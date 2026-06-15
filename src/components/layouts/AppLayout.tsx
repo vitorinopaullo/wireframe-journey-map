@@ -1,4 +1,4 @@
-import { Link, Outlet, useSearch, useLocation } from "@tanstack/react-router";
+import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 type Mode = "kopare" | "saljare";
