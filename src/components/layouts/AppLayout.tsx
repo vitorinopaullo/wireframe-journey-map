@@ -103,16 +103,3 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
   );
 }
 
-export function useMode(): Mode {
-  // dashboard route declares the search schema; other routes don't.
-  // We fall back to URL parsing for safety.
-  try {
-    const s = useSearch({ strict: false }) as { mode?: Mode };
-    if (s?.mode === "saljare" || s?.mode === "kopare") return s.mode;
-  } catch {}
-  if (typeof window !== "undefined") {
-    const m = new URLSearchParams(window.location.search).get("mode");
-    if (m === "saljare") return "saljare";
-  }
-  return "kopare";
-}
