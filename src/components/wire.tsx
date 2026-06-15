@@ -62,8 +62,8 @@ export function WireBtn({
       : "bg-transparent text-foreground border-dashed border-muted-foreground/50";
   const cls = `inline-flex items-center justify-center border px-4 py-2 text-sm font-medium hover:opacity-80 transition ${styles} ${className}`;
   if (to) {
-    // @ts-expect-error wireframe-grade dynamic params
-    return <Link to={to} params={params} className={cls}>{children}</Link>;
+    const LinkAny = Link as unknown as React.ComponentType<Record<string, unknown>>;
+    return <LinkAny to={to} params={params} className={cls}>{children}</LinkAny>;
   }
   return <button className={cls} {...rest}>{children}</button>;
 }
