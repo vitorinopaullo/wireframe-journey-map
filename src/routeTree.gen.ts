@@ -9,38 +9,370 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
+import { Route as RegistreraRouteImport } from './routes/registrera'
+import { Route as OversiktRouteImport } from './routes/oversikt'
+import { Route as LoggaInRouteImport } from './routes/logga-in'
+import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GeorgeIndexRouteImport } from './routes/george.index'
+import { Route as SaljareSkapaAnnonsRouteImport } from './routes/saljare.skapa-annons'
+import { Route as SaljareMinaAnnonserRouteImport } from './routes/saljare.mina-annonser'
+import { Route as SaljareIntressenterRouteImport } from './routes/saljare.intressenter'
+import { Route as SaljareAffarerRouteImport } from './routes/saljare.affarer'
+import { Route as KopareProfilRouteImport } from './routes/kopare.profil'
+import { Route as KopareFavoriterRouteImport } from './routes/kopare.favoriter'
+import { Route as KopareBevakningarRouteImport } from './routes/kopare.bevakningar'
+import { Route as KopareAffarerRouteImport } from './routes/kopare.affarer'
+import { Route as GeorgeHyresvardRouteImport } from './routes/george.hyresvard'
+import { Route as GeorgeFakturorRouteImport } from './routes/george.fakturor'
+import { Route as GeorgeAnvandareRouteImport } from './routes/george.anvandare'
+import { Route as GeorgeAnnonserRouteImport } from './routes/george.annonser'
+import { Route as GeorgeAffarerRouteImport } from './routes/george.affarer'
+import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
+import { Route as AffarIdRouteImport } from './routes/affar.$id'
 
+const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
+  id: '/tillaggstjanster',
+  path: '/tillaggstjanster',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistreraRoute = RegistreraRouteImport.update({
+  id: '/registrera',
+  path: '/registrera',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OversiktRoute = OversiktRouteImport.update({
+  id: '/oversikt',
+  path: '/oversikt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoggaInRoute = LoggaInRouteImport.update({
+  id: '/logga-in',
+  path: '/logga-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HurDetFunkarRoute = HurDetFunkarRouteImport.update({
+  id: '/hur-det-funkar',
+  path: '/hur-det-funkar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GeorgeIndexRoute = GeorgeIndexRouteImport.update({
+  id: '/george/',
+  path: '/george/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareSkapaAnnonsRoute = SaljareSkapaAnnonsRouteImport.update({
+  id: '/saljare/skapa-annons',
+  path: '/saljare/skapa-annons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareMinaAnnonserRoute = SaljareMinaAnnonserRouteImport.update({
+  id: '/saljare/mina-annonser',
+  path: '/saljare/mina-annonser',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareIntressenterRoute = SaljareIntressenterRouteImport.update({
+  id: '/saljare/intressenter',
+  path: '/saljare/intressenter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareAffarerRoute = SaljareAffarerRouteImport.update({
+  id: '/saljare/affarer',
+  path: '/saljare/affarer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareProfilRoute = KopareProfilRouteImport.update({
+  id: '/kopare/profil',
+  path: '/kopare/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareFavoriterRoute = KopareFavoriterRouteImport.update({
+  id: '/kopare/favoriter',
+  path: '/kopare/favoriter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareBevakningarRoute = KopareBevakningarRouteImport.update({
+  id: '/kopare/bevakningar',
+  path: '/kopare/bevakningar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareAffarerRoute = KopareAffarerRouteImport.update({
+  id: '/kopare/affarer',
+  path: '/kopare/affarer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GeorgeHyresvardRoute = GeorgeHyresvardRouteImport.update({
+  id: '/george/hyresvard',
+  path: '/george/hyresvard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GeorgeFakturorRoute = GeorgeFakturorRouteImport.update({
+  id: '/george/fakturor',
+  path: '/george/fakturor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GeorgeAnvandareRoute = GeorgeAnvandareRouteImport.update({
+  id: '/george/anvandare',
+  path: '/george/anvandare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GeorgeAnnonserRoute = GeorgeAnnonserRouteImport.update({
+  id: '/george/annonser',
+  path: '/george/annonser',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GeorgeAffarerRoute = GeorgeAffarerRouteImport.update({
+  id: '/george/affarer',
+  path: '/george/affarer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnonsIdRoute = AnnonsIdRouteImport.update({
+  id: '/annons/$id',
+  path: '/annons/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AffarIdRoute = AffarIdRouteImport.update({
+  id: '/affar/$id',
+  path: '/affar/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/hur-det-funkar': typeof HurDetFunkarRoute
+  '/logga-in': typeof LoggaInRoute
+  '/oversikt': typeof OversiktRoute
+  '/registrera': typeof RegistreraRoute
+  '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/affar/$id': typeof AffarIdRoute
+  '/annons/$id': typeof AnnonsIdRoute
+  '/george/affarer': typeof GeorgeAffarerRoute
+  '/george/annonser': typeof GeorgeAnnonserRoute
+  '/george/anvandare': typeof GeorgeAnvandareRoute
+  '/george/fakturor': typeof GeorgeFakturorRoute
+  '/george/hyresvard': typeof GeorgeHyresvardRoute
+  '/kopare/affarer': typeof KopareAffarerRoute
+  '/kopare/bevakningar': typeof KopareBevakningarRoute
+  '/kopare/favoriter': typeof KopareFavoriterRoute
+  '/kopare/profil': typeof KopareProfilRoute
+  '/saljare/affarer': typeof SaljareAffarerRoute
+  '/saljare/intressenter': typeof SaljareIntressenterRoute
+  '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
+  '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
+  '/george/': typeof GeorgeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/hur-det-funkar': typeof HurDetFunkarRoute
+  '/logga-in': typeof LoggaInRoute
+  '/oversikt': typeof OversiktRoute
+  '/registrera': typeof RegistreraRoute
+  '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/affar/$id': typeof AffarIdRoute
+  '/annons/$id': typeof AnnonsIdRoute
+  '/george/affarer': typeof GeorgeAffarerRoute
+  '/george/annonser': typeof GeorgeAnnonserRoute
+  '/george/anvandare': typeof GeorgeAnvandareRoute
+  '/george/fakturor': typeof GeorgeFakturorRoute
+  '/george/hyresvard': typeof GeorgeHyresvardRoute
+  '/kopare/affarer': typeof KopareAffarerRoute
+  '/kopare/bevakningar': typeof KopareBevakningarRoute
+  '/kopare/favoriter': typeof KopareFavoriterRoute
+  '/kopare/profil': typeof KopareProfilRoute
+  '/saljare/affarer': typeof SaljareAffarerRoute
+  '/saljare/intressenter': typeof SaljareIntressenterRoute
+  '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
+  '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
+  '/george': typeof GeorgeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/hur-det-funkar': typeof HurDetFunkarRoute
+  '/logga-in': typeof LoggaInRoute
+  '/oversikt': typeof OversiktRoute
+  '/registrera': typeof RegistreraRoute
+  '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/affar/$id': typeof AffarIdRoute
+  '/annons/$id': typeof AnnonsIdRoute
+  '/george/affarer': typeof GeorgeAffarerRoute
+  '/george/annonser': typeof GeorgeAnnonserRoute
+  '/george/anvandare': typeof GeorgeAnvandareRoute
+  '/george/fakturor': typeof GeorgeFakturorRoute
+  '/george/hyresvard': typeof GeorgeHyresvardRoute
+  '/kopare/affarer': typeof KopareAffarerRoute
+  '/kopare/bevakningar': typeof KopareBevakningarRoute
+  '/kopare/favoriter': typeof KopareFavoriterRoute
+  '/kopare/profil': typeof KopareProfilRoute
+  '/saljare/affarer': typeof SaljareAffarerRoute
+  '/saljare/intressenter': typeof SaljareIntressenterRoute
+  '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
+  '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
+  '/george/': typeof GeorgeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/hur-det-funkar'
+    | '/logga-in'
+    | '/oversikt'
+    | '/registrera'
+    | '/tillaggstjanster'
+    | '/affar/$id'
+    | '/annons/$id'
+    | '/george/affarer'
+    | '/george/annonser'
+    | '/george/anvandare'
+    | '/george/fakturor'
+    | '/george/hyresvard'
+    | '/kopare/affarer'
+    | '/kopare/bevakningar'
+    | '/kopare/favoriter'
+    | '/kopare/profil'
+    | '/saljare/affarer'
+    | '/saljare/intressenter'
+    | '/saljare/mina-annonser'
+    | '/saljare/skapa-annons'
+    | '/george/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/hur-det-funkar'
+    | '/logga-in'
+    | '/oversikt'
+    | '/registrera'
+    | '/tillaggstjanster'
+    | '/affar/$id'
+    | '/annons/$id'
+    | '/george/affarer'
+    | '/george/annonser'
+    | '/george/anvandare'
+    | '/george/fakturor'
+    | '/george/hyresvard'
+    | '/kopare/affarer'
+    | '/kopare/bevakningar'
+    | '/kopare/favoriter'
+    | '/kopare/profil'
+    | '/saljare/affarer'
+    | '/saljare/intressenter'
+    | '/saljare/mina-annonser'
+    | '/saljare/skapa-annons'
+    | '/george'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/hur-det-funkar'
+    | '/logga-in'
+    | '/oversikt'
+    | '/registrera'
+    | '/tillaggstjanster'
+    | '/affar/$id'
+    | '/annons/$id'
+    | '/george/affarer'
+    | '/george/annonser'
+    | '/george/anvandare'
+    | '/george/fakturor'
+    | '/george/hyresvard'
+    | '/kopare/affarer'
+    | '/kopare/bevakningar'
+    | '/kopare/favoriter'
+    | '/kopare/profil'
+    | '/saljare/affarer'
+    | '/saljare/intressenter'
+    | '/saljare/mina-annonser'
+    | '/saljare/skapa-annons'
+    | '/george/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
+  HurDetFunkarRoute: typeof HurDetFunkarRoute
+  LoggaInRoute: typeof LoggaInRoute
+  OversiktRoute: typeof OversiktRoute
+  RegistreraRoute: typeof RegistreraRoute
+  TillaggstjansterRoute: typeof TillaggstjansterRoute
+  AffarIdRoute: typeof AffarIdRoute
+  AnnonsIdRoute: typeof AnnonsIdRoute
+  GeorgeAffarerRoute: typeof GeorgeAffarerRoute
+  GeorgeAnnonserRoute: typeof GeorgeAnnonserRoute
+  GeorgeAnvandareRoute: typeof GeorgeAnvandareRoute
+  GeorgeFakturorRoute: typeof GeorgeFakturorRoute
+  GeorgeHyresvardRoute: typeof GeorgeHyresvardRoute
+  KopareAffarerRoute: typeof KopareAffarerRoute
+  KopareBevakningarRoute: typeof KopareBevakningarRoute
+  KopareFavoriterRoute: typeof KopareFavoriterRoute
+  KopareProfilRoute: typeof KopareProfilRoute
+  SaljareAffarerRoute: typeof SaljareAffarerRoute
+  SaljareIntressenterRoute: typeof SaljareIntressenterRoute
+  SaljareMinaAnnonserRoute: typeof SaljareMinaAnnonserRoute
+  SaljareSkapaAnnonsRoute: typeof SaljareSkapaAnnonsRoute
+  GeorgeIndexRoute: typeof GeorgeIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tillaggstjanster': {
+      id: '/tillaggstjanster'
+      path: '/tillaggstjanster'
+      fullPath: '/tillaggstjanster'
+      preLoaderRoute: typeof TillaggstjansterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registrera': {
+      id: '/registrera'
+      path: '/registrera'
+      fullPath: '/registrera'
+      preLoaderRoute: typeof RegistreraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oversikt': {
+      id: '/oversikt'
+      path: '/oversikt'
+      fullPath: '/oversikt'
+      preLoaderRoute: typeof OversiktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logga-in': {
+      id: '/logga-in'
+      path: '/logga-in'
+      fullPath: '/logga-in'
+      preLoaderRoute: typeof LoggaInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hur-det-funkar': {
+      id: '/hur-det-funkar'
+      path: '/hur-det-funkar'
+      fullPath: '/hur-det-funkar'
+      preLoaderRoute: typeof HurDetFunkarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +380,146 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/george/': {
+      id: '/george/'
+      path: '/george'
+      fullPath: '/george/'
+      preLoaderRoute: typeof GeorgeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/skapa-annons': {
+      id: '/saljare/skapa-annons'
+      path: '/saljare/skapa-annons'
+      fullPath: '/saljare/skapa-annons'
+      preLoaderRoute: typeof SaljareSkapaAnnonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/mina-annonser': {
+      id: '/saljare/mina-annonser'
+      path: '/saljare/mina-annonser'
+      fullPath: '/saljare/mina-annonser'
+      preLoaderRoute: typeof SaljareMinaAnnonserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/intressenter': {
+      id: '/saljare/intressenter'
+      path: '/saljare/intressenter'
+      fullPath: '/saljare/intressenter'
+      preLoaderRoute: typeof SaljareIntressenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/affarer': {
+      id: '/saljare/affarer'
+      path: '/saljare/affarer'
+      fullPath: '/saljare/affarer'
+      preLoaderRoute: typeof SaljareAffarerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/profil': {
+      id: '/kopare/profil'
+      path: '/kopare/profil'
+      fullPath: '/kopare/profil'
+      preLoaderRoute: typeof KopareProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/favoriter': {
+      id: '/kopare/favoriter'
+      path: '/kopare/favoriter'
+      fullPath: '/kopare/favoriter'
+      preLoaderRoute: typeof KopareFavoriterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/bevakningar': {
+      id: '/kopare/bevakningar'
+      path: '/kopare/bevakningar'
+      fullPath: '/kopare/bevakningar'
+      preLoaderRoute: typeof KopareBevakningarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/affarer': {
+      id: '/kopare/affarer'
+      path: '/kopare/affarer'
+      fullPath: '/kopare/affarer'
+      preLoaderRoute: typeof KopareAffarerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/hyresvard': {
+      id: '/george/hyresvard'
+      path: '/george/hyresvard'
+      fullPath: '/george/hyresvard'
+      preLoaderRoute: typeof GeorgeHyresvardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/fakturor': {
+      id: '/george/fakturor'
+      path: '/george/fakturor'
+      fullPath: '/george/fakturor'
+      preLoaderRoute: typeof GeorgeFakturorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/anvandare': {
+      id: '/george/anvandare'
+      path: '/george/anvandare'
+      fullPath: '/george/anvandare'
+      preLoaderRoute: typeof GeorgeAnvandareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/annonser': {
+      id: '/george/annonser'
+      path: '/george/annonser'
+      fullPath: '/george/annonser'
+      preLoaderRoute: typeof GeorgeAnnonserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/affarer': {
+      id: '/george/affarer'
+      path: '/george/affarer'
+      fullPath: '/george/affarer'
+      preLoaderRoute: typeof GeorgeAffarerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/annons/$id': {
+      id: '/annons/$id'
+      path: '/annons/$id'
+      fullPath: '/annons/$id'
+      preLoaderRoute: typeof AnnonsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/affar/$id': {
+      id: '/affar/$id'
+      path: '/affar/$id'
+      fullPath: '/affar/$id'
+      preLoaderRoute: typeof AffarIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
+  HurDetFunkarRoute: HurDetFunkarRoute,
+  LoggaInRoute: LoggaInRoute,
+  OversiktRoute: OversiktRoute,
+  RegistreraRoute: RegistreraRoute,
+  TillaggstjansterRoute: TillaggstjansterRoute,
+  AffarIdRoute: AffarIdRoute,
+  AnnonsIdRoute: AnnonsIdRoute,
+  GeorgeAffarerRoute: GeorgeAffarerRoute,
+  GeorgeAnnonserRoute: GeorgeAnnonserRoute,
+  GeorgeAnvandareRoute: GeorgeAnvandareRoute,
+  GeorgeFakturorRoute: GeorgeFakturorRoute,
+  GeorgeHyresvardRoute: GeorgeHyresvardRoute,
+  KopareAffarerRoute: KopareAffarerRoute,
+  KopareBevakningarRoute: KopareBevakningarRoute,
+  KopareFavoriterRoute: KopareFavoriterRoute,
+  KopareProfilRoute: KopareProfilRoute,
+  SaljareAffarerRoute: SaljareAffarerRoute,
+  SaljareIntressenterRoute: SaljareIntressenterRoute,
+  SaljareMinaAnnonserRoute: SaljareMinaAnnonserRoute,
+  SaljareSkapaAnnonsRoute: SaljareSkapaAnnonsRoute,
+  GeorgeIndexRoute: GeorgeIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
