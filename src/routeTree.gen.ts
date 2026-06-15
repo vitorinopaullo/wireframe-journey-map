@@ -28,6 +28,7 @@ import { Route as KopareAffarerRouteImport } from './routes/kopare.affarer'
 import { Route as GeorgeHyresvardRouteImport } from './routes/george.hyresvard'
 import { Route as GeorgeFakturorRouteImport } from './routes/george.fakturor'
 import { Route as GeorgeAnvandareRouteImport } from './routes/george.anvandare'
+import { Route as GeorgeAnnonserRouteImport } from './routes/george.annonser'
 import { Route as GeorgeAffarerRouteImport } from './routes/george.affarer'
 import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
 import { Route as AffarIdRouteImport } from './routes/affar.$id'
@@ -129,6 +130,11 @@ const GeorgeAnvandareRoute = GeorgeAnvandareRouteImport.update({
   path: '/george/anvandare',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GeorgeAnnonserRoute = GeorgeAnnonserRouteImport.update({
+  id: '/george/annonser',
+  path: '/george/annonser',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GeorgeAffarerRoute = GeorgeAffarerRouteImport.update({
   id: '/george/affarer',
   path: '/george/affarer',
@@ -145,9 +151,9 @@ const AffarIdRoute = AffarIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const GeorgeAnnonserIndexRoute = GeorgeAnnonserIndexRouteImport.update({
-  id: '/george/annonser/',
-  path: '/george/annonser/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => GeorgeAnnonserRoute,
 } as any)
 const GeorgeAnnonserIdRoute = GeorgeAnnonserIdRouteImport.update({
   id: '/$id',
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRoute
   '/george/affarer': typeof GeorgeAffarerRoute
+  '/george/annonser': typeof GeorgeAnnonserRouteWithChildren
   '/george/anvandare': typeof GeorgeAnvandareRoute
   '/george/fakturor': typeof GeorgeFakturorRoute
   '/george/hyresvard': typeof GeorgeHyresvardRoute
@@ -219,6 +226,7 @@ export interface FileRoutesById {
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRoute
   '/george/affarer': typeof GeorgeAffarerRoute
+  '/george/annonser': typeof GeorgeAnnonserRouteWithChildren
   '/george/anvandare': typeof GeorgeAnvandareRoute
   '/george/fakturor': typeof GeorgeFakturorRoute
   '/george/hyresvard': typeof GeorgeHyresvardRoute
@@ -247,6 +255,7 @@ export interface FileRouteTypes {
     | '/affar/$id'
     | '/annons/$id'
     | '/george/affarer'
+    | '/george/annonser'
     | '/george/anvandare'
     | '/george/fakturor'
     | '/george/hyresvard'
@@ -299,6 +308,7 @@ export interface FileRouteTypes {
     | '/affar/$id'
     | '/annons/$id'
     | '/george/affarer'
+    | '/george/annonser'
     | '/george/anvandare'
     | '/george/fakturor'
     | '/george/hyresvard'
@@ -326,6 +336,7 @@ export interface RootRouteChildren {
   AffarIdRoute: typeof AffarIdRoute
   AnnonsIdRoute: typeof AnnonsIdRoute
   GeorgeAffarerRoute: typeof GeorgeAffarerRoute
+  GeorgeAnnonserRoute: typeof GeorgeAnnonserRouteWithChildren
   GeorgeAnvandareRoute: typeof GeorgeAnvandareRoute
   GeorgeFakturorRoute: typeof GeorgeFakturorRoute
   GeorgeHyresvardRoute: typeof GeorgeHyresvardRoute
@@ -338,7 +349,6 @@ export interface RootRouteChildren {
   SaljareMinaAnnonserRoute: typeof SaljareMinaAnnonserRoute
   SaljareSkapaAnnonsRoute: typeof SaljareSkapaAnnonsRoute
   GeorgeIndexRoute: typeof GeorgeIndexRoute
-  GeorgeAnnonserIndexRoute: typeof GeorgeAnnonserIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -476,6 +486,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GeorgeAnvandareRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/george/annonser': {
+      id: '/george/annonser'
+      path: '/george/annonser'
+      fullPath: '/george/annonser'
+      preLoaderRoute: typeof GeorgeAnnonserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/george/affarer': {
       id: '/george/affarer'
       path: '/george/affarer'
@@ -499,10 +516,10 @@ declare module '@tanstack/react-router' {
     }
     '/george/annonser/': {
       id: '/george/annonser/'
-      path: '/george/annonser'
+      path: '/'
       fullPath: '/george/annonser/'
       preLoaderRoute: typeof GeorgeAnnonserIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof GeorgeAnnonserRoute
     }
     '/george/annonser/$id': {
       id: '/george/annonser/$id'
@@ -513,6 +530,20 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface GeorgeAnnonserRouteChildren {
+  GeorgeAnnonserIdRoute: typeof GeorgeAnnonserIdRoute
+  GeorgeAnnonserIndexRoute: typeof GeorgeAnnonserIndexRoute
+}
+
+const GeorgeAnnonserRouteChildren: GeorgeAnnonserRouteChildren = {
+  GeorgeAnnonserIdRoute: GeorgeAnnonserIdRoute,
+  GeorgeAnnonserIndexRoute: GeorgeAnnonserIndexRoute,
+}
+
+const GeorgeAnnonserRouteWithChildren = GeorgeAnnonserRoute._addFileChildren(
+  GeorgeAnnonserRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -525,6 +556,7 @@ const rootRouteChildren: RootRouteChildren = {
   AffarIdRoute: AffarIdRoute,
   AnnonsIdRoute: AnnonsIdRoute,
   GeorgeAffarerRoute: GeorgeAffarerRoute,
+  GeorgeAnnonserRoute: GeorgeAnnonserRouteWithChildren,
   GeorgeAnvandareRoute: GeorgeAnvandareRoute,
   GeorgeFakturorRoute: GeorgeFakturorRoute,
   GeorgeHyresvardRoute: GeorgeHyresvardRoute,
@@ -537,18 +569,7 @@ const rootRouteChildren: RootRouteChildren = {
   SaljareMinaAnnonserRoute: SaljareMinaAnnonserRoute,
   SaljareSkapaAnnonsRoute: SaljareSkapaAnnonsRoute,
   GeorgeIndexRoute: GeorgeIndexRoute,
-  GeorgeAnnonserIndexRoute: GeorgeAnnonserIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
