@@ -15,11 +15,16 @@ import { Route as LoggaInRouteImport } from './routes/logga-in'
 import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SaljareSkapaAnnonsRouteImport } from './routes/saljare.skapa-annons'
+import { Route as SaljareMinaAnnonserRouteImport } from './routes/saljare.mina-annonser'
+import { Route as SaljareIntressenterRouteImport } from './routes/saljare.intressenter'
+import { Route as SaljareAffarerRouteImport } from './routes/saljare.affarer'
 import { Route as KopareProfilRouteImport } from './routes/kopare.profil'
 import { Route as KopareFavoriterRouteImport } from './routes/kopare.favoriter'
 import { Route as KopareBevakningarRouteImport } from './routes/kopare.bevakningar'
 import { Route as KopareAffarerRouteImport } from './routes/kopare.affarer'
 import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
+import { Route as AffarIdRouteImport } from './routes/affar.$id'
 
 const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
   id: '/tillaggstjanster',
@@ -51,6 +56,26 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SaljareSkapaAnnonsRoute = SaljareSkapaAnnonsRouteImport.update({
+  id: '/saljare/skapa-annons',
+  path: '/saljare/skapa-annons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareMinaAnnonserRoute = SaljareMinaAnnonserRouteImport.update({
+  id: '/saljare/mina-annonser',
+  path: '/saljare/mina-annonser',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareIntressenterRoute = SaljareIntressenterRouteImport.update({
+  id: '/saljare/intressenter',
+  path: '/saljare/intressenter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareAffarerRoute = SaljareAffarerRouteImport.update({
+  id: '/saljare/affarer',
+  path: '/saljare/affarer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KopareProfilRoute = KopareProfilRouteImport.update({
   id: '/kopare/profil',
   path: '/kopare/profil',
@@ -76,6 +101,11 @@ const AnnonsIdRoute = AnnonsIdRouteImport.update({
   path: '/annons/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AffarIdRoute = AffarIdRouteImport.update({
+  id: '/affar/$id',
+  path: '/affar/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -84,11 +114,16 @@ export interface FileRoutesByFullPath {
   '/logga-in': typeof LoggaInRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRoute
   '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/profil': typeof KopareProfilRoute
+  '/saljare/affarer': typeof SaljareAffarerRoute
+  '/saljare/intressenter': typeof SaljareIntressenterRoute
+  '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
+  '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -97,11 +132,16 @@ export interface FileRoutesByTo {
   '/logga-in': typeof LoggaInRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRoute
   '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/profil': typeof KopareProfilRoute
+  '/saljare/affarer': typeof SaljareAffarerRoute
+  '/saljare/intressenter': typeof SaljareIntressenterRoute
+  '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
+  '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -111,11 +151,16 @@ export interface FileRoutesById {
   '/logga-in': typeof LoggaInRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRoute
   '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/profil': typeof KopareProfilRoute
+  '/saljare/affarer': typeof SaljareAffarerRoute
+  '/saljare/intressenter': typeof SaljareIntressenterRoute
+  '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
+  '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -126,11 +171,16 @@ export interface FileRouteTypes {
     | '/logga-in'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/affar/$id'
     | '/annons/$id'
     | '/kopare/affarer'
     | '/kopare/bevakningar'
     | '/kopare/favoriter'
     | '/kopare/profil'
+    | '/saljare/affarer'
+    | '/saljare/intressenter'
+    | '/saljare/mina-annonser'
+    | '/saljare/skapa-annons'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -139,11 +189,16 @@ export interface FileRouteTypes {
     | '/logga-in'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/affar/$id'
     | '/annons/$id'
     | '/kopare/affarer'
     | '/kopare/bevakningar'
     | '/kopare/favoriter'
     | '/kopare/profil'
+    | '/saljare/affarer'
+    | '/saljare/intressenter'
+    | '/saljare/mina-annonser'
+    | '/saljare/skapa-annons'
   id:
     | '__root__'
     | '/'
@@ -152,11 +207,16 @@ export interface FileRouteTypes {
     | '/logga-in'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/affar/$id'
     | '/annons/$id'
     | '/kopare/affarer'
     | '/kopare/bevakningar'
     | '/kopare/favoriter'
     | '/kopare/profil'
+    | '/saljare/affarer'
+    | '/saljare/intressenter'
+    | '/saljare/mina-annonser'
+    | '/saljare/skapa-annons'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -166,11 +226,16 @@ export interface RootRouteChildren {
   LoggaInRoute: typeof LoggaInRoute
   RegistreraRoute: typeof RegistreraRoute
   TillaggstjansterRoute: typeof TillaggstjansterRoute
+  AffarIdRoute: typeof AffarIdRoute
   AnnonsIdRoute: typeof AnnonsIdRoute
   KopareAffarerRoute: typeof KopareAffarerRoute
   KopareBevakningarRoute: typeof KopareBevakningarRoute
   KopareFavoriterRoute: typeof KopareFavoriterRoute
   KopareProfilRoute: typeof KopareProfilRoute
+  SaljareAffarerRoute: typeof SaljareAffarerRoute
+  SaljareIntressenterRoute: typeof SaljareIntressenterRoute
+  SaljareMinaAnnonserRoute: typeof SaljareMinaAnnonserRoute
+  SaljareSkapaAnnonsRoute: typeof SaljareSkapaAnnonsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -217,6 +282,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/saljare/skapa-annons': {
+      id: '/saljare/skapa-annons'
+      path: '/saljare/skapa-annons'
+      fullPath: '/saljare/skapa-annons'
+      preLoaderRoute: typeof SaljareSkapaAnnonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/mina-annonser': {
+      id: '/saljare/mina-annonser'
+      path: '/saljare/mina-annonser'
+      fullPath: '/saljare/mina-annonser'
+      preLoaderRoute: typeof SaljareMinaAnnonserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/intressenter': {
+      id: '/saljare/intressenter'
+      path: '/saljare/intressenter'
+      fullPath: '/saljare/intressenter'
+      preLoaderRoute: typeof SaljareIntressenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/affarer': {
+      id: '/saljare/affarer'
+      path: '/saljare/affarer'
+      fullPath: '/saljare/affarer'
+      preLoaderRoute: typeof SaljareAffarerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/kopare/profil': {
       id: '/kopare/profil'
       path: '/kopare/profil'
@@ -252,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnnonsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/affar/$id': {
+      id: '/affar/$id'
+      path: '/affar/$id'
+      fullPath: '/affar/$id'
+      preLoaderRoute: typeof AffarIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -262,11 +362,16 @@ const rootRouteChildren: RootRouteChildren = {
   LoggaInRoute: LoggaInRoute,
   RegistreraRoute: RegistreraRoute,
   TillaggstjansterRoute: TillaggstjansterRoute,
+  AffarIdRoute: AffarIdRoute,
   AnnonsIdRoute: AnnonsIdRoute,
   KopareAffarerRoute: KopareAffarerRoute,
   KopareBevakningarRoute: KopareBevakningarRoute,
   KopareFavoriterRoute: KopareFavoriterRoute,
   KopareProfilRoute: KopareProfilRoute,
+  SaljareAffarerRoute: SaljareAffarerRoute,
+  SaljareIntressenterRoute: SaljareIntressenterRoute,
+  SaljareMinaAnnonserRoute: SaljareMinaAnnonserRoute,
+  SaljareSkapaAnnonsRoute: SaljareSkapaAnnonsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
