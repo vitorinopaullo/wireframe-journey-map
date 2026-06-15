@@ -13,7 +13,12 @@ import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
 import { Route as RegistreraRouteImport } from './routes/registrera'
 import { Route as LoggaInRouteImport } from './routes/logga-in'
 import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as KopareProfilRouteImport } from './routes/kopare.profil'
+import { Route as KopareFavoriterRouteImport } from './routes/kopare.favoriter'
+import { Route as KopareBevakningarRouteImport } from './routes/kopare.bevakningar'
+import { Route as KopareAffarerRouteImport } from './routes/kopare.affarer'
 import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
 
 const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
@@ -36,9 +41,34 @@ const HurDetFunkarRoute = HurDetFunkarRouteImport.update({
   path: '/hur-det-funkar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareProfilRoute = KopareProfilRouteImport.update({
+  id: '/kopare/profil',
+  path: '/kopare/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareFavoriterRoute = KopareFavoriterRouteImport.update({
+  id: '/kopare/favoriter',
+  path: '/kopare/favoriter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareBevakningarRoute = KopareBevakningarRouteImport.update({
+  id: '/kopare/bevakningar',
+  path: '/kopare/bevakningar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareAffarerRoute = KopareAffarerRouteImport.update({
+  id: '/kopare/affarer',
+  path: '/kopare/affarer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnnonsIdRoute = AnnonsIdRouteImport.update({
@@ -49,63 +79,98 @@ const AnnonsIdRoute = AnnonsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/logga-in': typeof LoggaInRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/annons/$id': typeof AnnonsIdRoute
+  '/kopare/affarer': typeof KopareAffarerRoute
+  '/kopare/bevakningar': typeof KopareBevakningarRoute
+  '/kopare/favoriter': typeof KopareFavoriterRoute
+  '/kopare/profil': typeof KopareProfilRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/logga-in': typeof LoggaInRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/annons/$id': typeof AnnonsIdRoute
+  '/kopare/affarer': typeof KopareAffarerRoute
+  '/kopare/bevakningar': typeof KopareBevakningarRoute
+  '/kopare/favoriter': typeof KopareFavoriterRoute
+  '/kopare/profil': typeof KopareProfilRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/logga-in': typeof LoggaInRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/annons/$id': typeof AnnonsIdRoute
+  '/kopare/affarer': typeof KopareAffarerRoute
+  '/kopare/bevakningar': typeof KopareBevakningarRoute
+  '/kopare/favoriter': typeof KopareFavoriterRoute
+  '/kopare/profil': typeof KopareProfilRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
     | '/hur-det-funkar'
     | '/logga-in'
     | '/registrera'
     | '/tillaggstjanster'
     | '/annons/$id'
+    | '/kopare/affarer'
+    | '/kopare/bevakningar'
+    | '/kopare/favoriter'
+    | '/kopare/profil'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dashboard'
     | '/hur-det-funkar'
     | '/logga-in'
     | '/registrera'
     | '/tillaggstjanster'
     | '/annons/$id'
+    | '/kopare/affarer'
+    | '/kopare/bevakningar'
+    | '/kopare/favoriter'
+    | '/kopare/profil'
   id:
     | '__root__'
     | '/'
+    | '/dashboard'
     | '/hur-det-funkar'
     | '/logga-in'
     | '/registrera'
     | '/tillaggstjanster'
     | '/annons/$id'
+    | '/kopare/affarer'
+    | '/kopare/bevakningar'
+    | '/kopare/favoriter'
+    | '/kopare/profil'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
   HurDetFunkarRoute: typeof HurDetFunkarRoute
   LoggaInRoute: typeof LoggaInRoute
   RegistreraRoute: typeof RegistreraRoute
   TillaggstjansterRoute: typeof TillaggstjansterRoute
   AnnonsIdRoute: typeof AnnonsIdRoute
+  KopareAffarerRoute: typeof KopareAffarerRoute
+  KopareBevakningarRoute: typeof KopareBevakningarRoute
+  KopareFavoriterRoute: typeof KopareFavoriterRoute
+  KopareProfilRoute: typeof KopareProfilRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -138,11 +203,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HurDetFunkarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/profil': {
+      id: '/kopare/profil'
+      path: '/kopare/profil'
+      fullPath: '/kopare/profil'
+      preLoaderRoute: typeof KopareProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/favoriter': {
+      id: '/kopare/favoriter'
+      path: '/kopare/favoriter'
+      fullPath: '/kopare/favoriter'
+      preLoaderRoute: typeof KopareFavoriterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/bevakningar': {
+      id: '/kopare/bevakningar'
+      path: '/kopare/bevakningar'
+      fullPath: '/kopare/bevakningar'
+      preLoaderRoute: typeof KopareBevakningarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/affarer': {
+      id: '/kopare/affarer'
+      path: '/kopare/affarer'
+      fullPath: '/kopare/affarer'
+      preLoaderRoute: typeof KopareAffarerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/annons/$id': {
@@ -157,11 +257,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
   HurDetFunkarRoute: HurDetFunkarRoute,
   LoggaInRoute: LoggaInRoute,
   RegistreraRoute: RegistreraRoute,
   TillaggstjansterRoute: TillaggstjansterRoute,
   AnnonsIdRoute: AnnonsIdRoute,
+  KopareAffarerRoute: KopareAffarerRoute,
+  KopareBevakningarRoute: KopareBevakningarRoute,
+  KopareFavoriterRoute: KopareFavoriterRoute,
+  KopareProfilRoute: KopareProfilRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
