@@ -44,12 +44,14 @@ export function WireBtn({
   children,
   variant = "primary",
   to,
+  params,
   className = "",
   ...rest
 }: {
   children: ReactNode;
   variant?: "primary" | "secondary" | "ghost";
   to?: string;
+  params?: Record<string, string>;
   className?: string;
 } & Omit<HTMLAttributes<HTMLButtonElement>, "children">) {
   const styles =
@@ -59,7 +61,10 @@ export function WireBtn({
       ? "bg-background text-foreground border-foreground/60"
       : "bg-transparent text-foreground border-dashed border-muted-foreground/50";
   const cls = `inline-flex items-center justify-center border px-4 py-2 text-sm font-medium hover:opacity-80 transition ${styles} ${className}`;
-  if (to) return <Link to={to} className={cls}>{children}</Link>;
+  if (to) {
+    // @ts-expect-error wireframe-grade dynamic params
+    return <Link to={to} params={params} className={cls}>{children}</Link>;
+  }
   return <button className={cls} {...rest}>{children}</button>;
 }
 
