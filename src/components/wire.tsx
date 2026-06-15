@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { ReactNode, HTMLAttributes } from "react";
+import type { ReactNode, HTMLAttributes, ComponentType } from "react";
 
 /* Wireframe primitives — grayscale, dashed, monospace annotations */
 
