@@ -34,6 +34,7 @@ import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
 import { Route as AffarIdRouteImport } from './routes/affar.$id'
 import { Route as GeorgeAnnonserIndexRouteImport } from './routes/george.annonser.index'
 import { Route as GeorgeAnnonserIdRouteImport } from './routes/george.annonser.$id'
+import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
 
 const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
   id: '/tillaggstjanster',
@@ -160,6 +161,11 @@ const GeorgeAnnonserIdRoute = GeorgeAnnonserIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => GeorgeAnnonserRoute,
 } as any)
+const AnnonsIdIntresseRoute = AnnonsIdIntresseRouteImport.update({
+  id: '/intresse',
+  path: '/intresse',
+  getParentRoute: () => AnnonsIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -170,7 +176,7 @@ export interface FileRoutesByFullPath {
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/affar/$id': typeof AffarIdRoute
-  '/annons/$id': typeof AnnonsIdRoute
+  '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/george/affarer': typeof GeorgeAffarerRoute
   '/george/annonser': typeof GeorgeAnnonserRouteWithChildren
   '/george/anvandare': typeof GeorgeAnvandareRoute
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
   '/george/': typeof GeorgeIndexRoute
+  '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/george/annonser/': typeof GeorgeAnnonserIndexRoute
 }
@@ -197,7 +204,7 @@ export interface FileRoutesByTo {
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/affar/$id': typeof AffarIdRoute
-  '/annons/$id': typeof AnnonsIdRoute
+  '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/george/affarer': typeof GeorgeAffarerRoute
   '/george/anvandare': typeof GeorgeAnvandareRoute
   '/george/fakturor': typeof GeorgeFakturorRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
   '/george': typeof GeorgeIndexRoute
+  '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/george/annonser': typeof GeorgeAnnonserIndexRoute
 }
@@ -224,7 +232,7 @@ export interface FileRoutesById {
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/affar/$id': typeof AffarIdRoute
-  '/annons/$id': typeof AnnonsIdRoute
+  '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/george/affarer': typeof GeorgeAffarerRoute
   '/george/annonser': typeof GeorgeAnnonserRouteWithChildren
   '/george/anvandare': typeof GeorgeAnvandareRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
   '/george/': typeof GeorgeIndexRoute
+  '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/george/annonser/': typeof GeorgeAnnonserIndexRoute
 }
@@ -268,6 +277,7 @@ export interface FileRouteTypes {
     | '/saljare/mina-annonser'
     | '/saljare/skapa-annons'
     | '/george/'
+    | '/annons/$id/intresse'
     | '/george/annonser/$id'
     | '/george/annonser/'
   fileRoutesByTo: FileRoutesByTo
@@ -294,6 +304,7 @@ export interface FileRouteTypes {
     | '/saljare/mina-annonser'
     | '/saljare/skapa-annons'
     | '/george'
+    | '/annons/$id/intresse'
     | '/george/annonser/$id'
     | '/george/annonser'
   id:
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/saljare/mina-annonser'
     | '/saljare/skapa-annons'
     | '/george/'
+    | '/annons/$id/intresse'
     | '/george/annonser/$id'
     | '/george/annonser/'
   fileRoutesById: FileRoutesById
@@ -334,7 +346,7 @@ export interface RootRouteChildren {
   RegistreraRoute: typeof RegistreraRoute
   TillaggstjansterRoute: typeof TillaggstjansterRoute
   AffarIdRoute: typeof AffarIdRoute
-  AnnonsIdRoute: typeof AnnonsIdRoute
+  AnnonsIdRoute: typeof AnnonsIdRouteWithChildren
   GeorgeAffarerRoute: typeof GeorgeAffarerRoute
   GeorgeAnnonserRoute: typeof GeorgeAnnonserRouteWithChildren
   GeorgeAnvandareRoute: typeof GeorgeAnvandareRoute
@@ -528,8 +540,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GeorgeAnnonserIdRouteImport
       parentRoute: typeof GeorgeAnnonserRoute
     }
+    '/annons/$id/intresse': {
+      id: '/annons/$id/intresse'
+      path: '/intresse'
+      fullPath: '/annons/$id/intresse'
+      preLoaderRoute: typeof AnnonsIdIntresseRouteImport
+      parentRoute: typeof AnnonsIdRoute
+    }
   }
 }
+
+interface AnnonsIdRouteChildren {
+  AnnonsIdIntresseRoute: typeof AnnonsIdIntresseRoute
+}
+
+const AnnonsIdRouteChildren: AnnonsIdRouteChildren = {
+  AnnonsIdIntresseRoute: AnnonsIdIntresseRoute,
+}
+
+const AnnonsIdRouteWithChildren = AnnonsIdRoute._addFileChildren(
+  AnnonsIdRouteChildren,
+)
 
 interface GeorgeAnnonserRouteChildren {
   GeorgeAnnonserIdRoute: typeof GeorgeAnnonserIdRoute
@@ -554,7 +585,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegistreraRoute: RegistreraRoute,
   TillaggstjansterRoute: TillaggstjansterRoute,
   AffarIdRoute: AffarIdRoute,
-  AnnonsIdRoute: AnnonsIdRoute,
+  AnnonsIdRoute: AnnonsIdRouteWithChildren,
   GeorgeAffarerRoute: GeorgeAffarerRoute,
   GeorgeAnnonserRoute: GeorgeAnnonserRouteWithChildren,
   GeorgeAnvandareRoute: GeorgeAnvandareRoute,
