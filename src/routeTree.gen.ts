@@ -9,38 +9,135 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
+import { Route as RegistreraRouteImport } from './routes/registrera'
+import { Route as LoggaInRouteImport } from './routes/logga-in'
+import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
 
+const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
+  id: '/tillaggstjanster',
+  path: '/tillaggstjanster',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistreraRoute = RegistreraRouteImport.update({
+  id: '/registrera',
+  path: '/registrera',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoggaInRoute = LoggaInRouteImport.update({
+  id: '/logga-in',
+  path: '/logga-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HurDetFunkarRoute = HurDetFunkarRouteImport.update({
+  id: '/hur-det-funkar',
+  path: '/hur-det-funkar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnnonsIdRoute = AnnonsIdRouteImport.update({
+  id: '/annons/$id',
+  path: '/annons/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/hur-det-funkar': typeof HurDetFunkarRoute
+  '/logga-in': typeof LoggaInRoute
+  '/registrera': typeof RegistreraRoute
+  '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/annons/$id': typeof AnnonsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/hur-det-funkar': typeof HurDetFunkarRoute
+  '/logga-in': typeof LoggaInRoute
+  '/registrera': typeof RegistreraRoute
+  '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/annons/$id': typeof AnnonsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/hur-det-funkar': typeof HurDetFunkarRoute
+  '/logga-in': typeof LoggaInRoute
+  '/registrera': typeof RegistreraRoute
+  '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/annons/$id': typeof AnnonsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/hur-det-funkar'
+    | '/logga-in'
+    | '/registrera'
+    | '/tillaggstjanster'
+    | '/annons/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/hur-det-funkar'
+    | '/logga-in'
+    | '/registrera'
+    | '/tillaggstjanster'
+    | '/annons/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/hur-det-funkar'
+    | '/logga-in'
+    | '/registrera'
+    | '/tillaggstjanster'
+    | '/annons/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HurDetFunkarRoute: typeof HurDetFunkarRoute
+  LoggaInRoute: typeof LoggaInRoute
+  RegistreraRoute: typeof RegistreraRoute
+  TillaggstjansterRoute: typeof TillaggstjansterRoute
+  AnnonsIdRoute: typeof AnnonsIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tillaggstjanster': {
+      id: '/tillaggstjanster'
+      path: '/tillaggstjanster'
+      fullPath: '/tillaggstjanster'
+      preLoaderRoute: typeof TillaggstjansterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registrera': {
+      id: '/registrera'
+      path: '/registrera'
+      fullPath: '/registrera'
+      preLoaderRoute: typeof RegistreraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logga-in': {
+      id: '/logga-in'
+      path: '/logga-in'
+      fullPath: '/logga-in'
+      preLoaderRoute: typeof LoggaInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hur-det-funkar': {
+      id: '/hur-det-funkar'
+      path: '/hur-det-funkar'
+      fullPath: '/hur-det-funkar'
+      preLoaderRoute: typeof HurDetFunkarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +145,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/annons/$id': {
+      id: '/annons/$id'
+      path: '/annons/$id'
+      fullPath: '/annons/$id'
+      preLoaderRoute: typeof AnnonsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HurDetFunkarRoute: HurDetFunkarRoute,
+  LoggaInRoute: LoggaInRoute,
+  RegistreraRoute: RegistreraRoute,
+  TillaggstjansterRoute: TillaggstjansterRoute,
+  AnnonsIdRoute: AnnonsIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
