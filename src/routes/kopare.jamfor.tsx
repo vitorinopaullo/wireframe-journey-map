@@ -62,7 +62,7 @@ const rows: Row[] = [
 
 function Compare() {
   const { ids } = Route.useSearch();
-  const initial = ids.split(",").filter((i) => ALLA[i]).slice(0, 3);
+  const initial = ids.split(",").filter((i: string) => Boolean(ALLA[i])).slice(0, 3);
   const [selected, setSelected] = useState<string[]>(initial.length ? initial : ["1", "4"]);
 
   const annonser = useMemo(() => selected.map((id) => ALLA[id]).filter(Boolean), [selected]);
