@@ -22,6 +22,7 @@ import { Route as SaljareMinaAnnonserRouteImport } from './routes/saljare.mina-a
 import { Route as SaljareIntressenterRouteImport } from './routes/saljare.intressenter'
 import { Route as SaljareAffarerRouteImport } from './routes/saljare.affarer'
 import { Route as KopareProfilRouteImport } from './routes/kopare.profil'
+import { Route as KopareJamforRouteImport } from './routes/kopare.jamfor'
 import { Route as KopareFavoriterRouteImport } from './routes/kopare.favoriter'
 import { Route as KopareBevakningarRouteImport } from './routes/kopare.bevakningar'
 import { Route as KopareAffarerRouteImport } from './routes/kopare.affarer'
@@ -99,6 +100,11 @@ const SaljareAffarerRoute = SaljareAffarerRouteImport.update({
 const KopareProfilRoute = KopareProfilRouteImport.update({
   id: '/kopare/profil',
   path: '/kopare/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareJamforRoute = KopareJamforRouteImport.update({
+  id: '/kopare/jamfor',
+  path: '/kopare/jamfor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KopareFavoriterRoute = KopareFavoriterRouteImport.update({
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
+  '/kopare/jamfor': typeof KopareJamforRoute
   '/kopare/profil': typeof KopareProfilRoute
   '/saljare/affarer': typeof SaljareAffarerRoute
   '/saljare/intressenter': typeof SaljareIntressenterRoute
@@ -212,6 +219,7 @@ export interface FileRoutesByTo {
   '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
+  '/kopare/jamfor': typeof KopareJamforRoute
   '/kopare/profil': typeof KopareProfilRoute
   '/saljare/affarer': typeof SaljareAffarerRoute
   '/saljare/intressenter': typeof SaljareIntressenterRoute
@@ -241,6 +249,7 @@ export interface FileRoutesById {
   '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
+  '/kopare/jamfor': typeof KopareJamforRoute
   '/kopare/profil': typeof KopareProfilRoute
   '/saljare/affarer': typeof SaljareAffarerRoute
   '/saljare/intressenter': typeof SaljareIntressenterRoute
@@ -271,6 +280,7 @@ export interface FileRouteTypes {
     | '/kopare/affarer'
     | '/kopare/bevakningar'
     | '/kopare/favoriter'
+    | '/kopare/jamfor'
     | '/kopare/profil'
     | '/saljare/affarer'
     | '/saljare/intressenter'
@@ -298,6 +308,7 @@ export interface FileRouteTypes {
     | '/kopare/affarer'
     | '/kopare/bevakningar'
     | '/kopare/favoriter'
+    | '/kopare/jamfor'
     | '/kopare/profil'
     | '/saljare/affarer'
     | '/saljare/intressenter'
@@ -326,6 +337,7 @@ export interface FileRouteTypes {
     | '/kopare/affarer'
     | '/kopare/bevakningar'
     | '/kopare/favoriter'
+    | '/kopare/jamfor'
     | '/kopare/profil'
     | '/saljare/affarer'
     | '/saljare/intressenter'
@@ -355,6 +367,7 @@ export interface RootRouteChildren {
   KopareAffarerRoute: typeof KopareAffarerRoute
   KopareBevakningarRoute: typeof KopareBevakningarRoute
   KopareFavoriterRoute: typeof KopareFavoriterRoute
+  KopareJamforRoute: typeof KopareJamforRoute
   KopareProfilRoute: typeof KopareProfilRoute
   SaljareAffarerRoute: typeof SaljareAffarerRoute
   SaljareIntressenterRoute: typeof SaljareIntressenterRoute
@@ -454,6 +467,13 @@ declare module '@tanstack/react-router' {
       path: '/kopare/profil'
       fullPath: '/kopare/profil'
       preLoaderRoute: typeof KopareProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/jamfor': {
+      id: '/kopare/jamfor'
+      path: '/kopare/jamfor'
+      fullPath: '/kopare/jamfor'
+      preLoaderRoute: typeof KopareJamforRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kopare/favoriter': {
@@ -594,6 +614,7 @@ const rootRouteChildren: RootRouteChildren = {
   KopareAffarerRoute: KopareAffarerRoute,
   KopareBevakningarRoute: KopareBevakningarRoute,
   KopareFavoriterRoute: KopareFavoriterRoute,
+  KopareJamforRoute: KopareJamforRoute,
   KopareProfilRoute: KopareProfilRoute,
   SaljareAffarerRoute: SaljareAffarerRoute,
   SaljareIntressenterRoute: SaljareIntressenterRoute,

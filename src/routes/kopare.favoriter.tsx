@@ -19,7 +19,12 @@ function Favorites() {
         eyebrow="Köparläge"
         title="Sparade objekt"
         subtitle="Samla favoriter, jämför och återkom. Inga kontaktuppgifter visas — affär startar via intresseanmälan."
-        right={<Annotation>{favs.length} sparade</Annotation>}
+        right={
+          <div className="flex items-center gap-2">
+            <Annotation>{favs.length} sparade</Annotation>
+            <WireBtn variant="secondary" to="/kopare/jamfor" params={{}}>Jämför alla →</WireBtn>
+          </div>
+        }
       />
       <div className="space-y-3">
         {favs.map((l) => (
