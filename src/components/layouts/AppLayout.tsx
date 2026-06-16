@@ -28,7 +28,7 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
       <header className="border-b border-foreground/20">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link to="/dashboard" search={{ mode }} className="font-mono text-lg font-semibold">
-            ▢ TRELINK <span className="text-muted-foreground text-xs">/{mode}</span>
+            TRELINK <span className="text-muted-foreground text-xs">/{mode}</span>
           </Link>
           <div className="flex items-center gap-3">
             <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">

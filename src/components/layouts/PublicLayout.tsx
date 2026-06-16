@@ -14,7 +14,7 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
       <header className="border-b border-foreground/20">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link to="/" className="font-mono text-lg font-semibold tracking-tight">
-            ▢ TRELINK <span className="text-muted-foreground text-xs">/wireframe</span>
+            TRELINK <span className="text-muted-foreground text-xs">/wireframe</span>
           </Link>
           <nav className="hidden gap-6 md:flex">
             {navItems.map((n) => (
