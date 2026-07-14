@@ -74,13 +74,21 @@ function MyListings() {
                 </Annotation>
               </div>
               <div className="flex gap-2">
-                <WireBtn variant="secondary">Redigera</WireBtn>
                 {isNew ? (
-                  <WireBtn variant="ghost" onClick={() => remove(i.id)}>Ta bort</WireBtn>
+                  <>
+                    <WireBtn variant="secondary" to={`/saljare/skapa-annons?edit=${i.id}`}>
+                      Redigera
+                    </WireBtn>
+                    <WireBtn variant="ghost" onClick={() => remove(i.id)}>Ta bort</WireBtn>
+                  </>
                 ) : (
-                  <WireBtn variant="ghost">Pausa</WireBtn>
+                  <>
+                    <WireBtn variant="secondary">Redigera</WireBtn>
+                    <WireBtn variant="ghost">Pausa</WireBtn>
+                  </>
                 )}
               </div>
+
             </WireBox>
           );
         })}

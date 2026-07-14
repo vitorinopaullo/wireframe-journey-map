@@ -5,7 +5,9 @@ import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/
 
 export const Route = createFileRoute("/saljare/skapa-annons")({
   component: CreateListing,
+  validateSearch: (s: Record<string, unknown>) => ({ edit: typeof s.edit === "string" ? s.edit : undefined }),
 });
+
 
 type CatId = "overlatelse" | "inkram" | "aktie";
 
@@ -133,12 +135,25 @@ const STEPS = ["Paket", "Grunduppgifter", "Underlag", "Övrig info", "Granska & 
 
 function CreateListing() {
   const navigate = useNavigate();
+  const { edit: editId } = Route.useSearch();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<Draft>(empty);
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
   useEffect(() => {
     try {
+      if (editId) {
+        const raw = localStorage.getItem("saljare-annonser");
+        if (raw) {
+          const list = JSON.parse(raw) as any[];
+          const item = list.find((i) => i.id === editId);
+          if (item?.draft) {
+            setDraft({ ...empty, ...item.draft });
+            setStep(4);
+            return;
+          }
+        }
+      }
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as { draft: Draft; step: number; savedAt: string };
@@ -149,7 +164,9 @@ function CreateListing() {
     } catch {
       /* noop */
     }
-  }, []);
+  }, [editId]);
+
+
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -218,9 +235,12 @@ function CreateListing() {
   return (
     <AppLayout mode="saljare">
       <PageHeader
-        eyebrow="Säljarläge · Skapa annons"
+        eyebrow={editId ? "Säljarläge · Redigera annons" : "Säljarläge · Skapa annons"}
         title={STEPS[step]}
-        subtitle="Gratis att annonsera. Paketavgiften tas ut först vid genomförd affär. TreLink granskar innan publicering."
+        subtitle={editId
+          ? "Ändringarna skickas till TreLink för ny granskning innan annonsen publiceras igen."
+          : "Gratis att annonsera. Paketavgiften tas ut först vid genomförd affär. TreLink granskar innan publicering."}
+
         right={
           <div className="flex flex-col items-end gap-1">
             <WireTag>Steg {step + 1} av {STEPS.length}</WireTag>
@@ -637,26 +657,31 @@ function CreateListing() {
                 try {
                   const raw = localStorage.getItem("saljare-annonser") ?? "[]";
                   const list = JSON.parse(raw) as any[];
-                  list.unshift({
-                    id: "n" + Date.now(),
+                  const base = {
                     titel: draft.rubrik || `${activeCat.name} · ${draft.ort || "Ny annons"}`,
                     ort: draft.ort,
                     pris: draft.pris,
                     cat: draft.cat,
                     status: "Granskas",
                     premium: draft.premium,
-                    views: 0,
-                    intresse: 0,
                     skickadAt: new Date().toISOString(),
-                  });
+                    draft,
+                  };
+                  if (editId) {
+                    const idx = list.findIndex((i) => i.id === editId);
+                    if (idx >= 0) list[idx] = { ...list[idx], ...base };
+                  } else {
+                    list.unshift({ id: "n" + Date.now(), views: 0, intresse: 0, ...base });
+                  }
                   localStorage.setItem("saljare-annonser", JSON.stringify(list));
-                  localStorage.removeItem(STORAGE_KEY);
+                  if (!editId) localStorage.removeItem(STORAGE_KEY);
                 } catch {}
                 navigate({ to: "/saljare/annons-inskickad" });
               }}
             >
-              Skicka till TreLink för granskning →
+              {editId ? "Skicka uppdaterad annons på granskning →" : "Skicka till TreLink för granskning →"}
             </WireBtn>
+
           )}
         </div>
       </div>
