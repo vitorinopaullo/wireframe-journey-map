@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
 import { Route as RegistreraRouteImport } from './routes/registrera'
 import { Route as OversiktRouteImport } from './routes/oversikt'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoggaInRouteImport } from './routes/logga-in'
 import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -50,6 +51,11 @@ const RegistreraRoute = RegistreraRouteImport.update({
 const OversiktRoute = OversiktRouteImport.update({
   id: '/oversikt',
   path: '/oversikt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoggaInRoute = LoggaInRouteImport.update({
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/logga-in': typeof LoggaInRoute
+  '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/logga-in': typeof LoggaInRoute
+  '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/logga-in': typeof LoggaInRoute
+  '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
@@ -267,6 +276,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hur-det-funkar'
     | '/logga-in'
+    | '/onboarding'
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
@@ -296,6 +306,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hur-det-funkar'
     | '/logga-in'
+    | '/onboarding'
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
@@ -324,6 +335,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hur-det-funkar'
     | '/logga-in'
+    | '/onboarding'
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
@@ -354,6 +366,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   HurDetFunkarRoute: typeof HurDetFunkarRoute
   LoggaInRoute: typeof LoggaInRoute
+  OnboardingRoute: typeof OnboardingRoute
   OversiktRoute: typeof OversiktRoute
   RegistreraRoute: typeof RegistreraRoute
   TillaggstjansterRoute: typeof TillaggstjansterRoute
@@ -397,6 +410,13 @@ declare module '@tanstack/react-router' {
       path: '/oversikt'
       fullPath: '/oversikt'
       preLoaderRoute: typeof OversiktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/logga-in': {
@@ -601,6 +621,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   HurDetFunkarRoute: HurDetFunkarRoute,
   LoggaInRoute: LoggaInRoute,
+  OnboardingRoute: OnboardingRoute,
   OversiktRoute: OversiktRoute,
   RegistreraRoute: RegistreraRoute,
   TillaggstjansterRoute: TillaggstjansterRoute,

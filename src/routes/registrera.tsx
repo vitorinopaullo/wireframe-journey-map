@@ -22,9 +22,10 @@ function Register() {
           <p className="mt-4 text-xs text-muted-foreground">
             Verifieringen är obligatorisk för att kunna spara annonser eller anmäla intresse.
           </p>
-          <WireBtn className="mt-4 w-full" to="/dashboard">
+          <WireBtn className="mt-4 w-full" to="/onboarding">
             Starta BankID
           </WireBtn>
+
         </WireBox>
 
         <WireBox label="Komplettera profil">
