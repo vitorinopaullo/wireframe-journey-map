@@ -16,34 +16,30 @@ export const Route = createFileRoute("/onboarding")({
 });
 
 type Role = "kopare" | "saljare" | null;
-type Step = 1 | 2 | 3;
+type Step = 1 | 2;
 
 function Onboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>(1);
   const [role, setRole] = useState<Role>(null);
-  const [defaultMode, setDefaultMode] = useState<"kopare" | "saljare">("kopare");
 
   const steps = [
     { n: 1, label: "Välj roll" },
     { n: 2, label: "Dina uppgifter" },
-    { n: 3, label: "Startläge" },
   ] as const;
 
   return (
     <PublicLayout>
       <PageHeader
-        eyebrow={`Onboarding · steg ${step} av 3`}
+        eyebrow={`Onboarding · steg ${step} av 2`}
         title="Sätt upp ditt konto"
         subtitle="Ett konto — två lägen. Du kan alltid växla mellan köpare och säljare senare. Informationen du fyller i följer med respektive läge."
         right={<WireTag>BankID ✓</WireTag>}
       />
 
-      {/* Progress */}
-      <div className="mb-8 grid grid-cols-3 gap-2">
+      <div className="mb-8 grid grid-cols-2 gap-2">
         {steps.map((s) => {
-          const state =
-            s.n < step ? "done" : s.n === step ? "active" : "pending";
+          const state = s.n < step ? "done" : s.n === step ? "active" : "pending";
           return (
             <div
               key={s.n}
@@ -64,34 +60,21 @@ function Onboarding() {
       {step === 1 && (
         <Step1
           role={role}
-          onPick={(r) => {
-            setRole(r);
-            setDefaultMode(r === "saljare" ? "saljare" : "kopare");
-          }}
+          onPick={(r) => setRole(r)}
           onNext={() => role && setStep(2)}
         />
       )}
 
       {step === 2 && role && (
-        <Step2 role={role} onBack={() => setStep(1)} onNext={() => setStep(3)} />
-      )}
-
-      {step === 3 && role && (
-        <Step3
+        <Step2
           role={role}
-          defaultMode={defaultMode}
-          setDefaultMode={setDefaultMode}
-          onBack={() => setStep(2)}
-          onFinish={() =>
-            navigate({ to: "/dashboard", search: { mode: defaultMode } })
-          }
+          onBack={() => setStep(1)}
+          onFinish={() => navigate({ to: "/dashboard", search: { mode: role } })}
         />
       )}
     </PublicLayout>
   );
 }
-
-/* ---------------- Step 1 — role picker ---------------- */
 
 function Step1({
   role,
@@ -191,35 +174,23 @@ function RoleCard({
   );
 }
 
-/* ---------------- Step 2 — info form ---------------- */
-
 function Step2({
   role,
   onBack,
-  onNext,
+  onFinish,
 }: {
   role: "kopare" | "saljare";
   onBack: () => void;
-  onNext: () => void;
+  onFinish: () => void;
 }) {
   return (
     <>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <WireBox
-            label={role === "kopare" ? "Köparuppgifter" : "Säljaruppgifter"}
-          >
+          <WireBox label={role === "kopare" ? "Köparuppgifter" : "Säljaruppgifter"}>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <WireField
-                label="Förnamn *"
-                placeholder="Hämtat från BankID"
-                hint="Ej redigerbart"
-              />
-              <WireField
-                label="Efternamn *"
-                placeholder="Hämtat från BankID"
-                hint="Ej redigerbart"
-              />
+              <WireField label="Förnamn *" placeholder="Hämtat från BankID" hint="Ej redigerbart" />
+              <WireField label="Efternamn *" placeholder="Hämtat från BankID" hint="Ej redigerbart" />
               <WireField label="Telefon *" placeholder="+46 70 123 45 67" />
               <WireField label="E-post *" placeholder="namn@exempel.se" />
               {role === "saljare" && (
@@ -249,7 +220,7 @@ function Step2({
                     placeholder="Kort beskrivning av bolag, ägare och bakgrund…"
                     hint={
                       role === "kopare"
-                        ? "Frivilligt nu — hjälper säljare att välja dig som köpare. Måste vara på plats innan du kan slutföra ett köp."
+                        ? "Frivilligt nu — hjälper säljare att välja dig. Måste vara på plats innan du kan slutföra ett köp."
                         : "Frivilligt — visas på dina annonser för att skapa förtroende."
                     }
                   />
@@ -262,7 +233,7 @@ function Step2({
         <aside className="space-y-4">
           <WireBox label="Vad ser andra?" variant="ghost">
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>· Säljare/köpare ser bara det som behövs — aldrig personnummer eller kontaktuppgifter innan match.</li>
+              <li>· Motpart ser bara det som behövs — aldrig personnummer eller kontaktuppgifter innan match.</li>
               <li>· George ser allt för att kunna granska.</li>
               <li>· Bolagspresentation visas i intresseanmälan.</li>
             </ul>
@@ -277,93 +248,25 @@ function Step2({
               </p>
             </WireBox>
           )}
+
+          <WireBox variant="dashed">
+            <Annotation>Nästa steg</Annotation>
+            <p className="mt-2 text-sm text-muted-foreground">
+              När du sparat landar du i din{" "}
+              <strong>{role === "saljare" ? "säljarpanel" : "köparpanel"}</strong>.
+              Byt läge när som helst via växlaren uppe till höger.
+            </p>
+          </WireBox>
         </aside>
       </div>
 
       <NavBar
         secondary={<WireBtn variant="ghost" onClick={onBack}>← Tillbaka</WireBtn>}
-        primary={<WireBtn onClick={onNext}>Fortsätt →</WireBtn>}
+        primary={<WireBtn onClick={onFinish}>Spara & gå till min panel →</WireBtn>}
       />
     </>
   );
 }
-
-/* ---------------- Step 3 — default mode ---------------- */
-
-function Step3({
-  role,
-  defaultMode,
-  setDefaultMode,
-  onBack,
-  onFinish,
-}: {
-  role: "kopare" | "saljare";
-  defaultMode: "kopare" | "saljare";
-  setDefaultMode: (m: "kopare" | "saljare") => void;
-  onBack: () => void;
-  onFinish: () => void;
-}) {
-  return (
-    <>
-      <WireBox label="Startläge">
-        <p className="text-sm text-muted-foreground">
-          Vilket läge vill du landa i när du loggar in? Baserat på ditt val har
-          vi förvalt <strong>{role === "saljare" ? "säljare" : "köpare"}</strong>
-          , men du bestämmer.
-        </p>
-        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-          {(["kopare", "saljare"] as const).map((m) => {
-            const active = defaultMode === m;
-            return (
-              <button
-                key={m}
-                onClick={() => setDefaultMode(m)}
-                className={`text-left border p-5 ${
-                  active
-                    ? "border-foreground bg-muted/40"
-                    : "border-foreground/30 hover:border-foreground"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">
-                    {m === "kopare" ? "Köparläge" : "Säljarläge"}
-                  </span>
-                  <StatusDot state={active ? "done" : "pending"} />
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {m === "kopare"
-                    ? "Söklista, favoriter, bevakningar och intresseanmälningar."
-                    : "Skapa annons, hantera intresse och affärer."}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-        <Annotation>
-          <span className="mt-4 block">
-            Byt när som helst via läges-växlaren uppe till höger.
-          </span>
-        </Annotation>
-      </WireBox>
-
-      <WireBox variant="dashed" className="mt-6">
-        <Annotation>Sammanfattning</Annotation>
-        <ul className="mt-2 space-y-1 text-sm">
-          <li>· Roll vald: <strong>{role === "saljare" ? "Säljare" : "Köpare"}</strong></li>
-          <li>· Uppgifter sparade</li>
-          <li>· Startläge: <strong>{defaultMode === "saljare" ? "Säljare" : "Köpare"}</strong></li>
-        </ul>
-      </WireBox>
-
-      <NavBar
-        secondary={<WireBtn variant="ghost" onClick={onBack}>← Tillbaka</WireBtn>}
-        primary={<WireBtn onClick={onFinish}>Slutför & gå till dashboard →</WireBtn>}
-      />
-    </>
-  );
-}
-
-/* ---------------- shared ---------------- */
 
 function NavBar({
   secondary,
