@@ -135,12 +135,25 @@ const STEPS = ["Paket", "Grunduppgifter", "Underlag", "Övrig info", "Granska & 
 
 function CreateListing() {
   const navigate = useNavigate();
+  const { edit: editId } = Route.useSearch();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<Draft>(empty);
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
   useEffect(() => {
     try {
+      if (editId) {
+        const raw = localStorage.getItem("saljare-annonser");
+        if (raw) {
+          const list = JSON.parse(raw) as any[];
+          const item = list.find((i) => i.id === editId);
+          if (item?.draft) {
+            setDraft({ ...empty, ...item.draft });
+            setStep(4);
+            return;
+          }
+        }
+      }
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as { draft: Draft; step: number; savedAt: string };
@@ -151,7 +164,9 @@ function CreateListing() {
     } catch {
       /* noop */
     }
-  }, []);
+  }, [editId]);
+
+
 
   useEffect(() => {
     const t = setTimeout(() => {
