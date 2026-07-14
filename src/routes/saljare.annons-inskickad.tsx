@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 
-export const Route = createFileRoute("/saljare/skapa-annons/tack")({
+export const Route = createFileRoute("/saljare/annons-inskickad")({
   component: TackPage,
 });
 
