@@ -632,7 +632,7 @@ function CreateListing() {
               Nästa: {STEPS[step + 1]} →
             </WireBtn>
           ) : (
-            <WireBtn onClick={() => navigate({ to: "/saljare/skapa-annons/tack" })}>
+            <WireBtn onClick={() => navigate({ to: "/saljare/annons-inskickad" })}>
               Skicka till TreLink för granskning →
             </WireBtn>
           )}
