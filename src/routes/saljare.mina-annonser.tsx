@@ -76,7 +76,7 @@ function MyListings() {
               <div className="flex gap-2">
                 {isNew ? (
                   <>
-                    <WireBtn variant="secondary" to="/saljare/skapa-annons" search={{ edit: i.id }}>
+                    <WireBtn variant="secondary" to={`/saljare/skapa-annons?edit=${i.id}`}>
                       Redigera
                     </WireBtn>
                     <WireBtn variant="ghost" onClick={() => remove(i.id)}>Ta bort</WireBtn>
