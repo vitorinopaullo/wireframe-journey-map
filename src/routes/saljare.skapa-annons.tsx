@@ -654,26 +654,31 @@ function CreateListing() {
                 try {
                   const raw = localStorage.getItem("saljare-annonser") ?? "[]";
                   const list = JSON.parse(raw) as any[];
-                  list.unshift({
-                    id: "n" + Date.now(),
+                  const base = {
                     titel: draft.rubrik || `${activeCat.name} · ${draft.ort || "Ny annons"}`,
                     ort: draft.ort,
                     pris: draft.pris,
                     cat: draft.cat,
                     status: "Granskas",
                     premium: draft.premium,
-                    views: 0,
-                    intresse: 0,
                     skickadAt: new Date().toISOString(),
-                  });
+                    draft,
+                  };
+                  if (editId) {
+                    const idx = list.findIndex((i) => i.id === editId);
+                    if (idx >= 0) list[idx] = { ...list[idx], ...base };
+                  } else {
+                    list.unshift({ id: "n" + Date.now(), views: 0, intresse: 0, ...base });
+                  }
                   localStorage.setItem("saljare-annonser", JSON.stringify(list));
-                  localStorage.removeItem(STORAGE_KEY);
+                  if (!editId) localStorage.removeItem(STORAGE_KEY);
                 } catch {}
                 navigate({ to: "/saljare/annons-inskickad" });
               }}
             >
-              Skicka till TreLink för granskning →
+              {editId ? "Skicka uppdaterad annons på granskning →" : "Skicka till TreLink för granskning →"}
             </WireBtn>
+
           )}
         </div>
       </div>
