@@ -55,7 +55,7 @@ const rows: Row[] = [
   { label: "Multipel (pris/resultat)", get: (a) => Math.round((a.pris / a.resultat) * 10) / 10, highlight: "low", format: (v) => `${v}×` },
   { label: "Hyreskontrakt", get: (a) => a.hyreskontrakt },
   { label: "Inventarier ingår", get: (a) => (a.inventarier ? "Ja" : "Nej") },
-  { label: "Verifierad av George", get: (a) => (a.verifierad ? "Ja" : "Granskas") },
+  { label: "Verifierad av TreLink", get: (a) => (a.verifierad ? "Ja" : "Granskas") },
   { label: "Antal bilder", get: (a) => a.bilder },
   { label: "Svarstid (säljare)", get: (a) => a.sla },
 ];
@@ -186,7 +186,7 @@ function Compare() {
                 {annonser.map((a) => (
                   <td key={a.id} className="p-3 align-top">
                     <ul className="space-y-1 text-xs">
-                      <li className="flex items-center gap-2"><StatusDot state={a.verifierad ? "done" : "active"} /> {a.verifierad ? "Granskad av George" : "Granskning pågår"}</li>
+                      <li className="flex items-center gap-2"><StatusDot state={a.verifierad ? "done" : "active"} /> {a.verifierad ? "Granskad av TreLink" : "Granskning pågår"}</li>
                       <li className="flex items-center gap-2"><StatusDot state="done" /> Säkert klientmedel</li>
                       <li className="flex items-center gap-2"><StatusDot state="done" /> Anonym tills signering</li>
                     </ul>

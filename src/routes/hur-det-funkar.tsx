@@ -13,7 +13,7 @@ const steps = [
     body: "Registrera med BankID. Välj kategori (lokal/inkråm/bolag). Ladda upp underlag. Premium-tillägg 2 500 kr är frivilligt.",
   },
   {
-    actor: "George",
+    actor: "TreLink",
     title: "Granska & publicera",
     body: "Mäklaren granskar varje dokument innan annonsen går live. Inget publiceras ogranskat.",
   },
@@ -23,9 +23,9 @@ const steps = [
     body: "Bläddra fritt utan inloggning. Verifiera med BankID för att spara, bevaka och anmäla intresse.",
   },
   {
-    actor: "George",
+    actor: "TreLink",
     title: "UC-kontroll & matchning",
-    body: "George matchar parterna. Vid lokal: anonym profil till hyresvärd för godkännande.",
+    body: "TreLink matchar parterna. Vid lokal: anonym profil till hyresvärd för godkännande.",
   },
   {
     actor: "Båda",
@@ -33,7 +33,7 @@ const steps = [
     body: "Båda parter signerar avtalet. Handpenning faktureras till klientmedelskonto.",
   },
   {
-    actor: "George",
+    actor: "TreLink",
     title: "Tillträde & frigörande",
     body: "Vid tillträde frigörs medel. Säljaren får betalt — Trelinks avgift (29,5/49,5/79,5k) tas ut nu, först nu.",
   },
@@ -45,7 +45,7 @@ function HowItWorks() {
       <PageHeader
         eyebrow="Affärsflöde"
         title="Hur det funkar"
-        subtitle="Gratis hela vägen tills affären genomförs. George är navet varje affär passerar — statusen syns för båda parter."
+        subtitle="Gratis hela vägen tills affären genomförs. TreLink är navet varje affär passerar — statusen syns för båda parter."
       />
 
       <div className="space-y-4">
@@ -71,7 +71,7 @@ function HowItWorks() {
           </div>
           <div>
             <Annotation>Inkråm</Annotation>
-            <p className="mt-1 text-sm">Tillgångar säljs till köparens bolag. George godkänner varje dokument. Leverantörer tas över i drift.</p>
+            <p className="mt-1 text-sm">Tillgångar säljs till köparens bolag. TreLink godkänner varje dokument. Leverantörer tas över i drift.</p>
           </div>
           <div>
             <Annotation>Aktiebolag</Annotation>

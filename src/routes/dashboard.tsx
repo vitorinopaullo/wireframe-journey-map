@@ -63,7 +63,7 @@ function Dashboard() {
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <DashCard title="Mina annonser" value="2" link="/saljare/mina-annonser" hint="1 publicerad · 1 granskas" />
-          <DashCard title="Intresseanmälningar" value="14" link="/saljare/intressenter" hint="George driver matchning" />
+          <DashCard title="Intresseanmälningar" value="14" link="/saljare/intressenter" hint="TreLink driver matchning" />
           <DashCard title="Mina affärer" value="1" link="/saljare/affarer" hint="Pågående" />
         </div>
       )}

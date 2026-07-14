@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { GeorgeLayout } from "@/components/layouts/GeorgeLayout";
+import { TreLinkLayout } from "@/components/layouts/TreLinkLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { useState } from "react";
 
 export const Route = createFileRoute("/george/")({
-  component: GeorgeHome,
+  component: TreLinkHome,
 });
 
 type Task = {
@@ -19,7 +19,7 @@ type Task = {
   parties: string; // "S-104 · K-208"
 };
 
-const blockerOnGeorge: Task[] = [
+const blockerOnTreLink: Task[] = [
   { id: "t1", category: "Granskning", title: "Annons #9 — Frisörsalong, Vasastan", context: "5 dokument · alla inlämnade", to: "/george/annonser/9", cta: "Granska", age: "2h", sla: "ok", parties: "S-104" },
   { id: "t2", category: "Granskning", title: "Annons #12 — SaaS-bolag B2B", context: "7 dok · 2 saknas (granskning utlöper)", to: "/george/annonser/12", cta: "Öppna", age: "50h", sla: "brott", parties: "S-201" },
   { id: "t3", category: "UC", title: "Köpare K-208 anmält intresse på #1", context: "Kör UC innan kontaktdelning", to: "/george/affarer", cta: "Kör UC", age: "4h", sla: "snart", parties: "K-208 · S-101" },
@@ -30,7 +30,7 @@ const blockerOnGeorge: Task[] = [
 const waitingOnOthers: Task[] = [
   { id: "w1", category: "Hyresvärd", title: "#A-2041 · Restauranglokal Södermalm", context: "Anonym profil skickad 13 jun · ingen återkoppling", to: "/george/hyresvard", cta: "Påminn", age: "2d", sla: "snart", parties: "Hyresvärd" },
   { id: "w2", category: "Match", title: "Annons #10 · Café Linné", context: "Säljare ska komplettera hyresavtal", to: "/george/annonser/10", cta: "Påminn säljare", age: "1d", sla: "ok", parties: "S-122" },
-  { id: "w3", category: "Granskning", title: "Annons #11 · Butikslokal Malmö", context: "Säljaren behöver godkänna George's redigering av rubriken", to: "/george/annonser/11", cta: "Visa", age: "3h", sla: "ok", parties: "S-77" },
+  { id: "w3", category: "Granskning", title: "Annons #11 · Butikslokal Malmö", context: "Säljaren behöver godkänna TreLink's redigering av rubriken", to: "/george/annonser/11", cta: "Visa", age: "3h", sla: "ok", parties: "S-77" },
 ];
 
 const activity = [
@@ -41,15 +41,15 @@ const activity = [
   { ts: "yesterday", text: "Du publicerade annons #8 · Pizzeria Solna" },
 ];
 
-function GeorgeHome() {
+function TreLinkHome() {
   const [tab, setTab] = useState<"dig" | "andra">("dig");
-  const list = tab === "dig" ? blockerOnGeorge : waitingOnOthers;
+  const list = tab === "dig" ? blockerOnTreLink : waitingOnOthers;
 
   return (
-    <GeorgeLayout>
+    <TreLinkLayout>
       <PageHeader
         eyebrow="Kommandocentral · måndag 15 juni"
-        title="God morgon, George"
+        title="God morgon, TreLink"
         subtitle="5 saker väntar på dig · 3 på andra · 2 SLA-brott att rädda först"
         right={
           <div className="flex items-center gap-2">
@@ -79,7 +79,7 @@ function GeorgeHome() {
       {/* Huvudlista med flikar */}
       <div className="mb-3 flex items-center gap-2 border-b border-foreground/20">
         <TabButton active={tab === "dig"} onClick={() => setTab("dig")}>
-          Väntar på dig ({blockerOnGeorge.length})
+          Väntar på dig ({blockerOnTreLink.length})
         </TabButton>
         <TabButton active={tab === "andra"} onClick={() => setTab("andra")}>
           Väntar på andra ({waitingOnOthers.length})
@@ -150,7 +150,7 @@ function GeorgeHome() {
           </WireBox>
         </div>
       </div>
-    </GeorgeLayout>
+    </TreLinkLayout>
   );
 }
 

@@ -17,7 +17,7 @@ import { Route as LoggaInRouteImport } from './routes/logga-in'
 import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as GeorgeIndexRouteImport } from './routes/george.index'
+import { Route as TreLinkIndexRouteImport } from './routes/george.index'
 import { Route as SaljareSkapaAnnonsRouteImport } from './routes/saljare.skapa-annons'
 import { Route as SaljareMinaAnnonserRouteImport } from './routes/saljare.mina-annonser'
 import { Route as SaljareIntressenterRouteImport } from './routes/saljare.intressenter'
@@ -27,15 +27,15 @@ import { Route as KopareJamforRouteImport } from './routes/kopare.jamfor'
 import { Route as KopareFavoriterRouteImport } from './routes/kopare.favoriter'
 import { Route as KopareBevakningarRouteImport } from './routes/kopare.bevakningar'
 import { Route as KopareAffarerRouteImport } from './routes/kopare.affarer'
-import { Route as GeorgeHyresvardRouteImport } from './routes/george.hyresvard'
-import { Route as GeorgeFakturorRouteImport } from './routes/george.fakturor'
-import { Route as GeorgeAnvandareRouteImport } from './routes/george.anvandare'
-import { Route as GeorgeAnnonserRouteImport } from './routes/george.annonser'
-import { Route as GeorgeAffarerRouteImport } from './routes/george.affarer'
+import { Route as TreLinkHyresvardRouteImport } from './routes/george.hyresvard'
+import { Route as TreLinkFakturorRouteImport } from './routes/george.fakturor'
+import { Route as TreLinkAnvandareRouteImport } from './routes/george.anvandare'
+import { Route as TreLinkAnnonserRouteImport } from './routes/george.annonser'
+import { Route as TreLinkAffarerRouteImport } from './routes/george.affarer'
 import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
 import { Route as AffarIdRouteImport } from './routes/affar.$id'
-import { Route as GeorgeAnnonserIndexRouteImport } from './routes/george.annonser.index'
-import { Route as GeorgeAnnonserIdRouteImport } from './routes/george.annonser.$id'
+import { Route as TreLinkAnnonserIndexRouteImport } from './routes/george.annonser.index'
+import { Route as TreLinkAnnonserIdRouteImport } from './routes/george.annonser.$id'
 import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
 
 const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
@@ -78,7 +78,7 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeIndexRoute = GeorgeIndexRouteImport.update({
+const TreLinkIndexRoute = TreLinkIndexRouteImport.update({
   id: '/george/',
   path: '/george/',
   getParentRoute: () => rootRouteImport,
@@ -128,27 +128,27 @@ const KopareAffarerRoute = KopareAffarerRouteImport.update({
   path: '/kopare/affarer',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeHyresvardRoute = GeorgeHyresvardRouteImport.update({
+const TreLinkHyresvardRoute = TreLinkHyresvardRouteImport.update({
   id: '/george/hyresvard',
   path: '/george/hyresvard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeFakturorRoute = GeorgeFakturorRouteImport.update({
+const TreLinkFakturorRoute = TreLinkFakturorRouteImport.update({
   id: '/george/fakturor',
   path: '/george/fakturor',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeAnvandareRoute = GeorgeAnvandareRouteImport.update({
+const TreLinkAnvandareRoute = TreLinkAnvandareRouteImport.update({
   id: '/george/anvandare',
   path: '/george/anvandare',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeAnnonserRoute = GeorgeAnnonserRouteImport.update({
+const TreLinkAnnonserRoute = TreLinkAnnonserRouteImport.update({
   id: '/george/annonser',
   path: '/george/annonser',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeAffarerRoute = GeorgeAffarerRouteImport.update({
+const TreLinkAffarerRoute = TreLinkAffarerRouteImport.update({
   id: '/george/affarer',
   path: '/george/affarer',
   getParentRoute: () => rootRouteImport,
@@ -163,15 +163,15 @@ const AffarIdRoute = AffarIdRouteImport.update({
   path: '/affar/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeAnnonserIndexRoute = GeorgeAnnonserIndexRouteImport.update({
+const TreLinkAnnonserIndexRoute = TreLinkAnnonserIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => GeorgeAnnonserRoute,
+  getParentRoute: () => TreLinkAnnonserRoute,
 } as any)
-const GeorgeAnnonserIdRoute = GeorgeAnnonserIdRouteImport.update({
+const TreLinkAnnonserIdRoute = TreLinkAnnonserIdRouteImport.update({
   id: '/$id',
   path: '/$id',
-  getParentRoute: () => GeorgeAnnonserRoute,
+  getParentRoute: () => TreLinkAnnonserRoute,
 } as any)
 const AnnonsIdIntresseRoute = AnnonsIdIntresseRouteImport.update({
   id: '/intresse',
@@ -190,11 +190,11 @@ export interface FileRoutesByFullPath {
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
-  '/george/affarer': typeof GeorgeAffarerRoute
-  '/george/annonser': typeof GeorgeAnnonserRouteWithChildren
-  '/george/anvandare': typeof GeorgeAnvandareRoute
-  '/george/fakturor': typeof GeorgeFakturorRoute
-  '/george/hyresvard': typeof GeorgeHyresvardRoute
+  '/george/affarer': typeof TreLinkAffarerRoute
+  '/george/annonser': typeof TreLinkAnnonserRouteWithChildren
+  '/george/anvandare': typeof TreLinkAnvandareRoute
+  '/george/fakturor': typeof TreLinkFakturorRoute
+  '/george/hyresvard': typeof TreLinkHyresvardRoute
   '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
@@ -204,10 +204,10 @@ export interface FileRoutesByFullPath {
   '/saljare/intressenter': typeof SaljareIntressenterRoute
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
-  '/george/': typeof GeorgeIndexRoute
+  '/george/': typeof TreLinkIndexRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
-  '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
-  '/george/annonser/': typeof GeorgeAnnonserIndexRoute
+  '/george/annonser/$id': typeof TreLinkAnnonserIdRoute
+  '/george/annonser/': typeof TreLinkAnnonserIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -220,10 +220,10 @@ export interface FileRoutesByTo {
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
-  '/george/affarer': typeof GeorgeAffarerRoute
-  '/george/anvandare': typeof GeorgeAnvandareRoute
-  '/george/fakturor': typeof GeorgeFakturorRoute
-  '/george/hyresvard': typeof GeorgeHyresvardRoute
+  '/george/affarer': typeof TreLinkAffarerRoute
+  '/george/anvandare': typeof TreLinkAnvandareRoute
+  '/george/fakturor': typeof TreLinkFakturorRoute
+  '/george/hyresvard': typeof TreLinkHyresvardRoute
   '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
@@ -233,10 +233,10 @@ export interface FileRoutesByTo {
   '/saljare/intressenter': typeof SaljareIntressenterRoute
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
-  '/george': typeof GeorgeIndexRoute
+  '/george': typeof TreLinkIndexRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
-  '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
-  '/george/annonser': typeof GeorgeAnnonserIndexRoute
+  '/george/annonser/$id': typeof TreLinkAnnonserIdRoute
+  '/george/annonser': typeof TreLinkAnnonserIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -250,11 +250,11 @@ export interface FileRoutesById {
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
-  '/george/affarer': typeof GeorgeAffarerRoute
-  '/george/annonser': typeof GeorgeAnnonserRouteWithChildren
-  '/george/anvandare': typeof GeorgeAnvandareRoute
-  '/george/fakturor': typeof GeorgeFakturorRoute
-  '/george/hyresvard': typeof GeorgeHyresvardRoute
+  '/george/affarer': typeof TreLinkAffarerRoute
+  '/george/annonser': typeof TreLinkAnnonserRouteWithChildren
+  '/george/anvandare': typeof TreLinkAnvandareRoute
+  '/george/fakturor': typeof TreLinkFakturorRoute
+  '/george/hyresvard': typeof TreLinkHyresvardRoute
   '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
@@ -264,10 +264,10 @@ export interface FileRoutesById {
   '/saljare/intressenter': typeof SaljareIntressenterRoute
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
-  '/george/': typeof GeorgeIndexRoute
+  '/george/': typeof TreLinkIndexRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
-  '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
-  '/george/annonser/': typeof GeorgeAnnonserIndexRoute
+  '/george/annonser/$id': typeof TreLinkAnnonserIdRoute
+  '/george/annonser/': typeof TreLinkAnnonserIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -372,11 +372,11 @@ export interface RootRouteChildren {
   TillaggstjansterRoute: typeof TillaggstjansterRoute
   AffarIdRoute: typeof AffarIdRoute
   AnnonsIdRoute: typeof AnnonsIdRouteWithChildren
-  GeorgeAffarerRoute: typeof GeorgeAffarerRoute
-  GeorgeAnnonserRoute: typeof GeorgeAnnonserRouteWithChildren
-  GeorgeAnvandareRoute: typeof GeorgeAnvandareRoute
-  GeorgeFakturorRoute: typeof GeorgeFakturorRoute
-  GeorgeHyresvardRoute: typeof GeorgeHyresvardRoute
+  TreLinkAffarerRoute: typeof TreLinkAffarerRoute
+  TreLinkAnnonserRoute: typeof TreLinkAnnonserRouteWithChildren
+  TreLinkAnvandareRoute: typeof TreLinkAnvandareRoute
+  TreLinkFakturorRoute: typeof TreLinkFakturorRoute
+  TreLinkHyresvardRoute: typeof TreLinkHyresvardRoute
   KopareAffarerRoute: typeof KopareAffarerRoute
   KopareBevakningarRoute: typeof KopareBevakningarRoute
   KopareFavoriterRoute: typeof KopareFavoriterRoute
@@ -386,7 +386,7 @@ export interface RootRouteChildren {
   SaljareIntressenterRoute: typeof SaljareIntressenterRoute
   SaljareMinaAnnonserRoute: typeof SaljareMinaAnnonserRoute
   SaljareSkapaAnnonsRoute: typeof SaljareSkapaAnnonsRoute
-  GeorgeIndexRoute: typeof GeorgeIndexRoute
+  TreLinkIndexRoute: typeof TreLinkIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -451,7 +451,7 @@ declare module '@tanstack/react-router' {
       id: '/george/'
       path: '/george'
       fullPath: '/george/'
-      preLoaderRoute: typeof GeorgeIndexRouteImport
+      preLoaderRoute: typeof TreLinkIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/saljare/skapa-annons': {
@@ -521,35 +521,35 @@ declare module '@tanstack/react-router' {
       id: '/george/hyresvard'
       path: '/george/hyresvard'
       fullPath: '/george/hyresvard'
-      preLoaderRoute: typeof GeorgeHyresvardRouteImport
+      preLoaderRoute: typeof TreLinkHyresvardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/george/fakturor': {
       id: '/george/fakturor'
       path: '/george/fakturor'
       fullPath: '/george/fakturor'
-      preLoaderRoute: typeof GeorgeFakturorRouteImport
+      preLoaderRoute: typeof TreLinkFakturorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/george/anvandare': {
       id: '/george/anvandare'
       path: '/george/anvandare'
       fullPath: '/george/anvandare'
-      preLoaderRoute: typeof GeorgeAnvandareRouteImport
+      preLoaderRoute: typeof TreLinkAnvandareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/george/annonser': {
       id: '/george/annonser'
       path: '/george/annonser'
       fullPath: '/george/annonser'
-      preLoaderRoute: typeof GeorgeAnnonserRouteImport
+      preLoaderRoute: typeof TreLinkAnnonserRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/george/affarer': {
       id: '/george/affarer'
       path: '/george/affarer'
       fullPath: '/george/affarer'
-      preLoaderRoute: typeof GeorgeAffarerRouteImport
+      preLoaderRoute: typeof TreLinkAffarerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/annons/$id': {
@@ -570,15 +570,15 @@ declare module '@tanstack/react-router' {
       id: '/george/annonser/'
       path: '/'
       fullPath: '/george/annonser/'
-      preLoaderRoute: typeof GeorgeAnnonserIndexRouteImport
-      parentRoute: typeof GeorgeAnnonserRoute
+      preLoaderRoute: typeof TreLinkAnnonserIndexRouteImport
+      parentRoute: typeof TreLinkAnnonserRoute
     }
     '/george/annonser/$id': {
       id: '/george/annonser/$id'
       path: '/$id'
       fullPath: '/george/annonser/$id'
-      preLoaderRoute: typeof GeorgeAnnonserIdRouteImport
-      parentRoute: typeof GeorgeAnnonserRoute
+      preLoaderRoute: typeof TreLinkAnnonserIdRouteImport
+      parentRoute: typeof TreLinkAnnonserRoute
     }
     '/annons/$id/intresse': {
       id: '/annons/$id/intresse'
@@ -602,18 +602,18 @@ const AnnonsIdRouteWithChildren = AnnonsIdRoute._addFileChildren(
   AnnonsIdRouteChildren,
 )
 
-interface GeorgeAnnonserRouteChildren {
-  GeorgeAnnonserIdRoute: typeof GeorgeAnnonserIdRoute
-  GeorgeAnnonserIndexRoute: typeof GeorgeAnnonserIndexRoute
+interface TreLinkAnnonserRouteChildren {
+  TreLinkAnnonserIdRoute: typeof TreLinkAnnonserIdRoute
+  TreLinkAnnonserIndexRoute: typeof TreLinkAnnonserIndexRoute
 }
 
-const GeorgeAnnonserRouteChildren: GeorgeAnnonserRouteChildren = {
-  GeorgeAnnonserIdRoute: GeorgeAnnonserIdRoute,
-  GeorgeAnnonserIndexRoute: GeorgeAnnonserIndexRoute,
+const TreLinkAnnonserRouteChildren: TreLinkAnnonserRouteChildren = {
+  TreLinkAnnonserIdRoute: TreLinkAnnonserIdRoute,
+  TreLinkAnnonserIndexRoute: TreLinkAnnonserIndexRoute,
 }
 
-const GeorgeAnnonserRouteWithChildren = GeorgeAnnonserRoute._addFileChildren(
-  GeorgeAnnonserRouteChildren,
+const TreLinkAnnonserRouteWithChildren = TreLinkAnnonserRoute._addFileChildren(
+  TreLinkAnnonserRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -627,11 +627,11 @@ const rootRouteChildren: RootRouteChildren = {
   TillaggstjansterRoute: TillaggstjansterRoute,
   AffarIdRoute: AffarIdRoute,
   AnnonsIdRoute: AnnonsIdRouteWithChildren,
-  GeorgeAffarerRoute: GeorgeAffarerRoute,
-  GeorgeAnnonserRoute: GeorgeAnnonserRouteWithChildren,
-  GeorgeAnvandareRoute: GeorgeAnvandareRoute,
-  GeorgeFakturorRoute: GeorgeFakturorRoute,
-  GeorgeHyresvardRoute: GeorgeHyresvardRoute,
+  TreLinkAffarerRoute: TreLinkAffarerRoute,
+  TreLinkAnnonserRoute: TreLinkAnnonserRouteWithChildren,
+  TreLinkAnvandareRoute: TreLinkAnvandareRoute,
+  TreLinkFakturorRoute: TreLinkFakturorRoute,
+  TreLinkHyresvardRoute: TreLinkHyresvardRoute,
   KopareAffarerRoute: KopareAffarerRoute,
   KopareBevakningarRoute: KopareBevakningarRoute,
   KopareFavoriterRoute: KopareFavoriterRoute,
@@ -641,7 +641,7 @@ const rootRouteChildren: RootRouteChildren = {
   SaljareIntressenterRoute: SaljareIntressenterRoute,
   SaljareMinaAnnonserRoute: SaljareMinaAnnonserRoute,
   SaljareSkapaAnnonsRoute: SaljareSkapaAnnonsRoute,
-  GeorgeIndexRoute: GeorgeIndexRoute,
+  TreLinkIndexRoute: TreLinkIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

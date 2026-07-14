@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { GeorgeLayout } from "@/components/layouts/GeorgeLayout";
+import { TreLinkLayout } from "@/components/layouts/TreLinkLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 
 export const Route = createFileRoute("/george/annonser/$id")({
@@ -20,7 +20,7 @@ type Doc = {
 
 type LogEntry = {
   ts: string;
-  vem: "Säljare" | "George" | "System";
+  vem: "Säljare" | "TreLink" | "System";
   text: string;
 };
 
@@ -34,7 +34,7 @@ const initialDocs: Doc[] = [
 
 const initialLog: LogEntry[] = [
   { ts: "2025-06-14 09:12", vem: "Säljare", text: "Skickade annonsen för granskning" },
-  { ts: "2025-06-14 09:12", vem: "System",  text: "Tilldelad George-kön · SLA 24h" },
+  { ts: "2025-06-14 09:12", vem: "System",  text: "Tilldelad TreLink-kön · SLA 24h" },
 ];
 
 const kompletteringsMallar = [
@@ -80,7 +80,7 @@ function ReviewDetail() {
 
   const updateDoc = (docId: string, patch: Partial<Doc>, logText: string) => {
     setDocs((prev) => prev.map((d) => (d.id === docId ? { ...d, ...patch } : d)));
-    setLog((prev) => [{ ts: stamp(), vem: "George", text: logText }, ...prev]);
+    setLog((prev) => [{ ts: stamp(), vem: "TreLink", text: logText }, ...prev]);
   };
 
   const approve = (d: Doc) => updateDoc(d.id, { state: "godkänt", motivering: undefined }, `Godkände dokument: ${d.namn}`);
@@ -94,13 +94,13 @@ function ReviewDetail() {
 
   const publish = () => {
     if (!canPublish) return;
-    setLog((prev) => [{ ts: stamp(), vem: "George", text: "Publicerade annonsen · synlig för köpare" }, ...prev]);
+    setLog((prev) => [{ ts: stamp(), vem: "TreLink", text: "Publicerade annonsen · synlig för köpare" }, ...prev]);
     alert("Annons #" + id + " publicerad (wireframe-demo). Säljaren får notis.");
   };
 
   const reject = () => {
     if (!rejectReason) return;
-    setLog((prev) => [{ ts: stamp(), vem: "George", text: `Avvisade annonsen · ${rejectReason}${rejectNote ? ` — "${rejectNote}"` : ""}` }, ...prev]);
+    setLog((prev) => [{ ts: stamp(), vem: "TreLink", text: `Avvisade annonsen · ${rejectReason}${rejectNote ? ` — "${rejectNote}"` : ""}` }, ...prev]);
     setRejectOpen(false);
     setRejectReason("");
     setRejectNote("");
@@ -108,9 +108,9 @@ function ReviewDetail() {
   };
 
   return (
-    <GeorgeLayout>
+    <TreLinkLayout>
       <PageHeader
-        eyebrow={`George · granskning #${id}`}
+        eyebrow={`TreLink · granskning #${id}`}
         title="Frisörsalong · Vasastan"
         subtitle="Inkråm · säljare S-104 · inkommen 2025-06-14 09:12"
         right={
@@ -310,7 +310,7 @@ function ReviewDetail() {
           </WireBox>
         </div>
       </div>
-    </GeorgeLayout>
+    </TreLinkLayout>
   );
 }
 

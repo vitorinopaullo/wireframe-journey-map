@@ -24,7 +24,7 @@ const cats: {
     one: "Du säljer rätten till en hyreslokal — inget bolag, ingen verksamhet byter ägare.",
     avgift: "29 500 kr vid genomförd affär",
     tid: "Typiskt 3–6 veckor",
-    george: "George granskar hyresavtal & inventarier. Hyresvärden måste godkänna köparen.",
+    george: "TreLink granskar hyresavtal & inventarier. Hyresvärden måste godkänna köparen.",
     who: "Bäst för: restauranger, butiker, salonger som vill släppa lokalen vidare.",
   },
   {
@@ -33,7 +33,7 @@ const cats: {
     one: "Tillgångar och verksamhet säljs till köparens bolag — du behåller ditt AB.",
     avgift: "49 500 kr vid genomförd affär",
     tid: "Typiskt 6–10 veckor",
-    george: "George granskar varje dokument: tillgångar, avtal, personal, ekonomi.",
+    george: "TreLink granskar varje dokument: tillgångar, avtal, personal, ekonomi.",
     who: "Bäst för: när du vill sälja verksamheten men behålla bolagsmanteln.",
   },
   {
@@ -42,7 +42,7 @@ const cats: {
     one: "Hela bolaget byter ägare. Alla avtal, anställda och historik följer med.",
     avgift: "79 500 kr vid genomförd affär",
     tid: "Typiskt 8–14 veckor",
-    george: "George kör full DD: AML, verklig huvudman, årsredovisningar, avtal.",
+    george: "TreLink kör full DD: AML, verklig huvudman, årsredovisningar, avtal.",
     who: "Bäst för: lönsamma bolag med substans där köparen vill ta över allt.",
   },
 ];
@@ -60,7 +60,7 @@ const docsByCat: Record<CatId, { name: string; krav: string; comment?: string; i
     { name: "Tillgångslista", krav: "XLSX · maskiner, inventarier, varulager" },
     { name: "Resultaträkning 2024", krav: "PDF från bokföring" },
     { name: "Balansräkning", krav: "PDF · senaste perioden" },
-    { name: "Anställningsavtal", krav: "PDF per anställd · personuppgifter maskas av George" },
+    { name: "Anställningsavtal", krav: "PDF per anställd · personuppgifter maskas av TreLink" },
     { name: "Kundavtal (top 5)", krav: "PDF · vi prickar av överlåtbarhet" },
   ],
   bolag: [
@@ -69,7 +69,7 @@ const docsByCat: Record<CatId, { name: string; krav: string; comment?: string; i
     { name: "Aktiebok", krav: "PDF/bild · aktuell" },
     { name: "Aktieägaravtal", krav: "PDF · om det finns" },
     { name: "Verklig huvudman", krav: "PDF från Bolagsverket" },
-    { name: "Skuld- & pantbrevsregister", krav: "PDF · George beställer om du saknar" },
+    { name: "Skuld- & pantbrevsregister", krav: "PDF · TreLink beställer om du saknar" },
   ],
 };
 
@@ -189,7 +189,7 @@ function CreateListing() {
       <PageHeader
         eyebrow="Säljarläge · Skapa annons"
         title={STEPS[step]}
-        subtitle="Gratis att annonsera. Avgiften tas ut först vid genomförd affär. George granskar innan publicering."
+        subtitle="Gratis att annonsera. Avgiften tas ut först vid genomförd affär. TreLink granskar innan publicering."
         right={
           <div className="flex flex-col items-end gap-1">
             <WireTag>Steg {step + 1} av {STEPS.length}</WireTag>
@@ -263,7 +263,7 @@ function CreateListing() {
             })}
           </div>
           <div className="mt-4 border-t border-dashed border-muted-foreground/30 pt-4">
-            <Annotation>Vad George gör för dig</Annotation>
+            <Annotation>Vad TreLink gör för dig</Annotation>
             <p className="mt-1 text-sm">{activeCat.george}</p>
           </div>
         </WireBox>
@@ -316,7 +316,7 @@ function CreateListing() {
                   value={draft.orgnr}
                   onChange={(v) => set("orgnr", v)}
                   placeholder="556123-4567"
-                  hint="George hämtar bolagsinfo från Bolagsverket."
+                  hint="TreLink hämtar bolagsinfo från Bolagsverket."
                 />
               )}
             </div>
@@ -359,7 +359,7 @@ function CreateListing() {
                       <div className="text-sm font-medium">{d.name}</div>
                       <Annotation>{d.krav}</Annotation>
                       {s === "komplettera" && d.comment && (
-                        <p className="mt-1 text-[11px] text-foreground">George: {d.comment}</p>
+                        <p className="mt-1 text-[11px] text-foreground">TreLink: {d.comment}</p>
                       )}
                     </div>
                   </div>
@@ -382,7 +382,7 @@ function CreateListing() {
           <div className="mt-4 border-t border-dashed border-muted-foreground/30 pt-4">
             <Annotation>Så fungerar granskningen</Annotation>
             <p className="mt-1 text-sm">
-              När du skickar in granskar George varje dokument inom <strong>24h på vardagar</strong>.
+              När du skickar in granskar TreLink varje dokument inom <strong>24h på vardagar</strong>.
               Du får mejl om något behöver kompletteras — annonsen publiceras automatiskt när allt är godkänt.
             </p>
           </div>
@@ -441,7 +441,7 @@ function CreateListing() {
           {validation[3].length === 0 && validation[2].length === 0 && validation[1].length === 0 ? (
             <WireBox className="mb-6">
               <p className="text-sm">
-                ✓ Allt är ifyllt. Skickar du in nu får du besked från George inom 24h på vardagar.
+                ✓ Allt är ifyllt. Skickar du in nu får du besked från TreLink inom 24h på vardagar.
                 Inget publiceras innan du har sett och godkänt slutversionen.
               </p>
             </WireBox>
@@ -493,7 +493,7 @@ function CreateListing() {
             </WireBtn>
           ) : (
             <WireBtn
-              onClick={() => alert("Skickad till George för granskning. Du får besked inom 24h på vardagar.")}
+              onClick={() => alert("Skickad till TreLink för granskning. Du får besked inom 24h på vardagar.")}
               className={
                 validation[1].length + validation[2].length + validation[3].length === 0
                   ? ""
@@ -551,7 +551,7 @@ function WireFieldEditable({
 const docLabels: Record<DocState, string> = {
   saknas: "Saknas",
   uppladdad: "Uppladdad",
-  granskas: "Granskas av George",
+  granskas: "Granskas av TreLink",
   godkant: "Godkänt",
   komplettera: "Behöver kompletteras",
 };

@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { GeorgeLayout } from "@/components/layouts/GeorgeLayout";
+import { TreLinkLayout } from "@/components/layouts/TreLinkLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, StatusDot, Annotation } from "@/components/wire";
 
 export const Route = createFileRoute("/george/affarer")({
-  component: GeorgeDeals,
+  component: TreLinkDeals,
 });
 
-type Blocker = "George" | "Säljare" | "Köpare" | "Hyresvärd" | "Bank" | "Inget";
+type Blocker = "TreLink" | "Säljare" | "Köpare" | "Hyresvärd" | "Bank" | "Inget";
 type Stage = 0 | 1 | 2 | 3 | 4 | 5;
 
 const stages = ["Annons", "Match", "Hyresvärd", "Handpenning", "Signering", "Tillträde"] as const;
@@ -28,16 +28,16 @@ type Deal = {
 
 const initial: Deal[] = [
   { id: "A-2041", titel: "Restauranglokal · Södermalm", kat: "Lokal",  parties: { saljare: "S-77",  kopare: "K-210" }, belopp: "1 950 000 kr", step: 2, blocker: "Hyresvärd", daysInStage: 5, lastEvent: "Påminnelse skickad 13 jun", nextAction: "Vänta svar / påminn igen", flag: "sla-risk" },
-  { id: "A-2039", titel: "Café · Linné (inkråm)",      kat: "Inkråm", parties: { saljare: "S-122", kopare: "K-211" }, belopp: "850 000 kr",   step: 4, blocker: "George",    daysInStage: 1, lastEvent: "Båda parter signerade i morse",  nextAction: "Bekräfta tillträdesdatum", flag: "alla-villkor-uppfyllda" },
-  { id: "A-2038", titel: "Butikslokal · Vasastan",     kat: "Lokal",  parties: { saljare: "S-77",  kopare: "K-209" }, belopp: "1 200 000 kr", step: 3, blocker: "George",    daysInStage: 1, lastEvent: "Handpenning 120 000 mottagen", nextAction: "Frigör medel till säljare" },
-  { id: "A-2032", titel: "SaaS-bolag B2B",              kat: "Bolag",  parties: { saljare: "S-201", kopare: "K-208" }, belopp: "4 200 000 kr", step: 1, blocker: "George",    daysInStage: 0, lastEvent: "Köpare anmält intresse",         nextAction: "Kör UC + AML på köparen", flag: "uc-pending" },
-  { id: "A-2030", titel: "Frisör · Vasastan",           kat: "Inkråm", parties: { saljare: "S-104" },                  belopp: "—",            step: 0, blocker: "George",    daysInStage: 0, lastEvent: "Annons inskickad 09:12",         nextAction: "Granska annons" },
+  { id: "A-2039", titel: "Café · Linné (inkråm)",      kat: "Inkråm", parties: { saljare: "S-122", kopare: "K-211" }, belopp: "850 000 kr",   step: 4, blocker: "TreLink",    daysInStage: 1, lastEvent: "Båda parter signerade i morse",  nextAction: "Bekräfta tillträdesdatum", flag: "alla-villkor-uppfyllda" },
+  { id: "A-2038", titel: "Butikslokal · Vasastan",     kat: "Lokal",  parties: { saljare: "S-77",  kopare: "K-209" }, belopp: "1 200 000 kr", step: 3, blocker: "TreLink",    daysInStage: 1, lastEvent: "Handpenning 120 000 mottagen", nextAction: "Frigör medel till säljare" },
+  { id: "A-2032", titel: "SaaS-bolag B2B",              kat: "Bolag",  parties: { saljare: "S-201", kopare: "K-208" }, belopp: "4 200 000 kr", step: 1, blocker: "TreLink",    daysInStage: 0, lastEvent: "Köpare anmält intresse",         nextAction: "Kör UC + AML på köparen", flag: "uc-pending" },
+  { id: "A-2030", titel: "Frisör · Vasastan",           kat: "Inkråm", parties: { saljare: "S-104" },                  belopp: "—",            step: 0, blocker: "TreLink",    daysInStage: 0, lastEvent: "Annons inskickad 09:12",         nextAction: "Granska annons" },
 ];
 
 type StageFilter = "alla" | Stage;
 type BlockerFilter = "alla" | Blocker;
 
-function GeorgeDeals() {
+function TreLinkDeals() {
   const [stageF, setStageF] = useState<StageFilter>("alla");
   const [blockerF, setBlockerF] = useState<BlockerFilter>("alla");
   const [selected, setSelected] = useState<string[]>([]);
@@ -47,8 +47,8 @@ function GeorgeDeals() {
       .filter((d) => (stageF === "alla" ? true : d.step === stageF))
       .filter((d) => (blockerF === "alla" ? true : d.blocker === blockerF))
       .sort((a, b) => {
-        // SLA-risk först, sen "väntar på George", sen åldrad
-        const risk = (d: Deal) => (d.flag === "sla-risk" ? 0 : d.blocker === "George" ? 1 : 2);
+        // SLA-risk först, sen "väntar på TreLink", sen åldrad
+        const risk = (d: Deal) => (d.flag === "sla-risk" ? 0 : d.blocker === "TreLink" ? 1 : 2);
         if (risk(a) !== risk(b)) return risk(a) - risk(b);
         return b.daysInStage - a.daysInStage;
       });
@@ -58,9 +58,9 @@ function GeorgeDeals() {
     setSelected((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
   return (
-    <GeorgeLayout>
+    <TreLinkLayout>
       <PageHeader
-        eyebrow="George · adminzon"
+        eyebrow="TreLink · adminzon"
         title="Driv affärer"
         subtitle="Varje affär visar tydligt vem som blockerar nästa steg. Båda parter ser samma stege i sin vy."
         right={<WireTag>{initial.length} aktiva</WireTag>}
@@ -77,7 +77,7 @@ function GeorgeDeals() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Annotation>Blocker:</Annotation>
-          {(["alla", "George", "Säljare", "Köpare", "Hyresvärd", "Bank"] as BlockerFilter[]).map((b) => (
+          {(["alla", "TreLink", "Säljare", "Köpare", "Hyresvärd", "Bank"] as BlockerFilter[]).map((b) => (
             <Chip key={b} active={blockerF === b} onClick={() => setBlockerF(b)}>
               {b === "alla" ? "Alla" : b}
             </Chip>
@@ -169,12 +169,12 @@ function GeorgeDeals() {
           </WireBox>
         ))}
       </div>
-    </GeorgeLayout>
+    </TreLinkLayout>
   );
 }
 
 function PrimaryAction({ deal }: { deal: Deal }) {
-  if (deal.blocker !== "George") {
+  if (deal.blocker !== "TreLink") {
     return <WireBtn variant="ghost">Påminn {deal.blocker.toLowerCase()}</WireBtn>;
   }
   const label =
@@ -191,12 +191,12 @@ function PrimaryAction({ deal }: { deal: Deal }) {
 }
 
 function BlockerBadge({ blocker }: { blocker: Blocker }) {
-  const filled = blocker === "George";
+  const filled = blocker === "TreLink";
   return (
     <span className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${
       filled ? "border-foreground bg-foreground text-background" : "border-foreground/50"
     }`}>
-      {blocker === "George" ? "→ DU" : `väntar: ${blocker.toLowerCase()}`}
+      {blocker === "TreLink" ? "→ DU" : `väntar: ${blocker.toLowerCase()}`}
     </span>
   );
 }
