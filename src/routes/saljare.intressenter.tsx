@@ -19,7 +19,7 @@ function Interest() {
       <PageHeader
         eyebrow="Säljarläge"
         title="Intresse på mina annonser"
-        subtitle="Du ser ATT det finns intresse — George driver matchningen. Köparens identitet skyddas tills signering."
+        subtitle="Du ser ATT det finns intresse — TreLink driver matchningen. Köparens identitet skyddas tills signering."
       />
       <WireBox>
         <table className="w-full text-sm">
@@ -43,7 +43,7 @@ function Interest() {
           </tbody>
         </table>
         <Annotation>
-          <span className="mt-4 block">Inga kontaktuppgifter visas. Besked från George kommer via mejl.</span>
+          <span className="mt-4 block">Inga kontaktuppgifter visas. Besked från TreLink kommer via mejl.</span>
         </Annotation>
       </WireBox>
     </AppLayout>

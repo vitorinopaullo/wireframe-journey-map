@@ -9,7 +9,7 @@ export const Route = createFileRoute("/logga-in")({
 function Login() {
   return (
     <PublicLayout>
-      <PageHeader eyebrow="BankID-inloggning" title="Logga in" subtitle="Samma konto för köpar- och säljarläge. George loggar in via separat adminzon." />
+      <PageHeader eyebrow="BankID-inloggning" title="Logga in" subtitle="Samma konto för köpar- och säljarläge. TreLink loggar in via separat adminzon." />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <WireBox label="Köpare / Säljare">
           <div className="flex h-48 items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-sm text-muted-foreground">
@@ -21,7 +21,7 @@ function Login() {
             <Link to="/registrera" className="underline">Registrera dig</Link>
           </p>
         </WireBox>
-        <WireBox label="George · adminzon" variant="dashed">
+        <WireBox label="TreLink · adminzon" variant="dashed">
           <p className="mb-4 text-sm text-muted-foreground">
             Separat inloggning för mäklarnav — egna rättigheter.
           </p>

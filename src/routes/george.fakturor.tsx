@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { GeorgeLayout } from "@/components/layouts/GeorgeLayout";
+import { TreLinkLayout } from "@/components/layouts/TreLinkLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 
 export const Route = createFileRoute("/george/fakturor")({
@@ -62,9 +62,9 @@ function Money() {
   };
 
   return (
-    <GeorgeLayout>
+    <TreLinkLayout>
       <PageHeader
-        eyebrow="George · adminzon"
+        eyebrow="TreLink · adminzon"
         title="Fakturor & klientmedel"
         subtitle="Klientmedelskonto hålls åtskilt. Trelinks avgift dras först vid genomförd affär. Allt frigörande loggas."
         right={
@@ -182,7 +182,7 @@ function Money() {
           </ul>
         </WireBox>
       </div>
-    </GeorgeLayout>
+    </TreLinkLayout>
   );
 }
 

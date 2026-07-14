@@ -106,7 +106,7 @@ function Step1({
           bullets={[
             "Gratis att annonsera",
             "Avgift 29 500 – 79 500 kr först vid genomförd affär",
-            "George granskar och driver processen",
+            "TreLink granskar och driver processen",
           ]}
           onPick={() => onPick("saljare")}
         />
@@ -234,7 +234,7 @@ function Step2({
           <WireBox label="Vad ser andra?" variant="ghost">
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>· Motpart ser bara det som behövs — aldrig personnummer eller kontaktuppgifter innan match.</li>
-              <li>· George ser allt för att kunna granska.</li>
+              <li>· TreLink ser allt för att kunna granska.</li>
               <li>· Bolagspresentation visas i intresseanmälan.</li>
             </ul>
           </WireBox>

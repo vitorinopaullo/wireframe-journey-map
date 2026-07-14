@@ -90,7 +90,7 @@ const affarer: Affar[] = [
     pris: 1_200_000,
     steg: "hyresvard",
     vantar: "hyresvard",
-    nastaSteg: "George inväntar svar från hyresvärden",
+    nastaSteg: "TreLink inväntar svar från hyresvärden",
     uppdaterad: "för 3 dagar sedan",
   },
   {
@@ -101,7 +101,7 @@ const affarer: Affar[] = [
     pris: 420_000,
     steg: "uc-granskning",
     vantar: "george",
-    nastaSteg: "George kör UC och matchar dig med säljaren",
+    nastaSteg: "TreLink kör UC och matchar dig med säljaren",
     uppdaterad: "för 5 timmar sedan",
   },
 ];
@@ -158,7 +158,7 @@ function SlaPill({ sla }: { sla?: Affar["sla"] }) {
 function VantarTag({ v }: { v: Vantar }) {
   const map: Record<Vantar, string> = {
     dig: "Väntar på dig",
-    george: "Väntar på George",
+    george: "Väntar på TreLink",
     saljare: "Väntar på säljare",
     hyresvard: "Väntar på hyresvärd",
     ingen: "—",
@@ -241,7 +241,7 @@ function BuyerDeals() {
       <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {[
           ["Din tur", grupper.dig.length, "Agera nu för att inte tappa platsen"],
-          ["Hos George", affarer.filter((a) => a.vantar === "george").length, "George driver framåt"],
+          ["Hos TreLink", affarer.filter((a) => a.vantar === "george").length, "TreLink driver framåt"],
           ["Hos hyresvärd", affarer.filter((a) => a.vantar === "hyresvard").length, "Inväntar godkännande"],
           [
             "Akut SLA",

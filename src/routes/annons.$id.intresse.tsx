@@ -204,15 +204,15 @@ function InterestWizard() {
         <PageHeader
           eyebrow="Intresseanmälan skickad"
           title="Tack — vi tar det härifrån"
-          subtitle="George har fått din anmälan och hör av sig inom 24 timmar."
+          subtitle="TreLink har fått din anmälan och hör av sig inom 24 timmar."
         />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <WireBox label="Vad händer nu?" className="lg:col-span-2">
             <ol className="space-y-4">
               {[
-                ["George granskar dig (UC + identitet)", "active", "~ 24 h"],
+                ["TreLink granskar dig (UC + identitet)", "active", "~ 24 h"],
                 ["Säljaren får din anonyma profil", "pending", "1–2 dagar"],
-                ["George matchar — affär startar", "pending", "3–5 dagar"],
+                ["TreLink matchar — affär startar", "pending", "3–5 dagar"],
                 ["Handpenning, signering, tillträde", "pending", "Beror på hyresvärd"],
               ].map(([l, s, tid]) => (
                 <li key={l as string} className="flex gap-4">
@@ -256,7 +256,7 @@ function InterestWizard() {
       <PageHeader
         eyebrow={`Anmäl intresse · Annons #${id}`}
         title="Intresseanmälan — 5 steg"
-        subtitle="Gratis. Du binder dig inte. George kontaktar dig efter granskning."
+        subtitle="Gratis. Du binder dig inte. TreLink kontaktar dig efter granskning."
         right={
           <div className="flex items-center gap-2">
             {savedAt && (
@@ -419,7 +419,7 @@ function InterestWizard() {
                   className="mt-1"
                 />
                 <span>
-                  Jag medger att George tar en UC-kontroll på mig som en del av granskningen.
+                  Jag medger att TreLink tar en UC-kontroll på mig som en del av granskningen.
                   <span className="block text-xs text-muted-foreground">
                     Krävs innan din profil visas för säljaren. Kostnadsfritt för dig.
                   </span>
@@ -557,7 +557,7 @@ function InterestWizard() {
                   className="mt-1"
                 />
                 <span>
-                  Jag godkänner Trelinks villkor och att uppgifterna delas med George samt
+                  Jag godkänner Trelinks villkor och att uppgifterna delas med TreLink samt
                   (anonymiserat) med säljaren.
                 </span>
               </label>
@@ -616,7 +616,7 @@ function InterestWizard() {
             </Link>
           </WireBox>
 
-          <WireBox label="Vad George ser">
+          <WireBox label="Vad TreLink ser">
             <ul className="space-y-2 text-xs">
               {[
                 ["Identitet & UC", draft.bankid === "verifierad" && draft.ucMedgivande],
@@ -635,7 +635,7 @@ function InterestWizard() {
           <WireBox label="Integritet" variant="ghost">
             <ul className="space-y-1 text-xs text-muted-foreground">
               <li>· Säljaren ser aldrig din e-post eller telefon innan signering.</li>
-              <li>· UC-kontrollen syns bara för George.</li>
+              <li>· UC-kontrollen syns bara för TreLink.</li>
               <li>· Du kan dra tillbaka intresseanmälan när som helst.</li>
             </ul>
           </WireBox>

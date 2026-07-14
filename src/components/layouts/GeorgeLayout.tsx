@@ -10,7 +10,7 @@ const nav = [
   { to: "/george/anvandare", label: "Användare & statistik", hint: "⌘6" },
 ];
 
-export function GeorgeLayout({ children }: { children?: ReactNode }) {
+export function TreLinkLayout({ children }: { children?: ReactNode }) {
   const loc = useLocation();
   const navigate = useNavigate();
   const [cmdOpen, setCmdOpen] = useState(false);
@@ -102,7 +102,7 @@ export function GeorgeLayout({ children }: { children?: ReactNode }) {
           <div className="mt-8 border border-dashed border-muted-foreground/40 p-3">
             <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Vy</div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Allt George gör loggas och syns för köpare & säljare.
+              Allt TreLink gör loggas och syns för köpare & säljare.
             </p>
           </div>
         </aside>

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { GeorgeLayout } from "@/components/layouts/GeorgeLayout";
+import { TreLinkLayout } from "@/components/layouts/TreLinkLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 
 export const Route = createFileRoute("/george/annonser/")({
@@ -28,10 +28,10 @@ type QueueItem = {
 
 const initial: QueueItem[] = [
   { id: "9",  titel: "Frisörsalong · Vasastan", kat: "Inkråm", saljare: "S-104", inkommen: "2025-06-14T09:12", status: "ny",            priority: "hög",   docsTotal: 4, docsOk: 4, docsMissing: 0, slaHours: 6,  assignedTo: null,    senasteHandelse: "Säljare skickade in för granskning" },
-  { id: "10", titel: "Café · Linné",            kat: "Inkråm", saljare: "S-122", inkommen: "2025-06-13T16:40", status: "inväntar-säljare", priority: "medel", docsTotal: 5, docsOk: 3, docsMissing: 1, slaHours: 28, assignedTo: "George", senasteHandelse: "Begärt komplettering: hyresavtal" },
-  { id: "11", titel: "Butikslokal · Malmö",     kat: "Lokal",  saljare: "S-77",  inkommen: "2025-06-14T07:55", status: "pagar",         priority: "medel", docsTotal: 3, docsOk: 2, docsMissing: 0, slaHours: 18, assignedTo: "George", senasteHandelse: "Påbörjad granskning · 1 dok kvar" },
+  { id: "10", titel: "Café · Linné",            kat: "Inkråm", saljare: "S-122", inkommen: "2025-06-13T16:40", status: "inväntar-säljare", priority: "medel", docsTotal: 5, docsOk: 3, docsMissing: 1, slaHours: 28, assignedTo: "TreLink", senasteHandelse: "Begärt komplettering: hyresavtal" },
+  { id: "11", titel: "Butikslokal · Malmö",     kat: "Lokal",  saljare: "S-77",  inkommen: "2025-06-14T07:55", status: "pagar",         priority: "medel", docsTotal: 3, docsOk: 2, docsMissing: 0, slaHours: 18, assignedTo: "TreLink", senasteHandelse: "Påbörjad granskning · 1 dok kvar" },
   { id: "12", titel: "SaaS-bolag B2B",          kat: "Bolag",  saljare: "S-201", inkommen: "2025-06-12T11:00", status: "ny",            priority: "hög",   docsTotal: 7, docsOk: 5, docsMissing: 2, slaHours: -2, assignedTo: null,    senasteHandelse: "SLA bruten · väntar 50h" },
-  { id: "13", titel: "Restaurang · SoFo",       kat: "Inkråm", saljare: "S-133", inkommen: "2025-06-14T08:10", status: "klar-publicera", priority: "låg",   docsTotal: 6, docsOk: 6, docsMissing: 0, slaHours: 12, assignedTo: "George", senasteHandelse: "Allt godkänt · redo att publicera" },
+  { id: "13", titel: "Restaurang · SoFo",       kat: "Inkråm", saljare: "S-133", inkommen: "2025-06-14T08:10", status: "klar-publicera", priority: "låg",   docsTotal: 6, docsOk: 6, docsMissing: 0, slaHours: 12, assignedTo: "TreLink", senasteHandelse: "Allt godkänt · redo att publicera" },
 ];
 
 const filters: { id: "alla" | Status; label: string }[] = [
@@ -49,7 +49,7 @@ function ReviewListings() {
   const list = useMemo(() => {
     return initial
       .filter((q) => (filter === "alla" ? true : q.status === filter))
-      .filter((q) => (onlyMine ? q.assignedTo === "George" : true))
+      .filter((q) => (onlyMine ? q.assignedTo === "TreLink" : true))
       .sort((a, b) => {
         // SLA brott först, sedan prioritet, sedan äldst
         if ((a.slaHours < 0) !== (b.slaHours < 0)) return a.slaHours - b.slaHours;
@@ -68,9 +68,9 @@ function ReviewListings() {
   }), []);
 
   return (
-    <GeorgeLayout>
+    <TreLinkLayout>
       <PageHeader
-        eyebrow="George · adminzon"
+        eyebrow="TreLink · adminzon"
         title="Inkorg · granska annonser"
         subtitle="Inget publiceras ogranskat. Varje dokument godkänns separat. SLA: nya annonser granskas inom 24h."
         right={
@@ -155,7 +155,7 @@ function ReviewListings() {
           Alla beslut loggas med tidsstämpel och syns för säljaren. Komplettering måste ha motivering. Avvisning kräver mall + fri text.
         </span>
       </Annotation>
-    </GeorgeLayout>
+    </TreLinkLayout>
   );
 }
 

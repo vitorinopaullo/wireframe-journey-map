@@ -25,7 +25,7 @@ const HANDPENNING = Math.round(PRIS * 0.1);
 
 /* ---------- mock-data ---------- */
 const baseTimeline: Steg[] = [
-  { nyckel: "intresse", label: "Intresseanmälan mottagen", state: "done", note: "George granskade & godkände 12 jun" },
+  { nyckel: "intresse", label: "Intresseanmälan mottagen", state: "done", note: "TreLink granskade & godkände 12 jun" },
   { nyckel: "uc", label: "UC-kontroll & matchning", state: "done", note: "Godkänd 13 jun · säljaren har valt dig" },
   { nyckel: "hyresvard", label: "Hyresvärdens godkännande", state: "done", note: "Anonym profil skickad 13 jun · godkänd 18 jun" },
   { nyckel: "handpenning", label: "Handpenning till klientmedel", state: "done", note: "Inkommit 19 jun · 195 000 kr" },
@@ -126,7 +126,7 @@ function SignModal({
                 §6. Klientmedel hos Trelink, frigörs vid tillträde. <br />
                 §7. Trelinks förmedlingsavgift dras vid frigörande. <br />
                 §8. Tvist … allmän domstol, svensk lag. <br />
-                — Bilagor: A. Inventarier B. Hyreskontrakt C. UC-rapport (endast George)
+                — Bilagor: A. Inventarier B. Hyreskontrakt C. UC-rapport (endast TreLink)
               </div>
 
               <label className="mt-4 flex items-start gap-2 text-sm">
@@ -240,7 +240,7 @@ function ActionPanel({
         <p className="text-sm">
           Just nu väntar vi på{" "}
           <span className="font-medium">
-            {steg.vantar === "george" ? "George" : steg.vantar === "saljare" ? "säljaren" : "hyresvärden"}
+            {steg.vantar === "george" ? "TreLink" : steg.vantar === "saljare" ? "säljaren" : "hyresvärden"}
           </span>
           . Du behöver inte göra något — vi mejlar när det är din tur.
         </p>
@@ -268,7 +268,7 @@ function ActionPanel({
         <div className="mt-4 flex flex-wrap gap-2">
           <WireBtn onClick={() => onAction("paid")}>Jag har betalat ✓</WireBtn>
           <WireBtn variant="secondary">Ladda ner faktura (PDF)</WireBtn>
-          <WireBtn variant="ghost">Fråga George</WireBtn>
+          <WireBtn variant="ghost">Fråga TreLink</WireBtn>
         </div>
       </WireBox>
     );
@@ -283,7 +283,7 @@ function ActionPanel({
           Signering sker med BankID via Signicat. Båda parter måste signera inom 7 dagar.
         </p>
         <ul className="mt-4 space-y-2 text-sm">
-          <li className="flex items-center gap-2"><StatusDot state="done" /> Köpeavtal granskat av George</li>
+          <li className="flex items-center gap-2"><StatusDot state="done" /> Köpeavtal granskat av TreLink</li>
           <li className="flex items-center gap-2"><StatusDot state="active" /> Du signerar</li>
           <li className="flex items-center gap-2"><StatusDot state="pending" /> Säljaren signerar</li>
         </ul>
@@ -376,17 +376,17 @@ function DealDetail() {
             </ol>
           </WireBox>
 
-          <WireBox label="Meddelanden med George">
+          <WireBox label="Meddelanden med TreLink">
             <div className="space-y-3">
               <div className="border-l-2 border-foreground/40 pl-3">
-                <Annotation>George · för 2 h sedan</Annotation>
+                <Annotation>TreLink · för 2 h sedan</Annotation>
                 <p className="mt-1 text-sm">
                   Handpenning mottagen. Avtalet ligger i Signicat — signera när du är redo.
                 </p>
               </div>
               <textarea
                 rows={3}
-                placeholder="Skriv ett meddelande till George…"
+                placeholder="Skriv ett meddelande till TreLink…"
                 className="w-full border border-dashed border-muted-foreground/50 bg-background p-3 text-sm focus:border-foreground focus:outline-none"
               />
               <div className="flex justify-end">
@@ -410,7 +410,7 @@ function DealDetail() {
             <div className="space-y-3 text-sm">
               <div><Annotation>Säljare</Annotation><p>Anonym tills signering</p></div>
               <div><Annotation>Köpare</Annotation><p>{as === "kopare" ? "Du" : "Anonym tills signering"}</p></div>
-              <div><Annotation>Mäklare</Annotation><p>George · george@trelink.se</p></div>
+              <div><Annotation>Mäklare</Annotation><p>TreLink · george@trelink.se</p></div>
             </div>
           </WireBox>
 
@@ -420,7 +420,7 @@ function DealDetail() {
                 ["Köpeavtal (utkast)", "I Signicat"],
                 ["Hyreskontrakt", "Klart"],
                 ["Inventarielista", "Klart"],
-                ["UC-rapport (köpare)", "Endast George"],
+                ["UC-rapport (köpare)", "Endast TreLink"],
               ].map(([n, s]) => (
                 <li key={n} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 py-1.5">
                   <span>▤ {n}</span>

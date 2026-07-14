@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { GeorgeLayout } from "@/components/layouts/GeorgeLayout";
+import { TreLinkLayout } from "@/components/layouts/TreLinkLayout";
 import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
 
 export const Route = createFileRoute("/george/anvandare")({
@@ -8,9 +8,9 @@ export const Route = createFileRoute("/george/anvandare")({
 
 function Users() {
   return (
-    <GeorgeLayout>
+    <TreLinkLayout>
       <PageHeader
-        eyebrow="George · adminzon"
+        eyebrow="TreLink · adminzon"
         title="Användare & statistik"
         subtitle="Översikt över verifierade konton, aktiva annonser och affärsvolym."
       />
@@ -37,6 +37,6 @@ function Users() {
           ))}
         </ul>
       </WireBox>
-    </GeorgeLayout>
+    </TreLinkLayout>
   );
 }

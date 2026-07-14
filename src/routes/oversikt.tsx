@@ -42,8 +42,8 @@ const sections = [
     ],
   },
   {
-    title: "George · adminzon — separat",
-    color: "George",
+    title: "TreLink · adminzon — separat",
+    color: "TreLink",
     links: [
       ["/george", "Att-göra idag"],
       ["/george/annonser", "Granska annonser"],
@@ -88,12 +88,12 @@ function Sitemap() {
 
       <WireBox label="Kärnprincip" variant="dashed" className="mt-8">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 text-sm">
-          <div><WireTag>1</WireTag><p className="mt-2">Ett konto, två lägen — köpare & säljare. George separat.</p></div>
+          <div><WireTag>1</WireTag><p className="mt-2">Ett konto, två lägen — köpare & säljare. TreLink separat.</p></div>
           <div><WireTag>2</WireTag><p className="mt-2">Gratis hela vägen — avgift först vid tillträde.</p></div>
           <div><WireTag>3</WireTag><p className="mt-2">Affärsstatus syns för båda parter — full transparens.</p></div>
         </div>
         <Annotation>
-          <span className="mt-4 block">(?) UC-placering, klientmedelskonto och hyresvärdsgodkännandets exakta steg = öppna frågor till George.</span>
+          <span className="mt-4 block">(?) UC-placering, klientmedelskonto och hyresvärdsgodkännandets exakta steg = öppna frågor till TreLink.</span>
         </Annotation>
       </WireBox>
     </PublicLayout>

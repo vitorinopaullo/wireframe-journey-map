@@ -31,7 +31,7 @@ function HomePage() {
       <PageHeader
         eyebrow="Publik yta · ingen inloggning krävs"
         title="Hitta verksamheter att ta över"
-        subtitle="Lokaler, inkråm och aktiebolag — granskade av George innan publicering. Bläddra fritt, spara med konto, agera med BankID-verifiering."
+        subtitle="Lokaler, inkråm och aktiebolag — granskade av TreLink innan publicering. Bläddra fritt, spara med konto, agera med BankID-verifiering."
         right={
           <div className="flex gap-2">
             <WireTag>SSR</WireTag>
@@ -95,7 +95,7 @@ function HomePage() {
           </div>
           <div>
             <Annotation>Affär</Annotation>
-            <p className="mt-1 text-sm">UC-kontroll + signering. George matchar parterna.</p>
+            <p className="mt-1 text-sm">UC-kontroll + signering. TreLink matchar parterna.</p>
           </div>
         </div>
       </WireBox>

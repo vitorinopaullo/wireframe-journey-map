@@ -13,7 +13,7 @@ const verifieringar = [
   { label: "BankID-identitet", state: "done" as const, note: "Anna Andersson · verifierad 12 jun 2026" },
   { label: "E-post bekräftad", state: "done" as const, note: "anna@exempel.se" },
   { label: "Mobil bekräftad", state: "done" as const, note: "+46 70 123 45 67" },
-  { label: "UC-kreditkontroll", state: "active" as const, note: "Körs av George vid aktiv affär — du behöver inte göra något" },
+  { label: "UC-kreditkontroll", state: "active" as const, note: "Körs av TreLink vid aktiv affär — du behöver inte göra något" },
   { label: "Företagsuppgifter (frivilligt)", state: "pending" as const, note: "Lägg till org.nr för att snabba upp framtida affärer" },
 ];
 
@@ -39,7 +39,7 @@ function Profile() {
       <PageHeader
         eyebrow="Köparläge · Profil"
         title="Anna Andersson"
-        subtitle="Dina uppgifter delas aldrig med säljare innan signering. George ser endast det som behövs för granskning."
+        subtitle="Dina uppgifter delas aldrig med säljare innan signering. TreLink ser endast det som behövs för granskning."
         right={
           <div className="flex flex-col items-end gap-2">
             <WireTag>BankID ✓</WireTag>
@@ -134,7 +134,7 @@ function Profile() {
                 <Annotation>Status</Annotation>
                 <p className="mt-1 text-sm">Senaste UC: 13 jun 2026 · <span className="font-medium">Godkänd</span></p>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  UC körs av George vid varje aktiv affär. Du ser aldrig själva rapporten — endast
+                  UC körs av TreLink vid varje aktiv affär. Du ser aldrig själva rapporten — endast
                   status. Säljare ser bara "godkänd / ej godkänd".
                 </p>
               </div>

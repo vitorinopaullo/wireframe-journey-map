@@ -37,7 +37,7 @@ const listing = {
   ],
   faq: [
     ["Varför säljs verksamheten?", "Ägaren ska gå i pension. Driftpersonal stannar gärna."],
-    ["Får jag ta över hyreskontraktet?", "Ja, med hyresvärdens godkännande. George driver dialogen."],
+    ["Får jag ta över hyreskontraktet?", "Ja, med hyresvärdens godkännande. TreLink driver dialogen."],
     ["Ingår inventarier?", "Ja, allt i inventarielistan. Råvarulager räknas separat vid tillträde."],
     ["När kan tillträde ske?", "Tidigast 6 veckor efter signering — beror på hyresvärd."],
   ],
@@ -106,7 +106,7 @@ function ListingDetail() {
         subtitle={listing.underrubrik}
         right={
           <div className="flex flex-wrap gap-2">
-            <WireTag>✓ Granskad av George</WireTag>
+            <WireTag>✓ Granskad av TreLink</WireTag>
             <WireTag>Premium</WireTag>
             <WireTag>{listing.intressenter} intressenter</WireTag>
           </div>
@@ -129,7 +129,7 @@ function ListingDetail() {
           </div>
 
           {/* Trust-rad */}
-          <WireBox label="Vad George har verifierat" variant="dashed">
+          <WireBox label="Vad TreLink har verifierat" variant="dashed">
             <ul className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
               {[
                 "Säljarens identitet (BankID)",
@@ -147,7 +147,7 @@ function ListingDetail() {
             </ul>
             <Annotation>
               <span className="mt-3 block">
-                George står som mellanhand. Inga uppgifter byts mellan parter förrän handpenning är inne.
+                TreLink står som mellanhand. Inga uppgifter byts mellan parter förrän handpenning är inne.
               </span>
             </Annotation>
           </WireBox>
@@ -155,7 +155,7 @@ function ListingDetail() {
           {/* Beskrivning */}
           <WireBox label="Beskrivning">
             <p className="text-sm text-muted-foreground">
-              [Säljarens beskrivning av verksamheten / lokalen. Granskad av George innan publicering.
+              [Säljarens beskrivning av verksamheten / lokalen. Granskad av TreLink innan publicering.
               Inkluderar bakgrund, inventarier, omsättning, personal, hyresvillkor.]
             </p>
           </WireBox>
@@ -173,7 +173,7 @@ function ListingDetail() {
           </WireBox>
 
           {/* Dokument */}
-          <WireBox label="Dokument — granskade av George" variant="dashed">
+          <WireBox label="Dokument — granskade av TreLink" variant="dashed">
             <ul className="space-y-2 text-sm">
               {listing.dokument.map((d) => (
                 <li
@@ -227,7 +227,7 @@ function ListingDetail() {
             <ol className="mb-4 space-y-2 text-xs">
               {[
                 ["1", "Anmäl intresse (gratis, BankID)"],
-                ["2", "George kör UC + matchar"],
+                ["2", "TreLink kör UC + matchar"],
                 ["3", "Du får full info & hyresvärd kontrolleras"],
                 ["4", "Handpenning till klientmedel"],
                 ["5", "Signera digitalt (Signicat)"],
@@ -252,7 +252,7 @@ function ListingDetail() {
             </div>
             <Annotation>
               <span className="mt-3 block">
-                Inga kontaktuppgifter byts. George når dig på mejl inom 24 h.
+                Inga kontaktuppgifter byts. TreLink når dig på mejl inom 24 h.
               </span>
             </Annotation>
           </WireBox>

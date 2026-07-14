@@ -33,7 +33,7 @@ function Register() {
             <WireField label="E-post" placeholder="namn@exempel.se" />
             <WireField label="Telefon" placeholder="+46 ..." />
             <WireField label="Företag (frivilligt)" placeholder="AB / Org.nr" />
-            <Annotation>Notiser och besked från George skickas via mejl (Brevo / Postmark).</Annotation>
+            <Annotation>Notiser och besked från TreLink skickas via mejl (Brevo / Postmark).</Annotation>
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
             <WireTag>Anpassad start</WireTag>

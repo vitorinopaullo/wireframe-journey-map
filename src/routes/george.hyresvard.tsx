@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { GeorgeLayout } from "@/components/layouts/GeorgeLayout";
+import { TreLinkLayout } from "@/components/layouts/TreLinkLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 
 export const Route = createFileRoute("/george/hyresvard")({
@@ -54,11 +54,11 @@ function Landlord() {
   const overdue = cases.filter((c) => c.state !== "godkänd" && c.state !== "avslagen" && c.daysSinceSent >= 3).length;
 
   return (
-    <GeorgeLayout>
+    <TreLinkLayout>
       <PageHeader
-        eyebrow="George · adminzon · endast lokal"
+        eyebrow="TreLink · adminzon · endast lokal"
         title="Hyresvärdsgodkännande"
-        subtitle="Anonym profil till hyresvärd · all kommunikation går via George för att skydda säljaren mot disintermediering."
+        subtitle="Anonym profil till hyresvärd · all kommunikation går via TreLink för att skydda säljaren mot disintermediering."
         right={
           overdue > 0 ? (
             <span className="border border-foreground bg-foreground text-background px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider">
@@ -93,7 +93,7 @@ function Landlord() {
             <Field k="Övriga lokaler" v="0 hyresavtal med betalningsanmärkningar" />
           </div>
           <Annotation>
-            <span className="mt-3 block">↳ PDF genereras automatiskt. Hyresvärden svarar via en länk som loggas hos George.</span>
+            <span className="mt-3 block">↳ PDF genereras automatiskt. Hyresvärden svarar via en länk som loggas hos TreLink.</span>
           </Annotation>
         </WireBox>
       )}
@@ -175,7 +175,7 @@ function Landlord() {
           </WireBox>
         ))}
       </div>
-    </GeorgeLayout>
+    </TreLinkLayout>
   );
 }
 
