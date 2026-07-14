@@ -5,7 +5,9 @@ import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/
 
 export const Route = createFileRoute("/saljare/skapa-annons")({
   component: CreateListing,
+  validateSearch: (s: Record<string, unknown>) => ({ edit: typeof s.edit === "string" ? s.edit : undefined }),
 });
+
 
 type CatId = "overlatelse" | "inkram" | "aktie";
 
