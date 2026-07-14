@@ -53,10 +53,10 @@ function TackPage() {
       </WireBox>
 
       <div className="flex flex-wrap gap-2 mt-6">
-        <Link to="/saljare/dashboard">
+        <Link to="/dashboard">
           <WireBtn>Till min panel →</WireBtn>
         </Link>
-        <Link to="/saljare/annonser">
+        <Link to="/saljare/mina-annonser">
           <WireBtn variant="secondary">Mina annonser</WireBtn>
         </Link>
         <Link to="/saljare/skapa-annons">
