@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { WireBox, PageHeader, WireField, WireBtn, WireTag, Annotation } from "@/components/wire";
+import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 
 export const Route = createFileRoute("/saljare/skapa-annons")({
   component: CreateListing,
 });
 
-type CatId = "lokal" | "inkram" | "bolag";
+type CatId = "overlatelse" | "inkram" | "aktie";
 
 const cats: {
   id: CatId;
@@ -15,100 +15,127 @@ const cats: {
   one: string;
   avgift: string;
   tid: string;
-  george: string;
+  trelink: string;
   who: string;
 }[] = [
   {
-    id: "lokal",
-    name: "Lokal",
-    one: "Du säljer rätten till en hyreslokal — inget bolag, ingen verksamhet byter ägare.",
-    avgift: "29 500 kr vid genomförd affär",
+    id: "overlatelse",
+    name: "Överlåtelse",
+    one: "Du överlåter rätten till en hyreslokal — inget bolag, ingen verksamhet byter ägare.",
+    avgift: "29 900 kr vid genomförd affär",
     tid: "Typiskt 3–6 veckor",
-    george: "TreLink granskar hyresavtal & inventarier. Hyresvärden måste godkänna köparen.",
+    trelink: "TreLink granskar hyresavtal & inventarier. Hyresvärden måste godkänna köparen.",
     who: "Bäst för: restauranger, butiker, salonger som vill släppa lokalen vidare.",
   },
   {
     id: "inkram",
     name: "Inkråm",
     one: "Tillgångar och verksamhet säljs till köparens bolag — du behåller ditt AB.",
-    avgift: "49 500 kr vid genomförd affär",
+    avgift: "39 900 kr vid genomförd affär",
     tid: "Typiskt 6–10 veckor",
-    george: "TreLink granskar varje dokument: tillgångar, avtal, personal, ekonomi.",
+    trelink: "TreLink granskar dokument: tillgångar, ekonomi, avtal.",
     who: "Bäst för: när du vill sälja verksamheten men behålla bolagsmanteln.",
   },
   {
-    id: "bolag",
-    name: "Aktiebolag",
+    id: "aktie",
+    name: "Aktieöverlåtelse",
     one: "Hela bolaget byter ägare. Alla avtal, anställda och historik följer med.",
-    avgift: "79 500 kr vid genomförd affär",
+    avgift: "79 900 kr vid genomförd affär",
     tid: "Typiskt 8–14 veckor",
-    george: "TreLink kör full DD: AML, verklig huvudman, årsredovisningar, avtal.",
+    trelink: "TreLink kör full DD: AML, verklig huvudman, årsredovisningar, avtal.",
     who: "Bäst för: lönsamma bolag med substans där köparen vill ta över allt.",
   },
 ];
 
 type DocState = "saknas" | "uppladdad" | "granskas" | "godkant" | "komplettera";
 
-const docsByCat: Record<CatId, { name: string; krav: string; comment?: string; init?: DocState }[]> = {
-  lokal: [
-    { name: "Hyreskontrakt", krav: "PDF · alla sidor · signerat" },
-    { name: "Senaste hyresavi", krav: "PDF · max 3 mån gammal" },
-    { name: "Inventarielista", krav: "PDF/XLSX · med uppskattat värde" },
-    { name: "Bilder på lokalen", krav: "JPG/PNG · minst 6 st · dagsljus" },
+type DocSpec = { name: string; krav: string; required: boolean };
+
+const docsByCat: Record<CatId, DocSpec[]> = {
+  overlatelse: [
+    { name: "Överlåtelseavtal", krav: "PDF · signerat av båda parter (mall finns hos TreLink)", required: true },
+    { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
+    { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
+    { name: "Bilder på lokalen", krav: "JPG/PNG · minst 6 st · dagsljus", required: true },
   ],
   inkram: [
-    { name: "Tillgångslista", krav: "XLSX · maskiner, inventarier, varulager" },
-    { name: "Resultaträkning 2024", krav: "PDF från bokföring" },
-    { name: "Balansräkning", krav: "PDF · senaste perioden" },
-    { name: "Anställningsavtal", krav: "PDF per anställd · personuppgifter maskas av TreLink" },
-    { name: "Kundavtal (top 5)", krav: "PDF · vi prickar av överlåtbarhet" },
+    { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
+    { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
+    { name: "Rörelseresultat", krav: "PDF från bokföring · senaste perioden", required: true },
+    { name: "Bilder på verksamheten", krav: "JPG/PNG · minst 6 st · dagsljus", required: true },
+    { name: "Balansräkning", krav: "PDF · senaste perioden", required: false },
+    { name: "Årsredovisning", krav: "PDF · signerad", required: false },
   ],
-  bolag: [
-    { name: "Registreringsbevis", krav: "PDF · max 1 mån gammalt" },
-    { name: "Senaste årsredovisning", krav: "PDF · signerad" },
-    { name: "Aktiebok", krav: "PDF/bild · aktuell" },
-    { name: "Aktieägaravtal", krav: "PDF · om det finns" },
-    { name: "Verklig huvudman", krav: "PDF från Bolagsverket" },
-    { name: "Skuld- & pantbrevsregister", krav: "PDF · TreLink beställer om du saknar" },
+  aktie: [
+    { name: "Köpeavtal / aktieöverlåtelseavtal", krav: "PDF · mall finns hos TreLink", required: true },
+    { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
+    { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
+    { name: "Rörelseresultat", krav: "PDF från bokföring", required: true },
+    { name: "Bilder", krav: "JPG/PNG · minst 6 st · dagsljus", required: true },
+    { name: "Balansräkning", krav: "PDF · senaste perioden", required: false },
+    { name: "Årsredovisning", krav: "PDF · signerad", required: false },
+    { name: "Registreringsbevis", krav: "PDF · max 1 mån gammalt", required: false },
+    { name: "Bolagsordning", krav: "PDF · aktuell", required: false },
+    { name: "Aktiebrev / aktiebok", krav: "PDF/bild · aktuell", required: false },
+    { name: "Bolagspärm", krav: "PDF · protokoll m.m.", required: false },
+    { name: "Företagsinteckning", krav: "PDF · om det finns", required: false },
+    { name: "Anställningsavtal", krav: "PDF per anställd · personuppgifter maskas av TreLink", required: false },
+    { name: "Sociala medier", krav: "Länkar/handles till konton som följer med", required: false },
   ],
 };
 
-const STORAGE_KEY = "saljare-skapa-annons-draft";
+const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
 
 type Draft = {
   cat: CatId;
   rubrik: string;
   ort: string;
   pris: string;
-  storlek: string;
+  yta: string;
   verksamhet: string;
   orgnr: string;
   beskrivning: string;
   premium: boolean;
   docs: Record<string, DocState>;
+  // Övrig info — vem är köparen / firmatecknare
+  kopareTyp: "sjalv" | "assistent" | "";
+  kopareNamn: string;
+  kopareRoll: string;
+  kopareTel: string;
+  kopareEmail: string;
+  signerareNamn: string;
+  signerareRoll: string;
+  ovrigt: string;
 };
 
 const empty: Draft = {
-  cat: "lokal",
+  cat: "overlatelse",
   rubrik: "",
   ort: "",
   pris: "",
-  storlek: "",
+  yta: "",
   verksamhet: "",
   orgnr: "",
   beskrivning: "",
   premium: false,
   docs: {},
+  kopareTyp: "",
+  kopareNamn: "",
+  kopareRoll: "",
+  kopareTel: "",
+  kopareEmail: "",
+  signerareNamn: "",
+  signerareRoll: "",
+  ovrigt: "",
 };
 
-const STEPS = ["Kategori", "Grunduppgifter", "Underlag", "Granska & skicka"] as const;
+const STEPS = ["Paket", "Grunduppgifter", "Underlag", "Övrig info", "Granska & skicka"] as const;
 
 function CreateListing() {
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<Draft>(empty);
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
-  // Hydrate from localStorage
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -123,7 +150,6 @@ function CreateListing() {
     }
   }, []);
 
-  // Auto-save (debounced)
   useEffect(() => {
     const t = setTimeout(() => {
       const now = new Date().toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
@@ -143,34 +169,36 @@ function CreateListing() {
   const docStatus = (name: string): DocState => draft.docs[name] ?? "saknas";
 
   const validation = useMemo(() => {
-    const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [] };
-    if (!draft.cat) errs[0].push("Välj kategori.");
+    const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [], 4: [] };
+    if (!draft.cat) errs[0].push("Välj paket.");
     if (!draft.rubrik || draft.rubrik.length < 8) errs[1].push("Rubrik behövs (minst 8 tecken).");
     if (!draft.ort) errs[1].push("Ange ort.");
     if (!draft.pris) errs[1].push("Ange pris.");
-    if (draft.cat === "lokal" && !draft.storlek) errs[1].push("Ange storlek i m².");
+    if (!draft.yta) errs[1].push("Ange yta i m².");
     if (draft.cat === "inkram" && !draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
-    if (draft.cat === "bolag" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
+    if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
       errs[1].push("Org.nr i format 556xxx-xxxx.");
     if (!draft.beskrivning || draft.beskrivning.length < 40)
       errs[1].push("Skriv en beskrivning (minst 40 tecken).");
-    const missing = requiredDocs.filter(
-      (d) => docStatus(d.name) === "saknas" || docStatus(d.name) === "komplettera"
+    const missingReq = requiredDocs.filter(
+      (d) => d.required && (docStatus(d.name) === "saknas" || docStatus(d.name) === "komplettera")
     );
-    if (missing.length) errs[2].push(`${missing.length} dokument saknas eller behöver kompletteras.`);
+    if (missingReq.length) errs[2].push(`${missingReq.length} obligatoriska dokument saknas.`);
+    if (!draft.signerareNamn) errs[3].push("Ange vem som är firmatecknare/signerare för säljande part.");
+    if (!draft.signerareRoll) errs[3].push("Ange roll (VD, styrelseordförande etc.).");
     return errs;
   }, [draft, requiredDocs]);
 
   const canContinue = (validation[step] ?? []).length === 0;
 
   const completion = useMemo(() => {
-    const totalDocs = requiredDocs.length;
-    const okDocs = requiredDocs.filter((d) => {
+    const req = requiredDocs.filter((d) => d.required);
+    const okDocs = req.filter((d) => {
       const s = docStatus(d.name);
       return s === "uppladdad" || s === "granskas" || s === "godkant";
     }).length;
-    const fields = [draft.rubrik, draft.ort, draft.pris, draft.beskrivning].filter(Boolean).length;
-    return Math.round(((fields / 4) * 0.4 + (okDocs / Math.max(totalDocs, 1)) * 0.6) * 100);
+    const fields = [draft.rubrik, draft.ort, draft.pris, draft.beskrivning, draft.signerareNamn].filter(Boolean).length;
+    return Math.round(((fields / 5) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
   }, [draft, requiredDocs]);
 
   const reset = () => {
@@ -183,13 +211,15 @@ function CreateListing() {
   };
 
   const activeCat = cats.find((c) => c.id === draft.cat)!;
+  const canSubmit =
+    validation[1].length + validation[2].length + validation[3].length + validation[4].length === 0;
 
   return (
     <AppLayout mode="saljare">
       <PageHeader
         eyebrow="Säljarläge · Skapa annons"
         title={STEPS[step]}
-        subtitle="Gratis att annonsera. Avgiften tas ut först vid genomförd affär. TreLink granskar innan publicering."
+        subtitle="Gratis att annonsera. Paketavgiften tas ut först vid genomförd affär. TreLink granskar innan publicering."
         right={
           <div className="flex flex-col items-end gap-1">
             <WireTag>Steg {step + 1} av {STEPS.length}</WireTag>
@@ -201,7 +231,7 @@ function CreateListing() {
       />
 
       {/* Stepper */}
-      <div className="mb-6 grid grid-cols-4 gap-2">
+      <div className="mb-6 grid grid-cols-5 gap-2">
         {STEPS.map((label, i) => {
           const isDone = i < step;
           const isActive = i === step;
@@ -234,9 +264,9 @@ function CreateListing() {
         <Annotation>{completion}% komplett</Annotation>
       </div>
 
-      {/* STEP 0 — Kategori */}
+      {/* STEP 0 — Paket */}
       {step === 0 && (
-        <WireBox label="Välj kategori — detta styr avgift, dokument och process" className="mb-6">
+        <WireBox label="Välj paket — detta styr avgift, dokument och process" className="mb-6">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             {cats.map((c) => {
               const selected = draft.cat === c.id;
@@ -264,7 +294,18 @@ function CreateListing() {
           </div>
           <div className="mt-4 border-t border-dashed border-muted-foreground/30 pt-4">
             <Annotation>Vad TreLink gör för dig</Annotation>
-            <p className="mt-1 text-sm">{activeCat.george}</p>
+            <p className="mt-1 text-sm">{activeCat.trelink}</p>
+          </div>
+          <div className="mt-4 border-t border-dashed border-muted-foreground/30 pt-4">
+            <Annotation>Dokument som krävs för {activeCat.name}</Annotation>
+            <ul className="mt-2 grid grid-cols-1 gap-1 text-xs md:grid-cols-2">
+              {docsByCat[draft.cat].map((d) => (
+                <li key={d.name}>
+                  {d.required ? "•" : "○"} {d.name}
+                  {d.required ? <span className="text-muted-foreground"> *</span> : <span className="text-muted-foreground"> (frivilligt)</span>}
+                </li>
+              ))}
+            </ul>
           </div>
         </WireBox>
       )}
@@ -275,44 +316,42 @@ function CreateListing() {
           <WireBox label="Grunduppgifter" className="mb-6">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <WireFieldEditable
-                label="Annonsrubrik"
+                label="Annonsrubrik *"
                 value={draft.rubrik}
                 onChange={(v) => set("rubrik", v)}
                 placeholder="t.ex. Restauranglokal Södermalm, 180 m²"
                 hint="Visas i sökresultat. Var konkret."
               />
               <WireFieldEditable
-                label="Ort"
+                label="Ort *"
                 value={draft.ort}
                 onChange={(v) => set("ort", v)}
                 placeholder="Stockholm"
               />
               <WireFieldEditable
-                label="Pris (kr)"
+                label="Pris (kr) *"
                 value={draft.pris}
                 onChange={(v) => set("pris", v.replace(/[^\d]/g, ""))}
                 placeholder="1 950 000"
                 hint="Köparen ser detta. Du kan justera senare."
               />
-              {draft.cat === "lokal" && (
-                <WireFieldEditable
-                  label="Storlek (m²)"
-                  value={draft.storlek}
-                  onChange={(v) => set("storlek", v)}
-                  placeholder="180"
-                />
-              )}
+              <WireFieldEditable
+                label="Yta (m²) *"
+                value={draft.yta}
+                onChange={(v) => set("yta", v)}
+                placeholder="180"
+              />
               {draft.cat === "inkram" && (
                 <WireFieldEditable
-                  label="Verksamhetstyp"
+                  label="Verksamhetstyp *"
                   value={draft.verksamhet}
                   onChange={(v) => set("verksamhet", v)}
                   placeholder="Café & bageri"
                 />
               )}
-              {draft.cat === "bolag" && (
+              {draft.cat === "aktie" && (
                 <WireFieldEditable
-                  label="Org.nr"
+                  label="Org.nr *"
                   value={draft.orgnr}
                   onChange={(v) => set("orgnr", v)}
                   placeholder="556123-4567"
@@ -322,7 +361,7 @@ function CreateListing() {
             </div>
           </WireBox>
 
-          <WireBox label="Beskrivning" className="mb-6">
+          <WireBox label="Beskrivning *" className="mb-6">
             <label className="block">
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Berätta om verksamheten / lokalen
@@ -344,8 +383,9 @@ function CreateListing() {
 
       {/* STEP 2 — Underlag */}
       {step === 2 && (
-        <WireBox label={`Underlag för ${activeCat.name.toLowerCase()}`} className="mb-6">
-          <div className="space-y-3">
+        <WireBox label={`Underlag för ${activeCat.name}`} className="mb-6">
+          <Annotation>* = obligatoriskt för att kunna skicka på granskning. Övriga stärker annonsen men går att komplettera senare.</Annotation>
+          <div className="mt-3 space-y-3">
             {requiredDocs.map((d) => {
               const s = docStatus(d.name);
               return (
@@ -356,11 +396,11 @@ function CreateListing() {
                   <div className="flex items-start gap-3">
                     <DocStatusDot state={s} />
                     <div>
-                      <div className="text-sm font-medium">{d.name}</div>
+                      <div className="text-sm font-medium">
+                        {d.name}
+                        {d.required ? <span> *</span> : <span className="text-muted-foreground"> (frivilligt)</span>}
+                      </div>
                       <Annotation>{d.krav}</Annotation>
-                      {s === "komplettera" && d.comment && (
-                        <p className="mt-1 text-[11px] text-foreground">TreLink: {d.comment}</p>
-                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -389,19 +429,114 @@ function CreateListing() {
         </WireBox>
       )}
 
-      {/* STEP 3 — Granska & skicka */}
+      {/* STEP 3 — Övrig info */}
       {step === 3 && (
+        <>
+          <WireBox label="Vem representerar säljaren?" className="mb-6">
+            <Annotation>
+              Ibland är den som lägger upp annonsen inte firmatecknare (t.ex. en assistent eller mäklare).
+              TreLink behöver veta vem från styrelsen/VD som faktiskt skriver på kontraktet.
+            </Annotation>
+            <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+              <button
+                onClick={() => set("kopareTyp", "sjalv")}
+                className={`border p-3 text-left ${
+                  draft.kopareTyp === "sjalv" ? "border-foreground bg-muted/40" : "border-dashed border-muted-foreground/40"
+                }`}
+              >
+                <div className="text-sm font-medium">Jag är firmatecknare</div>
+                <Annotation>Jag skriver på kontraktet själv.</Annotation>
+              </button>
+              <button
+                onClick={() => set("kopareTyp", "assistent")}
+                className={`border p-3 text-left ${
+                  draft.kopareTyp === "assistent" ? "border-foreground bg-muted/40" : "border-dashed border-muted-foreground/40"
+                }`}
+              >
+                <div className="text-sm font-medium">Jag agerar för någon annan</div>
+                <Annotation>Firmatecknaren är en annan person (VD, styrelse, ägare).</Annotation>
+              </button>
+            </div>
+          </WireBox>
+
+          <WireBox label="Firmatecknare / signerare *" className="mb-6">
+            <Annotation>Denna person måste vara behörig att teckna säljande bolagets firma.</Annotation>
+            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <WireFieldEditable
+                label="Namn *"
+                value={draft.signerareNamn}
+                onChange={(v) => set("signerareNamn", v)}
+                placeholder="För- och efternamn"
+              />
+              <WireFieldEditable
+                label="Roll *"
+                value={draft.signerareRoll}
+                onChange={(v) => set("signerareRoll", v)}
+                placeholder="VD / Styrelseordförande / Ensam ägare"
+              />
+            </div>
+          </WireBox>
+
+          {draft.kopareTyp === "assistent" && (
+            <WireBox label="Kontaktperson (den som driver affären åt firmatecknaren)" className="mb-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <WireFieldEditable
+                  label="Namn"
+                  value={draft.kopareNamn}
+                  onChange={(v) => set("kopareNamn", v)}
+                  placeholder="För- och efternamn"
+                />
+                <WireFieldEditable
+                  label="Roll"
+                  value={draft.kopareRoll}
+                  onChange={(v) => set("kopareRoll", v)}
+                  placeholder="t.ex. Assistent, mäklare, rådgivare"
+                />
+                <WireFieldEditable
+                  label="Telefon"
+                  value={draft.kopareTel}
+                  onChange={(v) => set("kopareTel", v)}
+                  placeholder="+46 ..."
+                />
+                <WireFieldEditable
+                  label="E-post"
+                  value={draft.kopareEmail}
+                  onChange={(v) => set("kopareEmail", v)}
+                  placeholder="namn@företag.se"
+                />
+              </div>
+            </WireBox>
+          )}
+
+          <WireBox label="Övrig information till TreLink (frivilligt)" className="mb-6">
+            <textarea
+              value={draft.ovrigt}
+              onChange={(e) => set("ovrigt", e.target.value)}
+              rows={4}
+              placeholder="Något TreLink bör veta inför granskningen? Ex. pågående förhandling med hyresvärd, personal ska följa med, m.m."
+              className="block w-full border border-dashed border-muted-foreground/50 bg-muted/20 p-3 text-sm focus:border-foreground focus:outline-none"
+            />
+          </WireBox>
+        </>
+      )}
+
+      {/* STEP 4 — Granska & skicka */}
+      {step === 4 && (
         <>
           <WireBox label="Sammanfattning" className="mb-6">
             <dl className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <Row k="Kategori" v={activeCat.name} />
+              <Row k="Paket" v={activeCat.name} />
               <Row k="Avgift vid affär" v={activeCat.avgift} />
               <Row k="Rubrik" v={draft.rubrik || "—"} />
               <Row k="Ort" v={draft.ort || "—"} />
               <Row k="Pris" v={draft.pris ? `${draft.pris} kr` : "—"} />
-              {draft.cat === "lokal" && <Row k="Storlek" v={draft.storlek ? `${draft.storlek} m²` : "—"} />}
+              <Row k="Yta" v={draft.yta ? `${draft.yta} m²` : "—"} />
               {draft.cat === "inkram" && <Row k="Verksamhet" v={draft.verksamhet || "—"} />}
-              {draft.cat === "bolag" && <Row k="Org.nr" v={draft.orgnr || "—"} />}
+              {draft.cat === "aktie" && <Row k="Org.nr" v={draft.orgnr || "—"} />}
+              <Row k="Firmatecknare" v={draft.signerareNamn ? `${draft.signerareNamn} (${draft.signerareRoll})` : "—"} />
+              {draft.kopareTyp === "assistent" && (
+                <Row k="Kontaktperson" v={draft.kopareNamn ? `${draft.kopareNamn} · ${draft.kopareRoll}` : "—"} />
+              )}
             </dl>
           </WireBox>
 
@@ -413,6 +548,7 @@ function CreateListing() {
                   <li key={d.name} className="flex items-center justify-between text-sm">
                     <span className="flex items-center gap-2">
                       <DocStatusDot state={s} /> {d.name}
+                      {d.required ? <span> *</span> : <span className="text-muted-foreground"> (frivilligt)</span>}
                     </span>
                     <DocStatusTag state={s} />
                   </li>
@@ -438,7 +574,7 @@ function CreateListing() {
             </label>
           </WireBox>
 
-          {validation[3].length === 0 && validation[2].length === 0 && validation[1].length === 0 ? (
+          {canSubmit ? (
             <WireBox className="mb-6">
               <p className="text-sm">
                 ✓ Allt är ifyllt. Skickar du in nu får du besked från TreLink inom 24h på vardagar.
@@ -449,7 +585,7 @@ function CreateListing() {
             <WireBox className="mb-6" variant="dashed">
               <Annotation>Innan du kan skicka in</Annotation>
               <ul className="mt-2 list-inside list-disc text-sm">
-                {[...validation[1], ...validation[2], ...validation[3]].map((e) => (
+                {[...validation[1], ...validation[2], ...validation[3], ...validation[4]].map((e) => (
                   <li key={e}>{e}</li>
                 ))}
               </ul>
@@ -459,7 +595,7 @@ function CreateListing() {
       )}
 
       {/* Validation hints under content */}
-      {step < 3 && validation[step].length > 0 && (
+      {step < 4 && validation[step].length > 0 && (
         <WireBox className="mb-6" variant="dashed">
           <Annotation>Komplettera innan nästa steg</Annotation>
           <ul className="mt-2 list-inside list-disc text-sm">
@@ -476,6 +612,12 @@ function CreateListing() {
           <WireBtn variant="ghost" onClick={reset}>
             Rensa utkast
           </WireBtn>
+          <WireBtn
+            variant="secondary"
+            onClick={() => alert(`Utkast sparat ${savedAt ?? "nu"}. Du kan fortsätta senare från Mina annonser.`)}
+          >
+            Spara som utkast
+          </WireBtn>
           <Annotation>{savedAt ? `Sparat ${savedAt}` : ""}</Annotation>
         </div>
         <div className="flex gap-2">
@@ -484,7 +626,7 @@ function CreateListing() {
               ← Tillbaka
             </WireBtn>
           )}
-          {step < 3 ? (
+          {step < 4 ? (
             <WireBtn
               onClick={() => canContinue && setStep((s) => s + 1)}
               className={canContinue ? "" : "cursor-not-allowed opacity-40"}
@@ -493,14 +635,13 @@ function CreateListing() {
             </WireBtn>
           ) : (
             <WireBtn
-              onClick={() => alert("Skickad till TreLink för granskning. Du får besked inom 24h på vardagar.")}
-              className={
-                validation[1].length + validation[2].length + validation[3].length === 0
-                  ? ""
-                  : "cursor-not-allowed opacity-40"
+              onClick={() =>
+                canSubmit &&
+                alert("Skickad till TreLink för granskning. Du får besked inom 24h på vardagar.")
               }
+              className={canSubmit ? "" : "cursor-not-allowed opacity-40"}
             >
-              Skicka för granskning →
+              Skicka till TreLink för granskning →
             </WireBtn>
           )}
         </div>
