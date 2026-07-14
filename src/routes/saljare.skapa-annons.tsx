@@ -632,7 +632,29 @@ function CreateListing() {
               Nästa: {STEPS[step + 1]} →
             </WireBtn>
           ) : (
-            <WireBtn onClick={() => navigate({ to: "/saljare/annons-inskickad" })}>
+            <WireBtn
+              onClick={() => {
+                try {
+                  const raw = localStorage.getItem("saljare-annonser") ?? "[]";
+                  const list = JSON.parse(raw) as any[];
+                  list.unshift({
+                    id: "n" + Date.now(),
+                    titel: draft.rubrik || `${activeCat.name} · ${draft.ort || "Ny annons"}`,
+                    ort: draft.ort,
+                    pris: draft.pris,
+                    cat: draft.cat,
+                    status: "Granskas",
+                    premium: draft.premium,
+                    views: 0,
+                    intresse: 0,
+                    skickadAt: new Date().toISOString(),
+                  });
+                  localStorage.setItem("saljare-annonser", JSON.stringify(list));
+                  localStorage.removeItem(STORAGE_KEY);
+                } catch {}
+                navigate({ to: "/saljare/annons-inskickad" });
+              }}
+            >
               Skicka till TreLink för granskning →
             </WireBtn>
           )}
