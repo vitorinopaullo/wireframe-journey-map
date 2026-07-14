@@ -235,9 +235,12 @@ function CreateListing() {
   return (
     <AppLayout mode="saljare">
       <PageHeader
-        eyebrow="Säljarläge · Skapa annons"
+        eyebrow={editId ? "Säljarläge · Redigera annons" : "Säljarläge · Skapa annons"}
         title={STEPS[step]}
-        subtitle="Gratis att annonsera. Paketavgiften tas ut först vid genomförd affär. TreLink granskar innan publicering."
+        subtitle={editId
+          ? "Ändringarna skickas till TreLink för ny granskning innan annonsen publiceras igen."
+          : "Gratis att annonsera. Paketavgiften tas ut först vid genomförd affär. TreLink granskar innan publicering."}
+
         right={
           <div className="flex flex-col items-end gap-1">
             <WireTag>Steg {step + 1} av {STEPS.length}</WireTag>
