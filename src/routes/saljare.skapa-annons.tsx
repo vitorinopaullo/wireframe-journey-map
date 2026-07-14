@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
@@ -631,13 +631,7 @@ function CreateListing() {
               Nästa: {STEPS[step + 1]} →
             </WireBtn>
           ) : (
-            <WireBtn
-              onClick={() =>
-                canSubmit &&
-                alert("Skickad till TreLink för granskning. Du får besked inom 24h på vardagar.")
-              }
-              className={canSubmit ? "" : "cursor-not-allowed opacity-40"}
-            >
+            <WireBtn onClick={() => navigate({ to: "/saljare/skapa-annons/tack" })}>
               Skicka till TreLink för granskning →
             </WireBtn>
           )}
