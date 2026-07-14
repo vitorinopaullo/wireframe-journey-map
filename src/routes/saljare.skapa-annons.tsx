@@ -627,10 +627,7 @@ function CreateListing() {
             </WireBtn>
           )}
           {step < 4 ? (
-            <WireBtn
-              onClick={() => canContinue && setStep((s) => s + 1)}
-              className={canContinue ? "" : "cursor-not-allowed opacity-40"}
-            >
+            <WireBtn onClick={() => setStep((s) => s + 1)}>
               Nästa: {STEPS[step + 1]} →
             </WireBtn>
           ) : (
