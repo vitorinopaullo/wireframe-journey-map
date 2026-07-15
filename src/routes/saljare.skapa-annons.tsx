@@ -626,11 +626,14 @@ function CreateListing() {
             <dl className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <Row k="Paket" v={activeCat.name} />
               <Row k="Avgift vid affär" v={activeCat.avgift} />
-              <Row k="Rubrik" v={draft.rubrik || "—"} />
               <Row k="Ort" v={draft.ort || "—"} />
-              <Row k="Pris" v={draft.pris ? `${draft.pris} kr` : "—"} />
+              <Row k="Adress" v={draft.adress || "—"} />
               <Row k="Yta" v={draft.yta ? `${draft.yta} m²` : "—"} />
-              {draft.cat === "inkram" && <Row k="Verksamhet" v={draft.verksamhet || "—"} />}
+              <Row k="Verksamhet" v={draft.verksamhet || "—"} />
+              <Row k="Omsättning" v={draft.omsattning ? `${draft.omsattning} kr` : "—"} />
+              <Row k="Rörelseresultat" v={draft.resultat ? `${draft.resultat} kr` : "—"} />
+              <Row k="Verksam sedan" v={draft.verksamhetSedan || "—"} />
+              <Row k="Anställda" v={draft.anstallda || "—"} />
               {draft.cat === "aktie" && <Row k="Org.nr" v={draft.orgnr || "—"} />}
               <Row k="Firmatecknare" v={draft.signerareNamn ? `${draft.signerareNamn} (${draft.signerareRoll})` : "—"} />
               {draft.kopareTyp === "assistent" && (
