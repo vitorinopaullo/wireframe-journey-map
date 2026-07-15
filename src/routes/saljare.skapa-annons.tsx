@@ -90,13 +90,23 @@ const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
 
 type Draft = {
   cat: CatId;
-  rubrik: string;
   ort: string;
-  pris: string;
+  adress: string;
   yta: string;
   verksamhet: string;
   orgnr: string;
-  beskrivning: string;
+  // Säljande info till TreLink (används för att skriva annonstexten)
+  verksamhetSedan: string;
+  oppettider: string;
+  anstallda: string;
+  omsattning: string;
+  resultat: string;
+  usp: string;
+  kundunderlag: string;
+  laget: string;
+  inventarier: string;
+  anledning: string;
+  potential: string;
   premium: boolean;
   docs: Record<string, DocState>;
   // Övrig info — vem är köparen / firmatecknare
@@ -112,13 +122,22 @@ type Draft = {
 
 const empty: Draft = {
   cat: "overlatelse",
-  rubrik: "",
   ort: "",
-  pris: "",
+  adress: "",
   yta: "",
   verksamhet: "",
   orgnr: "",
-  beskrivning: "",
+  verksamhetSedan: "",
+  oppettider: "",
+  anstallda: "",
+  omsattning: "",
+  resultat: "",
+  usp: "",
+  kundunderlag: "",
+  laget: "",
+  inventarier: "",
+  anledning: "",
+  potential: "",
   premium: false,
   docs: {},
   kopareTyp: "",
