@@ -208,15 +208,16 @@ function CreateListing() {
   const validation = useMemo(() => {
     const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [], 4: [] };
     if (!draft.cat) errs[0].push("Välj paket.");
-    if (!draft.rubrik || draft.rubrik.length < 8) errs[1].push("Rubrik behövs (minst 8 tecken).");
     if (!draft.ort) errs[1].push("Ange ort.");
-    if (!draft.pris) errs[1].push("Ange pris.");
+    if (!draft.adress) errs[1].push("Ange adress.");
     if (!draft.yta) errs[1].push("Ange yta i m².");
-    if (draft.cat === "inkram" && !draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
+    if (!draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
     if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
       errs[1].push("Org.nr i format 556xxx-xxxx.");
-    if (!draft.beskrivning || draft.beskrivning.length < 40)
-      errs[1].push("Skriv en beskrivning (minst 40 tecken).");
+    if (!draft.usp || draft.usp.length < 20)
+      errs[1].push("Beskriv vad som gör verksamheten unik (minst 20 tecken).");
+    if (!draft.kundunderlag) errs[1].push("Beskriv kundunderlaget.");
+    if (!draft.laget) errs[1].push("Beskriv läget.");
     const missingReq = requiredDocs.filter(
       (d) => d.required && (docStatus(d.name) === "saknas" || docStatus(d.name) === "komplettera")
     );
@@ -234,9 +235,10 @@ function CreateListing() {
       const s = docStatus(d.name);
       return s === "uppladdad" || s === "granskas" || s === "godkant";
     }).length;
-    const fields = [draft.rubrik, draft.ort, draft.pris, draft.beskrivning, draft.signerareNamn].filter(Boolean).length;
-    return Math.round(((fields / 5) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
+    const fields = [draft.ort, draft.adress, draft.yta, draft.verksamhet, draft.usp, draft.kundunderlag, draft.laget, draft.signerareNamn].filter(Boolean).length;
+    return Math.round(((fields / 8) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
   }, [draft, requiredDocs]);
+
 
   const reset = () => {
     if (confirm("Rensa utkast och börja om?")) {
