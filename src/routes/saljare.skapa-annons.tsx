@@ -90,13 +90,23 @@ const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
 
 type Draft = {
   cat: CatId;
-  rubrik: string;
   ort: string;
-  pris: string;
+  adress: string;
   yta: string;
   verksamhet: string;
   orgnr: string;
-  beskrivning: string;
+  // Säljande info till TreLink (används för att skriva annonstexten)
+  verksamhetSedan: string;
+  oppettider: string;
+  anstallda: string;
+  omsattning: string;
+  resultat: string;
+  usp: string;
+  kundunderlag: string;
+  laget: string;
+  inventarier: string;
+  anledning: string;
+  potential: string;
   premium: boolean;
   docs: Record<string, DocState>;
   // Övrig info — vem är köparen / firmatecknare
@@ -112,13 +122,22 @@ type Draft = {
 
 const empty: Draft = {
   cat: "overlatelse",
-  rubrik: "",
   ort: "",
-  pris: "",
+  adress: "",
   yta: "",
   verksamhet: "",
   orgnr: "",
-  beskrivning: "",
+  verksamhetSedan: "",
+  oppettider: "",
+  anstallda: "",
+  omsattning: "",
+  resultat: "",
+  usp: "",
+  kundunderlag: "",
+  laget: "",
+  inventarier: "",
+  anledning: "",
+  potential: "",
   premium: false,
   docs: {},
   kopareTyp: "",
@@ -189,15 +208,16 @@ function CreateListing() {
   const validation = useMemo(() => {
     const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [], 4: [] };
     if (!draft.cat) errs[0].push("Välj paket.");
-    if (!draft.rubrik || draft.rubrik.length < 8) errs[1].push("Rubrik behövs (minst 8 tecken).");
     if (!draft.ort) errs[1].push("Ange ort.");
-    if (!draft.pris) errs[1].push("Ange pris.");
+    if (!draft.adress) errs[1].push("Ange adress.");
     if (!draft.yta) errs[1].push("Ange yta i m².");
-    if (draft.cat === "inkram" && !draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
+    if (!draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
     if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
       errs[1].push("Org.nr i format 556xxx-xxxx.");
-    if (!draft.beskrivning || draft.beskrivning.length < 40)
-      errs[1].push("Skriv en beskrivning (minst 40 tecken).");
+    if (!draft.usp || draft.usp.length < 20)
+      errs[1].push("Beskriv vad som gör verksamheten unik (minst 20 tecken).");
+    if (!draft.kundunderlag) errs[1].push("Beskriv kundunderlaget.");
+    if (!draft.laget) errs[1].push("Beskriv läget.");
     const missingReq = requiredDocs.filter(
       (d) => d.required && (docStatus(d.name) === "saknas" || docStatus(d.name) === "komplettera")
     );
@@ -215,9 +235,10 @@ function CreateListing() {
       const s = docStatus(d.name);
       return s === "uppladdad" || s === "granskas" || s === "godkant";
     }).length;
-    const fields = [draft.rubrik, draft.ort, draft.pris, draft.beskrivning, draft.signerareNamn].filter(Boolean).length;
-    return Math.round(((fields / 5) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
+    const fields = [draft.ort, draft.adress, draft.yta, draft.verksamhet, draft.usp, draft.kundunderlag, draft.laget, draft.signerareNamn].filter(Boolean).length;
+    return Math.round(((fields / 8) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
   }, [draft, requiredDocs]);
+
 
   const reset = () => {
     if (confirm("Rensa utkast och börja om?")) {
@@ -334,15 +355,12 @@ function CreateListing() {
       {/* STEP 1 — Grunduppgifter */}
       {step === 1 && (
         <>
-          <WireBox label="Grunduppgifter" className="mb-6">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <WireFieldEditable
-                label="Annonsrubrik *"
-                value={draft.rubrik}
-                onChange={(v) => set("rubrik", v)}
-                placeholder="t.ex. Restauranglokal Södermalm, 180 m²"
-                hint="Visas i sökresultat. Var konkret."
-              />
+          <WireBox label="Objektet" className="mb-6">
+            <Annotation>
+              TreLink sätter annonsrubrik och pris åt dig — vi kan marknaden och prissätter mot rätt köpargrupp.
+              Fyll i grundfakta så vi vet vad vi jobbar med.
+            </Annotation>
+            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
               <WireFieldEditable
                 label="Ort *"
                 value={draft.ort}
@@ -350,11 +368,11 @@ function CreateListing() {
                 placeholder="Stockholm"
               />
               <WireFieldEditable
-                label="Pris (kr) *"
-                value={draft.pris}
-                onChange={(v) => set("pris", v.replace(/[^\d]/g, ""))}
-                placeholder="1 950 000"
-                hint="Köparen ser detta. Du kan justera senare."
+                label="Adress *"
+                value={draft.adress}
+                onChange={(v) => set("adress", v)}
+                placeholder="Götgatan 12"
+                hint="Exakt adress visas inte publikt — TreLink använder området i annonsen."
               />
               <WireFieldEditable
                 label="Yta (m²) *"
@@ -362,14 +380,12 @@ function CreateListing() {
                 onChange={(v) => set("yta", v)}
                 placeholder="180"
               />
-              {draft.cat === "inkram" && (
-                <WireFieldEditable
-                  label="Verksamhetstyp *"
-                  value={draft.verksamhet}
-                  onChange={(v) => set("verksamhet", v)}
-                  placeholder="Café & bageri"
-                />
-              )}
+              <WireFieldEditable
+                label="Verksamhetstyp *"
+                value={draft.verksamhet}
+                onChange={(v) => set("verksamhet", v)}
+                placeholder="Café & bageri / Restaurang / Frisör / Butik…"
+              />
               {draft.cat === "aktie" && (
                 <WireFieldEditable
                   label="Org.nr *"
@@ -382,25 +398,87 @@ function CreateListing() {
             </div>
           </WireBox>
 
-          <WireBox label="Beskrivning *" className="mb-6">
-            <label className="block">
-              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Berätta om verksamheten / lokalen
-              </span>
-              <textarea
-                value={draft.beskrivning}
-                onChange={(e) => set("beskrivning", e.target.value)}
-                rows={6}
-                placeholder="Vad gör verksamheten unik? Vilka är kunderna? Varför säljer du?"
-                className="block w-full border border-dashed border-muted-foreground/50 bg-muted/20 p-3 text-sm focus:border-foreground focus:outline-none"
+          <WireBox label="Nyckeltal & drift (frivilligt men höjer värdet)" className="mb-6">
+            <Annotation>Ju mer TreLink vet, desto skarpare kan vi prissätta och skriva annonsen.</Annotation>
+            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <WireFieldEditable
+                label="Verksam sedan (år)"
+                value={draft.verksamhetSedan}
+                onChange={(v) => set("verksamhetSedan", v)}
+                placeholder="2016"
               />
-              <Annotation>
-                <span className="mt-1 block">{draft.beskrivning.length} tecken · minst 40</span>
-              </Annotation>
-            </label>
+              <WireFieldEditable
+                label="Antal anställda"
+                value={draft.anstallda}
+                onChange={(v) => set("anstallda", v)}
+                placeholder="4 heltid + 2 deltid"
+              />
+              <WireFieldEditable
+                label="Omsättning senaste året (kr)"
+                value={draft.omsattning}
+                onChange={(v) => set("omsattning", v)}
+                placeholder="4 200 000"
+              />
+              <WireFieldEditable
+                label="Rörelseresultat senaste året (kr)"
+                value={draft.resultat}
+                onChange={(v) => set("resultat", v)}
+                placeholder="650 000"
+              />
+              <WireFieldEditable
+                label="Öppettider"
+                value={draft.oppettider}
+                onChange={(v) => set("oppettider", v)}
+                placeholder="Mån–fre 07–18, lör 09–15"
+              />
+              <WireFieldEditable
+                label="Inventarier som ingår"
+                value={draft.inventarier}
+                onChange={(v) => set("inventarier", v)}
+                placeholder="Espressomaskin, ugn, kyl/frys, bord, kassasystem…"
+              />
+            </div>
+          </WireBox>
+
+          <WireBox label="Säljande info — hjälper TreLink skriva annonsen" className="mb-6">
+            <div className="grid grid-cols-1 gap-4">
+              <WireArea
+                label="Vad gör verksamheten unik? *"
+                value={draft.usp}
+                onChange={(v) => set("usp", v)}
+                placeholder="Ex. enda specialkaffet i området, egen bageri­produktion, stark närvaro på Instagram…"
+                hint={`${draft.usp.length} tecken · minst 20`}
+              />
+              <WireArea
+                label="Kundunderlag *"
+                value={draft.kundunderlag}
+                onChange={(v) => set("kundunderlag", v)}
+                placeholder="Vilka är kunderna? Stamkunder / kontor / turister? Återkommande?"
+              />
+              <WireArea
+                label="Läget *"
+                value={draft.laget}
+                onChange={(v) => set("laget", v)}
+                placeholder="Gångtrafik, närhet till tunnelbana, hörnläge, skyltfönster mot gatan…"
+              />
+              <WireArea
+                label="Utvecklingsmöjligheter (frivilligt)"
+                value={draft.potential}
+                onChange={(v) => set("potential", v)}
+                placeholder="Vad kan en ny ägare växa? Ex. lunchservering, catering, längre öppettider, e-handel."
+              />
+              <WireArea
+                label="Anledning till försäljning (frivilligt)"
+                value={draft.anledning}
+                onChange={(v) => set("anledning", v)}
+                placeholder="Ex. pension, ny satsning, flytt. Behövs inte i annonsen — hjälper TreLink förstå affären."
+              />
+            </div>
           </WireBox>
         </>
       )}
+
+
 
       {/* STEP 2 — Underlag */}
       {step === 2 && (
@@ -548,11 +626,14 @@ function CreateListing() {
             <dl className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <Row k="Paket" v={activeCat.name} />
               <Row k="Avgift vid affär" v={activeCat.avgift} />
-              <Row k="Rubrik" v={draft.rubrik || "—"} />
               <Row k="Ort" v={draft.ort || "—"} />
-              <Row k="Pris" v={draft.pris ? `${draft.pris} kr` : "—"} />
+              <Row k="Adress" v={draft.adress || "—"} />
               <Row k="Yta" v={draft.yta ? `${draft.yta} m²` : "—"} />
-              {draft.cat === "inkram" && <Row k="Verksamhet" v={draft.verksamhet || "—"} />}
+              <Row k="Verksamhet" v={draft.verksamhet || "—"} />
+              <Row k="Omsättning" v={draft.omsattning ? `${draft.omsattning} kr` : "—"} />
+              <Row k="Rörelseresultat" v={draft.resultat ? `${draft.resultat} kr` : "—"} />
+              <Row k="Verksam sedan" v={draft.verksamhetSedan || "—"} />
+              <Row k="Anställda" v={draft.anstallda || "—"} />
               {draft.cat === "aktie" && <Row k="Org.nr" v={draft.orgnr || "—"} />}
               <Row k="Firmatecknare" v={draft.signerareNamn ? `${draft.signerareNamn} (${draft.signerareRoll})` : "—"} />
               {draft.kopareTyp === "assistent" && (
@@ -658,9 +739,9 @@ function CreateListing() {
                   const raw = localStorage.getItem("saljare-annonser") ?? "[]";
                   const list = JSON.parse(raw) as any[];
                   const base = {
-                    titel: draft.rubrik || `${activeCat.name} · ${draft.ort || "Ny annons"}`,
+                    titel: `${activeCat.name} · ${draft.verksamhet || "Nytt objekt"} · ${draft.ort || ""}`.trim(),
                     ort: draft.ort,
-                    pris: draft.pris,
+                    pris: "TreLink sätter pris",
                     cat: draft.cat,
                     status: "Granskas",
                     premium: draft.premium,
@@ -722,6 +803,36 @@ function WireFieldEditable({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="block h-10 w-full border border-dashed border-muted-foreground/50 bg-muted/20 px-3 text-sm focus:border-foreground focus:outline-none"
+      />
+      {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
+    </label>
+  );
+}
+
+function WireArea({
+  label,
+  value,
+  onChange,
+  placeholder,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  hint?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={3}
+        className="block w-full border border-dashed border-muted-foreground/50 bg-muted/20 p-3 text-sm focus:border-foreground focus:outline-none"
       />
       {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
     </label>
