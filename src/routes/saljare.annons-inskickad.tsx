@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
+import { WireBox, PageHeader, WireBtn, WireTag } from "@/components/wire";
 
 export const Route = createFileRoute("/saljare/annons-inskickad")({
   component: TackPage,
