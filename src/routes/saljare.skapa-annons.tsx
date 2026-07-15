@@ -597,10 +597,8 @@ function CreateListing() {
               <Row k="Adress" v={draft.adress || "—"} />
               <Row k="Yta" v={draft.yta ? `${draft.yta} m²` : "—"} />
               <Row k="Verksamhet" v={draft.verksamhet || "—"} />
-              <Row k="Omsättning" v={draft.omsattning ? `${draft.omsattning} kr` : "—"} />
-              <Row k="Rörelseresultat" v={draft.resultat ? `${draft.resultat} kr` : "—"} />
-              <Row k="Verksam sedan" v={draft.verksamhetSedan || "—"} />
-              <Row k="Anställda" v={draft.anstallda || "—"} />
+              <Row k="Nyckeltal" v="Hämtas från uppladdade dokument" />
+
               {draft.cat === "aktie" && <Row k="Org.nr" v={draft.orgnr || "—"} />}
               <Row k="Firmatecknare" v={draft.signerareNamn ? `${draft.signerareNamn} (${draft.signerareRoll})` : "—"} />
               {draft.kopareTyp === "assistent" && (
