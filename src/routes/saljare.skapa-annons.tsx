@@ -355,15 +355,12 @@ function CreateListing() {
       {/* STEP 1 — Grunduppgifter */}
       {step === 1 && (
         <>
-          <WireBox label="Grunduppgifter" className="mb-6">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <WireFieldEditable
-                label="Annonsrubrik *"
-                value={draft.rubrik}
-                onChange={(v) => set("rubrik", v)}
-                placeholder="t.ex. Restauranglokal Södermalm, 180 m²"
-                hint="Visas i sökresultat. Var konkret."
-              />
+          <WireBox label="Objektet" className="mb-6">
+            <Annotation>
+              TreLink sätter annonsrubrik och pris åt dig — vi kan marknaden och prissätter mot rätt köpargrupp.
+              Fyll i grundfakta så vi vet vad vi jobbar med.
+            </Annotation>
+            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
               <WireFieldEditable
                 label="Ort *"
                 value={draft.ort}
@@ -371,11 +368,11 @@ function CreateListing() {
                 placeholder="Stockholm"
               />
               <WireFieldEditable
-                label="Pris (kr) *"
-                value={draft.pris}
-                onChange={(v) => set("pris", v.replace(/[^\d]/g, ""))}
-                placeholder="1 950 000"
-                hint="Köparen ser detta. Du kan justera senare."
+                label="Adress *"
+                value={draft.adress}
+                onChange={(v) => set("adress", v)}
+                placeholder="Götgatan 12"
+                hint="Exakt adress visas inte publikt — TreLink använder området i annonsen."
               />
               <WireFieldEditable
                 label="Yta (m²) *"
@@ -383,14 +380,12 @@ function CreateListing() {
                 onChange={(v) => set("yta", v)}
                 placeholder="180"
               />
-              {draft.cat === "inkram" && (
-                <WireFieldEditable
-                  label="Verksamhetstyp *"
-                  value={draft.verksamhet}
-                  onChange={(v) => set("verksamhet", v)}
-                  placeholder="Café & bageri"
-                />
-              )}
+              <WireFieldEditable
+                label="Verksamhetstyp *"
+                value={draft.verksamhet}
+                onChange={(v) => set("verksamhet", v)}
+                placeholder="Café & bageri / Restaurang / Frisör / Butik…"
+              />
               {draft.cat === "aktie" && (
                 <WireFieldEditable
                   label="Org.nr *"
@@ -403,25 +398,87 @@ function CreateListing() {
             </div>
           </WireBox>
 
-          <WireBox label="Beskrivning *" className="mb-6">
-            <label className="block">
-              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Berätta om verksamheten / lokalen
-              </span>
-              <textarea
-                value={draft.beskrivning}
-                onChange={(e) => set("beskrivning", e.target.value)}
-                rows={6}
-                placeholder="Vad gör verksamheten unik? Vilka är kunderna? Varför säljer du?"
-                className="block w-full border border-dashed border-muted-foreground/50 bg-muted/20 p-3 text-sm focus:border-foreground focus:outline-none"
+          <WireBox label="Nyckeltal & drift (frivilligt men höjer värdet)" className="mb-6">
+            <Annotation>Ju mer TreLink vet, desto skarpare kan vi prissätta och skriva annonsen.</Annotation>
+            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <WireFieldEditable
+                label="Verksam sedan (år)"
+                value={draft.verksamhetSedan}
+                onChange={(v) => set("verksamhetSedan", v)}
+                placeholder="2016"
               />
-              <Annotation>
-                <span className="mt-1 block">{draft.beskrivning.length} tecken · minst 40</span>
-              </Annotation>
-            </label>
+              <WireFieldEditable
+                label="Antal anställda"
+                value={draft.anstallda}
+                onChange={(v) => set("anstallda", v)}
+                placeholder="4 heltid + 2 deltid"
+              />
+              <WireFieldEditable
+                label="Omsättning senaste året (kr)"
+                value={draft.omsattning}
+                onChange={(v) => set("omsattning", v)}
+                placeholder="4 200 000"
+              />
+              <WireFieldEditable
+                label="Rörelseresultat senaste året (kr)"
+                value={draft.resultat}
+                onChange={(v) => set("resultat", v)}
+                placeholder="650 000"
+              />
+              <WireFieldEditable
+                label="Öppettider"
+                value={draft.oppettider}
+                onChange={(v) => set("oppettider", v)}
+                placeholder="Mån–fre 07–18, lör 09–15"
+              />
+              <WireFieldEditable
+                label="Inventarier som ingår"
+                value={draft.inventarier}
+                onChange={(v) => set("inventarier", v)}
+                placeholder="Espressomaskin, ugn, kyl/frys, bord, kassasystem…"
+              />
+            </div>
+          </WireBox>
+
+          <WireBox label="Säljande info — hjälper TreLink skriva annonsen" className="mb-6">
+            <div className="grid grid-cols-1 gap-4">
+              <WireArea
+                label="Vad gör verksamheten unik? *"
+                value={draft.usp}
+                onChange={(v) => set("usp", v)}
+                placeholder="Ex. enda specialkaffet i området, egen bageri­produktion, stark närvaro på Instagram…"
+                hint={`${draft.usp.length} tecken · minst 20`}
+              />
+              <WireArea
+                label="Kundunderlag *"
+                value={draft.kundunderlag}
+                onChange={(v) => set("kundunderlag", v)}
+                placeholder="Vilka är kunderna? Stamkunder / kontor / turister? Återkommande?"
+              />
+              <WireArea
+                label="Läget *"
+                value={draft.laget}
+                onChange={(v) => set("laget", v)}
+                placeholder="Gångtrafik, närhet till tunnelbana, hörnläge, skyltfönster mot gatan…"
+              />
+              <WireArea
+                label="Utvecklingsmöjligheter (frivilligt)"
+                value={draft.potential}
+                onChange={(v) => set("potential", v)}
+                placeholder="Vad kan en ny ägare växa? Ex. lunchservering, catering, längre öppettider, e-handel."
+              />
+              <WireArea
+                label="Anledning till försäljning (frivilligt)"
+                value={draft.anledning}
+                onChange={(v) => set("anledning", v)}
+                placeholder="Ex. pension, ny satsning, flytt. Behövs inte i annonsen — hjälper TreLink förstå affären."
+              />
+            </div>
           </WireBox>
         </>
       )}
+
+
 
       {/* STEP 2 — Underlag */}
       {step === 2 && (
