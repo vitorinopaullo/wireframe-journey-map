@@ -398,47 +398,14 @@ function CreateListing() {
             </div>
           </WireBox>
 
-          <WireBox label="Nyckeltal & drift (frivilligt men höjer värdet)" className="mb-6">
-            <Annotation>Ju mer TreLink vet, desto skarpare kan vi prissätta och skriva annonsen.</Annotation>
-            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <WireFieldEditable
-                label="Verksam sedan (år)"
-                value={draft.verksamhetSedan}
-                onChange={(v) => set("verksamhetSedan", v)}
-                placeholder="2016"
-              />
-              <WireFieldEditable
-                label="Antal anställda"
-                value={draft.anstallda}
-                onChange={(v) => set("anstallda", v)}
-                placeholder="4 heltid + 2 deltid"
-              />
-              <WireFieldEditable
-                label="Omsättning senaste året (kr)"
-                value={draft.omsattning}
-                onChange={(v) => set("omsattning", v)}
-                placeholder="4 200 000"
-              />
-              <WireFieldEditable
-                label="Rörelseresultat senaste året (kr)"
-                value={draft.resultat}
-                onChange={(v) => set("resultat", v)}
-                placeholder="650 000"
-              />
-              <WireFieldEditable
-                label="Öppettider"
-                value={draft.oppettider}
-                onChange={(v) => set("oppettider", v)}
-                placeholder="Mån–fre 07–18, lör 09–15"
-              />
-              <WireFieldEditable
-                label="Inventarier som ingår"
-                value={draft.inventarier}
-                onChange={(v) => set("inventarier", v)}
-                placeholder="Espressomaskin, ugn, kyl/frys, bord, kassasystem…"
-              />
-            </div>
+          <WireBox label="Nyckeltal & drift" className="mb-6">
+            <Annotation>
+              Dessa uppgifter behöver du inte fylla i här — TreLink hämtar dem från årsredovisning,
+              hyresavtal och övriga dokument du laddar upp i nästa steg.
+            </Annotation>
           </WireBox>
+
+
 
           <WireBox label="Säljande info — hjälper TreLink skriva annonsen" className="mb-6">
             <div className="grid grid-cols-1 gap-4">
