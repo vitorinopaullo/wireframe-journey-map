@@ -739,9 +739,9 @@ function CreateListing() {
                   const raw = localStorage.getItem("saljare-annonser") ?? "[]";
                   const list = JSON.parse(raw) as any[];
                   const base = {
-                    titel: draft.rubrik || `${activeCat.name} · ${draft.ort || "Ny annons"}`,
+                    titel: `${activeCat.name} · ${draft.verksamhet || "Nytt objekt"} · ${draft.ort || ""}`.trim(),
                     ort: draft.ort,
-                    pris: draft.pris,
+                    pris: "TreLink sätter pris",
                     cat: draft.cat,
                     status: "Granskas",
                     premium: draft.premium,
