@@ -398,15 +398,6 @@ function CreateListing() {
             </div>
           </WireBox>
 
-          <WireBox label="Nyckeltal & drift" className="mb-6">
-            <Annotation>
-              Dessa uppgifter behöver du inte fylla i här — TreLink hämtar dem från årsredovisning,
-              hyresavtal och övriga dokument du laddar upp i nästa steg.
-            </Annotation>
-          </WireBox>
-
-
-
           <WireBox label="Säljande info — hjälper TreLink skriva annonsen" className="mb-6">
             <div className="grid grid-cols-1 gap-4">
               <WireArea
