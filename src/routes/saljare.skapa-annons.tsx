@@ -95,6 +95,10 @@ type Draft = {
   yta: string;
   verksamhet: string;
   orgnr: string;
+  // Hyresvärd & BRF
+  hyresvardEmail: string;
+  hyresvardTel: string;
+  brfKontakt: string;
   // Säljande info till TreLink (används för att skriva annonstexten)
   verksamhetSedan: string;
   oppettider: string;
@@ -127,6 +131,9 @@ const empty: Draft = {
   yta: "",
   verksamhet: "",
   orgnr: "",
+  hyresvardEmail: "",
+  hyresvardTel: "",
+  brfKontakt: "",
   verksamhetSedan: "",
   oppettider: "",
   anstallda: "",
@@ -214,6 +221,9 @@ function CreateListing() {
     if (!draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
     if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
       errs[1].push("Org.nr i format 556xxx-xxxx.");
+    if (!draft.hyresvardEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.hyresvardEmail))
+      errs[1].push("Ange hyresvärdens e-postadress.");
+    if (!draft.hyresvardTel) errs[1].push("Ange hyresvärdens telefonnummer.");
     if (!draft.usp || draft.usp.length < 20)
       errs[1].push("Beskriv vad som gör verksamheten unik (minst 20 tecken).");
     if (!draft.kundunderlag) errs[1].push("Beskriv kundunderlaget.");
@@ -235,8 +245,12 @@ function CreateListing() {
       const s = docStatus(d.name);
       return s === "uppladdad" || s === "granskas" || s === "godkant";
     }).length;
-    const fields = [draft.ort, draft.adress, draft.yta, draft.verksamhet, draft.usp, draft.kundunderlag, draft.laget, draft.signerareNamn].filter(Boolean).length;
-    return Math.round(((fields / 8) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
+    const fields = [
+      draft.ort, draft.adress, draft.yta, draft.verksamhet,
+      draft.hyresvardEmail, draft.hyresvardTel, draft.brfKontakt,
+      draft.usp, draft.kundunderlag, draft.laget, draft.signerareNamn,
+    ].filter(Boolean).length;
+    return Math.round(((fields / 11) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
   }, [draft, requiredDocs]);
 
 
@@ -395,6 +409,35 @@ function CreateListing() {
                   hint="TreLink hämtar bolagsinfo från Bolagsverket."
                 />
               )}
+            </div>
+
+            <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
+              <Annotation>Hyresvärd & BRF</Annotation>
+              <p className="mt-1 text-sm text-muted-foreground">
+                TreLink behöver kontaktuppgifter till hyresvärden för att få godkännande av överlåtelse.
+                Vid BRF anger du kontaktpersonen i föreningen.
+              </p>
+              <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+                <WireFieldEditable
+                  label="Hyresvärdens e-post *"
+                  value={draft.hyresvardEmail}
+                  onChange={(v) => set("hyresvardEmail", v)}
+                  placeholder="info@fastighetsbolaget.se"
+                />
+                <WireFieldEditable
+                  label="Hyresvärdens telefon *"
+                  value={draft.hyresvardTel}
+                  onChange={(v) => set("hyresvardTel", v)}
+                  placeholder="+46 8 123 45 67"
+                />
+                <WireFieldEditable
+                  label="BRF-kontaktperson"
+                  value={draft.brfKontakt}
+                  onChange={(v) => set("brfKontakt", v)}
+                  placeholder="För- och efternamn på kontaktperson i föreningen"
+                  hint="Frivilligt — fylls i om objektet ligger i en bostadsrättsförening"
+                />
+              </div>
             </div>
           </WireBox>
 
@@ -588,6 +631,9 @@ function CreateListing() {
               <Row k="Adress" v={draft.adress || "—"} />
               <Row k="Yta" v={draft.yta ? `${draft.yta} m²` : "—"} />
               <Row k="Verksamhet" v={draft.verksamhet || "—"} />
+              <Row k="Hyresvärd e-post" v={draft.hyresvardEmail || "—"} />
+              <Row k="Hyresvärd telefon" v={draft.hyresvardTel || "—"} />
+              <Row k="BRF-kontaktperson" v={draft.brfKontakt || "—"} />
               <Row k="Nyckeltal" v="Hämtas från uppladdade dokument" />
 
               {draft.cat === "aktie" && <Row k="Org.nr" v={draft.orgnr || "—"} />}
