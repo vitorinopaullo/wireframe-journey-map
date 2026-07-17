@@ -245,8 +245,12 @@ function CreateListing() {
       const s = docStatus(d.name);
       return s === "uppladdad" || s === "granskas" || s === "godkant";
     }).length;
-    const fields = [draft.ort, draft.adress, draft.yta, draft.verksamhet, draft.usp, draft.kundunderlag, draft.laget, draft.signerareNamn].filter(Boolean).length;
-    return Math.round(((fields / 8) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
+    const fields = [
+      draft.ort, draft.adress, draft.yta, draft.verksamhet,
+      draft.hyresvardEmail, draft.hyresvardTel, draft.brfKontakt,
+      draft.usp, draft.kundunderlag, draft.laget, draft.signerareNamn,
+    ].filter(Boolean).length;
+    return Math.round(((fields / 11) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
   }, [draft, requiredDocs]);
 
 
