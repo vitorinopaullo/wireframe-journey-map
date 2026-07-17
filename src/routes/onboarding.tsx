@@ -256,11 +256,12 @@ function Step2({
               {role === "saljare" && (
                 <div className="md:col-span-2">
                   <InputField
-                    label="Adress *"
+                    label="Adress"
                     value={adress}
                     onChange={setAdress}
                     placeholder="Storgatan 1, 113 27 Stockholm"
-                    hint="Krävs för fakturering vid genomförd affär"
+                    hint="Frivilligt — används vid fakturering om affär genomförs"
+
                   />
                 </div>
               )}
