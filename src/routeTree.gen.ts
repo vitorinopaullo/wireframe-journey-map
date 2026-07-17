@@ -39,6 +39,7 @@ import { Route as AffarIdRouteImport } from './routes/affar.$id'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as GeorgeAnnonserIndexRouteImport } from './routes/george.annonser.index'
+import { Route as SaljareAnnonsIdRouteImport } from './routes/saljare.annons.$id'
 import { Route as GeorgeAnnonserIdRouteImport } from './routes/george.annonser.$id'
 import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
@@ -196,6 +197,11 @@ const GeorgeAnnonserIndexRoute = GeorgeAnnonserIndexRouteImport.update({
   path: '/',
   getParentRoute: () => GeorgeAnnonserRoute,
 } as any)
+const SaljareAnnonsIdRoute = SaljareAnnonsIdRouteImport.update({
+  id: '/saljare/annons/$id',
+  path: '/saljare/annons/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GeorgeAnnonserIdRoute = GeorgeAnnonserIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -252,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
+  '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/george/annonser/': typeof GeorgeAnnonserIndexRoute
 }
 export interface FileRoutesByTo {
@@ -287,6 +294,7 @@ export interface FileRoutesByTo {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
+  '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/george/annonser': typeof GeorgeAnnonserIndexRoute
 }
 export interface FileRoutesById {
@@ -324,6 +332,7 @@ export interface FileRoutesById {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
+  '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/george/annonser/': typeof GeorgeAnnonserIndexRoute
 }
 export interface FileRouteTypes {
@@ -362,6 +371,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/annons/$id/intresse'
     | '/george/annonser/$id'
+    | '/saljare/annons/$id'
     | '/george/annonser/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -397,6 +407,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/annons/$id/intresse'
     | '/george/annonser/$id'
+    | '/saljare/annons/$id'
     | '/george/annonser'
   id:
     | '__root__'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/annons/$id/intresse'
     | '/george/annonser/$id'
+    | '/saljare/annons/$id'
     | '/george/annonser/'
   fileRoutesById: FileRoutesById
 }
@@ -468,6 +480,7 @@ export interface RootRouteChildren {
   GeorgeIndexRoute: typeof GeorgeIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  SaljareAnnonsIdRoute: typeof SaljareAnnonsIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -682,6 +695,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GeorgeAnnonserIndexRouteImport
       parentRoute: typeof GeorgeAnnonserRoute
     }
+    '/saljare/annons/$id': {
+      id: '/saljare/annons/$id'
+      path: '/saljare/annons/$id'
+      fullPath: '/saljare/annons/$id'
+      preLoaderRoute: typeof SaljareAnnonsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/george/annonser/$id': {
       id: '/george/annonser/$id'
       path: '/$id'
@@ -772,6 +792,7 @@ const rootRouteChildren: RootRouteChildren = {
   GeorgeIndexRoute: GeorgeIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  SaljareAnnonsIdRoute: SaljareAnnonsIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
