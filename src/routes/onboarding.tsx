@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import {
   WireBox,
@@ -10,6 +10,7 @@ import {
   WireTag,
   StatusDot,
 } from "@/components/wire";
+import { getSession, pushAdminAccount, updateSession } from "@/lib/mock-auth";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
