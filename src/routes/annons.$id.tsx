@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation, PageHeader, StatusDot } from "@/components/wire";
+import { useIsAuthed } from "@/hooks/use-session";
 
 export const Route = createFileRoute("/annons/$id")({
   component: ListingDetail,
@@ -53,11 +54,13 @@ const liknande = [
 function StickyCTA({
   scrolled,
   saved,
-  setSaved,
+  onSave,
+  onInterest,
 }: {
   scrolled: boolean;
   saved: boolean;
-  setSaved: (v: boolean) => void;
+  onSave: () => void;
+  onInterest: () => void;
 }) {
   if (!scrolled) return null;
   return (
@@ -69,12 +72,10 @@ function StickyCTA({
           <span className="font-mono text-sm">{listing.pris.toLocaleString("sv-SE")} kr</span>
         </div>
         <div className="flex gap-2">
-          <WireBtn variant="ghost" onClick={() => setSaved(!saved)}>
+          <WireBtn variant="ghost" onClick={onSave}>
             {saved ? "★ Sparad" : "☆ Spara"}
           </WireBtn>
-          <WireBtn to="/annons/$id/intresse" params={{ id: listing.id }}>
-            Anmäl intresse →
-          </WireBtn>
+          <WireBtn onClick={onInterest}>Anmäl intresse →</WireBtn>
         </div>
       </div>
     </div>
@@ -85,12 +86,28 @@ function ListingDetail() {
   const { id } = Route.useParams();
   const [saved, setSaved] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isAuthed = useIsAuthed();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 480);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const gotoLogin = (next: string) =>
+    navigate({ to: "/logga-in", search: { next } });
+
+  const handleInterest = () => {
+    if (isAuthed) navigate({ to: "/annons/$id/intresse", params: { id } });
+    else gotoLogin(`/annons/${id}/intresse`);
+  };
+
+  const handleSave = () => {
+    if (!isAuthed) return gotoLogin(`/annons/${id}`);
+    setSaved((v) => !v);
+  };
+
 
   return (
     <PublicLayout>
@@ -240,10 +257,8 @@ function ListingDetail() {
               ))}
             </ol>
             <div className="flex flex-col gap-2">
-              <WireBtn to="/annons/$id/intresse" params={{ id }}>
-                Anmäl intresse →
-              </WireBtn>
-              <WireBtn variant="secondary" onClick={() => setSaved(!saved)}>
+              <WireBtn onClick={handleInterest}>Anmäl intresse →</WireBtn>
+              <WireBtn variant="secondary" onClick={handleSave}>
                 {saved ? "★ Sparad i favoriter" : "☆ Spara som favorit"}
               </WireBtn>
               <WireBtn variant="ghost" to="/kopare/bevakningar">
@@ -290,7 +305,7 @@ function ListingDetail() {
         </div>
       </div>
 
-      <StickyCTA scrolled={scrolled} saved={saved} setSaved={setSaved} />
+      <StickyCTA scrolled={scrolled} saved={saved} onSave={handleSave} onInterest={handleInterest} />
       <div className="h-20" />
     </PublicLayout>
   );
