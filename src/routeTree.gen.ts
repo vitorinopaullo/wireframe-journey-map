@@ -13,6 +13,7 @@ import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
 import { Route as RegistreraRouteImport } from './routes/registrera'
 import { Route as OversiktRouteImport } from './routes/oversikt'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoggaInRouteImport } from './routes/logga-in'
 import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -35,9 +36,13 @@ import { Route as GeorgeAnnonserRouteImport } from './routes/george.annonser'
 import { Route as GeorgeAffarerRouteImport } from './routes/george.affarer'
 import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
 import { Route as AffarIdRouteImport } from './routes/affar.$id'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as GeorgeAnnonserIndexRouteImport } from './routes/george.annonser.index'
 import { Route as GeorgeAnnonserIdRouteImport } from './routes/george.annonser.$id'
 import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
 const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
   id: '/tillaggstjanster',
@@ -57,6 +62,11 @@ const OversiktRoute = OversiktRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoggaInRoute = LoggaInRouteImport.update({
@@ -169,6 +179,18 @@ const AffarIdRoute = AffarIdRouteImport.update({
   path: '/affar/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const GeorgeAnnonserIndexRoute = GeorgeAnnonserIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -184,16 +206,30 @@ const AnnonsIdIntresseRoute = AnnonsIdIntresseRouteImport.update({
   path: '/intresse',
   getParentRoute: () => AnnonsIdRoute,
 } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/logga-in': typeof LoggaInRoute
+  '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/george/affarer': typeof GeorgeAffarerRoute
@@ -212,6 +248,8 @@ export interface FileRoutesByFullPath {
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
   '/george/': typeof GeorgeIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/george/annonser/': typeof GeorgeAnnonserIndexRoute
@@ -221,10 +259,13 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/logga-in': typeof LoggaInRoute
+  '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/george/affarer': typeof GeorgeAffarerRoute
@@ -242,6 +283,8 @@ export interface FileRoutesByTo {
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
   '/george': typeof GeorgeIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/george/annonser': typeof GeorgeAnnonserIndexRoute
@@ -252,10 +295,13 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/logga-in': typeof LoggaInRoute
+  '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/george/affarer': typeof GeorgeAffarerRoute
@@ -274,6 +320,8 @@ export interface FileRoutesById {
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
   '/george/': typeof GeorgeIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/george/annonser/': typeof GeorgeAnnonserIndexRoute
@@ -285,10 +333,13 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hur-det-funkar'
     | '/logga-in'
+    | '/mcp'
     | '/onboarding'
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/affar/$id'
     | '/annons/$id'
     | '/george/affarer'
@@ -307,6 +358,8 @@ export interface FileRouteTypes {
     | '/saljare/mina-annonser'
     | '/saljare/skapa-annons'
     | '/george/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/annons/$id/intresse'
     | '/george/annonser/$id'
     | '/george/annonser/'
@@ -316,10 +369,13 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hur-det-funkar'
     | '/logga-in'
+    | '/mcp'
     | '/onboarding'
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/affar/$id'
     | '/annons/$id'
     | '/george/affarer'
@@ -337,6 +393,8 @@ export interface FileRouteTypes {
     | '/saljare/mina-annonser'
     | '/saljare/skapa-annons'
     | '/george'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/annons/$id/intresse'
     | '/george/annonser/$id'
     | '/george/annonser'
@@ -346,10 +404,13 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/hur-det-funkar'
     | '/logga-in'
+    | '/mcp'
     | '/onboarding'
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/affar/$id'
     | '/annons/$id'
     | '/george/affarer'
@@ -368,6 +429,8 @@ export interface FileRouteTypes {
     | '/saljare/mina-annonser'
     | '/saljare/skapa-annons'
     | '/george/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/annons/$id/intresse'
     | '/george/annonser/$id'
     | '/george/annonser/'
@@ -378,10 +441,13 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   HurDetFunkarRoute: typeof HurDetFunkarRoute
   LoggaInRoute: typeof LoggaInRoute
+  McpRoute: typeof McpRoute
   OnboardingRoute: typeof OnboardingRoute
   OversiktRoute: typeof OversiktRoute
   RegistreraRoute: typeof RegistreraRoute
   TillaggstjansterRoute: typeof TillaggstjansterRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AffarIdRoute: typeof AffarIdRoute
   AnnonsIdRoute: typeof AnnonsIdRouteWithChildren
   GeorgeAffarerRoute: typeof GeorgeAffarerRoute
@@ -400,6 +466,8 @@ export interface RootRouteChildren {
   SaljareMinaAnnonserRoute: typeof SaljareMinaAnnonserRoute
   SaljareSkapaAnnonsRoute: typeof SaljareSkapaAnnonsRoute
   GeorgeIndexRoute: typeof GeorgeIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -430,6 +498,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/logga-in': {
@@ -586,6 +661,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AffarIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/george/annonser/': {
       id: '/george/annonser/'
       path: '/'
@@ -606,6 +695,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/annons/$id/intresse'
       preLoaderRoute: typeof AnnonsIdIntresseRouteImport
       parentRoute: typeof AnnonsIdRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -641,10 +744,14 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   HurDetFunkarRoute: HurDetFunkarRoute,
   LoggaInRoute: LoggaInRoute,
+  McpRoute: McpRoute,
   OnboardingRoute: OnboardingRoute,
   OversiktRoute: OversiktRoute,
   RegistreraRoute: RegistreraRoute,
   TillaggstjansterRoute: TillaggstjansterRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AffarIdRoute: AffarIdRoute,
   AnnonsIdRoute: AnnonsIdRouteWithChildren,
   GeorgeAffarerRoute: GeorgeAffarerRoute,
@@ -663,6 +770,8 @@ const rootRouteChildren: RootRouteChildren = {
   SaljareMinaAnnonserRoute: SaljareMinaAnnonserRoute,
   SaljareSkapaAnnonsRoute: SaljareSkapaAnnonsRoute,
   GeorgeIndexRoute: GeorgeIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

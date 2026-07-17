@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "sdk_version": "0.23.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://gurupewvmnkuxyybfdll.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "trelink-mcp",
+      "version": "0.1.0",
+      "title": "TreLink"
+    },
+    "tools": [
+      {
+        "name": "whoami",
+        "title": "Vem är jag",
+        "description": "Returnerar den inloggade TreLink-användarens ID, e-post och OAuth-klient. Använd för att verifiera att MCP-anslutningen fungerar och vilken användare den agerar som.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_ads",
+        "title": "Lista mina annonser",
+        "description": "Listar annonser som den inloggade säljaren skickat in till TreLink. OBS: I denna prototyp lagras annonser i webbläsarens localStorage och är inte tillgängliga via MCP — verktyget returnerar en förklarande status och användarens ID.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
