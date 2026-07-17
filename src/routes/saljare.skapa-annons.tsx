@@ -746,9 +746,11 @@ function CreateListing() {
           ) : (
             <WireBtn
               onClick={() => {
+                let itemId = editId ?? "";
                 try {
                   const raw = localStorage.getItem("saljare-annonser") ?? "[]";
                   const list = JSON.parse(raw) as any[];
+                  const now = new Date();
                   const base = {
                     titel: `${activeCat.name} · ${draft.verksamhet || "Nytt objekt"} · ${draft.ort || ""}`.trim(),
                     ort: draft.ort,
@@ -756,25 +758,44 @@ function CreateListing() {
                     cat: draft.cat,
                     status: "Granskas",
                     premium: draft.premium,
-                    skickadAt: new Date().toISOString(),
+                    skickadAt: now.toISOString(),
                     draft,
                   };
                   if (editId) {
                     const idx = list.findIndex((i) => i.id === editId);
-                    if (idx >= 0) list[idx] = { ...list[idx], ...base };
+                    if (idx >= 0) {
+                      const prev = list[idx];
+                      const wf = logEntry(
+                        prev.workflow ?? initialWorkflow(now),
+                        "Säljare",
+                        "Uppdaterade underlaget efter komplettering · ärendet är tillbaka på granskning",
+                      );
+                      list[idx] = { ...prev, ...base, workflow: { ...wf, state: "granskas" } };
+                    }
                   } else {
-                    list.unshift({ id: "n" + Date.now(), views: 0, intresse: 0, ...base });
+                    itemId = "n" + Date.now();
+                    list.unshift({
+                      id: itemId,
+                      views: 0,
+                      intresse: 0,
+                      ...base,
+                      workflow: initialWorkflow(now),
+                    });
                   }
                   localStorage.setItem("saljare-annonser", JSON.stringify(list));
                   if (!editId) localStorage.removeItem(STORAGE_KEY);
                 } catch {}
-                navigate({ to: "/saljare/annons-inskickad" });
+                navigate({
+                  to: "/saljare/annons-inskickad",
+                  search: { id: itemId || undefined } as any,
+                });
               }}
             >
               {editId ? "Skicka uppdaterad annons på granskning →" : "Skicka till TreLink för granskning →"}
             </WireBtn>
 
           )}
+
         </div>
       </div>
     </AppLayout>
