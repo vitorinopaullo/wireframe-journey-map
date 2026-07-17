@@ -410,6 +410,35 @@ function CreateListing() {
                 />
               )}
             </div>
+
+            <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
+              <Annotation>Hyresvärd & BRF</Annotation>
+              <p className="mt-1 text-sm text-muted-foreground">
+                TreLink behöver kontaktuppgifter till hyresvärden för att få godkännande av överlåtelse.
+                Vid BRF anger du kontaktpersonen i föreningen.
+              </p>
+              <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+                <WireFieldEditable
+                  label="Hyresvärdens e-post *"
+                  value={draft.hyresvardEmail}
+                  onChange={(v) => set("hyresvardEmail", v)}
+                  placeholder="info@fastighetsbolaget.se"
+                />
+                <WireFieldEditable
+                  label="Hyresvärdens telefon *"
+                  value={draft.hyresvardTel}
+                  onChange={(v) => set("hyresvardTel", v)}
+                  placeholder="+46 8 123 45 67"
+                />
+                <WireFieldEditable
+                  label="BRF-kontaktperson"
+                  value={draft.brfKontakt}
+                  onChange={(v) => set("brfKontakt", v)}
+                  placeholder="För- och efternamn på kontaktperson i föreningen"
+                  hint="Frivilligt — fylls i om objektet ligger i en bostadsrättsförening"
+                />
+              </div>
+            </div>
           </WireBox>
 
           <WireBox label="Säljande info — hjälper TreLink skriva annonsen" className="mb-6">
