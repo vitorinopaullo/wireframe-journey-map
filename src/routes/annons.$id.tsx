@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation, PageHeader, StatusDot } from "@/components/wire";
+import { useIsAuthed } from "@/hooks/use-session";
 
 export const Route = createFileRoute("/annons/$id")({
   component: ListingDetail,
