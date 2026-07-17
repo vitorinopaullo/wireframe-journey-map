@@ -131,12 +131,20 @@ function Row({ k, v }: { k: string; v: string }) {
 function InterestWizard() {
   const { id } = Route.useParams();
   const nav = useNavigate();
+  const isAuthed = useIsAuthed();
   const STORAGE_KEY = `kopare-intresse-${id}`;
+
+  useEffect(() => {
+    if (isAuthed === false) {
+      nav({ to: "/logga-in", search: { next: `/annons/${id}/intresse` } });
+    }
+  }, [isAuthed, id, nav]);
 
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<Draft>(TOM);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [skickat, setSkickat] = useState(false);
+
 
   /* ladda utkast */
   useEffect(() => {
