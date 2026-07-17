@@ -118,9 +118,26 @@ function SellerAnnonsDetail() {
     refresh();
   };
 
-  const openSignicat = () => {
-    toast("Signicat-integration är inte aktiv i demot");
+  const openSignicat = () => setSignicatOpen(true);
+
+  const completeSigning = () => {
+    patchAnnons(id, (it) => {
+      const now = new Date().toISOString();
+      let nwf: WorkflowData = {
+        ...it.workflow,
+        state: "hyresvard-notifiering",
+        avtalSignedAt: now,
+        hyresvardNotifieradAt: now,
+      };
+      nwf = logEntry(nwf, "Säljare", "Uppdragsavtal signerat");
+      nwf = logEntry(nwf, "TreLink", "Informationsmejl skickat till hyresvärden");
+      return { ...it, workflow: nwf };
+    });
+    setSignicatOpen(false);
+    toast("Uppdragsavtalet är signerat");
+    refresh();
   };
+
 
   const approveDraft = () => {
     patchAnnons(id, (it) => {
