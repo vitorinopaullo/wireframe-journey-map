@@ -221,6 +221,9 @@ function CreateListing() {
     if (!draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
     if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
       errs[1].push("Org.nr i format 556xxx-xxxx.");
+    if (!draft.hyresvardEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.hyresvardEmail))
+      errs[1].push("Ange hyresvärdens e-postadress.");
+    if (!draft.hyresvardTel) errs[1].push("Ange hyresvärdens telefonnummer.");
     if (!draft.usp || draft.usp.length < 20)
       errs[1].push("Beskriv vad som gör verksamheten unik (minst 20 tecken).");
     if (!draft.kundunderlag) errs[1].push("Beskriv kundunderlaget.");
