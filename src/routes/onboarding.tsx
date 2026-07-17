@@ -209,27 +209,56 @@ function RoleCard({
 
 function Step2({
   role,
+  bankid,
   onBack,
   onFinish,
 }: {
   role: "kopare" | "saljare";
+  bankid: { fornamn: string; efternamn: string; personnr: string };
   onBack: () => void;
-  onFinish: () => void;
+  onFinish: (profil: Record<string, string>) => void;
 }) {
+  const [telefon, setTelefon] = useState("");
+  const [epost, setEpost] = useState("");
+  const [adress, setAdress] = useState("");
+  const [bolag, setBolag] = useState("");
+  const [orgnr, setOrgnr] = useState("");
+  const [presentation, setPresentation] = useState("");
+
+  const kanFortsatta =
+    telefon.trim() && epost.trim() && (role === "kopare" || adress.trim());
+
+  function submit() {
+    if (!kanFortsatta) return;
+    onFinish({
+      fornamn: bankid.fornamn,
+      efternamn: bankid.efternamn,
+      personnr: bankid.personnr,
+      telefon,
+      epost,
+      ...(role === "saljare" && { adress }),
+      ...(bolag && { bolag }),
+      ...(orgnr && { orgnr }),
+      ...(presentation && { presentation }),
+    });
+  }
+
   return (
     <>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <WireBox label={role === "kopare" ? "Köparuppgifter" : "Säljaruppgifter"}>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <WireField label="Förnamn *" placeholder="Hämtat från BankID" hint="Ej redigerbart" />
-              <WireField label="Efternamn *" placeholder="Hämtat från BankID" hint="Ej redigerbart" />
-              <WireField label="Telefon *" placeholder="+46 70 123 45 67" />
-              <WireField label="E-post *" placeholder="namn@exempel.se" />
+              <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
+              <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
+              <InputField label="Telefon *" value={telefon} onChange={setTelefon} placeholder="+46 70 123 45 67" />
+              <InputField label="E-post *" value={epost} onChange={setEpost} placeholder="namn@exempel.se" type="email" />
               {role === "saljare" && (
                 <div className="md:col-span-2">
-                  <WireField
+                  <InputField
                     label="Adress *"
+                    value={adress}
+                    onChange={setAdress}
                     placeholder="Storgatan 1, 113 27 Stockholm"
                     hint="Krävs för fakturering vid genomförd affär"
                   />
@@ -245,12 +274,15 @@ function Step2({
                 {role === "kopare" && <WireTag>Krävs innan köp</WireTag>}
               </div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <WireField label="Bolag" placeholder="Anna Restauranger AB" />
-                <WireField label="Org.nr" placeholder="556677-8899" />
+                <InputField label="Bolag" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
+                <InputField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
                 <div className="md:col-span-2">
-                  <WireField
+                  <InputField
                     label="Företagspresentation"
+                    value={presentation}
+                    onChange={setPresentation}
                     placeholder="Kort beskrivning av bolag, ägare och bakgrund…"
+                    multiline
                     hint={
                       role === "kopare"
                         ? "Frivilligt nu — hjälper säljare att välja dig. Måste vara på plats innan du kan slutföra ett köp."
@@ -264,6 +296,13 @@ function Step2({
         </div>
 
         <aside className="space-y-4">
+          <WireBox label="Skickas till TreLink admin" variant="dashed">
+            <p className="text-sm text-muted-foreground">
+              När du sparar skickas ditt BankID-verifierade namn, personnummer och dessa uppgifter till TreLinks admin
+              för granskning av nytt konto.
+            </p>
+          </WireBox>
+
           <WireBox label="Vad ser andra?" variant="ghost">
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>· Motpart ser bara det som behövs — aldrig personnummer eller kontaktuppgifter innan match.</li>
@@ -275,31 +314,80 @@ function Step2({
           {role === "kopare" && (
             <WireBox label="Varför frivilligt?" variant="dashed">
               <p className="text-sm text-muted-foreground">
-                Många köpare startar bolag <em>i samband</em> med köpet. Du kan
-                skapa konto och börja titta direkt — men innan handpenning och
-                signering måste bolag och org.nr finnas på plats.
+                Många köpare startar bolag <em>i samband</em> med köpet. Du kan skapa konto och börja titta direkt —
+                men innan handpenning och signering måste bolag och org.nr finnas på plats.
               </p>
             </WireBox>
           )}
-
-          <WireBox variant="dashed">
-            <Annotation>Nästa steg</Annotation>
-            <p className="mt-2 text-sm text-muted-foreground">
-              När du sparat landar du i din{" "}
-              <strong>{role === "saljare" ? "säljarpanel" : "köparpanel"}</strong>.
-              Byt läge när som helst via växlaren uppe till höger.
-            </p>
-          </WireBox>
         </aside>
       </div>
 
       <NavBar
         secondary={<WireBtn variant="ghost" onClick={onBack}>← Tillbaka</WireBtn>}
-        primary={<WireBtn onClick={onFinish}>Spara & gå till min panel →</WireBtn>}
+        primary={
+          <WireBtn variant={kanFortsatta ? "primary" : "ghost"} onClick={kanFortsatta ? submit : undefined}>
+            Spara & skicka till TreLink →
+          </WireBtn>
+        }
       />
     </>
   );
 }
+
+function InputField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  hint,
+  multiline,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  type?: string;
+  hint?: string;
+  multiline?: boolean;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
+      {multiline ? (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          rows={3}
+          className="w-full border border-foreground/40 bg-background px-3 py-2 text-sm"
+        />
+      ) : (
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+        />
+      )}
+      {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
+    </label>
+  );
+}
+
+function ReadonlyField({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
+      <div className="flex h-10 items-center border border-dashed border-muted-foreground/50 bg-muted/20 px-3 text-sm">
+        {value}
+      </div>
+      {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
+    </label>
+  );
+}
+
 
 function NavBar({
   secondary,
