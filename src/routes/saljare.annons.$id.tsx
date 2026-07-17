@@ -454,7 +454,73 @@ function SellerAnnonsDetail() {
           </WireBox>
         </div>
       </div>
+
+      {showLandlordUpdate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md border border-foreground/20 bg-background p-6">
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              Uppdatera hyresvärdens e-post
+            </div>
+            <h3 className="mb-3 text-base font-semibold">
+              Är du säker?
+            </h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Om du uppdaterar e-postadressen skickas ett nytt informationsmejl till den nya adressen.
+            </p>
+            <label className="mb-4 block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Ny e-postadress
+              </span>
+              <input
+                type="email"
+                value={newLandlordEmail}
+                onChange={(e) => setNewLandlordEmail(e.target.value)}
+                placeholder={item.draft?.hyresvardEmail || "info@fastighetsbolaget.se"}
+                className="block h-10 w-full border border-dashed border-muted-foreground/50 bg-muted/20 px-3 text-sm focus:border-foreground focus:outline-none"
+              />
+            </label>
+            <div className="flex justify-end gap-2">
+              <WireBtn
+                variant="secondary"
+                onClick={() => {
+                  setShowLandlordUpdate(false);
+                  setNewLandlordEmail("");
+                }}
+              >
+                Avbryt
+              </WireBtn>
+              <WireBtn
+                onClick={() => {
+                  const email = newLandlordEmail.trim();
+                  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                  if (!valid) {
+                    toast("Ange en giltig e-postadress");
+                    return;
+                  }
+                  patchAnnons(id, (it) => {
+                    let nwf: WorkflowData = { ...it.workflow };
+                    nwf = logEntry(nwf, "TreLink", `Nytt informationsmejl skickat till ${email}`);
+                    nwf.hyresvardNotifieradAt = new Date().toISOString();
+                    return {
+                      ...it,
+                      draft: { ...(it.draft ?? {}), hyresvardEmail: email },
+                      workflow: nwf,
+                    };
+                  });
+                  toast(`Nytt informationsmejl skickat till ${email}`);
+                  setShowLandlordUpdate(false);
+                  setNewLandlordEmail("");
+                  refresh();
+                }}
+              >
+                Uppdatera och skicka om
+              </WireBtn>
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
+
   );
 }
 
