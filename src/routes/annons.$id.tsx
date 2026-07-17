@@ -86,12 +86,28 @@ function ListingDetail() {
   const { id } = Route.useParams();
   const [saved, setSaved] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isAuthed = useIsAuthed();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 480);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const gotoLogin = (next: string) =>
+    navigate({ to: "/logga-in", search: { next } });
+
+  const handleInterest = () => {
+    if (isAuthed) navigate({ to: "/annons/$id/intresse", params: { id } });
+    else gotoLogin(`/annons/${id}/intresse`);
+  };
+
+  const handleSave = () => {
+    if (!isAuthed) return gotoLogin(`/annons/${id}`);
+    setSaved((v) => !v);
+  };
+
 
   return (
     <PublicLayout>
