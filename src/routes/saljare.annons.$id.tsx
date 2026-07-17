@@ -298,6 +298,106 @@ function SellerAnnonsDetail() {
             </>
           )}
 
+          {/* STEP 1b · Komplettering krävs */}
+          {st === "komplettering" && (
+            <>
+              <WireBox label="Status">
+                <div className="text-sm">↩ Komplettering begärd av Trelink.</div>
+                <Annotation>
+                  <span className="mt-2 block">
+                    ÅTGÄRDA NEDANSTÅENDE OCH SKICKA IN PÅ NYTT. DU KAN FORTFARANDE INTE REDIGERA ANNONSTEXTEN.
+                  </span>
+                </Annotation>
+              </WireBox>
+
+              <WireBox label="Meddelande från Trelink">
+                <div className="border-l-2 border-amber-500/70 bg-amber-50/60 px-4 py-3 dark:bg-amber-500/5">
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {new Date().toLocaleDateString("sv-SE")} · TRELINK
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed">
+                    Vi behöver ytterligare underlag för att kunna godkänna objektet. Vänligen ladda upp:
+                    senaste hyresavier (minst 3 månader) samt ett uppdaterat resultatdokument för
+                    innevarande år.
+                  </p>
+                </div>
+              </WireBox>
+
+              <WireBox label="Ladda upp komplettering">
+                <label
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setDragOver(false);
+                    const names = Array.from(e.dataTransfer.files).map((f) => f.name);
+                    setKompletteringFiles((prev) => [...prev, ...names]);
+                  }}
+                  className={`flex cursor-pointer flex-col items-center justify-center border-2 border-dashed p-8 text-center text-sm transition ${
+                    dragOver
+                      ? "border-foreground bg-muted/50"
+                      : "border-muted-foreground/40 bg-muted/20 hover:border-foreground/60"
+                  }`}
+                >
+                  <input
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      const names = Array.from(e.target.files ?? []).map((f) => f.name);
+                      setKompletteringFiles((prev) => [...prev, ...names]);
+                    }}
+                  />
+                  <div className="text-2xl">⬆</div>
+                  <div className="mt-2 font-medium">Släpp filer här eller klicka för att välja</div>
+                  <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    PDF, Word, Excel · Max 20 MB per fil
+                  </div>
+                </label>
+
+                {kompletteringFiles.length > 0 && (
+                  <ul className="mt-3 space-y-1 text-sm">
+                    {kompletteringFiles.map((f, i) => (
+                      <li key={i} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 py-1">
+                        <span>📎 {f}</span>
+                        <button
+                          onClick={() =>
+                            setKompletteringFiles((prev) => prev.filter((_, j) => j !== i))
+                          }
+                          className="text-xs text-muted-foreground hover:text-foreground"
+                        >
+                          Ta bort
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {Array.isArray(item.draft?.files) && item.draft.files.length > 0 && (
+                  <div className="mt-5">
+                    <Annotation>Tidigare inskickade dokument</Annotation>
+                    <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                      {item.draft.files.map((f: any, i: number) => (
+                        <li key={i}>📄 {typeof f === "string" ? f : f.name ?? "Dokument"}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="mt-5">
+                  <WireBtn className="w-full" onClick={submitKomplettering}>
+                    Skicka in komplettering
+                  </WireBtn>
+                </div>
+              </WireBox>
+            </>
+          )}
+
+
+
           {/* STEP 2 · Uppdragsavtal */}
           {st === "avtal-vantar-signering" && (
             <>
