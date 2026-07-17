@@ -397,6 +397,42 @@ function CreateListing() {
                 placeholder="Götgatan 12"
                 hint="Exakt adress visas inte publikt — TreLink använder området i annonsen."
               />
+              {(() => {
+                const email = draft.hyresvardEmail;
+                const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                const showError = email.length === 0 || !emailValid;
+                const errorMsg = email.length === 0
+                  ? "Hyresvärdens e-postadress krävs för att gå vidare"
+                  : "Ange en giltig e-postadress (t.ex. namn@företag.se)";
+                return (
+                  <label className="block">
+                    <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      HYRESVÄRD E-POST <span className="text-red-600">*</span>
+                    </span>
+                    <input
+                      type="email"
+                      required
+                      aria-required="true"
+                      aria-invalid={showError}
+                      value={email}
+                      onChange={(e) => set("hyresvardEmail", e.target.value)}
+                      placeholder="info@fastighetsbolaget.se"
+                      className={`block h-10 w-full border border-dashed bg-muted/20 px-3 text-sm focus:outline-none ${
+                        showError
+                          ? "border-red-600 focus:border-red-700"
+                          : "border-muted-foreground/50 focus:border-foreground"
+                      }`}
+                    />
+                    {showError && (
+                      <span className="mt-1 block text-[11px] text-red-600">{errorMsg}</span>
+                    )}
+                    <span className="mt-1 block text-[11px] text-muted-foreground">
+                      Trelink skickar ett informationsmejl till hyresvärden när uppdragsavtalet är signerat. Detta krävs för att processen ska kunna starta.
+                    </span>
+                  </label>
+                );
+              })()}
+
               <WireFieldEditable
                 label="Yta (m²) *"
                 value={draft.yta}
@@ -428,17 +464,12 @@ function CreateListing() {
               </p>
               <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <WireFieldEditable
-                  label="Hyresvärdens e-post *"
-                  value={draft.hyresvardEmail}
-                  onChange={(v) => set("hyresvardEmail", v)}
-                  placeholder="info@fastighetsbolaget.se"
-                />
-                <WireFieldEditable
                   label="Hyresvärdens telefon *"
                   value={draft.hyresvardTel}
                   onChange={(v) => set("hyresvardTel", v)}
                   placeholder="+46 8 123 45 67"
                 />
+
                 <WireFieldEditable
                   label="BRF-kontaktperson"
                   value={draft.brfKontakt}

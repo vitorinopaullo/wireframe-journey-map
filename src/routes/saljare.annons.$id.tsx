@@ -48,6 +48,9 @@ function SellerAnnonsDetail() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
   const [signicatOpen, setSignicatOpen] = useState(false);
+  const [showLandlordUpdate, setShowLandlordUpdate] = useState(false);
+  const [newLandlordEmail, setNewLandlordEmail] = useState("");
+
 
 
   useEffect(() => {
@@ -300,15 +303,21 @@ function SellerAnnonsDetail() {
                 </p>
 
                 <div className="mt-4 border-b border-dashed border-muted-foreground/30 pb-2">
-                  <Annotation>Hyresvärd e-post</Annotation>
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    HYRESVÄRD E-POST
+                  </div>
                   <div className="mt-1 text-sm">{item.draft?.hyresvardEmail || "—"}</div>
+                  <div className="mt-1 text-[11px] text-muted-foreground">
+                    Informationsmejl skickades till denna adress när uppdragsavtalet signerades.
+                  </div>
                 </div>
                 <button
-                  onClick={() => toast("Uppdatering av hyresvärdens e-post är inte aktiv i demot")}
+                  onClick={() => setShowLandlordUpdate(true)}
                   className="mt-2 text-xs text-muted-foreground underline hover:text-foreground"
                 >
                   Uppdatera hyresvärdens e-post
                 </button>
+
               </WireBox>
             </>
           )}
@@ -445,7 +454,73 @@ function SellerAnnonsDetail() {
           </WireBox>
         </div>
       </div>
+
+      {showLandlordUpdate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md border border-foreground/20 bg-background p-6">
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              Uppdatera hyresvärdens e-post
+            </div>
+            <h3 className="mb-3 text-base font-semibold">
+              Är du säker?
+            </h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Om du uppdaterar e-postadressen skickas ett nytt informationsmejl till den nya adressen.
+            </p>
+            <label className="mb-4 block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Ny e-postadress
+              </span>
+              <input
+                type="email"
+                value={newLandlordEmail}
+                onChange={(e) => setNewLandlordEmail(e.target.value)}
+                placeholder={item.draft?.hyresvardEmail || "info@fastighetsbolaget.se"}
+                className="block h-10 w-full border border-dashed border-muted-foreground/50 bg-muted/20 px-3 text-sm focus:border-foreground focus:outline-none"
+              />
+            </label>
+            <div className="flex justify-end gap-2">
+              <WireBtn
+                variant="secondary"
+                onClick={() => {
+                  setShowLandlordUpdate(false);
+                  setNewLandlordEmail("");
+                }}
+              >
+                Avbryt
+              </WireBtn>
+              <WireBtn
+                onClick={() => {
+                  const email = newLandlordEmail.trim();
+                  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                  if (!valid) {
+                    toast("Ange en giltig e-postadress");
+                    return;
+                  }
+                  patchAnnons(id, (it) => {
+                    let nwf: WorkflowData = { ...it.workflow };
+                    nwf = logEntry(nwf, "TreLink", `Nytt informationsmejl skickat till ${email}`);
+                    nwf.hyresvardNotifieradAt = new Date().toISOString();
+                    return {
+                      ...it,
+                      draft: { ...(it.draft ?? {}), hyresvardEmail: email },
+                      workflow: nwf,
+                    };
+                  });
+                  toast(`Nytt informationsmejl skickat till ${email}`);
+                  setShowLandlordUpdate(false);
+                  setNewLandlordEmail("");
+                  refresh();
+                }}
+              >
+                Uppdatera och skicka om
+              </WireBtn>
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
+
   );
 }
 
