@@ -124,7 +124,12 @@ function SellerAnnonsDetail() {
 
       return {
         ...it,
-        status: target === "publicerad" ? "Publicerad" : "Granskas",
+        status:
+          target === "publicerad"
+            ? "Publicerad"
+            : target === "komplettering"
+            ? "Komplettering krävs"
+            : "Granskas",
         workflow: nwf,
       };
     });
