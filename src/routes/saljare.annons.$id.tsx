@@ -277,6 +277,11 @@ function SellerAnnonsDetail() {
             );
           })}
         </div>
+        {st === "komplettering" && (
+          <div className="mt-3 border-t border-dashed border-amber-500/40 pt-2 text-xs font-medium text-amber-700 dark:text-amber-500">
+            ↩ Komplettering begärd — åtgärda och skicka in på nytt
+          </div>
+        )}
       </WireBox>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
