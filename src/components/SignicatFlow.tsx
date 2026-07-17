@@ -86,16 +86,23 @@ function DocViewer({
   blurred: boolean;
 }) {
   return (
-    <div className={`min-h-screen bg-white ${blurred ? "blur-sm pointer-events-none" : ""}`}>
+    <div
+      className={`min-h-screen ${blurred ? "blur-sm pointer-events-none" : ""}`}
+      style={{ backgroundColor: "#FAFAFA", fontFamily: "Inter, sans-serif" }}
+    >
       {/* Top bar */}
-      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-3">
-        <div className="text-sm text-gray-600">100%</div>
-        <div className="text-sm text-gray-700">🌐 English</div>
+      <div
+        className="flex items-center justify-between bg-white px-6 py-3"
+        style={{ borderBottom: "1px solid #E7E5E4" }}
+      >
+        <div className="text-sm text-black">100%</div>
+        <div className="text-sm text-black">🌐 English</div>
         <div className="flex items-center gap-3">
-          <button className="text-sm text-gray-700">More actions ▾</button>
+          <button className="text-sm text-black">More actions ▾</button>
           <button
             onClick={onSign}
-            className="rounded bg-[#4444FF] px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+            className="px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+            style={{ backgroundColor: "#0F0F0F", borderRadius: "3px" }}
           >
             Sign documents
           </button>
@@ -104,56 +111,34 @@ function DocViewer({
 
       <div className="mx-auto flex max-w-6xl gap-6 p-6">
         {/* Document */}
-        <div className="flex-1 bg-[#f7f7f7] p-8">
-          <div className="mx-auto max-w-2xl bg-white p-10 shadow-sm">
-            <h1 className="mb-6 text-2xl font-bold text-gray-900">Uppdragsavtal</h1>
-
-            <Section title="Förmedlare">
-              <p>Trelink AB</p>
-              <p className="text-gray-500">[Förmedlarens adress fylls i före produktion]</p>
-            </Section>
-
-            <Section title="Uppdragsgivare">
-              <p>{seller.bolag || "—"}</p>
-              <p>Org.nr: {seller.orgnr || "—"}</p>
-              <p>{seller.adress || "—"}</p>
-            </Section>
-
-            <Section title="Förmedlingsuppdrag">
-              <p>
-                Uppdragsgivaren är hyresgäst i nedanstående Förmedlingsobjekt. Uppdragsgivaren ger
-                Förmedlaren med ensamrätt i uppdrag att överlåta nedanstående Förmedlingsobjekt.
-              </p>
-            </Section>
-
-            <Section title="Förmedlingsobjekt">
-              <p>{seller.objektAdress || seller.adress || "—"}</p>
-            </Section>
-
-            <Section title="Utgångspris">
-              <p>{seller.utgangspris || "Enligt överenskommelse"}</p>
-            </Section>
-
-            <Section title="Avtalstid">
-              <p>
-                Detta Uppdragsavtal är förenat med ensamrätt under en tid av tre (3) månader från
-                och med att båda parter har undertecknat detta Uppdragsavtal.
-              </p>
-            </Section>
+        <div className="flex-1">
+          <DocumentPage seller={seller} />
+          {/* Page break */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1" style={{ backgroundColor: "#E7E5E4" }} />
+            <span className="text-[10px] uppercase tracking-widest text-black/60">Sida 2</span>
+            <div className="h-px flex-1" style={{ backgroundColor: "#E7E5E4" }} />
           </div>
+          <DocumentPage2 />
         </div>
 
         {/* Sidebar */}
         <aside className="w-64 shrink-0">
-          <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Documents
-          </div>
-          <div className="mt-3 border border-gray-200 bg-white p-4">
+          <div className="text-xs font-semibold uppercase tracking-wider text-black">Documents</div>
+          <div
+            className="mt-3 bg-white p-4"
+            style={{ border: "1px solid #E7E5E4", borderRadius: "3px" }}
+          >
             <div className="flex items-center justify-between">
-              <div className="font-medium text-gray-900">Document</div>
-              <span className="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700">Reading</span>
+              <div className="font-medium text-black">Uppdragsavtal</div>
+              <span
+                className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-black"
+                style={{ border: "1px solid #0F0F0F", borderRadius: "3px" }}
+              >
+                Reading
+              </span>
             </div>
-            <div className="mt-2 text-xs text-gray-500">2 pages ›</div>
+            <div className="mt-2 text-xs text-black/60">2 sidor ›</div>
           </div>
         </aside>
       </div>
@@ -161,11 +146,179 @@ function DocViewer({
   );
 }
 
+function DocumentPage({ seller }: { seller: SignicatSellerInfo }) {
+  return (
+    <div
+      className="mx-auto max-w-2xl bg-white p-10"
+      style={{ border: "1px solid #E7E5E4", borderRadius: "3px" }}
+    >
+      <div className="mb-8 text-xl font-bold text-black">⬡ TreLink</div>
+
+      <h1 className="mb-8 text-2xl font-bold text-black">Uppdragsavtal</h1>
+
+      <Section title="Förmedlare">
+        <p>George Kashou</p>
+        <p>Trelink AB</p>
+      </Section>
+
+      <Section title="Uppdragsgivare">
+        <p>{seller.bolag || "—"}</p>
+        <p>Org.nr: {seller.orgnr || "—"}</p>
+        <p>{seller.adress || "—"}</p>
+      </Section>
+
+      <Section title="Förmedlingsuppdrag">
+        <p>
+          Uppdragsgivaren är hyresgäst i nedanstående Förmedlingsobjekt. Uppdragsgivaren ger
+          Förmedlaren med ensamrätt i uppdrag att överlåta nedanstående Förmedlingsobjekt.
+        </p>
+      </Section>
+
+      <Section title="Förmedlingsobjekt">
+        <p>Hyresrätten till lokalen {seller.objektAdress || seller.adress || "—"}.</p>
+      </Section>
+
+      <Section title="Utgångspris">
+        <p>
+          För förmedlingsarbetet gäller ett utgångspris för lokalen om{" "}
+          {seller.utgangspris || "kronor"}, vilket uppdragsgivaren ej behöver acceptera och som kan
+          komma att överskridas eller underskridas efter överenskommelse med uppdragsgivaren.
+        </p>
+      </Section>
+
+      <Section title="Avtalstid">
+        <p>
+          Detta Uppdragsavtal är förenat med ensamrätt under en tid av tre (3) månader från och med
+          att båda parter har undertecknat detta Uppdragsavtal.
+        </p>
+        <p>
+          Om inte uppsägning sker senast tio (10) dagar före Avtalstidens utgång förlängs
+          Uppdragsavtalet på oförändrade villkor med en (1) månad åt gången.
+        </p>
+        <p>
+          Om Uppdragsgivaren ensidigt häver detta Uppdragsavtal under dess löptid, utan Mäklarens
+          medgivande äger Mäklaren rätt till full Förmedlingsprovision.
+        </p>
+      </Section>
+
+      <Section title="Förmedlingsprovision">
+        <p>Förmedlingsprovision till Mäklaren utgår med 10% av årshyran, dock lägst 54 900 kr.</p>
+        <p>Mervärdeskatt tillkommer på ovanstående Förmedlingsprovision.</p>
+        <p>
+          I det fall uppdragsavtalet har löpt ut gäller under en period om sex månader att full rätt
+          till förmedlingsprovision föreligger, i det fall uppdragsgivaren själv eller på annat sätt
+          finner en hyresgäst bland de intressenter som Mäklaren har haft dokumenterad kommunikation
+          med gällande förmedlingsuppdraget.
+        </p>
+        <p>
+          Skulle uppdragsgivaren under avtalstiden själv eller på annat sätt finna ny hyresgäst till
+          förmedlingsobjektet har Mäklaren rätt till full förmedlingsprovision enligt detta avtal.
+        </p>
+        <p>
+          Mäklarens rätt till förmedlingsprovision påverkas ej i det fall överlåtelsen inte sker på
+          grund av Uppdragsgivaren eller dennes motparts avtalsbrott.
+        </p>
+      </Section>
+
+      <div className="mt-10 text-center text-[11px] text-black/50">Trelink AB · GK25733 · 1/2</div>
+    </div>
+  );
+}
+
+function DocumentPage2() {
+  return (
+    <div
+      className="mx-auto max-w-2xl bg-white p-10"
+      style={{ border: "1px solid #E7E5E4", borderRadius: "3px" }}
+    >
+      <Section title="Rätt till Förmedlingsprovision">
+        <p>
+          Rätt till Förmedlingsprovision föreligger om bindande avtal om överlåtelse av
+          Förmedlingsobjektet träffats mellan Uppdragsgivaren, Hyresvärd och Ny hyresgäst.
+        </p>
+        <p>
+          Förmedlingsprovision skall även betalas i de fall Uppdragsgivaren väljer att inte ingå
+          avtal om överlåtelse av Förmedlingsobjektet med Spekulanten, trots att denne erbjuder en
+          köpeskilling om minst det mellan Uppdragsgivaren och Mäklarens överenskomna Acceptpriset
+          för Förmedlingsobjektet.
+        </p>
+        <p>
+          Förmedlingsprovision skall i sådant fall utgöra 10% av årshyran, dock lägst 54 900 kr ex
+          moms av överenskommet acceptpris.
+        </p>
+      </Section>
+
+      <Section title="Förfallodag">
+        <p>
+          Överenskommen provision är förfallen till betalning vid anfordran då rätt till provision
+          föreligger och så snart bindande avtal eller annat därmed jämförligt avtal utväxlats
+          mellan parterna.
+        </p>
+      </Section>
+
+      <Section title="Övrigt">
+        <p>
+          Uppdragsgivaren skall hålla Förmedlingsobjektet med förrådsutrymmen tillgängliga för
+          visningar, besiktning, värdering etc. som utförs av eller på uppdrag av Mäklaren.
+        </p>
+        <p>
+          Uppdragsgivaren skall tillhandahålla korrekt information till Mäklaren för upprättande av
+          beskrivning, prospekt etc. av Förmedlingsobjektet.
+        </p>
+        <p>
+          Om Mäklaren på grund av semester, sjukdom eller av annan orsak är förhindrad att utföra
+          del av uppdraget, godkänner Uppdragsgivaren att en av Mäklaren utsedd kollega har rätt att
+          utföra den aktuella delen av uppdraget.
+        </p>
+        <p>
+          Uppdragsgivaren skall löpande hålla Mäklaren informerad om väsentliga händelser för
+          Förmedlingsuppdragets genomförande.
+        </p>
+        <p>Textmanus och den bildproduktion som Mäklaren låter ta fram äger Trelink AB rättigheterna till.</p>
+        <p>
+          Mäklaren ansvarar för direkt eller indirekt skada som orsakas av Mäklaren, om denne har
+          varit vårdslös vid utförande av sitt uppdrag. Mäklarens skadeståndsansvar är dock alltid
+          begränsat till högst 50 000 kronor.
+        </p>
+      </Section>
+
+      <Section title="Tvist">
+        <p>
+          Tvist med anledning av detta Uppdragsavtal skall avgöras i allmän domstol med Stockholms
+          tingsrätt som första instans.
+        </p>
+      </Section>
+
+      <Section title="Utväxling av Uppdragsavtal">
+        <p>Detta Uppdragsavtal är upprättat i två exemplar varav parterna tagit var sitt.</p>
+      </Section>
+
+      <div className="mt-10 grid grid-cols-2 gap-8 text-sm text-black">
+        <div>
+          <div className="mb-10 border-b border-black/30 pb-1">&nbsp;</div>
+          <div className="text-xs text-black/70">Uppdragsgivarens underskrift</div>
+          <div className="mt-6 mb-10 border-b border-black/30 pb-1">&nbsp;</div>
+          <div className="text-xs text-black/70">Ort och datum</div>
+        </div>
+        <div>
+          <div className="mb-2 text-xs text-black/70">Ovanstående uppdrag bekräftas av</div>
+          <div className="mb-1 font-medium">Stockholm 2026-07-16</div>
+          <div className="mb-10 text-xs text-black/70">Ort och datum</div>
+          <div className="mb-1 font-medium">Fastighetskonsult George Kashou</div>
+          <div className="text-xs text-black/70">Mäklarens underskrift</div>
+        </div>
+      </div>
+
+      <div className="mt-10 text-center text-[11px] text-black/50">Trelink AB · GK25733 · 2/2</div>
+    </div>
+  );
+}
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-5">
-      <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-gray-700">{title}</h2>
-      <div className="text-sm leading-relaxed text-gray-800">{children}</div>
+      <h2 className="mb-2 text-sm font-bold text-black">{title}</h2>
+      <div className="space-y-2 text-sm leading-relaxed text-black">{children}</div>
     </div>
   );
 }
