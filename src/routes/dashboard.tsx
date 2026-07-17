@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
+import { ContractExpiryBanner } from "@/components/ContractExpiryBanner";
 
 const searchSchema = z.object({
   mode: z.enum(["kopare", "saljare"]).catch("kopare").default("kopare"),
