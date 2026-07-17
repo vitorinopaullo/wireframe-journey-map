@@ -53,6 +53,8 @@ function SellerAnnonsDetail() {
   const [newLandlordEmail, setNewLandlordEmail] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
+  const [kompletteringFiles, setKompletteringFiles] = useState<string[]>([]);
+  const [dragOver, setDragOver] = useState(false);
 
 
 
@@ -88,6 +90,11 @@ function SellerAnnonsDetail() {
       // Seed contextual timeline entries per target if not already present.
       const hasText = (t: string) => nwf.timeline.some((l) => l.text === t);
 
+      if (target === "komplettering") {
+        const msg = "Komplettering begärd: Vi behöver ytterligare underlag för att kunna godkänna objektet.";
+        if (!hasText(msg)) nwf = logEntry(nwf, "TreLink", msg);
+        nwf.komplettering = nwf.komplettering ?? { message: msg, at: new Date().toISOString() };
+      }
       if (target === "avtal-vantar-signering") {
         const msg = "Objektet godkänt — uppdragsavtal skickat för signering";
         if (!hasText(msg)) nwf = logEntry(nwf, "TreLink", msg);
@@ -117,7 +124,12 @@ function SellerAnnonsDetail() {
 
       return {
         ...it,
-        status: target === "publicerad" ? "Publicerad" : "Granskas",
+        status:
+          target === "publicerad"
+            ? "Publicerad"
+            : target === "komplettering"
+            ? "Komplettering krävs"
+            : "Granskas",
         workflow: nwf,
       };
     });
@@ -174,6 +186,17 @@ function SellerAnnonsDetail() {
     refresh();
   };
 
+  const submitKomplettering = () => {
+    patchAnnons(id, (it) => {
+      let nwf: WorkflowData = { ...it.workflow, state: "granskas" };
+      nwf = logEntry(nwf, "Säljare", "Komplettering inskickad");
+      return { ...it, status: "Granskas", workflow: nwf };
+    });
+    toast("Kompletteringen har skickats till Trelink");
+    setKompletteringFiles([]);
+    refresh();
+  };
+
   const draftText =
     "Välskött kontorslokal på 80 m² i centrala Stockholm. Lokalen är fullt utrustad och har en flexibel hyrestid. Passar verksamhet inom administration, konsulting eller lätt service. Överlåtelse av inkråm. Hyra: 18 000 kr/mån. Tillträde enligt överenskommelse.";
 
@@ -219,6 +242,7 @@ function SellerAnnonsDetail() {
           {flowSteps.map((s) => (
             <option key={s.state} value={s.state}>{s.label}</option>
           ))}
+          <option value="komplettering">Komplettering krävs</option>
         </select>
       </div>
 
@@ -226,11 +250,26 @@ function SellerAnnonsDetail() {
       <WireBox className="mb-6" variant="dashed">
         <div className="flex flex-wrap items-center gap-3">
           {flowSteps.map((s, i) => {
-            const state = i < currentStep ? "done" : i === currentStep ? "active" : "pending";
+            const isKomp = st === "komplettering" && i === 0;
+            const state = isKomp
+              ? "pending"
+              : i < currentStep
+              ? "done"
+              : i === currentStep
+              ? "active"
+              : "pending";
             return (
               <div key={s.state} className="flex items-center gap-2">
                 <StatusDot state={state} />
-                <span className={`text-xs ${i === currentStep ? "font-semibold" : "text-muted-foreground"}`}>
+                <span
+                  className={`text-xs ${
+                    isKomp
+                      ? "font-semibold text-amber-700 dark:text-amber-500"
+                      : i === currentStep
+                      ? "font-semibold"
+                      : "text-muted-foreground"
+                  }`}
+                >
                   {s.label}
                 </span>
                 {i < flowSteps.length - 1 && <span className="text-muted-foreground/40">›</span>}
@@ -238,6 +277,11 @@ function SellerAnnonsDetail() {
             );
           })}
         </div>
+        {st === "komplettering" && (
+          <div className="mt-3 border-t border-dashed border-amber-500/40 pt-2 text-xs font-medium text-amber-700 dark:text-amber-500">
+            ↩ Komplettering begärd — åtgärda och skicka in på nytt
+          </div>
+        )}
       </WireBox>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -253,6 +297,106 @@ function SellerAnnonsDetail() {
               </WireBox>
             </>
           )}
+
+          {/* STEP 1b · Komplettering krävs */}
+          {st === "komplettering" && (
+            <>
+              <WireBox label="Status">
+                <div className="text-sm">↩ Komplettering begärd av Trelink.</div>
+                <Annotation>
+                  <span className="mt-2 block">
+                    ÅTGÄRDA NEDANSTÅENDE OCH SKICKA IN PÅ NYTT. DU KAN FORTFARANDE INTE REDIGERA ANNONSTEXTEN.
+                  </span>
+                </Annotation>
+              </WireBox>
+
+              <WireBox label="Meddelande från Trelink">
+                <div className="border-l-2 border-amber-500/70 bg-amber-50/60 px-4 py-3 dark:bg-amber-500/5">
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {new Date().toLocaleDateString("sv-SE")} · TRELINK
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed">
+                    Vi behöver ytterligare underlag för att kunna godkänna objektet. Vänligen ladda upp:
+                    senaste hyresavier (minst 3 månader) samt ett uppdaterat resultatdokument för
+                    innevarande år.
+                  </p>
+                </div>
+              </WireBox>
+
+              <WireBox label="Ladda upp komplettering">
+                <label
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setDragOver(false);
+                    const names = Array.from(e.dataTransfer.files).map((f) => f.name);
+                    setKompletteringFiles((prev) => [...prev, ...names]);
+                  }}
+                  className={`flex cursor-pointer flex-col items-center justify-center border-2 border-dashed p-8 text-center text-sm transition ${
+                    dragOver
+                      ? "border-foreground bg-muted/50"
+                      : "border-muted-foreground/40 bg-muted/20 hover:border-foreground/60"
+                  }`}
+                >
+                  <input
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      const names = Array.from(e.target.files ?? []).map((f) => f.name);
+                      setKompletteringFiles((prev) => [...prev, ...names]);
+                    }}
+                  />
+                  <div className="text-2xl">⬆</div>
+                  <div className="mt-2 font-medium">Släpp filer här eller klicka för att välja</div>
+                  <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    PDF, Word, Excel · Max 20 MB per fil
+                  </div>
+                </label>
+
+                {kompletteringFiles.length > 0 && (
+                  <ul className="mt-3 space-y-1 text-sm">
+                    {kompletteringFiles.map((f, i) => (
+                      <li key={i} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 py-1">
+                        <span>📎 {f}</span>
+                        <button
+                          onClick={() =>
+                            setKompletteringFiles((prev) => prev.filter((_, j) => j !== i))
+                          }
+                          className="text-xs text-muted-foreground hover:text-foreground"
+                        >
+                          Ta bort
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {Array.isArray(item.draft?.files) && item.draft.files.length > 0 && (
+                  <div className="mt-5">
+                    <Annotation>Tidigare inskickade dokument</Annotation>
+                    <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                      {item.draft.files.map((f: any, i: number) => (
+                        <li key={i}>📄 {typeof f === "string" ? f : f.name ?? "Dokument"}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="mt-5">
+                  <WireBtn className="w-full" onClick={submitKomplettering}>
+                    Skicka in komplettering
+                  </WireBtn>
+                </div>
+              </WireBox>
+            </>
+          )}
+
+
 
           {/* STEP 2 · Uppdragsavtal */}
           {st === "avtal-vantar-signering" && (
