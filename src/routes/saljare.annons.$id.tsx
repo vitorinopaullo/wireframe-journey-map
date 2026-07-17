@@ -530,7 +530,55 @@ function SellerAnnonsDetail() {
           </div>
         </div>
       )}
+
+      <AnnonsPreviewOverlay
+        open={previewOpen}
+        item={item}
+        onClose={() => setPreviewOpen(false)}
+        onFeedback={() => {
+          setPreviewOpen(false);
+          setShowFeedback(true);
+          setTimeout(() => {
+            const ta = document.querySelector<HTMLTextAreaElement>("textarea");
+            if (ta) {
+              ta.scrollIntoView({ behavior: "smooth", block: "center" });
+              ta.focus();
+            }
+          }, 100);
+        }}
+        onApprove={() => setConfirmApproveOpen(true)}
+      />
+
+      {confirmApproveOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md border border-foreground/20 bg-background p-6">
+            <h3 className="mb-3 text-base font-semibold">Godkänn annonstexten?</h3>
+            <p className="mb-5 text-sm text-muted-foreground">
+              När du godkänner texten publicerar Trelink din annons. Du kan inte redigera texten efter
+              godkännande — kontakta Trelink om ändringar behövs.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmApproveOpen(false)}
+                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+              >
+                Avbryt
+              </button>
+              <WireBtn
+                onClick={() => {
+                  setConfirmApproveOpen(false);
+                  setPreviewOpen(false);
+                  approveDraft();
+                }}
+              >
+                Ja, godkänn och skicka till Trelink
+              </WireBtn>
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
+
 
   );
 }
