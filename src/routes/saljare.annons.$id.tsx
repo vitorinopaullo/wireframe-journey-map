@@ -47,6 +47,8 @@ function SellerAnnonsDetail() {
   const [tick, setTick] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
+  const [signicatOpen, setSignicatOpen] = useState(false);
+
 
   useEffect(() => {
     const load = () => setItem(getAnnons(id) ?? null);
