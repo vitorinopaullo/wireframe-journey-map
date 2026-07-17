@@ -608,6 +608,7 @@ function SellerAnnonsDetail() {
               ))}
             </ul>
           </WireBox>
+          <ContractExpiryCountdown daysLive={80} signedAt={wf?.avtalSignedAt} />
         </div>
       </div>
 
