@@ -186,6 +186,17 @@ function SellerAnnonsDetail() {
     refresh();
   };
 
+  const submitKomplettering = () => {
+    patchAnnons(id, (it) => {
+      let nwf: WorkflowData = { ...it.workflow, state: "granskas" };
+      nwf = logEntry(nwf, "Säljare", "Komplettering inskickad");
+      return { ...it, status: "Granskas", workflow: nwf };
+    });
+    toast("Kompletteringen har skickats till Trelink");
+    setKompletteringFiles([]);
+    refresh();
+  };
+
   const draftText =
     "Välskött kontorslokal på 80 m² i centrala Stockholm. Lokalen är fullt utrustad och har en flexibel hyrestid. Passar verksamhet inom administration, konsulting eller lätt service. Överlåtelse av inkråm. Hyra: 18 000 kr/mån. Tillträde enligt överenskommelse.";
 
