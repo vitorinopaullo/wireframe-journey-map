@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
 import { SignicatFlow } from "@/components/SignicatFlow";
+import { AnnonsPreviewOverlay } from "@/components/AnnonsPreviewOverlay";
 import {
   getAnnons,
   logEntry,
@@ -50,6 +51,8 @@ function SellerAnnonsDetail() {
   const [signicatOpen, setSignicatOpen] = useState(false);
   const [showLandlordUpdate, setShowLandlordUpdate] = useState(false);
   const [newLandlordEmail, setNewLandlordEmail] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
 
 
 
@@ -335,21 +338,29 @@ function SellerAnnonsDetail() {
               </WireBox>
 
               <WireBox label="Annonstextutkast · skrivet av TreLink">
-                <div
-                  className="border border-foreground/20 p-4 text-sm italic"
-                  style={{ background: "#F5F5F4", fontSize: 14 }}
-                >
-                  {draftText}
+                <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Annonstextutkast · skrivet av Trelink
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Trelink har skrivit annonstexten baserat på ditt underlag. Förhandsgranska hur annonsen
+                  ser ut för köpare — godkänn sedan eller lämna feedback.
+                </p>
+
+                <div className="mt-4">
+                  <WireBtn className="w-full" onClick={() => setPreviewOpen(true)}>
+                    🔍 Förhandsgranska annons som köpare ser den
+                  </WireBtn>
                 </div>
 
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                  <WireBtn className="w-full sm:w-auto" onClick={approveDraft}>
+                  <WireBtn className="w-full sm:w-auto" onClick={() => setConfirmApproveOpen(true)}>
                     Godkänn annonstexten
                   </WireBtn>
                   <WireBtn variant="secondary" onClick={() => setShowFeedback((v) => !v)}>
                     Lämna feedback
                   </WireBtn>
                 </div>
+
 
                 {showFeedback && (
                   <div className="mt-4">
@@ -519,7 +530,55 @@ function SellerAnnonsDetail() {
           </div>
         </div>
       )}
+
+      <AnnonsPreviewOverlay
+        open={previewOpen}
+        item={item}
+        onClose={() => setPreviewOpen(false)}
+        onFeedback={() => {
+          setPreviewOpen(false);
+          setShowFeedback(true);
+          setTimeout(() => {
+            const ta = document.querySelector<HTMLTextAreaElement>("textarea");
+            if (ta) {
+              ta.scrollIntoView({ behavior: "smooth", block: "center" });
+              ta.focus();
+            }
+          }, 100);
+        }}
+        onApprove={() => setConfirmApproveOpen(true)}
+      />
+
+      {confirmApproveOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md border border-foreground/20 bg-background p-6">
+            <h3 className="mb-3 text-base font-semibold">Godkänn annonstexten?</h3>
+            <p className="mb-5 text-sm text-muted-foreground">
+              När du godkänner texten publicerar Trelink din annons. Du kan inte redigera texten efter
+              godkännande — kontakta Trelink om ändringar behövs.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmApproveOpen(false)}
+                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+              >
+                Avbryt
+              </button>
+              <WireBtn
+                onClick={() => {
+                  setConfirmApproveOpen(false);
+                  setPreviewOpen(false);
+                  approveDraft();
+                }}
+              >
+                Ja, godkänn och skicka till Trelink
+              </WireBtn>
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
+
 
   );
 }
