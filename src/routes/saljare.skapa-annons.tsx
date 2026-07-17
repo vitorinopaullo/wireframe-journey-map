@@ -464,11 +464,12 @@ function CreateListing() {
               </p>
               <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <WireFieldEditable
-                  label="Hyresvärdens e-post *"
-                  value={draft.hyresvardEmail}
-                  onChange={(v) => set("hyresvardEmail", v)}
-                  placeholder="info@fastighetsbolaget.se"
+                  label="Hyresvärdens telefon *"
+                  value={draft.hyresvardTel}
+                  onChange={(v) => set("hyresvardTel", v)}
+                  placeholder="+46 8 123 45 67"
                 />
+
                 <WireFieldEditable
                   label="Hyresvärdens telefon *"
                   value={draft.hyresvardTel}
