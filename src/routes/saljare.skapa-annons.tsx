@@ -95,6 +95,10 @@ type Draft = {
   yta: string;
   verksamhet: string;
   orgnr: string;
+  // Hyresvärd & BRF
+  hyresvardEmail: string;
+  hyresvardTel: string;
+  brfKontakt: string;
   // Säljande info till TreLink (används för att skriva annonstexten)
   verksamhetSedan: string;
   oppettider: string;
