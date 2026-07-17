@@ -5,6 +5,7 @@ import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
 import { SignicatFlow } from "@/components/SignicatFlow";
 import { AnnonsPreviewOverlay } from "@/components/AnnonsPreviewOverlay";
+import { ContractExpiryCountdown } from "@/components/ContractExpiryBanner";
 import {
   getAnnons,
   logEntry,
