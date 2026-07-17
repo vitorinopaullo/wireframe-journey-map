@@ -300,15 +300,21 @@ function SellerAnnonsDetail() {
                 </p>
 
                 <div className="mt-4 border-b border-dashed border-muted-foreground/30 pb-2">
-                  <Annotation>Hyresvärd e-post</Annotation>
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    HYRESVÄRD E-POST
+                  </div>
                   <div className="mt-1 text-sm">{item.draft?.hyresvardEmail || "—"}</div>
+                  <div className="mt-1 text-[11px] text-muted-foreground">
+                    Informationsmejl skickades till denna adress när uppdragsavtalet signerades.
+                  </div>
                 </div>
                 <button
-                  onClick={() => toast("Uppdatering av hyresvärdens e-post är inte aktiv i demot")}
+                  onClick={() => setShowLandlordUpdate(true)}
                   className="mt-2 text-xs text-muted-foreground underline hover:text-foreground"
                 >
                   Uppdatera hyresvärdens e-post
                 </button>
+
               </WireBox>
             </>
           )}
