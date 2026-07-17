@@ -54,11 +54,13 @@ const liknande = [
 function StickyCTA({
   scrolled,
   saved,
-  setSaved,
+  onSave,
+  onInterest,
 }: {
   scrolled: boolean;
   saved: boolean;
-  setSaved: (v: boolean) => void;
+  onSave: () => void;
+  onInterest: () => void;
 }) {
   if (!scrolled) return null;
   return (
@@ -70,12 +72,10 @@ function StickyCTA({
           <span className="font-mono text-sm">{listing.pris.toLocaleString("sv-SE")} kr</span>
         </div>
         <div className="flex gap-2">
-          <WireBtn variant="ghost" onClick={() => setSaved(!saved)}>
+          <WireBtn variant="ghost" onClick={onSave}>
             {saved ? "★ Sparad" : "☆ Spara"}
           </WireBtn>
-          <WireBtn to="/annons/$id/intresse" params={{ id: listing.id }}>
-            Anmäl intresse →
-          </WireBtn>
+          <WireBtn onClick={onInterest}>Anmäl intresse →</WireBtn>
         </div>
       </div>
     </div>
