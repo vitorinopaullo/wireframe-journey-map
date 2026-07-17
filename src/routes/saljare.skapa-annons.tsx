@@ -471,12 +471,6 @@ function CreateListing() {
                 />
 
                 <WireFieldEditable
-                  label="Hyresvärdens telefon *"
-                  value={draft.hyresvardTel}
-                  onChange={(v) => set("hyresvardTel", v)}
-                  placeholder="+46 8 123 45 67"
-                />
-                <WireFieldEditable
                   label="BRF-kontaktperson"
                   value={draft.brfKontakt}
                   onChange={(v) => set("brfKontakt", v)}
