@@ -173,6 +173,19 @@ function SellerAnnonsDetail() {
 
   return (
     <AppLayout mode="saljare">
+      <SignicatFlow
+        open={signicatOpen}
+        seller={{
+          bolag: item.draft?.bolag,
+          orgnr: item.draft?.orgnr,
+          adress: item.draft?.adress,
+          objektAdress: item.draft?.adress,
+          utgangspris: item.pris || "Enligt överenskommelse",
+        }}
+        onCancel={() => setSignicatOpen(false)}
+        onSigned={completeSigning}
+      />
+
       <PageHeader
         eyebrow={`Säljarläge · ärende ${id}`}
         title={item.titel}
