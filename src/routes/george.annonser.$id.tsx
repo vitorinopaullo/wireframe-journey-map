@@ -115,11 +115,19 @@ function ReviewDetail() {
         subtitle="Inkråm · säljare S-104 · inkommen 2025-06-14 09:12"
         right={
           <div className="flex items-center gap-2">
+            <Link
+              to="/george/annons-flode/$id"
+              params={{ id }}
+              className="border border-foreground bg-foreground text-background px-3 py-1.5 text-xs font-medium hover:opacity-80"
+            >
+              Öppna flöde →
+            </Link>
             <Link to="/george/annonser" className="text-xs text-muted-foreground underline hover:text-foreground">
               ← Tillbaka till inkorgen
             </Link>
           </div>
         }
+
       />
 
       {/* Progress + beslutsknappar */}
