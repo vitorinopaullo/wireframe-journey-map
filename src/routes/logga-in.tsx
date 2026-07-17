@@ -48,7 +48,7 @@ function Login() {
             <p className="mb-3 text-sm text-muted-foreground">
               Första gången du legitimerar dig skapas kontot automatiskt. Du väljer sedan om du är köpare eller säljare.
             </p>
-            <WireBtn variant="secondary" to="/registrera" search={isSafeNext(next) ? { next } : undefined}>
+            <WireBtn variant="secondary" to="/registrera">
               Skapa konto med BankID →
             </WireBtn>
           </WireBox>
