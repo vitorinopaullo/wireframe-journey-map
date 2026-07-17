@@ -631,6 +631,9 @@ function CreateListing() {
               <Row k="Adress" v={draft.adress || "—"} />
               <Row k="Yta" v={draft.yta ? `${draft.yta} m²` : "—"} />
               <Row k="Verksamhet" v={draft.verksamhet || "—"} />
+              <Row k="Hyresvärd e-post" v={draft.hyresvardEmail || "—"} />
+              <Row k="Hyresvärd telefon" v={draft.hyresvardTel || "—"} />
+              <Row k="BRF-kontaktperson" v={draft.brfKontakt || "—"} />
               <Row k="Nyckeltal" v="Hämtas från uppladdade dokument" />
 
               {draft.cat === "aktie" && <Row k="Org.nr" v={draft.orgnr || "—"} />}
