@@ -48,6 +48,9 @@ function SellerAnnonsDetail() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
   const [signicatOpen, setSignicatOpen] = useState(false);
+  const [showLandlordUpdate, setShowLandlordUpdate] = useState(false);
+  const [newLandlordEmail, setNewLandlordEmail] = useState("");
+
 
 
   useEffect(() => {
