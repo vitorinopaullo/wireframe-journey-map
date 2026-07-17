@@ -77,21 +77,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "TreLink — digital mäklare för överlåtelser" },
+      {
+        name: "description",
+        content:
+          "TreLink är den digitala mäklaren för överlåtelse, inkråm och aktieöverlåtelse. Säljare skickar in underlag, TreLink paketerar och matchar med verifierade köpare.",
+      },
+      { property: "og:title", content: "TreLink — digital mäklare för överlåtelser" },
+      {
+        property: "og:description",
+        content:
+          "En plattform för att sälja och köpa verksamhet. TreLink sköter allt däremellan.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
     ],
+
   }),
   shellComponent: RootShell,
   component: RootComponent,
