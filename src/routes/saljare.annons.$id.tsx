@@ -53,6 +53,8 @@ function SellerAnnonsDetail() {
   const [newLandlordEmail, setNewLandlordEmail] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
+  const [kompletteringFiles, setKompletteringFiles] = useState<string[]>([]);
+  const [dragOver, setDragOver] = useState(false);
 
 
 
