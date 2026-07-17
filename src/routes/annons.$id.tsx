@@ -305,7 +305,7 @@ function ListingDetail() {
         </div>
       </div>
 
-      <StickyCTA scrolled={scrolled} saved={saved} setSaved={setSaved} />
+      <StickyCTA scrolled={scrolled} saved={saved} onSave={handleSave} onInterest={handleInterest} />
       <div className="h-20" />
     </PublicLayout>
   );
