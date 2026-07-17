@@ -90,6 +90,11 @@ function SellerAnnonsDetail() {
       // Seed contextual timeline entries per target if not already present.
       const hasText = (t: string) => nwf.timeline.some((l) => l.text === t);
 
+      if (target === "komplettering") {
+        const msg = "Komplettering begärd: Vi behöver ytterligare underlag för att kunna godkänna objektet.";
+        if (!hasText(msg)) nwf = logEntry(nwf, "TreLink", msg);
+        nwf.komplettering = nwf.komplettering ?? { message: msg, at: new Date().toISOString() };
+      }
       if (target === "avtal-vantar-signering") {
         const msg = "Objektet godkänt — uppdragsavtal skickat för signering";
         if (!hasText(msg)) nwf = logEntry(nwf, "TreLink", msg);
