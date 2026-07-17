@@ -242,6 +242,7 @@ function SellerAnnonsDetail() {
           {flowSteps.map((s) => (
             <option key={s.state} value={s.state}>{s.label}</option>
           ))}
+          <option value="komplettering">Komplettering krävs</option>
         </select>
       </div>
 
@@ -249,11 +250,26 @@ function SellerAnnonsDetail() {
       <WireBox className="mb-6" variant="dashed">
         <div className="flex flex-wrap items-center gap-3">
           {flowSteps.map((s, i) => {
-            const state = i < currentStep ? "done" : i === currentStep ? "active" : "pending";
+            const isKomp = st === "komplettering" && i === 0;
+            const state = isKomp
+              ? "pending"
+              : i < currentStep
+              ? "done"
+              : i === currentStep
+              ? "active"
+              : "pending";
             return (
               <div key={s.state} className="flex items-center gap-2">
                 <StatusDot state={state} />
-                <span className={`text-xs ${i === currentStep ? "font-semibold" : "text-muted-foreground"}`}>
+                <span
+                  className={`text-xs ${
+                    isKomp
+                      ? "font-semibold text-amber-700 dark:text-amber-500"
+                      : i === currentStep
+                      ? "font-semibold"
+                      : "text-muted-foreground"
+                  }`}
+                >
                   {s.label}
                 </span>
                 {i < flowSteps.length - 1 && <span className="text-muted-foreground/40">›</span>}
