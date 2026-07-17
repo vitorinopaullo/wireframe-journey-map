@@ -1,28 +1,20 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { getSession, subscribeSession, type Session } from "@/lib/mock-auth";
 
 /**
- * Returns:
- *  - undefined while checking (SSR/initial)
- *  - null if signed out
- *  - session object if signed in
+ * BankID-mock session. undefined = laddar (SSR), null = utloggad.
  */
 export function useSession() {
-  const [session, setSession] = useState<
-    Awaited<ReturnType<typeof supabase.auth.getSession>>["data"]["session"] | null | undefined
-  >(undefined);
+  const [session, setSession] = useState<Session | null | undefined>(undefined);
 
   useEffect(() => {
-    let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (mounted) setSession(data.session ?? null);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s ?? null);
-    });
+    setSession(getSession());
+    const unsub = subscribeSession(() => setSession(getSession()));
+    const onStorage = () => setSession(getSession());
+    window.addEventListener("storage", onStorage);
     return () => {
-      mounted = false;
-      sub.subscription.unsubscribe();
+      unsub();
+      window.removeEventListener("storage", onStorage);
     };
   }, []);
 
