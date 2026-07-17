@@ -51,6 +51,8 @@ function SellerAnnonsDetail() {
   const [signicatOpen, setSignicatOpen] = useState(false);
   const [showLandlordUpdate, setShowLandlordUpdate] = useState(false);
   const [newLandlordEmail, setNewLandlordEmail] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
 
 
 
