@@ -338,21 +338,29 @@ function SellerAnnonsDetail() {
               </WireBox>
 
               <WireBox label="Annonstextutkast · skrivet av TreLink">
-                <div
-                  className="border border-foreground/20 p-4 text-sm italic"
-                  style={{ background: "#F5F5F4", fontSize: 14 }}
-                >
-                  {draftText}
+                <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Annonstextutkast · skrivet av Trelink
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Trelink har skrivit annonstexten baserat på ditt underlag. Förhandsgranska hur annonsen
+                  ser ut för köpare — godkänn sedan eller lämna feedback.
+                </p>
+
+                <div className="mt-4">
+                  <WireBtn className="w-full" onClick={() => setPreviewOpen(true)}>
+                    🔍 Förhandsgranska annons som köpare ser den
+                  </WireBtn>
                 </div>
 
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                  <WireBtn className="w-full sm:w-auto" onClick={approveDraft}>
+                  <WireBtn className="w-full sm:w-auto" onClick={() => setConfirmApproveOpen(true)}>
                     Godkänn annonstexten
                   </WireBtn>
                   <WireBtn variant="secondary" onClick={() => setShowFeedback((v) => !v)}>
                     Lämna feedback
                   </WireBtn>
                 </div>
+
 
                 {showFeedback && (
                   <div className="mt-4">
