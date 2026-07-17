@@ -23,11 +23,32 @@ function Onboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>(1);
   const [role, setRole] = useState<Role>(null);
+  const [session, setSessionState] = useState(() => getSession());
+
+  useEffect(() => {
+    const s = getSession();
+    setSessionState(s);
+    if (!s) navigate({ to: "/logga-in" });
+  }, [navigate]);
+
+  const bankid = session?.bankid;
 
   const steps = [
     { n: 1, label: "Välj roll" },
     { n: 2, label: "Dina uppgifter" },
   ] as const;
+
+  function handleFinish(profil: Record<string, string>) {
+    if (!role || !bankid || !session) return;
+    updateSession({ role });
+    pushAdminAccount({
+      userId: session.userId,
+      role,
+      bankid,
+      profil,
+    });
+    navigate({ to: "/dashboard", search: { mode: role } });
+  }
 
   return (
     <PublicLayout>
@@ -35,7 +56,16 @@ function Onboarding() {
         eyebrow={`Onboarding · steg ${step} av 2`}
         title="Sätt upp ditt konto"
         subtitle="Ett konto — två lägen. Du kan alltid växla mellan köpare och säljare senare. Informationen du fyller i följer med respektive läge."
-        right={<WireTag>BankID ✓</WireTag>}
+        right={
+          <div className="flex flex-col items-end gap-1">
+            <WireTag>BankID ✓</WireTag>
+            {bankid && (
+              <span className="font-mono text-[10px] text-muted-foreground">
+                {bankid.fornamn} {bankid.efternamn} · {bankid.personnr}
+              </span>
+            )}
+          </div>
+        }
       />
 
       <div className="mb-8 grid grid-cols-2 gap-2">
@@ -66,16 +96,18 @@ function Onboarding() {
         />
       )}
 
-      {step === 2 && role && (
+      {step === 2 && role && bankid && (
         <Step2
           role={role}
+          bankid={bankid}
           onBack={() => setStep(1)}
-          onFinish={() => navigate({ to: "/dashboard", search: { mode: role } })}
+          onFinish={handleFinish}
         />
       )}
     </PublicLayout>
   );
 }
+
 
 function Step1({
   role,
