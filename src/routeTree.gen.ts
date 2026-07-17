@@ -41,6 +41,7 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as GeorgeAnnonserIndexRouteImport } from './routes/george.annonser.index'
 import { Route as SaljareAnnonsIdRouteImport } from './routes/saljare.annons.$id'
 import { Route as GeorgeAnnonserIdRouteImport } from './routes/george.annonser.$id'
+import { Route as GeorgeAnnonsFlodeIdRouteImport } from './routes/george.annons-flode.$id'
 import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -207,6 +208,11 @@ const GeorgeAnnonserIdRoute = GeorgeAnnonserIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => GeorgeAnnonserRoute,
 } as any)
+const GeorgeAnnonsFlodeIdRoute = GeorgeAnnonsFlodeIdRouteImport.update({
+  id: '/george/annons-flode/$id',
+  path: '/george/annons-flode/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnnonsIdIntresseRoute = AnnonsIdIntresseRouteImport.update({
   id: '/intresse',
   path: '/intresse',
@@ -257,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
+  '/george/annons-flode/$id': typeof GeorgeAnnonsFlodeIdRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/george/annonser/': typeof GeorgeAnnonserIndexRoute
@@ -293,6 +300,7 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
+  '/george/annons-flode/$id': typeof GeorgeAnnonsFlodeIdRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/george/annonser': typeof GeorgeAnnonserIndexRoute
@@ -331,6 +339,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
+  '/george/annons-flode/$id': typeof GeorgeAnnonsFlodeIdRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/george/annonser/': typeof GeorgeAnnonserIndexRoute
@@ -370,6 +379,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/annons/$id/intresse'
+    | '/george/annons-flode/$id'
     | '/george/annonser/$id'
     | '/saljare/annons/$id'
     | '/george/annonser/'
@@ -406,6 +416,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/annons/$id/intresse'
+    | '/george/annons-flode/$id'
     | '/george/annonser/$id'
     | '/saljare/annons/$id'
     | '/george/annonser'
@@ -443,6 +454,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/annons/$id/intresse'
+    | '/george/annons-flode/$id'
     | '/george/annonser/$id'
     | '/saljare/annons/$id'
     | '/george/annonser/'
@@ -480,6 +492,7 @@ export interface RootRouteChildren {
   GeorgeIndexRoute: typeof GeorgeIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  GeorgeAnnonsFlodeIdRoute: typeof GeorgeAnnonsFlodeIdRoute
   SaljareAnnonsIdRoute: typeof SaljareAnnonsIdRoute
 }
 
@@ -709,6 +722,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GeorgeAnnonserIdRouteImport
       parentRoute: typeof GeorgeAnnonserRoute
     }
+    '/george/annons-flode/$id': {
+      id: '/george/annons-flode/$id'
+      path: '/george/annons-flode/$id'
+      fullPath: '/george/annons-flode/$id'
+      preLoaderRoute: typeof GeorgeAnnonsFlodeIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/annons/$id/intresse': {
       id: '/annons/$id/intresse'
       path: '/intresse'
@@ -792,6 +812,7 @@ const rootRouteChildren: RootRouteChildren = {
   GeorgeIndexRoute: GeorgeIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  GeorgeAnnonsFlodeIdRoute: GeorgeAnnonsFlodeIdRoute,
   SaljareAnnonsIdRoute: SaljareAnnonsIdRoute,
 }
 export const routeTree = rootRouteImport
