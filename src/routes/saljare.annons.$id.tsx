@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
+import { SignicatFlow } from "@/components/SignicatFlow";
 import {
   getAnnons,
   logEntry,
@@ -11,6 +12,7 @@ import {
   type WorkflowState,
   type WorkflowData,
 } from "@/lib/annons-workflow";
+
 
 export const Route = createFileRoute("/saljare/annons/$id")({
   component: SellerAnnonsDetail,
@@ -45,6 +47,8 @@ function SellerAnnonsDetail() {
   const [tick, setTick] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
+  const [signicatOpen, setSignicatOpen] = useState(false);
+
 
   useEffect(() => {
     const load = () => setItem(getAnnons(id) ?? null);
@@ -114,9 +118,26 @@ function SellerAnnonsDetail() {
     refresh();
   };
 
-  const openSignicat = () => {
-    toast("Signicat-integration är inte aktiv i demot");
+  const openSignicat = () => setSignicatOpen(true);
+
+  const completeSigning = () => {
+    patchAnnons(id, (it) => {
+      const now = new Date().toISOString();
+      let nwf: WorkflowData = {
+        ...it.workflow,
+        state: "hyresvard-notifiering",
+        avtalSignedAt: now,
+        hyresvardNotifieradAt: now,
+      };
+      nwf = logEntry(nwf, "Säljare", "Uppdragsavtal signerat");
+      nwf = logEntry(nwf, "TreLink", "Informationsmejl skickat till hyresvärden");
+      return { ...it, workflow: nwf };
+    });
+    setSignicatOpen(false);
+    toast("Uppdragsavtalet är signerat");
+    refresh();
   };
+
 
   const approveDraft = () => {
     patchAnnons(id, (it) => {
@@ -152,6 +173,19 @@ function SellerAnnonsDetail() {
 
   return (
     <AppLayout mode="saljare">
+      <SignicatFlow
+        open={signicatOpen}
+        seller={{
+          bolag: item.draft?.bolag,
+          orgnr: item.draft?.orgnr,
+          adress: item.draft?.adress,
+          objektAdress: item.draft?.adress,
+          utgangspris: item.pris || "Enligt överenskommelse",
+        }}
+        onCancel={() => setSignicatOpen(false)}
+        onSigned={completeSigning}
+      />
+
       <PageHeader
         eyebrow={`Säljarläge · ärende ${id}`}
         title={item.titel}
