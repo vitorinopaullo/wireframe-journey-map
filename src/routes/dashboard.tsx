@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
+import { ContractExpiryBanner } from "@/components/ContractExpiryBanner";
 
 const searchSchema = z.object({
   mode: z.enum(["kopare", "saljare"]).catch("kopare").default("kopare"),
@@ -26,6 +27,10 @@ function Dashboard() {
         }
         right={<WireTag>BankID-verifierad</WireTag>}
       />
+
+      {mode === "saljare" && (
+        <ContractExpiryBanner daysLive={80} objectLabel="Inkråm · Café · Stockholm" />
+      )}
 
       <WireBox label="Pågående affär · status" className="mb-6">
         <div className="mb-4 flex items-center justify-between">
