@@ -28,6 +28,10 @@ function Dashboard() {
         right={<WireTag>BankID-verifierad</WireTag>}
       />
 
+      {mode === "saljare" && (
+        <ContractExpiryBanner daysLive={80} objectLabel="Inkråm · Café · Stockholm" />
+      )}
+
       <WireBox label="Pågående affär · status" className="mb-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
