@@ -225,8 +225,8 @@ function Step2({
   const [orgnr, setOrgnr] = useState("");
   const [presentation, setPresentation] = useState("");
 
-  const kanFortsatta =
-    telefon.trim() && epost.trim() && (role === "kopare" || adress.trim());
+  const kanFortsatta = telefon.trim() && epost.trim();
+
 
   function submit() {
     if (!kanFortsatta) return;
