@@ -257,10 +257,8 @@ function ListingDetail() {
               ))}
             </ol>
             <div className="flex flex-col gap-2">
-              <WireBtn to="/annons/$id/intresse" params={{ id }}>
-                Anmäl intresse →
-              </WireBtn>
-              <WireBtn variant="secondary" onClick={() => setSaved(!saved)}>
+              <WireBtn onClick={handleInterest}>Anmäl intresse →</WireBtn>
+              <WireBtn variant="secondary" onClick={handleSave}>
                 {saved ? "★ Sparad i favoriter" : "☆ Spara som favorit"}
               </WireBtn>
               <WireBtn variant="ghost" to="/kopare/bevakningar">
