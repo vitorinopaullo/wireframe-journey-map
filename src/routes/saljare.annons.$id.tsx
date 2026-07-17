@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
+import { SignicatFlow } from "@/components/SignicatFlow";
 import {
   getAnnons,
   logEntry,
@@ -11,6 +12,7 @@ import {
   type WorkflowState,
   type WorkflowData,
 } from "@/lib/annons-workflow";
+
 
 export const Route = createFileRoute("/saljare/annons/$id")({
   component: SellerAnnonsDetail,
