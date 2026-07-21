@@ -14,7 +14,7 @@ export const Route = createFileRoute("/villkor")({
 
 const sections = [
   { n: "1", title: "Om tjänsten", body: "Trelink AB tillhandahåller en digital marknadsplats för överlåtelser av lokaler, inkråm och aktiebolag." },
-  { n: "2", title: "Avgifter", body: "Fast avgift (29 500 / 49 500 / 79 500 kr) faktureras säljaren först vid tillträde. Att skapa annons är gratis." },
+  { n: "2", title: "Avgifter", body: "Fast avgift (29 900 / 39 900 / 79 900 kr) faktureras säljaren först vid tillträde. Att skapa annons är gratis." },
   { n: "3", title: "Uppdragsavtal", body: "Uppdragsavtal tecknas mellan Trelink och säljare innan annonsen publiceras. Uppdraget gäller 90 dagar." },
   { n: "4", title: "Ansvar", body: "Trelink agerar mellanhand. Parterna ansvarar själva för korrektheten i uppgifter och för att fullfölja affären." },
   { n: "5", title: "Dokumenthantering", body: "Alla dokument arkiveras i 7 år enligt god mäklarsed (fastighetsmäklarlagen 4 kap.)." },
