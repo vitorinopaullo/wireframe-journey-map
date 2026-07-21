@@ -16,8 +16,8 @@ const categories: { title: string; questions: { q: string; a: string }[] }[] = [
   {
     title: "För säljare",
     questions: [
-      { q: "Vad kostar det att annonsera?", a: "Att skapa annons är gratis. Fast avgift (29 500 / 49 500 / 79 500 kr) tas ut först när affären genomförs." },
-      { q: "Hur lång tid tar granskningen?", a: "Normalt 1–3 arbetsdagar från inskickad annons till publicering." },
+      { q: "Vad kostar det att annonsera?", a: "Att skapa annons är gratis. Fast avgift (29 900 / 39 900 / 79 900 kr) tas ut först när affären genomförs." },
+      { q: "Hur lång tid tar granskningen?", a: "Inom 24 timmar på vardagar." },
       { q: "Kan jag redigera annonsen efter publicering?", a: "Ja, men ändringar går på ny granskning innan de går live." },
       { q: "Hur länge ligger min annons uppe?", a: "90 dagar per uppdragsavtal. Kontakta oss för förlängning." },
       { q: "Vem skriver annonstexten?", a: "Trelink skriver texten baserat på dina underlag och uppgifter. Du godkänner utkastet innan publicering." },
@@ -28,7 +28,7 @@ const categories: { title: string; questions: { q: string; a: string }[] }[] = [
     questions: [
       { q: "Varför får jag inte kontakta säljaren direkt?", a: "Alla dialoger går via Trelink för att skydda båda parter och säkerställa korrekt process." },
       { q: "Vem genomför visningen?", a: "Trelink samordnar visningen tillsammans med säljaren efter godkänd intresseanmälan." },
-      { q: "Vad kostar det att anmäla intresse?", a: "Inget. Intresseanmälan och UC-kontroll är kostnadsfria för köparen." },
+      { q: "Vad kostar det att anmäla intresse?", a: "Inget. Att anmäla intresse är kostnadsfritt. Kreditkontroll (UC) görs först senare i processen, efter signerat köpeavtal och betald handpenning." },
       { q: "Krävs BankID?", a: "Ja, för att anmäla intresse, spara favoriter och signera avtal." },
     ],
   },
