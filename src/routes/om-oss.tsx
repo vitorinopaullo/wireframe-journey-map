@@ -29,7 +29,7 @@ function OmOss() {
         </WireBox>
         <WireBox label="Varför fast avgift">
           <p className="text-sm text-muted-foreground">
-            Traditionella mäklare tar 5–10 % i provision. Vi tar en fast avgift (29 500 / 49 500 / 79 500 kr)
+            Traditionella mäklare tar 5–10 % i provision. Vi tar en fast avgift (29 900 / 39 900 / 79 900 kr)
             som betalas först när affären genomförs. Ingen risk för säljaren.
           </p>
         </WireBox>
