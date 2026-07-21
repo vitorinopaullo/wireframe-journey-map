@@ -9,14 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VillkorRouteImport } from './routes/villkor'
 import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
 import { Route as RegistreraRouteImport } from './routes/registrera'
 import { Route as OversiktRouteImport } from './routes/oversikt'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as OmOssRouteImport } from './routes/om-oss'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoggaInRouteImport } from './routes/logga-in'
+import { Route as KontaktRouteImport } from './routes/kontakt'
+import { Route as IntegritetspolicyRouteImport } from './routes/integritetspolicy'
 import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GeorgeIndexRouteImport } from './routes/george.index'
 import { Route as SaljareSkapaAnnonsRouteImport } from './routes/saljare.skapa-annons'
@@ -46,6 +52,11 @@ import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intres
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
+const VillkorRoute = VillkorRouteImport.update({
+  id: '/villkor',
+  path: '/villkor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
   id: '/tillaggstjanster',
   path: '/tillaggstjanster',
@@ -66,6 +77,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OmOssRoute = OmOssRouteImport.update({
+  id: '/om-oss',
+  path: '/om-oss',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
@@ -76,14 +92,34 @@ const LoggaInRoute = LoggaInRouteImport.update({
   path: '/logga-in',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KontaktRoute = KontaktRouteImport.update({
+  id: '/kontakt',
+  path: '/kontakt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegritetspolicyRoute = IntegritetspolicyRouteImport.update({
+  id: '/integritetspolicy',
+  path: '/integritetspolicy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HurDetFunkarRoute = HurDetFunkarRouteImport.update({
   id: '/hur-det-funkar',
   path: '/hur-det-funkar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -232,14 +268,20 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cookies': typeof CookiesRoute
   '/dashboard': typeof DashboardRoute
+  '/faq': typeof FaqRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
+  '/integritetspolicy': typeof IntegritetspolicyRoute
+  '/kontakt': typeof KontaktRoute
   '/logga-in': typeof LoggaInRoute
   '/mcp': typeof McpRoute
+  '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/villkor': typeof VillkorRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/affar/$id': typeof AffarIdRoute
@@ -270,14 +312,20 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cookies': typeof CookiesRoute
   '/dashboard': typeof DashboardRoute
+  '/faq': typeof FaqRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
+  '/integritetspolicy': typeof IntegritetspolicyRoute
+  '/kontakt': typeof KontaktRoute
   '/logga-in': typeof LoggaInRoute
   '/mcp': typeof McpRoute
+  '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/villkor': typeof VillkorRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/affar/$id': typeof AffarIdRoute
@@ -308,14 +356,20 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cookies': typeof CookiesRoute
   '/dashboard': typeof DashboardRoute
+  '/faq': typeof FaqRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
+  '/integritetspolicy': typeof IntegritetspolicyRoute
+  '/kontakt': typeof KontaktRoute
   '/logga-in': typeof LoggaInRoute
   '/mcp': typeof McpRoute
+  '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/villkor': typeof VillkorRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/affar/$id': typeof AffarIdRoute
@@ -348,14 +402,20 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/cookies'
     | '/dashboard'
+    | '/faq'
     | '/hur-det-funkar'
+    | '/integritetspolicy'
+    | '/kontakt'
     | '/logga-in'
     | '/mcp'
+    | '/om-oss'
     | '/onboarding'
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/villkor'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/affar/$id'
@@ -386,14 +446,20 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/cookies'
     | '/dashboard'
+    | '/faq'
     | '/hur-det-funkar'
+    | '/integritetspolicy'
+    | '/kontakt'
     | '/logga-in'
     | '/mcp'
+    | '/om-oss'
     | '/onboarding'
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/villkor'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/affar/$id'
@@ -423,14 +489,20 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/cookies'
     | '/dashboard'
+    | '/faq'
     | '/hur-det-funkar'
+    | '/integritetspolicy'
+    | '/kontakt'
     | '/logga-in'
     | '/mcp'
+    | '/om-oss'
     | '/onboarding'
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/villkor'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/affar/$id'
@@ -462,14 +534,20 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CookiesRoute: typeof CookiesRoute
   DashboardRoute: typeof DashboardRoute
+  FaqRoute: typeof FaqRoute
   HurDetFunkarRoute: typeof HurDetFunkarRoute
+  IntegritetspolicyRoute: typeof IntegritetspolicyRoute
+  KontaktRoute: typeof KontaktRoute
   LoggaInRoute: typeof LoggaInRoute
   McpRoute: typeof McpRoute
+  OmOssRoute: typeof OmOssRoute
   OnboardingRoute: typeof OnboardingRoute
   OversiktRoute: typeof OversiktRoute
   RegistreraRoute: typeof RegistreraRoute
   TillaggstjansterRoute: typeof TillaggstjansterRoute
+  VillkorRoute: typeof VillkorRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AffarIdRoute: typeof AffarIdRoute
@@ -498,6 +576,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/villkor': {
+      id: '/villkor'
+      path: '/villkor'
+      fullPath: '/villkor'
+      preLoaderRoute: typeof VillkorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tillaggstjanster': {
       id: '/tillaggstjanster'
       path: '/tillaggstjanster'
@@ -526,6 +611,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/om-oss': {
+      id: '/om-oss'
+      path: '/om-oss'
+      fullPath: '/om-oss'
+      preLoaderRoute: typeof OmOssRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mcp': {
       id: '/mcp'
       path: '/mcp'
@@ -540,6 +632,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoggaInRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kontakt': {
+      id: '/kontakt'
+      path: '/kontakt'
+      fullPath: '/kontakt'
+      preLoaderRoute: typeof KontaktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integritetspolicy': {
+      id: '/integritetspolicy'
+      path: '/integritetspolicy'
+      fullPath: '/integritetspolicy'
+      preLoaderRoute: typeof IntegritetspolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hur-det-funkar': {
       id: '/hur-det-funkar'
       path: '/hur-det-funkar'
@@ -547,11 +653,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HurDetFunkarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -781,14 +901,20 @@ const GeorgeAnnonserRouteWithChildren = GeorgeAnnonserRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CookiesRoute: CookiesRoute,
   DashboardRoute: DashboardRoute,
+  FaqRoute: FaqRoute,
   HurDetFunkarRoute: HurDetFunkarRoute,
+  IntegritetspolicyRoute: IntegritetspolicyRoute,
+  KontaktRoute: KontaktRoute,
   LoggaInRoute: LoggaInRoute,
   McpRoute: McpRoute,
+  OmOssRoute: OmOssRoute,
   OnboardingRoute: OnboardingRoute,
   OversiktRoute: OversiktRoute,
   RegistreraRoute: RegistreraRoute,
   TillaggstjansterRoute: TillaggstjansterRoute,
+  VillkorRoute: VillkorRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,

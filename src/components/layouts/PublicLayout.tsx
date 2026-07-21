@@ -8,6 +8,41 @@ const navItems = [
   { to: "/oversikt", label: "Sitemap" },
 ];
 
+const footerCols: { title: string; links: { to: string; label: string }[]; blurb?: string }[] = [
+  {
+    title: "Trelink",
+    blurb: "Sveriges marknadsplats för verksamhetsöverlåtelser. Fast avgift, ingen provision.",
+    links: [
+      { to: "/om-oss", label: "Om oss" },
+      { to: "/kontakt", label: "Kontakta oss" },
+    ],
+  },
+  {
+    title: "För säljare",
+    links: [
+      { to: "/saljare/skapa-annons", label: "Skapa annons" },
+      { to: "/hur-det-funkar", label: "Hur det funkar" },
+      { to: "/tillaggstjanster", label: "Tilläggstjänster" },
+    ],
+  },
+  {
+    title: "För köpare",
+    links: [
+      { to: "/", label: "Sök annonser" },
+      { to: "/hur-det-funkar", label: "Hur det funkar" },
+    ],
+  },
+  {
+    title: "Support & villkor",
+    links: [
+      { to: "/faq", label: "FAQ" },
+      { to: "/villkor", label: "Användarvillkor" },
+      { to: "/integritetspolicy", label: "Integritetspolicy" },
+      { to: "/cookies", label: "Cookies" },
+    ],
+  },
+];
+
 export function PublicLayout({ children }: { children?: ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -41,10 +76,36 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-6 py-10">{children ?? <Outlet />}</main>
-      <footer className="border-t border-foreground/20 py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-6 text-xs text-muted-foreground md:flex-row">
-          <span>CC Projects × Trelink — wireframe v0.1</span>
-          <span className="font-mono">Publik yta · SSR · SEO</span>
+      <footer className="border-t border-foreground/20">
+        <div className="mx-auto max-w-7xl px-6 py-12">
+          <div className="grid grid-cols-1 gap-8 border-b border-dashed border-muted-foreground/40 pb-10 md:grid-cols-4">
+            {footerCols.map((col) => (
+              <div key={col.title}>
+                <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {col.title}
+                </div>
+                {col.blurb && (
+                  <p className="mb-4 text-sm text-muted-foreground">{col.blurb}</p>
+                )}
+                <ul className="space-y-2">
+                  {col.links.map((l) => (
+                    <li key={l.to + l.label}>
+                      <Link to={l.to} className="text-sm hover:underline">
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex flex-col items-center justify-between gap-2 text-xs text-muted-foreground md:flex-row">
+            <span>CC Projects × Trelink — wireframe v0.1</span>
+            <span className="font-mono">Publik yta · SSR · SEO</span>
+          </div>
+          <div className="mt-2 text-center text-xs text-muted-foreground md:text-left">
+            © 2026 Trelink AB · Org.nr XXXXXX-XXXX
+          </div>
         </div>
       </footer>
     </div>
