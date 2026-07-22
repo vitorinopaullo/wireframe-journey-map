@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { Check } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation, PageHeader, StatusDot } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
@@ -306,7 +307,7 @@ function InterestWizard() {
                   }`}
                 >
                   <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                    Steg {s.n} {klar && "✓"}
+                    Steg {s.n} {klar ? <Check className="inline-block h-3 w-3 align-middle" /> : null}
                   </span>
                   <span className="font-medium">{s.k}</span>
                   <span className="text-muted-foreground">{s.b}</span>
@@ -327,7 +328,7 @@ function InterestWizard() {
                   <Annotation>BankID-verifiering</Annotation>
                   <p className="mt-1 text-sm">
                     {draft.bankid === "verifierad"
-                      ? "✓ Verifierad som privatperson"
+                      ? <><Check className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Verifierad som privatperson</>
                       : "Verifiera dig en gång — gäller alla framtida intressen."}
                   </p>
                 </div>
@@ -498,7 +499,7 @@ function InterestWizard() {
               />
               <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
                 <span>{draft.meddelande.length} tecken</span>
-                <span>{draft.meddelande.length >= 40 ? "✓ Tillräckligt" : "Minst 40 tecken"}</span>
+                <span>{draft.meddelande.length >= 40 ? <><Check className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Tillräckligt</> : "Minst 40 tecken"}</span>
               </div>
 
               <Annotation>
@@ -513,7 +514,7 @@ function InterestWizard() {
           {step === 4 && (
             <WireBox label="Granska & skicka">
               <div className="space-y-1">
-                <Row k="BankID" v={draft.bankid === "verifierad" ? "✓ Verifierad" : ""} />
+                <Row k="BankID" v={draft.bankid === "verifierad" ? "Verifierad" : ""} />
                 <Row k="Namn" v={draft.namn} />
                 <Row k="E-post" v={draft.epost} />
                 <Row k="Telefon" v={draft.telefon} />

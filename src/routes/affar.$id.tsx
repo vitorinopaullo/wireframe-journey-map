@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { X, Check, CheckCircle2 } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, PageHeader, WireTag, StatusDot, Annotation, WireBtn } from "@/components/wire";
 
@@ -84,7 +85,7 @@ function SignModal({
             Signicat · BankID
           </div>
           <button onClick={onClose} className="font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground">
-            Stäng ✕
+            Stäng <X className="inline-block h-3.5 w-3.5 ml-0.5 align-middle" />
           </button>
         </div>
 
@@ -101,7 +102,7 @@ function SignModal({
               <div className="mt-5 grid grid-cols-1 gap-3 border border-dashed border-muted-foreground/40 p-4 sm:grid-cols-2">
                 <div><Annotation>Avtal</Annotation><p className="mt-1 text-sm">Köpeavtal AFR-A-2041</p></div>
                 <div><Annotation>Köpesumma</Annotation><p className="mt-1 font-mono text-sm">{PRIS.toLocaleString("sv-SE")} kr</p></div>
-                <div><Annotation>Handpenning</Annotation><p className="mt-1 font-mono text-sm">Mottagen ✓</p></div>
+                <div><Annotation>Handpenning</Annotation><p className="mt-1 font-mono text-sm">Mottagen <Check className="inline-block h-3.5 w-3.5 ml-0.5 align-middle" /></p></div>
                 <div><Annotation>Giltigt t.o.m.</Annotation><p className="mt-1 font-mono text-sm">7 dagar</p></div>
               </div>
 
@@ -186,7 +187,7 @@ function SignModal({
           {phase === "waiting" && (
             <div className="py-4 text-center">
               <Annotation>Slutför</Annotation>
-              <h2 className="mt-1 text-xl font-semibold">Du har signerat ✓</h2>
+              <h2 className="mt-1 text-xl font-semibold">Du har signerat <CheckCircle2 className="inline-block h-5 w-5 ml-1 align-middle" /></h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Säljaren har fått en förfrågan. Vi mejlar dig så snart säljaren har signerat.
               </p>
@@ -204,7 +205,7 @@ function SignModal({
           {phase === "done" && (
             <div className="py-4 text-center">
               <Annotation>Klart</Annotation>
-              <h2 className="mt-1 text-xl font-semibold">Båda parter har signerat 🎉</h2>
+              <h2 className="mt-1 text-xl font-semibold">Båda parter har signerat</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Kontaktuppgifter har frigjorts. Tillträde planeras till 1 aug 2026.
               </p>
@@ -266,7 +267,7 @@ function ActionPanel({
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <WireBtn onClick={() => onAction("paid")}>Jag har betalat ✓</WireBtn>
+          <WireBtn onClick={() => onAction("paid")}>Jag har betalat <Check className="inline-block h-4 w-4 ml-1 align-middle" /></WireBtn>
           <WireBtn variant="secondary">Ladda ner faktura (PDF)</WireBtn>
           <WireBtn variant="ghost">Fråga TreLink</WireBtn>
         </div>

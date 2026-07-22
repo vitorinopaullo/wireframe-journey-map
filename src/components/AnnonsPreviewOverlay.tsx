@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { CheckCircle2, Star } from "lucide-react";
 import { WireBox, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
 
 type Item = {
@@ -139,7 +140,7 @@ export function AnnonsPreviewOverlay({
 
           {/* Badges */}
           <div className="mt-4 flex flex-wrap gap-2">
-            <WireTag>✓ Granskad av Trelink</WireTag>
+            <WireTag><CheckCircle2 className="inline-block h-3 w-3 mr-1 align-middle" />Granskad av Trelink</WireTag>
             {item.draft?.premium && (
               <span className="inline-flex items-center border border-foreground bg-foreground px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-background">
                 Premium
@@ -262,7 +263,7 @@ export function AnnonsPreviewOverlay({
                     onClick={(e) => e.preventDefault()}
                     className="cursor-not-allowed border border-foreground bg-background px-4 py-2 text-sm"
                   >
-                    ☆ Spara som favorit
+                    <Star className="inline-block h-4 w-4 mr-1" /> Spara som favorit
                   </button>
                   <button
                     type="button"

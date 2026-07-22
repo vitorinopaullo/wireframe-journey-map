@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
+import { Search, AlertTriangle, Bell } from "lucide-react";
 
 const nav = [
   { to: "/george", label: "Att-göra idag", hint: "⌘1" },
@@ -48,16 +49,16 @@ export function TreLinkLayout({ children }: { children?: ReactNode }) {
             onClick={() => setCmdOpen(true)}
             className="flex flex-1 max-w-md items-center justify-between border border-dashed border-muted-foreground/50 bg-muted/20 px-3 py-2 text-left font-mono text-xs text-muted-foreground hover:border-foreground hover:text-foreground"
           >
-            <span>🔍 Sök affär · annons · användare · faktura</span>
+            <span className="flex items-center gap-1.5"><Search className="h-3.5 w-3.5 shrink-0" />Sök affär · annons · användare · faktura</span>
             <span className="border border-muted-foreground/40 px-1 py-0.5 text-[10px]">⌘K</span>
           </button>
 
           <div className="flex items-center gap-3">
             <span className="hidden border border-foreground bg-foreground text-background px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider md:inline-block">
-              ⚠ 2 SLA-brott
+              <AlertTriangle className="inline-block h-3.5 w-3.5 mr-1 align-middle" />2 SLA-brott
             </span>
             <button className="relative border border-foreground/40 px-2 py-1 font-mono text-[10px] uppercase tracking-wider hover:border-foreground">
-              🔔 Notiser
+              <Bell className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Notiser
               <span className="absolute -top-1.5 -right-1.5 inline-flex h-4 min-w-[16px] items-center justify-center border border-foreground bg-foreground text-background px-1 font-mono text-[9px]">
                 3
               </span>

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Star, CheckCircle2 } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation, PageHeader, StatusDot } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
@@ -73,7 +74,7 @@ function StickyCTA({
         </div>
         <div className="flex gap-2">
           <WireBtn variant="ghost" onClick={onSave}>
-            {saved ? "★ Sparad" : "☆ Spara"}
+            {saved ? <><Star className="h-4 w-4 mr-1 fill-current" />Sparad</> : <><Star className="h-4 w-4 mr-1" />Spara</>}
           </WireBtn>
           <WireBtn onClick={onInterest}>Anmäl intresse →</WireBtn>
         </div>
@@ -123,7 +124,7 @@ function ListingDetail() {
         subtitle={listing.underrubrik}
         right={
           <div className="flex flex-wrap gap-2">
-            <WireTag>✓ Granskad av TreLink</WireTag>
+            <WireTag><CheckCircle2 className="inline-block h-3 w-3 mr-1 align-middle" />Granskad av TreLink</WireTag>
             <WireTag>Premium</WireTag>
             <WireTag>{listing.intressenter} intressenter</WireTag>
           </div>
@@ -259,7 +260,7 @@ function ListingDetail() {
             <div className="flex flex-col gap-2">
               <WireBtn onClick={handleInterest}>Anmäl intresse →</WireBtn>
               <WireBtn variant="secondary" onClick={handleSave}>
-                {saved ? "★ Sparad i favoriter" : "☆ Spara som favorit"}
+                {saved ? <><Star className="h-4 w-4 mr-1 fill-current" />Sparad i favoriter</> : <><Star className="h-4 w-4 mr-1" />Spara som favorit</>}
               </WireBtn>
               <WireBtn variant="ghost" to="/kopare/bevakningar">
                 Bevaka liknande

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { X, Globe } from "lucide-react";
 
 type Screen = "doc" | "start-modal" | "bankid" | "done";
 
@@ -47,7 +48,7 @@ export function SignicatFlow({
           onClick={onCancel}
           className="fixed left-4 top-4 z-[110] text-xs text-gray-500 hover:text-gray-900"
         >
-          ✕ Avbryt signering
+          <X className="inline-block h-3.5 w-3.5 mr-1 align-middle" /> Avbryt signering
         </button>
       )}
 
@@ -96,7 +97,7 @@ function DocViewer({
         style={{ borderBottom: "1px solid #E7E5E4" }}
       >
         <div className="text-sm text-black">100%</div>
-        <div className="text-sm text-black">🌐 English</div>
+        <div className="flex items-center gap-1 text-sm text-black"><Globe className="h-3.5 w-3.5" /> English</div>
         <div className="flex items-center gap-3">
           <button className="text-sm text-black">More actions ▾</button>
           <button

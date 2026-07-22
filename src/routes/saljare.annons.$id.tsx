@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { X, Lock, Upload, Paperclip, FileText, Mail, PenLine, Search, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
@@ -117,6 +118,12 @@ function SellerAnnonsDetail() {
       const targetOrder = stateOrder[target];
       let nwf: WorkflowData = { ...it.workflow, state: target };
 
+      // When leaving avvisad, remove its specific entry and clear the reason.
+      if (it.workflow.state === "avvisad" && target !== "avvisad") {
+        nwf.timeline = nwf.timeline.filter((l) => l.text !== "Annonsen avvisad — se motivering");
+        delete (nwf as any).avvisadReason;
+      }
+
       // Backward jump: purge timeline entries and reset fields from later steps.
       if (targetOrder < originalOrder) {
         const textsToRemove = new Set<string>();
@@ -169,6 +176,15 @@ function SellerAnnonsDetail() {
         if (!hasText(m3)) nwf = logEntry(nwf, "System", m3);
         nwf.publiceradAt = nwf.publiceradAt ?? new Date().toISOString();
       }
+      if (target === "avvisad") {
+        const msg = "Annonsen avvisad — se motivering";
+        if (!hasText(msg)) nwf = logEntry(nwf, "TreLink", msg);
+        nwf.avvisadReason = nwf.avvisadReason ?? {
+          orsak: "Objektet uppfyller inte kraven för förmedling via Trelink.",
+          note: "Vänligen kontakta oss om du vill diskutera ärendet eller ansöka på nytt med ett annat objekt.",
+          at: new Date().toISOString(),
+        };
+      }
 
       return {
         ...it,
@@ -177,6 +193,8 @@ function SellerAnnonsDetail() {
             ? "Publicerad"
             : target === "komplettering"
             ? "Komplettering krävs"
+            : target === "avvisad"
+            ? "Avvisad"
             : "Granskas",
         workflow: nwf,
       };
@@ -291,6 +309,7 @@ function SellerAnnonsDetail() {
             <option key={s.state} value={s.state}>{s.label}</option>
           ))}
           <option value="komplettering">Komplettering krävs</option>
+          <option value="avvisad">Avvisad</option>
         </select>
       </div>
 
@@ -299,7 +318,8 @@ function SellerAnnonsDetail() {
         <div className="flex flex-wrap items-center gap-3">
           {flowSteps.map((s, i) => {
             const isKomp = st === "komplettering" && i === 0;
-            const state = isKomp
+            const isAvvisad = st === "avvisad" && i === 0;
+            const dotState = isKomp || isAvvisad
               ? "pending"
               : i < currentStep
               ? "done"
@@ -308,11 +328,13 @@ function SellerAnnonsDetail() {
               : "pending";
             return (
               <div key={s.state} className="flex items-center gap-2">
-                <StatusDot state={state} />
+                <StatusDot state={dotState} />
                 <span
                   className={`text-xs ${
                     isKomp
                       ? "font-semibold text-amber-700 dark:text-amber-500"
+                      : isAvvisad
+                      ? "font-semibold text-foreground/70"
                       : i === currentStep
                       ? "font-semibold"
                       : "text-muted-foreground"
@@ -330,6 +352,11 @@ function SellerAnnonsDetail() {
             ↩ Komplettering begärd — åtgärda och skicka in på nytt
           </div>
         )}
+        {st === "avvisad" && (
+          <div className="mt-3 border-t border-dashed border-foreground/30 pt-2 text-xs font-medium text-foreground/70">
+            <X className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Avvisad — ärendet är stängt
+          </div>
+        )}
       </WireBox>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -338,7 +365,7 @@ function SellerAnnonsDetail() {
           {st === "granskas" && (
             <>
               <WireBox label="Status">
-                <div className="text-sm">🔒 Låst för redigering under granskning.</div>
+                <div className="text-sm"><Lock className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Låst för redigering under granskning.</div>
                 <Annotation>
                   <span className="mt-2 block">TRELINK ÅTERKOMMER MED BESKED, KOMPLETTERING ELLER UPPDRAGSAVTAL.</span>
                 </Annotation>
@@ -399,7 +426,7 @@ function SellerAnnonsDetail() {
                       setKompletteringFiles((prev) => [...prev, ...names]);
                     }}
                   />
-                  <div className="text-2xl">⬆</div>
+                  <Upload className="h-8 w-8 text-muted-foreground" />
                   <div className="mt-2 font-medium">Släpp filer här eller klicka för att välja</div>
                   <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                     PDF, Word, Excel · Max 20 MB per fil
@@ -410,7 +437,7 @@ function SellerAnnonsDetail() {
                   <ul className="mt-3 space-y-1 text-sm">
                     {kompletteringFiles.map((f, i) => (
                       <li key={i} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 py-1">
-                        <span>📎 {f}</span>
+                        <span><Paperclip className="inline-block h-3.5 w-3.5 mr-1 align-middle" />{f}</span>
                         <button
                           onClick={() =>
                             setKompletteringFiles((prev) => prev.filter((_, j) => j !== i))
@@ -429,7 +456,7 @@ function SellerAnnonsDetail() {
                     <Annotation>Tidigare inskickade dokument</Annotation>
                     <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
                       {item.draft.files.map((f: any, i: number) => (
-                        <li key={i}>📄 {typeof f === "string" ? f : f.name ?? "Dokument"}</li>
+                        <li key={i}><FileText className="inline-block h-3.5 w-3.5 mr-1 align-middle" />{typeof f === "string" ? f : f.name ?? "Dokument"}</li>
                       ))}
                     </ul>
                   </div>
@@ -446,11 +473,54 @@ function SellerAnnonsDetail() {
 
 
 
+          {/* STEP 1c · Avvisad */}
+          {st === "avvisad" && (
+            <>
+              <WireBox label="Status">
+                <div className="text-sm"><X className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Din annons har avvisats.</div>
+                <Annotation>
+                  <span className="mt-2 block">ÄRENDET ÄR STÄNGT. SE TRELINKS MOTIVERING NEDAN.</span>
+                </Annotation>
+              </WireBox>
+
+              <WireBox label="Motivering från Trelink">
+                <div className="border-l-2 border-foreground/40 bg-muted/20 px-4 py-3">
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {wf.avvisadReason?.at
+                      ? new Date(wf.avvisadReason.at).toLocaleDateString("sv-SE")
+                      : new Date().toLocaleDateString("sv-SE")} · TRELINK
+                  </div>
+                  <p className="mt-2 text-sm font-medium leading-relaxed">
+                    {wf.avvisadReason?.orsak ?? "Objektet uppfyller inte kraven för förmedling via Trelink. Kontakta oss om du har frågor."}
+                  </p>
+                  {wf.avvisadReason?.note && (
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{wf.avvisadReason.note}</p>
+                  )}
+                </div>
+              </WireBox>
+
+              <WireBox label="Vad kan du göra?">
+                <p className="text-sm">
+                  Ärendet är stängt och annonsen kommer inte att publiceras. Om du anser att beslutet
+                  är felaktigt, eller vill veta mer om orsakerna, är du välkommen att kontakta Trelink.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <a href="/kontakt">
+                    <WireBtn variant="secondary">Kontakta Trelink</WireBtn>
+                  </a>
+                  <Link to="/saljare/mina-annonser">
+                    <WireBtn variant="secondary">← Mina annonser</WireBtn>
+                  </Link>
+                </div>
+              </WireBox>
+            </>
+          )}
+
           {/* STEP 2 · Uppdragsavtal */}
           {st === "avtal-vantar-signering" && (
             <>
               <WireBox label="Status">
-                <div className="text-sm">📄 Uppdragsavtal väntar på din signatur.</div>
+                <div className="text-sm"><FileText className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Uppdragsavtal väntar på din signatur.</div>
                 <Annotation>
                   <span className="mt-2 block">AVTALET HAR SKICKATS TILL DIN E-POST OCH FINNS ÄVEN HÄR I PLATTFORMEN.</span>
                 </Annotation>
@@ -479,7 +549,7 @@ function SellerAnnonsDetail() {
           {st === "hyresvard-notifiering" && (
             <>
               <WireBox label="Status">
-                <div className="text-sm">📬 Informationsmejl skickat till hyresvärden.</div>
+                <div className="text-sm"><Mail className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Informationsmejl skickat till hyresvärden.</div>
                 <Annotation>
                   <span className="mt-2 block">
                     HYRESVÄRDEN HAR INFORMERATS OM ATT EN LOKALFÖRMEDLING HAR PÅBÖRJATS FÖR DINA LOKALER.
@@ -521,7 +591,7 @@ function SellerAnnonsDetail() {
           {(st === "utkast-till-saljare" || st === "utkast-feedback") && (
             <>
               <WireBox label="Status">
-                <div className="text-sm">✍️ Annonstexten är klar för ditt godkännande.</div>
+                <div className="text-sm"><PenLine className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Annonstexten är klar för ditt godkännande.</div>
                 <Annotation>
                   <span className="mt-2 block">
                     TRELINK HAR SKRIVIT ANNONSTEXTEN BASERAT PÅ DITT UNDERLAG. GRANSKA OCH GODKÄNN — ELLER LÄMNA FEEDBACK.
@@ -540,7 +610,7 @@ function SellerAnnonsDetail() {
 
                 <div className="mt-4">
                   <WireBtn className="w-full" onClick={() => setPreviewOpen(true)}>
-                    🔍 Förhandsgranska annons som köpare ser den
+                    <Search className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Förhandsgranska annons som köpare ser den
                   </WireBtn>
                 </div>
 
@@ -584,7 +654,7 @@ function SellerAnnonsDetail() {
           {st === "publicerad" && (
             <>
               <WireBox label="Status">
-                <div className="text-sm">✅ Din annons är nu live.</div>
+                <div className="text-sm"><CheckCircle2 className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Din annons är nu live.</div>
                 <Annotation>
                   <span className="mt-2 block">ETT BEKRÄFTELSEMEJL HAR SKICKATS TILL DIN E-POSTADRESS.</span>
                 </Annotation>

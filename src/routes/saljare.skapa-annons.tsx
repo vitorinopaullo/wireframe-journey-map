@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { Check } from "lucide-react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { initialWorkflow, logEntry, canSellerEdit } from "@/lib/annons-workflow";
@@ -315,7 +316,7 @@ function CreateListing() {
               }`}
             >
               <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                {String(i + 1).padStart(2, "0")} {isDone ? "✓" : ""}
+                {String(i + 1).padStart(2, "0")} {isDone ? <Check className="inline-block h-3 w-3 align-middle" /> : null}
               </div>
               <div className="text-sm font-medium">{label}</div>
             </button>
@@ -729,7 +730,7 @@ function CreateListing() {
           {canSubmit ? (
             <WireBox className="mb-6">
               <p className="text-sm">
-                ✓ Allt är ifyllt. Skickar du in nu får du besked från TreLink inom 24h på vardagar.
+                <Check className="inline-block h-4 w-4 mr-1 align-middle" /> Allt är ifyllt. Skickar du in nu får du besked från TreLink inom 24h på vardagar.
                 Inget publiceras innan du har sett och godkänt slutversionen.
               </p>
             </WireBox>

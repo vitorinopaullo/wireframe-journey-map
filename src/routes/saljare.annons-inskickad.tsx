@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { CheckCircle2 } from "lucide-react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 
@@ -22,7 +23,7 @@ function TackPage() {
       />
 
       <WireBox className="p-6 space-y-3">
-        <div className="text-2xl">✓ Underlaget är mottaget</div>
+        <div className="flex items-center gap-2 text-xl"><CheckCircle2 className="h-6 w-6 shrink-0" />Underlaget är mottaget</div>
         <p className="text-sm text-muted-foreground max-w-2xl">
           Du hittar ärendet under <strong>Mina annonser</strong> med status <strong>Granskas</strong>.
           Där ser du också alla steg framåt — uppdragsavtal, hyresvärdsdialog, annonsutkast och publicering.

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { AlertTriangle, X } from "lucide-react";
 
 interface Props {
   daysLive: number;
@@ -23,7 +24,7 @@ export function ContractExpiryBanner({ daysLive, objectLabel = "Inkråm · Café
       className={`relative mb-6 flex gap-3 bg-white p-4 ${borderClass}`}
       style={{ ...borderStyle, borderStyle: "solid" }}
     >
-      <div className="text-lg leading-none">⚠</div>
+      <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <h3 className="text-[14px] font-bold text-[#0F0F0F]">
@@ -60,7 +61,7 @@ export function ContractExpiryBanner({ daysLive, objectLabel = "Inkråm · Café
         aria-label="Stäng"
         className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center text-muted-foreground hover:text-foreground"
       >
-        ×
+        <X className="h-4 w-4" />
       </button>
     </div>
   );
