@@ -263,9 +263,6 @@ function SellerAnnonsDetail() {
     refresh();
   };
 
-  const draftText =
-    "Välskött kontorslokal på 80 m² i centrala Stockholm. Lokalen är fullt utrustad och har en flexibel hyrestid. Passar verksamhet inom administration, konsulting eller lätt service. Överlåtelse av inkråm. Hyra: 18 000 kr/mån. Tillträde enligt överenskommelse.";
-
   return (
     <AppLayout mode="saljare">
       <SignicatFlow
