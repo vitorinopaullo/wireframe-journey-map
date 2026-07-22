@@ -39,6 +39,33 @@ const stateOrder: Record<WorkflowState, number> = {
   "publicerad": 4,
 };
 
+// Timeline texts and WorkflowData fields that are introduced at each step order.
+// Used to prune stale entries when the dev-jumper goes backward.
+const stepTextsMap: Record<number, string[]> = {
+  1: ["Objektet godkänt — uppdragsavtal skickat för signering"],
+  2: [
+    "Uppdragsavtal signerat av säljaren",
+    "Uppdragsavtal signerat",
+    "Informationsmejl skickat till hyresvärden",
+  ],
+  3: [
+    "Annonstextutkast skickat för granskning",
+    "Lämnade feedback på annonsutkastet",
+  ],
+  4: [
+    "Annonstexten godkänd",
+    "Annons publicerad på trelink.se",
+    "Bekräftelsemejl skickat till säljaren",
+  ],
+};
+
+const stepFieldsMap: Record<number, (keyof WorkflowData)[]> = {
+  1: ["avtalSentAt"],
+  2: ["avtalSignedAt", "hyresvardNotifieradAt"],
+  3: ["saljareFeedback"],
+  4: ["publiceradAt"],
+};
+
 function nowSv() {
   return new Date().toLocaleString("sv-SE");
 }
@@ -86,7 +113,27 @@ function SellerAnnonsDetail() {
   // Dev-only: jump to a specific step and seed timeline entries.
   const jumpTo = (target: WorkflowState) => {
     patchAnnons(id, (it) => {
+      const originalOrder = stateOrder[it.workflow.state as WorkflowState] ?? 0;
+      const targetOrder = stateOrder[target];
       let nwf: WorkflowData = { ...it.workflow, state: target };
+
+      // Backward jump: purge timeline entries and reset fields from later steps.
+      if (targetOrder < originalOrder) {
+        const textsToRemove = new Set<string>();
+        for (let ord = targetOrder + 1; ord <= 4; ord++) {
+          (stepTextsMap[ord] ?? []).forEach((t) => textsToRemove.add(t));
+        }
+        nwf.timeline = nwf.timeline.filter(
+          (l) =>
+            !textsToRemove.has(l.text) &&
+            !(targetOrder < 2 && l.text.startsWith("Nytt informationsmejl skickat till")),
+        );
+        for (let ord = targetOrder + 1; ord <= 4; ord++) {
+          for (const field of stepFieldsMap[ord] ?? []) {
+            delete (nwf as any)[field];
+          }
+        }
+      }
 
       // Seed contextual timeline entries per target if not already present.
       const hasText = (t: string) => nwf.timeline.some((l) => l.text === t);
@@ -597,7 +644,7 @@ function SellerAnnonsDetail() {
         {/* Timeline */}
         <div>
           <WireBox label="Ärendehistorik · synlig för dig & TreLink">
-            <ul className="space-y-3">
+            <ul className="mt-1 max-h-[400px] overflow-y-auto space-y-3 pr-1">
               {(wf.timeline ?? []).map((l, i) => (
                 <li key={i} className="border-l-2 border-foreground/40 pl-3">
                   <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
