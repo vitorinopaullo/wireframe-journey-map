@@ -123,6 +123,7 @@ type Draft = {
   kopareEmail: string;
   signerareNamn: string;
   signerareRoll: string;
+  signerareEmail: string;
   ovrigt: string;
 };
 
@@ -156,6 +157,7 @@ const empty: Draft = {
   kopareEmail: "",
   signerareNamn: "",
   signerareRoll: "",
+  signerareEmail: "",
   ovrigt: "",
 };
 
@@ -613,6 +615,12 @@ function CreateListing() {
                 value={draft.signerareRoll}
                 onChange={(v) => set("signerareRoll", v)}
                 placeholder="VD / Styrelseordförande / Ensam ägare"
+              />
+              <WireFieldEditable
+                label="E-post *"
+                value={draft.signerareEmail}
+                onChange={(v) => set("signerareEmail", v)}
+                placeholder="namn@företag.se"
               />
             </div>
           </WireBox>
