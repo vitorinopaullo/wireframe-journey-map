@@ -9,7 +9,7 @@ export const Route = createFileRoute("/saljare/intressenter")({
 const rows = [
   { date: "14 jun", annons: "Restauranglokal · Södermalm", code: "K-208", state: "Ny" },
   { date: "13 jun", annons: "Restauranglokal · Södermalm", code: "K-204", state: "Matchad" },
-  { date: "11 jun", annons: "Restauranglokal · Södermalm", code: "K-198", state: "UC pågår" },
+  { date: "11 jun", annons: "Restauranglokal · Södermalm", code: "K-198", state: "Bedöms av TreLink" },
   { date: "10 jun", annons: "Restauranglokal · Södermalm", code: "K-191", state: "Avvisad" },
 ];
 
