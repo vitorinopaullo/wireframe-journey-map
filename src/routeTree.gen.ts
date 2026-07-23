@@ -16,6 +16,7 @@ import { Route as OversiktRouteImport } from './routes/oversikt'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OmOssRouteImport } from './routes/om-oss'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as LokalerRouteImport } from './routes/lokaler'
 import { Route as LoggaInRouteImport } from './routes/logga-in'
 import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as IntegritetspolicyRouteImport } from './routes/integritetspolicy'
@@ -85,6 +86,11 @@ const OmOssRoute = OmOssRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LokalerRoute = LokalerRouteImport.update({
+  id: '/lokaler',
+  path: '/lokaler',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoggaInRoute = LoggaInRouteImport.update({
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/integritetspolicy': typeof IntegritetspolicyRoute
   '/kontakt': typeof KontaktRoute
   '/logga-in': typeof LoggaInRoute
+  '/lokaler': typeof LokalerRoute
   '/mcp': typeof McpRoute
   '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
@@ -319,6 +326,7 @@ export interface FileRoutesByTo {
   '/integritetspolicy': typeof IntegritetspolicyRoute
   '/kontakt': typeof KontaktRoute
   '/logga-in': typeof LoggaInRoute
+  '/lokaler': typeof LokalerRoute
   '/mcp': typeof McpRoute
   '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
@@ -363,6 +371,7 @@ export interface FileRoutesById {
   '/integritetspolicy': typeof IntegritetspolicyRoute
   '/kontakt': typeof KontaktRoute
   '/logga-in': typeof LoggaInRoute
+  '/lokaler': typeof LokalerRoute
   '/mcp': typeof McpRoute
   '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
@@ -409,6 +418,7 @@ export interface FileRouteTypes {
     | '/integritetspolicy'
     | '/kontakt'
     | '/logga-in'
+    | '/lokaler'
     | '/mcp'
     | '/om-oss'
     | '/onboarding'
@@ -453,6 +463,7 @@ export interface FileRouteTypes {
     | '/integritetspolicy'
     | '/kontakt'
     | '/logga-in'
+    | '/lokaler'
     | '/mcp'
     | '/om-oss'
     | '/onboarding'
@@ -496,6 +507,7 @@ export interface FileRouteTypes {
     | '/integritetspolicy'
     | '/kontakt'
     | '/logga-in'
+    | '/lokaler'
     | '/mcp'
     | '/om-oss'
     | '/onboarding'
@@ -541,6 +553,7 @@ export interface RootRouteChildren {
   IntegritetspolicyRoute: typeof IntegritetspolicyRoute
   KontaktRoute: typeof KontaktRoute
   LoggaInRoute: typeof LoggaInRoute
+  LokalerRoute: typeof LokalerRoute
   McpRoute: typeof McpRoute
   OmOssRoute: typeof OmOssRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -623,6 +636,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lokaler': {
+      id: '/lokaler'
+      path: '/lokaler'
+      fullPath: '/lokaler'
+      preLoaderRoute: typeof LokalerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/logga-in': {
@@ -908,6 +928,7 @@ const rootRouteChildren: RootRouteChildren = {
   IntegritetspolicyRoute: IntegritetspolicyRoute,
   KontaktRoute: KontaktRoute,
   LoggaInRoute: LoggaInRoute,
+  LokalerRoute: LokalerRoute,
   McpRoute: McpRoute,
   OmOssRoute: OmOssRoute,
   OnboardingRoute: OnboardingRoute,
