@@ -101,6 +101,8 @@ const PRISINTERVALL_OPTIONS = [
   "1 000 000 – 5 000 000 kr",
   "5 000 000 kr +",
 ];
+const STORLEK_OPTIONS = ["0 – 50 m²", "50 – 100 m²", "100 – 250 m²", "250+ m²"];
+const PUBLICERAD_OPTIONS = ["Senaste 24 timmarna", "Senaste veckan", "Senaste månaden", "Alla"];
 
 function Dropdown({
   label,
@@ -167,6 +169,7 @@ function Dropdown({
 
 function SearchBox() {
   const [active, setActive] = useState<TabValue>("alla");
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
   const isLokal = active === "lokal";
 
   return (
@@ -206,11 +209,23 @@ function SearchBox() {
         <Dropdown label="Prisintervall" options={PRISINTERVALL_OPTIONS} placeholder="0 – 5 000 000 kr" />
       </div>
 
+      {/* Fler filter — expanderas inline, samma gridmall som sökfälten ovan */}
+      {showMoreFilters && (
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-[2fr_1fr_1fr]">
+          <div className="hidden md:block" aria-hidden="true" />
+          <Dropdown label="Storlek (m²)" options={STORLEK_OPTIONS} placeholder="Valfri storlek" />
+          <Dropdown label="Publicerad" options={PUBLICERAD_OPTIONS} placeholder="Alla datum" />
+        </div>
+      )}
+
       {/* Åtgärder */}
       <div className="mt-4 flex items-center gap-5">
         <WireBtn className="px-10">Sök</WireBtn>
-        <button className="font-mono text-xs text-muted-foreground transition hover:text-foreground">
-          Fler filter +
+        <button
+          onClick={() => setShowMoreFilters((s) => !s)}
+          className="font-mono text-xs text-muted-foreground transition hover:text-foreground"
+        >
+          {showMoreFilters ? "Dölj filter −" : "Fler filter +"}
         </button>
       </div>
     </WireBox>
