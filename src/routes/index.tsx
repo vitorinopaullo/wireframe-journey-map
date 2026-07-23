@@ -273,15 +273,22 @@ function HomePage() {
       {/* Om oss */}
       <div className="mt-16">
         <WireBox label="Om Trelink">
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            Trelink är ett digitalt mäkleri för verksamhetsöverlåtelser — lokaler, inkråm och
-            aktiebolag. Vi tar en fast avgift utan provision, granskar varje objekt noggrant innan
-            publicering och håller köpare och säljare anonyma tills affären är klar. Allt signeras
-            digitalt via Signicat och BankID. En trygg, strukturerad process från underlag till
-            tillträde.
-          </p>
-          <div className="mt-4">
-            <WireBtn to="/om-oss" variant="secondary">Läs mer om oss →</WireBtn>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Trelink är ett digitalt mäkleri för verksamhetsöverlåtelser — lokaler, inkråm och
+                aktiebolag. Vi tar en fast avgift utan provision, granskar varje objekt noggrant innan
+                publicering och håller köpare och säljare anonyma tills affären är klar. Allt signeras
+                digitalt via Signicat och BankID. En trygg, strukturerad process från underlag till
+                tillträde.
+              </p>
+              <div className="mt-4">
+                <WireBtn to="/om-oss" variant="secondary">Läs mer om oss →</WireBtn>
+              </div>
+            </div>
+            <div className="flex min-h-[180px] items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-xs text-muted-foreground">
+              [ Bild · Om TreLink ]
+            </div>
           </div>
         </WireBox>
       </div>
