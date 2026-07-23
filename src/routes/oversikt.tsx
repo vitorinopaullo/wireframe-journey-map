@@ -8,7 +8,7 @@ export const Route = createFileRoute("/oversikt")({
 
 const sections = [
   {
-    title: "Publik yta — utloggad (SSR, SEO)",
+    title: "Publik yta — utloggad",
     color: "Publik",
     links: [
       ["/", "Start · sök & filter"],

@@ -101,7 +101,7 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
           </div>
           <div className="mt-6 flex flex-col items-center justify-between gap-2 text-xs text-muted-foreground md:flex-row">
             <span>CC Projects × Trelink — wireframe v0.1</span>
-            <span className="font-mono">Publik yta · SSR · SEO</span>
+            <span className="font-mono">Publik yta</span>
           </div>
           <div className="mt-2 text-center text-xs text-muted-foreground md:text-left">
             © 2026 Trelink AB · Org.nr XXXXXX-XXXX

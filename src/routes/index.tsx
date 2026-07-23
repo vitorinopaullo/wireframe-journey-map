@@ -234,12 +234,6 @@ function HomePage() {
         eyebrow="Publik yta · ingen inloggning krävs"
         title="Hitta verksamheter att ta över"
         subtitle="Lokaler, inkråm och aktiebolag — granskade av TreLink innan publicering. Bläddra fritt, spara med konto, agera med BankID-verifiering."
-        right={
-          <div className="flex gap-2">
-            <WireTag>SSR</WireTag>
-            <WireTag>SEO</WireTag>
-          </div>
-        }
       />
 
       <SearchBox />
