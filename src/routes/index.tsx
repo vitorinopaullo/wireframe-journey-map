@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireField, WireBtn, WireTag, Annotation, PageHeader } from "@/components/wire";
 import {
@@ -84,6 +85,70 @@ const faqItems = [
   },
 ];
 
+const TABS = [
+  { value: "alla",   label: "Alla" },
+  { value: "lokal",  label: "Lokal" },
+  { value: "inkram", label: "Inkråm" },
+  { value: "bolag",  label: "Bolag" },
+] as const;
+type TabValue = typeof TABS[number]["value"];
+
+function SearchBox() {
+  const [active, setActive] = useState<TabValue>("alla");
+
+  return (
+    <WireBox label="Sök & filter" className="mb-8">
+      {/* Transaktionstyp-flikar */}
+      <div className="mb-5 flex overflow-x-auto">
+        {TABS.map((tab, i) => (
+          <button
+            key={tab.value}
+            onClick={() => setActive(tab.value)}
+            className={[
+              "relative shrink-0 px-5 py-2 font-mono text-[11px] uppercase tracking-wider transition",
+              i > 0 ? "-ml-px" : "",
+              active === tab.value
+                ? "z-10 border border-foreground bg-foreground text-background"
+                : "border border-foreground/30 bg-background text-muted-foreground hover:z-10 hover:border-foreground hover:text-foreground",
+            ].join(" ")}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Sökfält */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-[2fr_1fr_1fr]">
+        {/* OMRÅDE — primärfält, något högre för visuell vikt */}
+        <label className="block">
+          <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            Område
+          </span>
+          <div className="flex h-12 items-center border border-foreground/40 bg-background px-3 text-sm text-foreground/40">
+            Gata, stadsdel eller ort
+          </div>
+        </label>
+
+        <WireField
+          label="Verksamhetstyp"
+          placeholder="Restaurang / Café / Butik / Frisör…"
+          type="select"
+        />
+
+        <WireField label="Prisintervall" placeholder="0 – 5 000 000 kr" />
+      </div>
+
+      {/* Åtgärder */}
+      <div className="mt-4 flex items-center gap-5">
+        <WireBtn className="px-10">Sök</WireBtn>
+        <button className="font-mono text-xs text-muted-foreground transition hover:text-foreground">
+          Fler filter +
+        </button>
+      </div>
+    </WireBox>
+  );
+}
+
 function ListingCard({ l }: { l: Listing }) {
   return (
     <Link
@@ -144,21 +209,7 @@ function HomePage() {
         }
       />
 
-      <WireBox label="Sök & filter" className="mb-8">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          <WireField label="Kategori" placeholder="Lokal / Inkråm / Bolag" type="select" />
-          <WireField label="Ort" placeholder="Stockholm" />
-          <WireField label="Prisintervall" placeholder="0 – 5 000 000 kr" />
-          <div className="flex items-end">
-            <WireBtn className="w-full">Sök</WireBtn>
-          </div>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {["Lokal", "Inkråm", "Bolag", "Restaurang", "Detaljhandel", "Tjänst", "E-handel"].map((c) => (
-            <WireTag key={c}>{c}</WireTag>
-          ))}
-        </div>
-      </WireBox>
+      <SearchBox />
 
       {/* Aktuella annonser */}
       <div className="mb-4 flex items-end justify-between">
