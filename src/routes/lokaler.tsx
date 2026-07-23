@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
-import { PageHeader } from "@/components/wire";
+import { PageHeader, Annotation } from "@/components/wire";
 import { SearchBox } from "@/components/SearchFilters";
 import { ListingCard, type Listing } from "@/components/ListingCard";
 
@@ -11,6 +11,17 @@ export const Route = createFileRoute("/lokaler")({
 // Approximate height of the sticky filter row above — not pixel-perfect,
 // but keeps the list and the map's scroll area aligned in this wireframe.
 const STICKY_OFFSET = "14rem";
+
+// Klustrade områdesbubblor — representerar zoner, inte exakta adresser.
+const mapClusters = [
+  { id: "c1", x: 22, y: 26, pris: "2,3 Mkr" },
+  { id: "c2", x: 52, y: 16, pris: "1,1 Mkr" },
+  { id: "c3", x: 76, y: 32, pris: "3,4 Mkr" },
+  { id: "c4", x: 34, y: 54, pris: "540 tkr" },
+  { id: "c5", x: 60, y: 60, pris: "1,7 Mkr" },
+  { id: "c6", x: 18, y: 76, pris: "720 tkr" },
+  { id: "c7", x: 82, y: 74, pris: "5,4 Mkr" },
+];
 
 const sodermalmListings: Listing[] = [
   { id: "plp1", kat: "Lokal", titel: "Restauranglokal · Hornstull", pris: "2 250 000", stad: "Stockholm · Södermalm", size: "195 m²" },
@@ -53,9 +64,39 @@ function LokalerPage() {
           className="lg:sticky"
           style={{ top: STICKY_OFFSET, maxHeight: `calc(100vh - ${STICKY_OFFSET})` }}
         >
-          <div className="flex h-full min-h-[400px] items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-sm text-muted-foreground">
-            [ Karta ]
+          <div className="relative h-full min-h-[400px] overflow-hidden border border-dashed border-muted-foreground/40 bg-muted/30">
+            {/* Rutnät som antyder en karta */}
+            <div className="absolute inset-0 grid grid-cols-6 grid-rows-6">
+              {Array.from({ length: 36 }).map((_, i) => (
+                <div key={i} className="border border-muted-foreground/10" />
+              ))}
+            </div>
+
+            <span className="absolute left-3 top-3 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              [ Karta ]
+            </span>
+
+            {/* Prisbubblor — områdes-/klusterzoner, inte exakta pins */}
+            {mapClusters.map((c) => (
+              <div
+                key={c.id}
+                className="absolute -translate-x-1/2 -translate-y-1/2"
+                style={{ left: `${c.x}%`, top: `${c.y}%` }}
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-dashed border-foreground/30 bg-foreground/5">
+                  <span className="whitespace-nowrap rounded-full border border-foreground/40 bg-background px-2 py-0.5 font-mono text-[10px] text-foreground shadow-sm">
+                    {c.pris}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
+
+          <Annotation>
+            <span className="mt-2 block">
+              Kartprecision: område/kluster, aldrig exakt adress för Bolag/Inkråm — att bekräfta för Lokal-annonser.
+            </span>
+          </Annotation>
         </aside>
       </div>
     </PublicLayout>
