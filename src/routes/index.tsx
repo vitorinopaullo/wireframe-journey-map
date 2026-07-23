@@ -1,13 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireField, WireBtn, WireTag, Annotation, PageHeader } from "@/components/wire";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import {
   Accordion,
@@ -171,25 +170,59 @@ function ListingCard({ l }: { l: Listing }) {
 }
 
 function ListingCarousel({ title, listings }: { title: string; listings: Listing[] }) {
+  const [api, setApi] = useState<CarouselApi>();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (!api) return;
+
+    const onSelectOrInit = () => {
+      setScrollSnaps(api.scrollSnapList());
+      setSelectedIndex(api.selectedScrollSnap());
+    };
+
+    onSelectOrInit();
+    api.on("select", onSelectOrInit);
+    api.on("reInit", onSelectOrInit);
+
+    return () => {
+      api.off("select", onSelectOrInit);
+      api.off("reInit", onSelectOrInit);
+    };
+  }, [api]);
+
   return (
     <div className="mt-12">
       <div className="mb-4 flex items-end justify-between">
         <h2 className="text-lg font-semibold">{title}</h2>
         <Annotation>{listings.length} annonser</Annotation>
       </div>
-      <div className="relative px-12">
-        <Carousel opts={{ align: "start" }}>
-          <CarouselContent>
-            {listings.map((l) => (
-              <CarouselItem key={l.id} className="basis-full md:basis-1/2 lg:basis-1/3">
-                <ListingCard l={l} />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-0" />
-          <CarouselNext className="right-0" />
-        </Carousel>
-      </div>
+      <Carousel opts={{ align: "start" }} setApi={setApi}>
+        <CarouselContent>
+          {listings.map((l) => (
+            <CarouselItem key={l.id} className="basis-full md:basis-1/2 lg:basis-1/3">
+              <ListingCard l={l} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+      {scrollSnaps.length > 1 && (
+        <div className="mt-4 flex justify-center gap-2">
+          {scrollSnaps.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => api?.scrollTo(i)}
+              aria-label={`Sida ${i + 1} av ${scrollSnaps.length}`}
+              aria-current={i === selectedIndex}
+              className={[
+                "h-2 w-2 rounded-full border border-foreground/40 transition",
+                i === selectedIndex ? "bg-foreground border-foreground" : "bg-background",
+              ].join(" ")}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
