@@ -9,118 +9,53 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as VillkorRouteImport } from './routes/villkor'
-import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
-import { Route as RegistreraRouteImport } from './routes/registrera'
-import { Route as OversiktRouteImport } from './routes/oversikt'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as OmOssRouteImport } from './routes/om-oss'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as LokalerRouteImport } from './routes/lokaler'
-import { Route as LoggaInRouteImport } from './routes/logga-in'
-import { Route as KontaktRouteImport } from './routes/kontakt'
-import { Route as IntegritetspolicyRouteImport } from './routes/integritetspolicy'
-import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
-import { Route as FaqRouteImport } from './routes/faq'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as GeorgeIndexRouteImport } from './routes/george.index'
-import { Route as SaljareSkapaAnnonsRouteImport } from './routes/saljare.skapa-annons'
-import { Route as SaljareMinaAnnonserRouteImport } from './routes/saljare.mina-annonser'
-import { Route as SaljareIntressenterRouteImport } from './routes/saljare.intressenter'
-import { Route as SaljareAnnonsInskickadRouteImport } from './routes/saljare.annons-inskickad'
-import { Route as SaljareAffarerRouteImport } from './routes/saljare.affarer'
-import { Route as KopareProfilRouteImport } from './routes/kopare.profil'
-import { Route as KopareJamforRouteImport } from './routes/kopare.jamfor'
-import { Route as KopareFavoriterRouteImport } from './routes/kopare.favoriter'
-import { Route as KopareBevakningarRouteImport } from './routes/kopare.bevakningar'
-import { Route as KopareAffarerRouteImport } from './routes/kopare.affarer'
-import { Route as GeorgeHyresvardRouteImport } from './routes/george.hyresvard'
-import { Route as GeorgeFakturorRouteImport } from './routes/george.fakturor'
-import { Route as GeorgeAnvandareRouteImport } from './routes/george.anvandare'
-import { Route as GeorgeAnnonserRouteImport } from './routes/george.annonser'
-import { Route as GeorgeAffarerRouteImport } from './routes/george.affarer'
-import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
-import { Route as AffarIdRouteImport } from './routes/affar.$id'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
+import { Route as IntegritetspolicyRouteImport } from './routes/integritetspolicy'
+import { Route as KontaktRouteImport } from './routes/kontakt'
+import { Route as LoggaInRouteImport } from './routes/logga-in'
+import { Route as LokalerRouteImport } from './routes/lokaler'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as OmOssRouteImport } from './routes/om-oss'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as OversiktRouteImport } from './routes/oversikt'
+import { Route as RegistreraRouteImport } from './routes/registrera'
+import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
+import { Route as VillkorRouteImport } from './routes/villkor'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as GeorgeAnnonserIndexRouteImport } from './routes/george.annonser.index'
-import { Route as SaljareAnnonsIdRouteImport } from './routes/saljare.annons.$id'
-import { Route as GeorgeAnnonserIdRouteImport } from './routes/george.annonser.$id'
-import { Route as GeorgeAnnonsFlodeIdRouteImport } from './routes/george.annons-flode.$id'
-import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
-import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AffarIdRouteImport } from './routes/affar.$id'
+import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
+import { Route as GeorgeIndexRouteImport } from './routes/george.index'
+import { Route as GeorgeAffarerRouteImport } from './routes/george.affarer'
+import { Route as GeorgeAnnonserRouteImport } from './routes/george.annonser'
+import { Route as GeorgeAnvandareRouteImport } from './routes/george.anvandare'
+import { Route as GeorgeFakturorRouteImport } from './routes/george.fakturor'
+import { Route as GeorgeHyresvardRouteImport } from './routes/george.hyresvard'
+import { Route as KopareAffarerRouteImport } from './routes/kopare.affarer'
+import { Route as KopareBevakningarRouteImport } from './routes/kopare.bevakningar'
+import { Route as KopareFavoriterRouteImport } from './routes/kopare.favoriter'
+import { Route as KopareJamforRouteImport } from './routes/kopare.jamfor'
+import { Route as KopareProfilRouteImport } from './routes/kopare.profil'
+import { Route as SaljareAffarerRouteImport } from './routes/saljare.affarer'
+import { Route as SaljareAnnonsInskickadRouteImport } from './routes/saljare.annons-inskickad'
+import { Route as SaljareIntressenterRouteImport } from './routes/saljare.intressenter'
+import { Route as SaljareMinaAnnonserRouteImport } from './routes/saljare.mina-annonser'
+import { Route as SaljareSkapaAnnonsRouteImport } from './routes/saljare.skapa-annons'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
+import { Route as GeorgeAnnonsFlodeIdRouteImport } from './routes/george.annons-flode.$id'
+import { Route as GeorgeAnnonserIndexRouteImport } from './routes/george.annonser.index'
+import { Route as GeorgeAnnonserIdRouteImport } from './routes/george.annonser.$id'
+import { Route as SaljareAnnonsIdRouteImport } from './routes/saljare.annons.$id'
 
-const VillkorRoute = VillkorRouteImport.update({
-  id: '/villkor',
-  path: '/villkor',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
-  id: '/tillaggstjanster',
-  path: '/tillaggstjanster',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RegistreraRoute = RegistreraRouteImport.update({
-  id: '/registrera',
-  path: '/registrera',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OversiktRoute = OversiktRouteImport.update({
-  id: '/oversikt',
-  path: '/oversikt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OmOssRoute = OmOssRouteImport.update({
-  id: '/om-oss',
-  path: '/om-oss',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LokalerRoute = LokalerRouteImport.update({
-  id: '/lokaler',
-  path: '/lokaler',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoggaInRoute = LoggaInRouteImport.update({
-  id: '/logga-in',
-  path: '/logga-in',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KontaktRoute = KontaktRouteImport.update({
-  id: '/kontakt',
-  path: '/kontakt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IntegritetspolicyRoute = IntegritetspolicyRouteImport.update({
-  id: '/integritetspolicy',
-  path: '/integritetspolicy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HurDetFunkarRoute = HurDetFunkarRouteImport.update({
-  id: '/hur-det-funkar',
-  path: '/hur-det-funkar',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FaqRoute = FaqRouteImport.update({
-  id: '/faq',
-  path: '/faq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiesRoute = CookiesRouteImport.update({
@@ -128,89 +63,91 @@ const CookiesRoute = CookiesRouteImport.update({
   path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeIndexRoute = GeorgeIndexRouteImport.update({
-  id: '/george/',
-  path: '/george/',
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SaljareSkapaAnnonsRoute = SaljareSkapaAnnonsRouteImport.update({
-  id: '/saljare/skapa-annons',
-  path: '/saljare/skapa-annons',
+const HurDetFunkarRoute = HurDetFunkarRouteImport.update({
+  id: '/hur-det-funkar',
+  path: '/hur-det-funkar',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SaljareMinaAnnonserRoute = SaljareMinaAnnonserRouteImport.update({
-  id: '/saljare/mina-annonser',
-  path: '/saljare/mina-annonser',
+const IntegritetspolicyRoute = IntegritetspolicyRouteImport.update({
+  id: '/integritetspolicy',
+  path: '/integritetspolicy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SaljareIntressenterRoute = SaljareIntressenterRouteImport.update({
-  id: '/saljare/intressenter',
-  path: '/saljare/intressenter',
+const KontaktRoute = KontaktRouteImport.update({
+  id: '/kontakt',
+  path: '/kontakt',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SaljareAnnonsInskickadRoute = SaljareAnnonsInskickadRouteImport.update({
-  id: '/saljare/annons-inskickad',
-  path: '/saljare/annons-inskickad',
+const LoggaInRoute = LoggaInRouteImport.update({
+  id: '/logga-in',
+  path: '/logga-in',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SaljareAffarerRoute = SaljareAffarerRouteImport.update({
-  id: '/saljare/affarer',
-  path: '/saljare/affarer',
+const LokalerRoute = LokalerRouteImport.update({
+  id: '/lokaler',
+  path: '/lokaler',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KopareProfilRoute = KopareProfilRouteImport.update({
-  id: '/kopare/profil',
-  path: '/kopare/profil',
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KopareJamforRoute = KopareJamforRouteImport.update({
-  id: '/kopare/jamfor',
-  path: '/kopare/jamfor',
+const OmOssRoute = OmOssRouteImport.update({
+  id: '/om-oss',
+  path: '/om-oss',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KopareFavoriterRoute = KopareFavoriterRouteImport.update({
-  id: '/kopare/favoriter',
-  path: '/kopare/favoriter',
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KopareBevakningarRoute = KopareBevakningarRouteImport.update({
-  id: '/kopare/bevakningar',
-  path: '/kopare/bevakningar',
+const OversiktRoute = OversiktRouteImport.update({
+  id: '/oversikt',
+  path: '/oversikt',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KopareAffarerRoute = KopareAffarerRouteImport.update({
-  id: '/kopare/affarer',
-  path: '/kopare/affarer',
+const RegistreraRoute = RegistreraRouteImport.update({
+  id: '/registrera',
+  path: '/registrera',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeHyresvardRoute = GeorgeHyresvardRouteImport.update({
-  id: '/george/hyresvard',
-  path: '/george/hyresvard',
+const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
+  id: '/tillaggstjanster',
+  path: '/tillaggstjanster',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeFakturorRoute = GeorgeFakturorRouteImport.update({
-  id: '/george/fakturor',
-  path: '/george/fakturor',
+const VillkorRoute = VillkorRouteImport.update({
+  id: '/villkor',
+  path: '/villkor',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeAnvandareRoute = GeorgeAnvandareRouteImport.update({
-  id: '/george/anvandare',
-  path: '/george/anvandare',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GeorgeAnnonserRoute = GeorgeAnnonserRouteImport.update({
-  id: '/george/annonser',
-  path: '/george/annonser',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GeorgeAffarerRoute = GeorgeAffarerRouteImport.update({
-  id: '/george/affarer',
-  path: '/george/affarer',
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AffarIdRoute = AffarIdRouteImport.update({
+  id: '/affar/$id',
+  path: '/affar/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnnonsIdRoute = AnnonsIdRouteImport.update({
@@ -218,47 +155,90 @@ const AnnonsIdRoute = AnnonsIdRouteImport.update({
   path: '/annons/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AffarIdRoute = AffarIdRouteImport.update({
-  id: '/affar/$id',
-  path: '/affar/$id',
+const GeorgeIndexRoute = GeorgeIndexRouteImport.update({
+  id: '/george/',
+  path: '/george/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const GeorgeAnnonserIndexRoute = GeorgeAnnonserIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => GeorgeAnnonserRoute,
-} as any)
-const SaljareAnnonsIdRoute = SaljareAnnonsIdRouteImport.update({
-  id: '/saljare/annons/$id',
-  path: '/saljare/annons/$id',
+const GeorgeAffarerRoute = GeorgeAffarerRouteImport.update({
+  id: '/george/affarer',
+  path: '/george/affarer',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GeorgeAnnonserIdRoute = GeorgeAnnonserIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => GeorgeAnnonserRoute,
-} as any)
-const GeorgeAnnonsFlodeIdRoute = GeorgeAnnonsFlodeIdRouteImport.update({
-  id: '/george/annons-flode/$id',
-  path: '/george/annons-flode/$id',
+const GeorgeAnnonserRoute = GeorgeAnnonserRouteImport.update({
+  id: '/george/annonser',
+  path: '/george/annonser',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AnnonsIdIntresseRoute = AnnonsIdIntresseRouteImport.update({
-  id: '/intresse',
-  path: '/intresse',
-  getParentRoute: () => AnnonsIdRoute,
+const GeorgeAnvandareRoute = GeorgeAnvandareRouteImport.update({
+  id: '/george/anvandare',
+  path: '/george/anvandare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GeorgeFakturorRoute = GeorgeFakturorRouteImport.update({
+  id: '/george/fakturor',
+  path: '/george/fakturor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GeorgeHyresvardRoute = GeorgeHyresvardRouteImport.update({
+  id: '/george/hyresvard',
+  path: '/george/hyresvard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareAffarerRoute = KopareAffarerRouteImport.update({
+  id: '/kopare/affarer',
+  path: '/kopare/affarer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareBevakningarRoute = KopareBevakningarRouteImport.update({
+  id: '/kopare/bevakningar',
+  path: '/kopare/bevakningar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareFavoriterRoute = KopareFavoriterRouteImport.update({
+  id: '/kopare/favoriter',
+  path: '/kopare/favoriter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareJamforRoute = KopareJamforRouteImport.update({
+  id: '/kopare/jamfor',
+  path: '/kopare/jamfor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KopareProfilRoute = KopareProfilRouteImport.update({
+  id: '/kopare/profil',
+  path: '/kopare/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareAffarerRoute = SaljareAffarerRouteImport.update({
+  id: '/saljare/affarer',
+  path: '/saljare/affarer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareAnnonsInskickadRoute = SaljareAnnonsInskickadRouteImport.update({
+  id: '/saljare/annons-inskickad',
+  path: '/saljare/annons-inskickad',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareIntressenterRoute = SaljareIntressenterRouteImport.update({
+  id: '/saljare/intressenter',
+  path: '/saljare/intressenter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareMinaAnnonserRoute = SaljareMinaAnnonserRouteImport.update({
+  id: '/saljare/mina-annonser',
+  path: '/saljare/mina-annonser',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SaljareSkapaAnnonsRoute = SaljareSkapaAnnonsRouteImport.update({
+  id: '/saljare/skapa-annons',
+  path: '/saljare/skapa-annons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
@@ -266,9 +246,29 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
-const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
-  id: '/.lovable/oauth/consent',
-  path: '/.lovable/oauth/consent',
+const AnnonsIdIntresseRoute = AnnonsIdIntresseRouteImport.update({
+  id: '/intresse',
+  path: '/intresse',
+  getParentRoute: () => AnnonsIdRoute,
+} as any)
+const GeorgeAnnonsFlodeIdRoute = GeorgeAnnonsFlodeIdRouteImport.update({
+  id: '/george/annons-flode/$id',
+  path: '/george/annons-flode/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GeorgeAnnonserIndexRoute = GeorgeAnnonserIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GeorgeAnnonserRoute,
+} as any)
+const GeorgeAnnonserIdRoute = GeorgeAnnonserIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => GeorgeAnnonserRoute,
+} as any)
+const SaljareAnnonsIdRoute = SaljareAnnonsIdRouteImport.update({
+  id: '/saljare/annons/$id',
+  path: '/saljare/annons/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -589,102 +589,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/villkor': {
-      id: '/villkor'
-      path: '/villkor'
-      fullPath: '/villkor'
-      preLoaderRoute: typeof VillkorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tillaggstjanster': {
-      id: '/tillaggstjanster'
-      path: '/tillaggstjanster'
-      fullPath: '/tillaggstjanster'
-      preLoaderRoute: typeof TillaggstjansterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/registrera': {
-      id: '/registrera'
-      path: '/registrera'
-      fullPath: '/registrera'
-      preLoaderRoute: typeof RegistreraRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/oversikt': {
-      id: '/oversikt'
-      path: '/oversikt'
-      fullPath: '/oversikt'
-      preLoaderRoute: typeof OversiktRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/om-oss': {
-      id: '/om-oss'
-      path: '/om-oss'
-      fullPath: '/om-oss'
-      preLoaderRoute: typeof OmOssRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lokaler': {
-      id: '/lokaler'
-      path: '/lokaler'
-      fullPath: '/lokaler'
-      preLoaderRoute: typeof LokalerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/logga-in': {
-      id: '/logga-in'
-      path: '/logga-in'
-      fullPath: '/logga-in'
-      preLoaderRoute: typeof LoggaInRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/kontakt': {
-      id: '/kontakt'
-      path: '/kontakt'
-      fullPath: '/kontakt'
-      preLoaderRoute: typeof KontaktRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/integritetspolicy': {
-      id: '/integritetspolicy'
-      path: '/integritetspolicy'
-      fullPath: '/integritetspolicy'
-      preLoaderRoute: typeof IntegritetspolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hur-det-funkar': {
-      id: '/hur-det-funkar'
-      path: '/hur-det-funkar'
-      fullPath: '/hur-det-funkar'
-      preLoaderRoute: typeof HurDetFunkarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/faq': {
-      id: '/faq'
-      path: '/faq'
-      fullPath: '/faq'
-      preLoaderRoute: typeof FaqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookies': {
@@ -694,144 +603,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/george/': {
-      id: '/george/'
-      path: '/george'
-      fullPath: '/george/'
-      preLoaderRoute: typeof GeorgeIndexRouteImport
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/saljare/skapa-annons': {
-      id: '/saljare/skapa-annons'
-      path: '/saljare/skapa-annons'
-      fullPath: '/saljare/skapa-annons'
-      preLoaderRoute: typeof SaljareSkapaAnnonsRouteImport
+    '/hur-det-funkar': {
+      id: '/hur-det-funkar'
+      path: '/hur-det-funkar'
+      fullPath: '/hur-det-funkar'
+      preLoaderRoute: typeof HurDetFunkarRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/saljare/mina-annonser': {
-      id: '/saljare/mina-annonser'
-      path: '/saljare/mina-annonser'
-      fullPath: '/saljare/mina-annonser'
-      preLoaderRoute: typeof SaljareMinaAnnonserRouteImport
+    '/integritetspolicy': {
+      id: '/integritetspolicy'
+      path: '/integritetspolicy'
+      fullPath: '/integritetspolicy'
+      preLoaderRoute: typeof IntegritetspolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/saljare/intressenter': {
-      id: '/saljare/intressenter'
-      path: '/saljare/intressenter'
-      fullPath: '/saljare/intressenter'
-      preLoaderRoute: typeof SaljareIntressenterRouteImport
+    '/kontakt': {
+      id: '/kontakt'
+      path: '/kontakt'
+      fullPath: '/kontakt'
+      preLoaderRoute: typeof KontaktRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/saljare/annons-inskickad': {
-      id: '/saljare/annons-inskickad'
-      path: '/saljare/annons-inskickad'
-      fullPath: '/saljare/annons-inskickad'
-      preLoaderRoute: typeof SaljareAnnonsInskickadRouteImport
+    '/logga-in': {
+      id: '/logga-in'
+      path: '/logga-in'
+      fullPath: '/logga-in'
+      preLoaderRoute: typeof LoggaInRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/saljare/affarer': {
-      id: '/saljare/affarer'
-      path: '/saljare/affarer'
-      fullPath: '/saljare/affarer'
-      preLoaderRoute: typeof SaljareAffarerRouteImport
+    '/lokaler': {
+      id: '/lokaler'
+      path: '/lokaler'
+      fullPath: '/lokaler'
+      preLoaderRoute: typeof LokalerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kopare/profil': {
-      id: '/kopare/profil'
-      path: '/kopare/profil'
-      fullPath: '/kopare/profil'
-      preLoaderRoute: typeof KopareProfilRouteImport
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kopare/jamfor': {
-      id: '/kopare/jamfor'
-      path: '/kopare/jamfor'
-      fullPath: '/kopare/jamfor'
-      preLoaderRoute: typeof KopareJamforRouteImport
+    '/om-oss': {
+      id: '/om-oss'
+      path: '/om-oss'
+      fullPath: '/om-oss'
+      preLoaderRoute: typeof OmOssRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kopare/favoriter': {
-      id: '/kopare/favoriter'
-      path: '/kopare/favoriter'
-      fullPath: '/kopare/favoriter'
-      preLoaderRoute: typeof KopareFavoriterRouteImport
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kopare/bevakningar': {
-      id: '/kopare/bevakningar'
-      path: '/kopare/bevakningar'
-      fullPath: '/kopare/bevakningar'
-      preLoaderRoute: typeof KopareBevakningarRouteImport
+    '/oversikt': {
+      id: '/oversikt'
+      path: '/oversikt'
+      fullPath: '/oversikt'
+      preLoaderRoute: typeof OversiktRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kopare/affarer': {
-      id: '/kopare/affarer'
-      path: '/kopare/affarer'
-      fullPath: '/kopare/affarer'
-      preLoaderRoute: typeof KopareAffarerRouteImport
+    '/registrera': {
+      id: '/registrera'
+      path: '/registrera'
+      fullPath: '/registrera'
+      preLoaderRoute: typeof RegistreraRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/george/hyresvard': {
-      id: '/george/hyresvard'
-      path: '/george/hyresvard'
-      fullPath: '/george/hyresvard'
-      preLoaderRoute: typeof GeorgeHyresvardRouteImport
+    '/tillaggstjanster': {
+      id: '/tillaggstjanster'
+      path: '/tillaggstjanster'
+      fullPath: '/tillaggstjanster'
+      preLoaderRoute: typeof TillaggstjansterRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/george/fakturor': {
-      id: '/george/fakturor'
-      path: '/george/fakturor'
-      fullPath: '/george/fakturor'
-      preLoaderRoute: typeof GeorgeFakturorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/george/anvandare': {
-      id: '/george/anvandare'
-      path: '/george/anvandare'
-      fullPath: '/george/anvandare'
-      preLoaderRoute: typeof GeorgeAnvandareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/george/annonser': {
-      id: '/george/annonser'
-      path: '/george/annonser'
-      fullPath: '/george/annonser'
-      preLoaderRoute: typeof GeorgeAnnonserRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/george/affarer': {
-      id: '/george/affarer'
-      path: '/george/affarer'
-      fullPath: '/george/affarer'
-      preLoaderRoute: typeof GeorgeAffarerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/annons/$id': {
-      id: '/annons/$id'
-      path: '/annons/$id'
-      fullPath: '/annons/$id'
-      preLoaderRoute: typeof AnnonsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/affar/$id': {
-      id: '/affar/$id'
-      path: '/affar/$id'
-      fullPath: '/affar/$id'
-      preLoaderRoute: typeof AffarIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+    '/villkor': {
+      id: '/villkor'
+      path: '/villkor'
+      fullPath: '/villkor'
+      preLoaderRoute: typeof VillkorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/list-tools': {
@@ -841,32 +708,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/george/annonser/': {
-      id: '/george/annonser/'
-      path: '/'
-      fullPath: '/george/annonser/'
-      preLoaderRoute: typeof GeorgeAnnonserIndexRouteImport
-      parentRoute: typeof GeorgeAnnonserRoute
-    }
-    '/saljare/annons/$id': {
-      id: '/saljare/annons/$id'
-      path: '/saljare/annons/$id'
-      fullPath: '/saljare/annons/$id'
-      preLoaderRoute: typeof SaljareAnnonsIdRouteImport
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/george/annonser/$id': {
-      id: '/george/annonser/$id'
-      path: '/$id'
-      fullPath: '/george/annonser/$id'
-      preLoaderRoute: typeof GeorgeAnnonserIdRouteImport
-      parentRoute: typeof GeorgeAnnonserRoute
+    '/affar/$id': {
+      id: '/affar/$id'
+      path: '/affar/$id'
+      fullPath: '/affar/$id'
+      preLoaderRoute: typeof AffarIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/george/annons-flode/$id': {
-      id: '/george/annons-flode/$id'
-      path: '/george/annons-flode/$id'
-      fullPath: '/george/annons-flode/$id'
-      preLoaderRoute: typeof GeorgeAnnonsFlodeIdRouteImport
+    '/annons/$id': {
+      id: '/annons/$id'
+      path: '/annons/$id'
+      fullPath: '/annons/$id'
+      preLoaderRoute: typeof AnnonsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/': {
+      id: '/george/'
+      path: '/george'
+      fullPath: '/george/'
+      preLoaderRoute: typeof GeorgeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/affarer': {
+      id: '/george/affarer'
+      path: '/george/affarer'
+      fullPath: '/george/affarer'
+      preLoaderRoute: typeof GeorgeAffarerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/annonser': {
+      id: '/george/annonser'
+      path: '/george/annonser'
+      fullPath: '/george/annonser'
+      preLoaderRoute: typeof GeorgeAnnonserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/anvandare': {
+      id: '/george/anvandare'
+      path: '/george/anvandare'
+      fullPath: '/george/anvandare'
+      preLoaderRoute: typeof GeorgeAnvandareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/fakturor': {
+      id: '/george/fakturor'
+      path: '/george/fakturor'
+      fullPath: '/george/fakturor'
+      preLoaderRoute: typeof GeorgeFakturorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/george/hyresvard': {
+      id: '/george/hyresvard'
+      path: '/george/hyresvard'
+      fullPath: '/george/hyresvard'
+      preLoaderRoute: typeof GeorgeHyresvardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/affarer': {
+      id: '/kopare/affarer'
+      path: '/kopare/affarer'
+      fullPath: '/kopare/affarer'
+      preLoaderRoute: typeof KopareAffarerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/bevakningar': {
+      id: '/kopare/bevakningar'
+      path: '/kopare/bevakningar'
+      fullPath: '/kopare/bevakningar'
+      preLoaderRoute: typeof KopareBevakningarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/favoriter': {
+      id: '/kopare/favoriter'
+      path: '/kopare/favoriter'
+      fullPath: '/kopare/favoriter'
+      preLoaderRoute: typeof KopareFavoriterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/jamfor': {
+      id: '/kopare/jamfor'
+      path: '/kopare/jamfor'
+      fullPath: '/kopare/jamfor'
+      preLoaderRoute: typeof KopareJamforRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kopare/profil': {
+      id: '/kopare/profil'
+      path: '/kopare/profil'
+      fullPath: '/kopare/profil'
+      preLoaderRoute: typeof KopareProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/affarer': {
+      id: '/saljare/affarer'
+      path: '/saljare/affarer'
+      fullPath: '/saljare/affarer'
+      preLoaderRoute: typeof SaljareAffarerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/annons-inskickad': {
+      id: '/saljare/annons-inskickad'
+      path: '/saljare/annons-inskickad'
+      fullPath: '/saljare/annons-inskickad'
+      preLoaderRoute: typeof SaljareAnnonsInskickadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/intressenter': {
+      id: '/saljare/intressenter'
+      path: '/saljare/intressenter'
+      fullPath: '/saljare/intressenter'
+      preLoaderRoute: typeof SaljareIntressenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/mina-annonser': {
+      id: '/saljare/mina-annonser'
+      path: '/saljare/mina-annonser'
+      fullPath: '/saljare/mina-annonser'
+      preLoaderRoute: typeof SaljareMinaAnnonserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saljare/skapa-annons': {
+      id: '/saljare/skapa-annons'
+      path: '/saljare/skapa-annons'
+      fullPath: '/saljare/skapa-annons'
+      preLoaderRoute: typeof SaljareSkapaAnnonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/annons/$id/intresse': {
@@ -876,18 +862,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnnonsIdIntresseRouteImport
       parentRoute: typeof AnnonsIdRoute
     }
-    '/.mcp/invoke-tool/$tool': {
-      id: '/.mcp/invoke-tool/$tool'
-      path: '/.mcp/invoke-tool/$tool'
-      fullPath: '/.mcp/invoke-tool/$tool'
-      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+    '/george/annons-flode/$id': {
+      id: '/george/annons-flode/$id'
+      path: '/george/annons-flode/$id'
+      fullPath: '/george/annons-flode/$id'
+      preLoaderRoute: typeof GeorgeAnnonsFlodeIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.lovable/oauth/consent': {
-      id: '/.lovable/oauth/consent'
-      path: '/.lovable/oauth/consent'
-      fullPath: '/.lovable/oauth/consent'
-      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+    '/george/annonser/': {
+      id: '/george/annonser/'
+      path: '/'
+      fullPath: '/george/annonser/'
+      preLoaderRoute: typeof GeorgeAnnonserIndexRouteImport
+      parentRoute: typeof GeorgeAnnonserRoute
+    }
+    '/george/annonser/$id': {
+      id: '/george/annonser/$id'
+      path: '/$id'
+      fullPath: '/george/annonser/$id'
+      preLoaderRoute: typeof GeorgeAnnonserIdRouteImport
+      parentRoute: typeof GeorgeAnnonserRoute
+    }
+    '/saljare/annons/$id': {
+      id: '/saljare/annons/$id'
+      path: '/saljare/annons/$id'
+      fullPath: '/saljare/annons/$id'
+      preLoaderRoute: typeof SaljareAnnonsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
