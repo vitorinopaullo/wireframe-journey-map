@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { redirect } from "@tanstack/react-router";
+import { isUnlocked } from "@/lib/gate.functions";
 
 function NotFoundComponent() {
   return (
@@ -73,6 +75,16 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: async ({ location }) => {
+    if (location.pathname === "/unlock") return;
+    if (location.pathname.startsWith("/.well-known")) return;
+    if (location.pathname.startsWith("/.mcp")) return;
+    if (location.pathname.startsWith("/_serverFn")) return;
+    const { unlocked } = await isUnlocked();
+    if (!unlocked) {
+      throw redirect({ to: "/unlock" });
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
