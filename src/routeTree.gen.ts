@@ -24,6 +24,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OversiktRouteImport } from './routes/oversikt'
 import { Route as RegistreraRouteImport } from './routes/registrera'
 import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
+import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as VillkorRouteImport } from './routes/villkor'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -126,6 +127,11 @@ const RegistreraRoute = RegistreraRouteImport.update({
 const TillaggstjansterRoute = TillaggstjansterRouteImport.update({
   id: '/tillaggstjanster',
   path: '/tillaggstjanster',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnlockRoute = UnlockRouteImport.update({
+  id: '/unlock',
+  path: '/unlock',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VillkorRoute = VillkorRouteImport.update({
@@ -288,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/unlock': typeof UnlockRoute
   '/villkor': typeof VillkorRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -333,6 +340,7 @@ export interface FileRoutesByTo {
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/unlock': typeof UnlockRoute
   '/villkor': typeof VillkorRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -378,6 +386,7 @@ export interface FileRoutesById {
   '/oversikt': typeof OversiktRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
+  '/unlock': typeof UnlockRoute
   '/villkor': typeof VillkorRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -425,6 +434,7 @@ export interface FileRouteTypes {
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/unlock'
     | '/villkor'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -470,6 +480,7 @@ export interface FileRouteTypes {
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/unlock'
     | '/villkor'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -514,6 +525,7 @@ export interface FileRouteTypes {
     | '/oversikt'
     | '/registrera'
     | '/tillaggstjanster'
+    | '/unlock'
     | '/villkor'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -560,6 +572,7 @@ export interface RootRouteChildren {
   OversiktRoute: typeof OversiktRoute
   RegistreraRoute: typeof RegistreraRoute
   TillaggstjansterRoute: typeof TillaggstjansterRoute
+  UnlockRoute: typeof UnlockRoute
   VillkorRoute: typeof VillkorRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -692,6 +705,13 @@ declare module '@tanstack/react-router' {
       path: '/tillaggstjanster'
       fullPath: '/tillaggstjanster'
       preLoaderRoute: typeof TillaggstjansterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unlock': {
+      id: '/unlock'
+      path: '/unlock'
+      fullPath: '/unlock'
+      preLoaderRoute: typeof UnlockRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/villkor': {
@@ -935,6 +955,7 @@ const rootRouteChildren: RootRouteChildren = {
   OversiktRoute: OversiktRoute,
   RegistreraRoute: RegistreraRoute,
   TillaggstjansterRoute: TillaggstjansterRoute,
+  UnlockRoute: UnlockRoute,
   VillkorRoute: VillkorRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
