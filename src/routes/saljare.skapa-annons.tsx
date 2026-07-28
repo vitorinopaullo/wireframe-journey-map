@@ -390,47 +390,6 @@ function CreateListing() {
         <>
           <KontoSammanfattning />
 
-          <WireBox label="Objektet" className="mb-6">
-            <Annotation>
-              TreLink sätter annonsrubrik och pris åt dig — vi kan marknaden och prissätter mot rätt köpargrupp.
-              Fyll i grundfakta så vi vet vad vi jobbar med.
-            </Annotation>
-            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <WireFieldEditable
-                label="Ort *"
-                value={draft.ort}
-                onChange={(v) => set("ort", v)}
-                placeholder="Stockholm"
-              />
-              <WireFieldEditable
-                label="Adress *"
-                value={draft.adress}
-                onChange={(v) => set("adress", v)}
-                placeholder="Götgatan 12"
-                hint="Exakt adress visas inte publikt — TreLink använder området i annonsen."
-              />
-              <WireFieldEditable
-                label="Yta (m²) *"
-                value={draft.yta}
-                onChange={(v) => set("yta", v)}
-                placeholder="180"
-              />
-              <VerksamhetstypSelect
-                value={draft.verksamhet}
-                onChange={(v) => set("verksamhet", v)}
-              />
-              {draft.cat === "aktie" && (
-                <WireFieldEditable
-                  label="Org.nr *"
-                  value={draft.orgnr}
-                  onChange={(v) => set("orgnr", v)}
-                  placeholder="556123-4567"
-                  hint="TreLink hämtar bolagsinfo från Bolagsverket."
-                />
-              )}
-            </div>
-          </WireBox>
-
           <WireBox label="Hyresvärd & BRF" className="mb-6">
             <p className="text-sm text-muted-foreground">
               TreLink behöver kontaktuppgifter till hyresvärden för att få godkännande av överlåtelse.
@@ -492,6 +451,47 @@ function CreateListing() {
                 placeholder="För- och efternamn på kontaktperson i föreningen"
                 hint="Frivilligt — fylls i om objektet ligger i en bostadsrättsförening"
               />
+            </div>
+          </WireBox>
+
+          <WireBox label="Objektet" className="mb-6">
+            <Annotation>
+              TreLink sätter annonsrubrik och pris åt dig — vi kan marknaden och prissätter mot rätt köpargrupp.
+              Fyll i grundfakta så vi vet vad vi jobbar med.
+            </Annotation>
+            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <WireFieldEditable
+                label="Ort *"
+                value={draft.ort}
+                onChange={(v) => set("ort", v)}
+                placeholder="Stockholm"
+              />
+              <WireFieldEditable
+                label="Adress *"
+                value={draft.adress}
+                onChange={(v) => set("adress", v)}
+                placeholder="Götgatan 12"
+                hint="Exakt adress visas inte publikt — TreLink använder området i annonsen."
+              />
+              <WireFieldEditable
+                label="Yta (m²) *"
+                value={draft.yta}
+                onChange={(v) => set("yta", v)}
+                placeholder="180"
+              />
+              <VerksamhetstypSelect
+                value={draft.verksamhet}
+                onChange={(v) => set("verksamhet", v)}
+              />
+              {draft.cat === "aktie" && (
+                <WireFieldEditable
+                  label="Org.nr *"
+                  value={draft.orgnr}
+                  onChange={(v) => set("orgnr", v)}
+                  placeholder="556123-4567"
+                  hint="TreLink hämtar bolagsinfo från Bolagsverket."
+                />
+              )}
             </div>
           </WireBox>
 
