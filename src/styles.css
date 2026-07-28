@@ -17,12 +17,18 @@
  * To add a new semantic color:
  * 1. Add the variable to :root (light value) and .dark (dark value)
  * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ *
+ * Typography tokens (--heading, --body-text) are the one deliberate
+ * exception to the oklch rule: they carry exact brand hex values from the
+ * design spec (Syne / Hanken Grotesk), so keep them as hex for a 1:1 match
+ * when handing off to the tech team.
  */
 
 @theme inline {
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", monospace;
   --font-heading: "Syne", sans-serif;
+  --font-body: "Hanken Grotesk", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -32,6 +38,8 @@
   --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-heading: var(--heading);
+  --color-body-text: var(--body-text);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -68,6 +76,7 @@
 :root {
   --radius: 0.625rem;
   --heading: #1A161F;
+  --body-text: #494552;
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
@@ -144,13 +153,27 @@
 
   body {
     background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
+    color: var(--color-body-text);
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
+
+  /*
+   * Layout wrappers set text-foreground directly (for buttons, tags, etc.),
+   * which shadows body's inherited color for any <p> without its own color
+   * class. A direct type-selector rule beats inheritance without needing
+   * !important, and still loses to explicit classes like text-muted-foreground
+   * (higher specificity), so intentionally de-emphasized copy stays untouched.
+   */
+  p {
+    font-family: var(--font-body);
+    font-weight: 400;
+    color: var(--color-body-text);
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 500 !important;
-    color: var(--heading) !important;
+    color: var(--color-heading) !important;
   }
 }
