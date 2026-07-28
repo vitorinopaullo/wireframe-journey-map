@@ -48,8 +48,9 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-foreground/20">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link to="/" className="font-mono text-lg font-semibold tracking-tight">
-            TRELINK <span className="text-muted-foreground text-xs">/wireframe</span>
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/trelink-logo.svg" alt="TreLink" className="h-6 w-auto" />
+            <span className="font-mono text-xs text-muted-foreground">/wireframe</span>
           </Link>
           <nav className="hidden gap-6 md:flex">
             {navItems.map((n) => (
@@ -79,11 +80,15 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
       <footer className="border-t border-foreground/20">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="grid grid-cols-1 gap-8 border-b border-dashed border-muted-foreground/40 pb-10 md:grid-cols-4">
-            {footerCols.map((col) => (
+            {footerCols.map((col, i) => (
               <div key={col.title}>
-                <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                  {col.title}
-                </div>
+                {i === 0 ? (
+                  <img src="/trelink-logo.svg" alt="TreLink" className="mb-3 h-5 w-auto" />
+                ) : (
+                  <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {col.title}
+                  </div>
+                )}
                 {col.blurb && (
                   <p className="mb-4 text-sm text-muted-foreground">{col.blurb}</p>
                 )}
