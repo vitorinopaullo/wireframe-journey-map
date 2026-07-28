@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, Annotation, PageHeader } from "@/components/wire";
 import { SearchBox } from "@/components/SearchFilters";
@@ -84,7 +85,15 @@ const faqItems = [
   },
 ];
 
-function ListingCarousel({ title, listings }: { title: string; listings: Listing[] }) {
+function ListingCarousel({
+  title,
+  listings,
+  omrade,
+}: {
+  title: string;
+  listings: Listing[];
+  omrade: string;
+}) {
   const [api, setApi] = useState<CarouselApi>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
@@ -111,7 +120,18 @@ function ListingCarousel({ title, listings }: { title: string; listings: Listing
     <div className="mt-12">
       <div className="mb-4 flex items-end justify-between">
         <h2 className="text-lg font-semibold">{title}</h2>
-        <Annotation>{listings.length} annonser</Annotation>
+        {/*
+          TODO: /lokaler är statisk (hårdkodad till Södermalm) och stödjer ännu
+          inte per-område-routing. Länka till t.ex. `/lokaler/${omrade}` när
+          PLP-sidan tar emot ett dynamiskt områdesparametrar istället.
+        */}
+        <Link
+          to="/lokaler"
+          className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground transition hover:text-foreground"
+        >
+          Visa alla
+          <ArrowRight className="h-3 w-3" />
+        </Link>
       </div>
       <Carousel opts={{ align: "start" }} setApi={setApi}>
         <CarouselContent>
@@ -182,8 +202,8 @@ function HomePage() {
       </WireBox>
 
       {/* Karuseller per stadsdel */}
-      <ListingCarousel title="Lediga lokaler i Södermalm" listings={sodermalamListings} />
-      <ListingCarousel title="Lediga lokaler i Östermalm" listings={ostermalmListings} />
+      <ListingCarousel title="Lediga lokaler i Södermalm" listings={sodermalamListings} omrade="Södermalm" />
+      <ListingCarousel title="Lediga lokaler i Östermalm" listings={ostermalmListings} omrade="Östermalm" />
 
       {/* Om oss */}
       <div className="mt-16">
