@@ -129,16 +129,6 @@ type Draft = {
   potential: string;
   premium: boolean;
   docs: Record<string, DocState>;
-  // Övrig info — vem är köparen / firmatecknare
-  kopareTyp: "sjalv" | "assistent" | "";
-  kopareNamn: string;
-  kopareRoll: string;
-  kopareTel: string;
-  kopareEmail: string;
-  signerareNamn: string;
-  signerareRoll: string;
-  signerareEmail: string;
-  ovrigt: string;
 };
 
 const empty: Draft = {
@@ -165,18 +155,9 @@ const empty: Draft = {
   potential: "",
   premium: false,
   docs: {},
-  kopareTyp: "",
-  kopareNamn: "",
-  kopareRoll: "",
-  kopareTel: "",
-  kopareEmail: "",
-  signerareNamn: "",
-  signerareRoll: "",
-  signerareEmail: "",
-  ovrigt: "",
 };
 
-const STEPS = ["Paket", "Grunduppgifter", "Underlag", "Övrig info", "Granska & skicka"] as const;
+const STEPS = ["Paket", "Grunduppgifter", "Underlag", "Granska & skicka"] as const;
 
 function CreateListing() {
   const navigate = useNavigate();
@@ -239,7 +220,7 @@ function CreateListing() {
   const docStatus = (name: string): DocState => draft.docs[name] ?? "saknas";
 
   const validation = useMemo(() => {
-    const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [], 4: [] };
+    const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [] };
     if (!draft.cat) errs[0].push("Välj paket.");
     if (!draft.ort) errs[1].push("Ange ort.");
     if (!draft.adress) errs[1].push("Ange adress.");
@@ -257,8 +238,6 @@ function CreateListing() {
       (d) => d.required && (docStatus(d.name) === "saknas" || docStatus(d.name) === "komplettera")
     );
     if (missingReq.length) errs[2].push(`${missingReq.length} obligatoriska dokument saknas.`);
-    if (!draft.signerareNamn) errs[3].push("Ange vem som är firmatecknare/signerare för säljande part.");
-    if (!draft.signerareRoll) errs[3].push("Ange roll (VD, styrelseordförande etc.).");
     return errs;
   }, [draft, requiredDocs]);
 
@@ -273,9 +252,9 @@ function CreateListing() {
     const fields = [
       draft.ort, draft.adress, draft.yta, draft.verksamhet,
       draft.hyresvardEmail, draft.hyresvardTel, draft.brfKontakt,
-      draft.usp, draft.kundunderlag, draft.laget, draft.signerareNamn,
+      draft.usp, draft.kundunderlag, draft.laget,
     ].filter(Boolean).length;
-    return Math.round(((fields / 11) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
+    return Math.round(((fields / 10) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
   }, [draft, requiredDocs]);
 
 
@@ -290,7 +269,7 @@ function CreateListing() {
 
   const activeCat = cats.find((c) => c.id === draft.cat)!;
   const canSubmit =
-    validation[1].length + validation[2].length + validation[3].length + validation[4].length === 0;
+    validation[1].length + validation[2].length + validation[3].length === 0;
 
   return (
     <AppLayout mode="saljare">
@@ -312,7 +291,7 @@ function CreateListing() {
       />
 
       {/* Stepper */}
-      <div className="mb-6 grid grid-cols-5 gap-2">
+      <div className="mb-6 grid grid-cols-4 gap-2">
         {STEPS.map((label, i) => {
           const isDone = i < step;
           const isActive = i === step;
@@ -591,105 +570,8 @@ function CreateListing() {
         </WireBox>
       )}
 
-      {/* STEP 3 — Övrig info */}
+      {/* STEP 3 — Granska & skicka */}
       {step === 3 && (
-        <>
-          <WireBox label="Vem representerar säljaren?" className="mb-6">
-            <Annotation>
-              Ibland är den som lägger upp annonsen inte firmatecknare (t.ex. en assistent eller mäklare).
-              TreLink behöver veta vem från styrelsen/VD som faktiskt skriver på kontraktet.
-            </Annotation>
-            <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
-              <button
-                onClick={() => set("kopareTyp", "sjalv")}
-                className={`border p-3 text-left ${
-                  draft.kopareTyp === "sjalv" ? "border-foreground bg-muted/40" : "border-dashed border-muted-foreground/40"
-                }`}
-              >
-                <div className="text-sm font-medium">Jag är firmatecknare</div>
-                <Annotation>Jag skriver på kontraktet själv.</Annotation>
-              </button>
-              <button
-                onClick={() => set("kopareTyp", "assistent")}
-                className={`border p-3 text-left ${
-                  draft.kopareTyp === "assistent" ? "border-foreground bg-muted/40" : "border-dashed border-muted-foreground/40"
-                }`}
-              >
-                <div className="text-sm font-medium">Jag agerar för någon annan</div>
-                <Annotation>Firmatecknaren är en annan person (VD, styrelse, ägare).</Annotation>
-              </button>
-            </div>
-          </WireBox>
-
-          <WireBox label="Firmatecknare / signerare *" className="mb-6">
-            <Annotation>Denna person måste vara behörig att teckna säljande bolagets firma.</Annotation>
-            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <WireFieldEditable
-                label="Namn *"
-                value={draft.signerareNamn}
-                onChange={(v) => set("signerareNamn", v)}
-                placeholder="För- och efternamn"
-              />
-              <WireFieldEditable
-                label="Roll *"
-                value={draft.signerareRoll}
-                onChange={(v) => set("signerareRoll", v)}
-                placeholder="VD / Styrelseordförande / Ensam ägare"
-              />
-              <WireFieldEditable
-                label="E-post *"
-                value={draft.signerareEmail}
-                onChange={(v) => set("signerareEmail", v)}
-                placeholder="namn@företag.se"
-              />
-            </div>
-          </WireBox>
-
-          {draft.kopareTyp === "assistent" && (
-            <WireBox label="Kontaktperson (den som driver affären åt firmatecknaren)" className="mb-6">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <WireFieldEditable
-                  label="Namn"
-                  value={draft.kopareNamn}
-                  onChange={(v) => set("kopareNamn", v)}
-                  placeholder="För- och efternamn"
-                />
-                <WireFieldEditable
-                  label="Roll"
-                  value={draft.kopareRoll}
-                  onChange={(v) => set("kopareRoll", v)}
-                  placeholder="t.ex. Assistent, mäklare, rådgivare"
-                />
-                <WireFieldEditable
-                  label="Telefon"
-                  value={draft.kopareTel}
-                  onChange={(v) => set("kopareTel", v)}
-                  placeholder="+46 ..."
-                />
-                <WireFieldEditable
-                  label="E-post"
-                  value={draft.kopareEmail}
-                  onChange={(v) => set("kopareEmail", v)}
-                  placeholder="namn@företag.se"
-                />
-              </div>
-            </WireBox>
-          )}
-
-          <WireBox label="Övrig information till TreLink (frivilligt)" className="mb-6">
-            <textarea
-              value={draft.ovrigt}
-              onChange={(e) => set("ovrigt", e.target.value)}
-              rows={4}
-              placeholder="Något TreLink bör veta inför granskningen? Ex. pågående förhandling med hyresvärd, personal ska följa med, m.m."
-              className="block w-full border border-dashed border-muted-foreground/50 bg-muted/20 p-3 text-sm focus:border-foreground focus:outline-none"
-            />
-          </WireBox>
-        </>
-      )}
-
-      {/* STEP 4 — Granska & skicka */}
-      {step === 4 && (
         <>
           <WireBox label="Sammanfattning" className="mb-6">
             <dl className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -705,10 +587,6 @@ function CreateListing() {
               <Row k="Nyckeltal" v="Hämtas från uppladdade dokument" />
 
               {draft.cat === "aktie" && <Row k="Org.nr" v={draft.orgnr || "—"} />}
-              <Row k="Firmatecknare" v={draft.signerareNamn ? `${draft.signerareNamn} (${draft.signerareRoll})` : "—"} />
-              {draft.kopareTyp === "assistent" && (
-                <Row k="Kontaktperson" v={draft.kopareNamn ? `${draft.kopareNamn} · ${draft.kopareRoll}` : "—"} />
-              )}
             </dl>
           </WireBox>
 
@@ -757,7 +635,7 @@ function CreateListing() {
             <WireBox className="mb-6" variant="dashed">
               <Annotation>Innan du kan skicka in</Annotation>
               <ul className="mt-2 list-inside list-disc text-sm">
-                {[...validation[1], ...validation[2], ...validation[3], ...validation[4]].map((e) => (
+                {[...validation[1], ...validation[2], ...validation[3]].map((e) => (
                   <li key={e}>{e}</li>
                 ))}
               </ul>
@@ -767,7 +645,7 @@ function CreateListing() {
       )}
 
       {/* Validation hints under content */}
-      {step < 4 && validation[step].length > 0 && (
+      {step < 3 && validation[step].length > 0 && (
         <WireBox className="mb-6" variant="dashed">
           <Annotation>Komplettera innan nästa steg</Annotation>
           <ul className="mt-2 list-inside list-disc text-sm">
@@ -798,7 +676,7 @@ function CreateListing() {
               ← Tillbaka
             </WireBtn>
           )}
-          {step < 4 ? (
+          {step < 3 ? (
             <WireBtn onClick={() => setStep((s) => s + 1)}>
               Nästa: {STEPS[step + 1]} →
             </WireBtn>
