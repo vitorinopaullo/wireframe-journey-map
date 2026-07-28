@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import {
   WireBox,
@@ -18,6 +19,9 @@ export const Route = createFileRoute("/onboarding")({
 
 type Role = "kopare" | "saljare" | null;
 type Step = 1 | 2;
+
+// Läses av Grunduppgifter-sidan i ett senare steg.
+const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
 function Onboarding() {
   const navigate = useNavigate();
@@ -186,19 +190,25 @@ function RoleCard({
       onClick={onPick}
       className={`text-left border p-6 transition ${
         active
-          ? "border-foreground bg-muted/40"
+          ? "border-foreground bg-foreground text-background"
           : "border-foreground/30 hover:border-foreground"
       }`}
     >
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold">{title}</h3>
-        <StatusDot state={active ? "done" : "pending"} />
+        {active ? (
+          <CheckCircle2 className="h-5 w-5" />
+        ) : (
+          <StatusDot state="pending" />
+        )}
       </div>
-      <p className="mt-2 text-sm text-muted-foreground">{tagline}</p>
+      <p className={`mt-2 text-sm ${active ? "text-background/70" : "text-muted-foreground"}`}>
+        {tagline}
+      </p>
       <ul className="mt-4 space-y-1.5 text-sm">
         {bullets.map((b) => (
           <li key={b} className="flex gap-2">
-            <span className="text-muted-foreground">·</span>
+            <span className={active ? "text-background/70" : "text-muted-foreground"}>·</span>
             <span>{b}</span>
           </li>
         ))}
@@ -225,11 +235,37 @@ function Step2({
   const [orgnr, setOrgnr] = useState("");
   const [presentation, setPresentation] = useState("");
 
+  const [arFirmatecknare, setArFirmatecknare] = useState(true);
+  const [ftRoll, setFtRoll] = useState("");
+  const [ftFornamn, setFtFornamn] = useState("");
+  const [ftEfternamn, setFtEfternamn] = useState("");
+  const [ftMail, setFtMail] = useState("");
+  const [ftMobil, setFtMobil] = useState("");
+
   const kanFortsatta = telefon.trim() && epost.trim();
 
 
   function submit() {
     if (!kanFortsatta) return;
+
+    if (role === "saljare") {
+      localStorage.setItem(
+        ONBOARDING_SALJARE_KEY,
+        JSON.stringify({
+          bolagsuppgifter: { bolag, orgnr, adress, presentation },
+          saljaruppgifter: {
+            fornamn: bankid.fornamn,
+            efternamn: bankid.efternamn,
+            mobil: telefon,
+            epost,
+          },
+          firmatecknare: arFirmatecknare
+            ? null
+            : { roll: ftRoll, fornamn: ftFornamn, efternamn: ftEfternamn, mail: ftMail, mobil: ftMobil },
+        }),
+      );
+    }
+
     onFinish({
       fornamn: bankid.fornamn,
       efternamn: bankid.efternamn,
@@ -246,54 +282,105 @@ function Step2({
   return (
     <>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <WireBox label={role === "kopare" ? "Köparuppgifter" : "Säljaruppgifter"}>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
-              <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
-              <InputField label="Telefon *" value={telefon} onChange={setTelefon} placeholder="+46 70 123 45 67" />
-              <InputField label="E-post *" value={epost} onChange={setEpost} placeholder="namn@exempel.se" type="email" />
-              {role === "saljare" && (
-                <div className="md:col-span-2">
-                  <InputField
-                    label="Adress"
-                    value={adress}
-                    onChange={setAdress}
-                    placeholder="Storgatan 1, 113 27 Stockholm"
-                    hint="Frivilligt — används vid fakturering om affär genomförs"
-
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
-              <div className="mb-3 flex items-center justify-between">
-                <Annotation>
-                  Bolagsuppgifter {role === "kopare" ? "(frivilligt nu)" : ""}
-                </Annotation>
-                {role === "kopare" && <WireTag>Krävs innan köp</WireTag>}
-              </div>
+        <div className="lg:col-span-2 space-y-6">
+          {role === "kopare" ? (
+            <WireBox label="Köparuppgifter">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <InputField label="Bolag" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
-                <InputField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
-                <div className="md:col-span-2">
-                  <InputField
-                    label="Företagspresentation"
-                    value={presentation}
-                    onChange={setPresentation}
-                    placeholder="Kort beskrivning av bolag, ägare och bakgrund…"
-                    multiline
-                    hint={
-                      role === "kopare"
-                        ? "Frivilligt nu — hjälper säljare att välja dig. Måste vara på plats innan du kan slutföra ett köp."
-                        : "Frivilligt — visas på dina annonser för att skapa förtroende."
-                    }
-                  />
+                <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
+                <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
+                <InputField label="Telefon *" value={telefon} onChange={setTelefon} placeholder="+46 70 123 45 67" />
+                <InputField label="E-post *" value={epost} onChange={setEpost} placeholder="namn@exempel.se" type="email" />
+              </div>
+
+              <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
+                <div className="mb-3 flex items-center justify-between">
+                  <Annotation>Bolagsuppgifter (frivilligt nu)</Annotation>
+                  <WireTag>Krävs innan köp</WireTag>
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <InputField label="Bolag" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
+                  <InputField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
+                  <div className="md:col-span-2">
+                    <InputField
+                      label="Företagspresentation"
+                      value={presentation}
+                      onChange={setPresentation}
+                      placeholder="Kort beskrivning av bolag, ägare och bakgrund…"
+                      multiline
+                      hint="Frivilligt nu — hjälper säljare att välja dig. Måste vara på plats innan du kan slutföra ett köp."
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </WireBox>
+            </WireBox>
+          ) : (
+            <>
+              <WireBox label="Bolagsuppgifter">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <InputField label="Bolag" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
+                  <InputField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
+                  <div className="md:col-span-2">
+                    <InputField
+                      label="Adress"
+                      value={adress}
+                      onChange={setAdress}
+                      placeholder="Storgatan 1, 113 27 Stockholm"
+                      hint="Frivilligt — används vid fakturering om affär genomförs"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <InputField
+                      label="Företagspresentation"
+                      value={presentation}
+                      onChange={setPresentation}
+                      placeholder="Kort beskrivning av bolag, ägare och bakgrund…"
+                      multiline
+                      hint="Frivilligt — visas på dina annonser för att skapa förtroende."
+                    />
+                  </div>
+                </div>
+              </WireBox>
+
+              <WireBox label="Säljaruppgifter">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
+                  <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
+                  <InputField label="Mobil nr *" value={telefon} onChange={setTelefon} placeholder="+46 70 123 45 67" />
+                  <InputField label="E-post *" value={epost} onChange={setEpost} placeholder="namn@exempel.se" type="email" />
+                </div>
+
+                <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
+                  <Annotation>Firmatecknare</Annotation>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <WireBtn
+                      variant={arFirmatecknare ? "primary" : "secondary"}
+                      onClick={() => setArFirmatecknare(true)}
+                    >
+                      Jag är firmatecknare
+                    </WireBtn>
+                    <WireBtn
+                      variant={!arFirmatecknare ? "primary" : "secondary"}
+                      onClick={() => setArFirmatecknare(false)}
+                    >
+                      Jag är inte firmatecknare
+                    </WireBtn>
+                  </div>
+                </div>
+              </WireBox>
+
+              {!arFirmatecknare && (
+                <WireBox label="Firmatecknarens uppgifter" variant="dashed">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <InputField label="Roll" value={ftRoll} onChange={setFtRoll} placeholder="VD / Styrelseordförande" />
+                    <InputField label="Förnamn" value={ftFornamn} onChange={setFtFornamn} placeholder="Förnamn" />
+                    <InputField label="Efternamn" value={ftEfternamn} onChange={setFtEfternamn} placeholder="Efternamn" />
+                    <InputField label="Mail" value={ftMail} onChange={setFtMail} placeholder="namn@exempel.se" type="email" />
+                    <InputField label="Mobil" value={ftMobil} onChange={setFtMobil} placeholder="+46 70 123 45 67" />
+                  </div>
+                </WireBox>
+              )}
+            </>
+          )}
         </div>
 
         <aside className="space-y-4">
