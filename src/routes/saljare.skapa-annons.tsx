@@ -90,6 +90,11 @@ const docsByCat: Record<CatId, DocSpec[]> = {
 };
 
 const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
+// Sparas av onboardingflödet ("Sätt upp ditt konto") — läses här för att visa en sammanfattning.
+const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
+
+// Samma kategorier som TYP-fältet på annonskorten (@/components/ListingCard).
+const VERKSAMHETSTYP_TAGGAR = ["Café & bageri", "Restaurang", "Frisör", "Butik", "Kontor", "Lager"];
 
 type Draft = {
   cat: CatId;
@@ -99,6 +104,7 @@ type Draft = {
   verksamhet: string;
   orgnr: string;
   // Hyresvärd & BRF
+  hyresvardNamn: string;
   hyresvardEmail: string;
   hyresvardTel: string;
   brfKontakt: string;
@@ -135,6 +141,7 @@ const empty: Draft = {
   yta: "",
   verksamhet: "",
   orgnr: "",
+  hyresvardNamn: "",
   hyresvardEmail: "",
   hyresvardTel: "",
   brfKontakt: "",
@@ -381,6 +388,8 @@ function CreateListing() {
       {/* STEP 1 — Grunduppgifter */}
       {step === 1 && (
         <>
+          <KontoSammanfattning />
+
           <WireBox label="Objektet" className="mb-6">
             <Annotation>
               TreLink sätter annonsrubrik och pris åt dig — vi kan marknaden och prissätter mot rätt köpargrupp.
@@ -399,6 +408,47 @@ function CreateListing() {
                 onChange={(v) => set("adress", v)}
                 placeholder="Götgatan 12"
                 hint="Exakt adress visas inte publikt — TreLink använder området i annonsen."
+              />
+              <WireFieldEditable
+                label="Yta (m²) *"
+                value={draft.yta}
+                onChange={(v) => set("yta", v)}
+                placeholder="180"
+              />
+              <VerksamhetstypSelect
+                value={draft.verksamhet}
+                onChange={(v) => set("verksamhet", v)}
+              />
+              {draft.cat === "aktie" && (
+                <WireFieldEditable
+                  label="Org.nr *"
+                  value={draft.orgnr}
+                  onChange={(v) => set("orgnr", v)}
+                  placeholder="556123-4567"
+                  hint="TreLink hämtar bolagsinfo från Bolagsverket."
+                />
+              )}
+            </div>
+          </WireBox>
+
+          <WireBox label="Hyresvärd & BRF" className="mb-6">
+            <p className="text-sm text-muted-foreground">
+              TreLink behöver kontaktuppgifter till hyresvärden för att få godkännande av överlåtelse.
+              Vid BRF anger du kontaktpersonen i föreningen.
+            </p>
+            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <WireFieldEditable
+                label="Hyresvärdens namn"
+                value={draft.hyresvardNamn}
+                onChange={(v) => set("hyresvardNamn", v)}
+                placeholder="Fastighetsbolaget AB"
+                hint="Namn på hyresvärd, fastighetsägare eller bostadsrättsförening."
+              />
+              <WireFieldEditable
+                label="Hyresvärdens telefon *"
+                value={draft.hyresvardTel}
+                onChange={(v) => set("hyresvardTel", v)}
+                placeholder="+46 8 123 45 67"
               />
               {(() => {
                 const email = draft.hyresvardEmail;
@@ -435,52 +485,13 @@ function CreateListing() {
                   </label>
                 );
               })()}
-
               <WireFieldEditable
-                label="Yta (m²) *"
-                value={draft.yta}
-                onChange={(v) => set("yta", v)}
-                placeholder="180"
+                label="BRF-kontaktperson"
+                value={draft.brfKontakt}
+                onChange={(v) => set("brfKontakt", v)}
+                placeholder="För- och efternamn på kontaktperson i föreningen"
+                hint="Frivilligt — fylls i om objektet ligger i en bostadsrättsförening"
               />
-              <WireFieldEditable
-                label="Verksamhetstyp *"
-                value={draft.verksamhet}
-                onChange={(v) => set("verksamhet", v)}
-                placeholder="Café & bageri / Restaurang / Frisör / Butik…"
-              />
-              {draft.cat === "aktie" && (
-                <WireFieldEditable
-                  label="Org.nr *"
-                  value={draft.orgnr}
-                  onChange={(v) => set("orgnr", v)}
-                  placeholder="556123-4567"
-                  hint="TreLink hämtar bolagsinfo från Bolagsverket."
-                />
-              )}
-            </div>
-
-            <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
-              <Annotation>Hyresvärd & BRF</Annotation>
-              <p className="mt-1 text-sm text-muted-foreground">
-                TreLink behöver kontaktuppgifter till hyresvärden för att få godkännande av överlåtelse.
-                Vid BRF anger du kontaktpersonen i föreningen.
-              </p>
-              <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-                <WireFieldEditable
-                  label="Hyresvärdens telefon *"
-                  value={draft.hyresvardTel}
-                  onChange={(v) => set("hyresvardTel", v)}
-                  placeholder="+46 8 123 45 67"
-                />
-
-                <WireFieldEditable
-                  label="BRF-kontaktperson"
-                  value={draft.brfKontakt}
-                  onChange={(v) => set("brfKontakt", v)}
-                  placeholder="För- och efternamn på kontaktperson i föreningen"
-                  hint="Frivilligt — fylls i om objektet ligger i en bostadsrättsförening"
-                />
-              </div>
             </div>
           </WireBox>
 
@@ -848,6 +859,101 @@ function Row({ k, v }: { k: string; v: string }) {
       <Annotation>{k}</Annotation>
       <div className="mt-1 text-sm">{v}</div>
     </div>
+  );
+}
+
+type OnboardingSaljareData = {
+  bolagsuppgifter: { bolag: string; orgnr: string; adress: string };
+  saljaruppgifter: { fornamn: string; efternamn: string; mobil: string; epost: string };
+  firmatecknare: { roll: string; fornamn: string; efternamn: string; mail: string; mobil: string } | null;
+};
+
+function KontoSammanfattning() {
+  const [data, setData] = useState<OnboardingSaljareData | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ONBOARDING_SALJARE_KEY);
+      if (raw) setData(JSON.parse(raw));
+    } catch {
+      /* noop */
+    }
+  }, []);
+
+  if (!data) return null;
+
+  const { bolagsuppgifter, saljaruppgifter, firmatecknare } = data;
+
+  return (
+    <WireBox label="Från kontoinställningen" variant="ghost" className="mb-6">
+      <dl className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <Row k="Bolag" v={bolagsuppgifter.bolag || "—"} />
+        <Row k="Org.nr" v={bolagsuppgifter.orgnr || "—"} />
+        <Row k="Adress" v={bolagsuppgifter.adress || "—"} />
+      </dl>
+
+      <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
+        <div className={firmatecknare ? "grid grid-cols-1 gap-6 md:grid-cols-2" : ""}>
+          <div>
+            <WireTag>Kontaktperson</WireTag>
+            <dl className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+              <Row k="Förnamn" v={saljaruppgifter.fornamn || "—"} />
+              <Row k="Efternamn" v={saljaruppgifter.efternamn || "—"} />
+              <Row k="Mobil" v={saljaruppgifter.mobil || "—"} />
+              <Row k="Mail" v={saljaruppgifter.epost || "—"} />
+            </dl>
+          </div>
+
+          {firmatecknare && (
+            <div>
+              <WireTag>Firmatecknare</WireTag>
+              <dl className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                <Row k="Roll" v={firmatecknare.roll || "—"} />
+                <Row k="Förnamn" v={firmatecknare.fornamn || "—"} />
+                <Row k="Efternamn" v={firmatecknare.efternamn || "—"} />
+                <Row k="Mail" v={firmatecknare.mail || "—"} />
+                <Row k="Mobil" v={firmatecknare.mobil || "—"} />
+              </dl>
+            </div>
+          )}
+        </div>
+      </div>
+    </WireBox>
+  );
+}
+
+function VerksamhetstypSelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const selected = value ? value.split(",").map((s) => s.trim()).filter(Boolean) : [];
+
+  function toggle(tag: string) {
+    const next = selected.includes(tag)
+      ? selected.filter((t) => t !== tag)
+      : [...selected, tag];
+    onChange(next.join(", "));
+  }
+
+  return (
+    <label className="block">
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        Verksamhetstyp *
+      </span>
+      <div className="flex flex-wrap gap-2 border border-dashed border-muted-foreground/50 bg-muted/20 p-3">
+        {VERKSAMHETSTYP_TAGGAR.map((tag) => (
+          <WireTag key={tag} active={selected.includes(tag)} onClick={() => toggle(tag)}>
+            {tag}
+          </WireTag>
+        ))}
+      </div>
+      <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">
+        Välj en eller flera kategorier som beskriver verksamheten.
+      </span>
+    </label>
   );
 }
 

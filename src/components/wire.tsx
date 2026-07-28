@@ -129,10 +129,25 @@ export function PageHeader({
   );
 }
 
-export function WireTag({ children }: { children: ReactNode }) {
-  return (
-    <span className="inline-flex items-center border border-foreground/40 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider">
-      {children}
-    </span>
-  );
+export function WireTag({
+  children,
+  onClick,
+  active,
+}: {
+  children: ReactNode;
+  onClick?: () => void;
+  active?: boolean;
+}) {
+  const cls = `inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider transition ${
+    active ? "border-foreground bg-foreground text-background" : "border-foreground/40"
+  } ${onClick ? "cursor-pointer hover:border-foreground" : ""}`;
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={cls}>
+        {children}
+      </button>
+    );
+  }
+  return <span className={cls}>{children}</span>;
 }
