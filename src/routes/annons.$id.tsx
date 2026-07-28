@@ -21,7 +21,6 @@ export const Route = createFileRoute("/annons/$id")({
 });
 
 /* ---------- mock data ---------- */
-const FSKATT_TYPER = ["Kontor", "Butik"];
 const ANTAL_BILDER = 4;
 
 const listing = {
@@ -34,6 +33,8 @@ const listing = {
   typ: "Restaurang",
   yta: 180,
   hyra: 62_000,
+  // F-Skatt är ett fristående fält satt av säljaren — oberoende av kategori/typ.
+  hasFTax: true,
   ort: "Stockholm · Södermalm",
   pris: 1_950_000,
   publicerad: "28 maj 2026",
@@ -74,13 +75,11 @@ function StatTile({
   icon: Icon,
   label,
   value,
-  note,
   highlight,
 }: {
   icon: LucideIcon;
   label: string;
   value: string;
-  note?: string;
   highlight?: boolean;
 }) {
   return (
@@ -101,11 +100,6 @@ function StatTile({
           {label}
         </div>
         <div className="mt-0.5 text-sm font-medium">{value}</div>
-        {note && (
-          <div className="mt-1">
-            <WireTag>{note}</WireTag>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -152,7 +146,6 @@ function ListingDetail() {
 
   const visaForegaende = () => setBild((b) => (b - 1 + ANTAL_BILDER) % ANTAL_BILDER);
   const visaNasta = () => setBild((b) => (b + 1) % ANTAL_BILDER);
-  const harFSkatt = FSKATT_TYPER.includes(listing.typ);
   const hyraPerKvm = Math.round(listing.hyra / listing.yta);
 
   useEffect(() => {
@@ -222,18 +215,14 @@ function ListingDetail() {
           <WireTag><CheckCircle2 className="inline-block h-3 w-3 mr-1 align-middle" />Granskad av TreLink</WireTag>
           <WireTag>Premium</WireTag>
           <WireTag>{listing.intressenter} intressenter</WireTag>
+          {listing.hasFTax && <WireTag>F-skatt</WireTag>}
         </div>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
           <StatTile icon={Maximize} label="Yta" value={`${listing.yta} kvm`} />
           <StatTile icon={Banknote} label="Pris" value={`${listing.pris.toLocaleString("sv-SE")} kr`} highlight />
           <StatTile icon={Tag} label="Hyra" value={`${listing.hyra.toLocaleString("sv-SE")} kr/mån`} />
-          <StatTile
-            icon={Building2}
-            label="Typ"
-            value={listing.typ}
-            note={harFSkatt ? "F-skatt" : undefined}
-          />
+          <StatTile icon={Building2} label="Typ" value={listing.typ} />
           <StatTile icon={Percent} label="Hyra / kvm" value={`${hyraPerKvm} kr/kvm`} />
         </div>
       </div>

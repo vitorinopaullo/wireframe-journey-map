@@ -32,28 +32,28 @@ export const Route = createFileRoute("/")({
 });
 
 const dummyListings: Listing[] = [
-  { id: "1", kat: "Lokal", titel: "Restauranglokal · Södermalm", pris: "1 950 000", stad: "Stockholm", size: "180 m²" },
-  { id: "2", kat: "Inkråm", titel: "Café & bageri — inkråm", pris: "850 000", stad: "Göteborg", size: "Verksamhet" },
-  { id: "3", kat: "Bolag", titel: "E-handelsbolag (AB)", pris: "4 200 000", stad: "Malmö", size: "Omsättning 6,8 Mkr" },
-  { id: "4", kat: "Lokal", titel: "Butik · Vasastan", pris: "1 200 000", stad: "Stockholm", size: "95 m²" },
-  { id: "5", kat: "Inkråm", titel: "Frisörsalong", pris: "420 000", stad: "Uppsala", size: "Verksamhet" },
-  { id: "6", kat: "Bolag", titel: "SaaS-bolag · B2B", pris: "12 500 000", stad: "Remote", size: "ARR 4 Mkr" },
+  { id: "1", kat: "Lokal", titel: "Restauranglokal · Södermalm", pris: "1 950 000", stad: "Stockholm", typ: "Restaurang", yta: 180, hyra: 63_000, hasFTax: true },
+  { id: "2", kat: "Inkråm", titel: "Café & bageri — inkråm", pris: "850 000", stad: "Göteborg", lokalyta: 60, etablerat: 2016, hasFTax: true },
+  { id: "3", kat: "Bolag", titel: "E-handelsbolag (AB)", pris: "4 200 000", stad: "Malmö", omsattning: "6,8 Mkr", arr: "5,2 Mkr", bolagsform: "AB", grundat: 2017, hasFTax: true },
+  { id: "4", kat: "Lokal", titel: "Butik · Vasastan", pris: "1 200 000", stad: "Stockholm", typ: "Butik", yta: 95, hyra: 33_250 },
+  { id: "5", kat: "Inkråm", titel: "Frisörsalong", pris: "420 000", stad: "Uppsala", lokalyta: 45, etablerat: 2019 },
+  { id: "6", kat: "Bolag", titel: "SaaS-bolag · B2B", pris: "12 500 000", stad: "Remote", omsattning: "4,1 Mkr", arr: "4 Mkr", bolagsform: "AB", grundat: 2020 },
 ];
 
 const sodermalamListings: Listing[] = [
-  { id: "s1", kat: "Lokal", titel: "Restauranglokal · Medborgarplatsen", pris: "2 100 000", stad: "Stockholm · Södermalm", size: "210 m²" },
-  { id: "s2", kat: "Lokal", titel: "Café med uteservering · SoFo", pris: "680 000", stad: "Stockholm · Södermalm", size: "65 m²" },
-  { id: "s3", kat: "Lokal", titel: "Kontorslokal · Hornsgatan", pris: "1 450 000", stad: "Stockholm · Södermalm", size: "120 m²" },
-  { id: "s4", kat: "Inkråm", titel: "Blomsteraffär inkl. inventarier", pris: "390 000", stad: "Stockholm · Södermalm", size: "Verksamhet" },
-  { id: "s5", kat: "Lokal", titel: "Butik · Götgatan", pris: "950 000", stad: "Stockholm · Södermalm", size: "78 m²" },
+  { id: "s1", kat: "Lokal", titel: "Restauranglokal · Medborgarplatsen", pris: "2 100 000", stad: "Stockholm · Södermalm", typ: "Restaurang", yta: 210, hyra: 78_750 },
+  { id: "s2", kat: "Lokal", titel: "Café med uteservering · SoFo", pris: "680 000", stad: "Stockholm · Södermalm", typ: "Café", yta: 65, hyra: 26_000 },
+  { id: "s3", kat: "Lokal", titel: "Kontorslokal · Hornsgatan", pris: "1 450 000", stad: "Stockholm · Södermalm", typ: "Kontor", yta: 120, hyra: 42_000 },
+  { id: "s4", kat: "Inkråm", titel: "Blomsteraffär inkl. inventarier", pris: "390 000", stad: "Stockholm · Södermalm", lokalyta: 35, etablerat: 2018 },
+  { id: "s5", kat: "Lokal", titel: "Butik · Götgatan", pris: "950 000", stad: "Stockholm · Södermalm", typ: "Butik", yta: 78, hyra: 29_640 },
 ];
 
 const ostermalmListings: Listing[] = [
-  { id: "o1", kat: "Lokal", titel: "Restauranglokal · Stureplan", pris: "3 800 000", stad: "Stockholm · Östermalm", size: "285 m²" },
-  { id: "o2", kat: "Lokal", titel: "Frisörsalong · Birger Jarlsgatan", pris: "740 000", stad: "Stockholm · Östermalm", size: "55 m²" },
-  { id: "o3", kat: "Inkråm", titel: "Lyxbageri med catering", pris: "1 150 000", stad: "Stockholm · Östermalm", size: "Verksamhet" },
-  { id: "o4", kat: "Lokal", titel: "Kontorslokal · Humlegården", pris: "2 200 000", stad: "Stockholm · Östermalm", size: "160 m²" },
-  { id: "o5", kat: "Lokal", titel: "Skönhetsklinik · Karlavägen", pris: "880 000", stad: "Stockholm · Östermalm", size: "70 m²" },
+  { id: "o1", kat: "Lokal", titel: "Restauranglokal · Stureplan", pris: "3 800 000", stad: "Stockholm · Östermalm", typ: "Restaurang", yta: 285, hyra: 142_500 },
+  { id: "o2", kat: "Lokal", titel: "Frisörsalong · Birger Jarlsgatan", pris: "740 000", stad: "Stockholm · Östermalm", typ: "Frisör", yta: 55, hyra: 24_750 },
+  { id: "o3", kat: "Inkråm", titel: "Lyxbageri med catering", pris: "1 150 000", stad: "Stockholm · Östermalm", lokalyta: 90, etablerat: 2015 },
+  { id: "o4", kat: "Lokal", titel: "Kontorslokal · Humlegården", pris: "2 200 000", stad: "Stockholm · Östermalm", typ: "Kontor", yta: 160, hyra: 64_000 },
+  { id: "o5", kat: "Lokal", titel: "Skönhetsklinik · Karlavägen", pris: "880 000", stad: "Stockholm · Östermalm", typ: "Skönhetssalong", yta: 70, hyra: 29_400 },
 ];
 
 const faqItems = [

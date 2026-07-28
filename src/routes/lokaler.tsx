@@ -24,15 +24,15 @@ const mapClusters = [
 ];
 
 const sodermalmListings: Listing[] = [
-  { id: "plp1", kat: "Lokal", titel: "Restauranglokal · Hornstull", pris: "2 250 000", stad: "Stockholm · Södermalm", size: "195 m²" },
-  { id: "plp2", kat: "Inkråm", titel: "Bageri & konditori — inkråm", pris: "540 000", stad: "Stockholm · Södermalm", size: "Verksamhet" },
-  { id: "plp3", kat: "Bolag", titel: "Redovisningsbyrå (AB)", pris: "3 100 000", stad: "Stockholm · Södermalm", size: "Omsättning 4,2 Mkr" },
-  { id: "plp4", kat: "Lokal", titel: "Butik · Folkungagatan", pris: "1 050 000", stad: "Stockholm · Södermalm", size: "82 m²" },
-  { id: "plp5", kat: "Inkråm", titel: "Frisörsalong · Åsögatan", pris: "320 000", stad: "Stockholm · Södermalm", size: "Verksamhet" },
-  { id: "plp6", kat: "Lokal", titel: "Kontorslokal · Bondegatan", pris: "1 680 000", stad: "Stockholm · Södermalm", size: "140 m²" },
-  { id: "plp7", kat: "Lokal", titel: "Café · Nytorget", pris: "720 000", stad: "Stockholm · Södermalm", size: "58 m²" },
-  { id: "plp8", kat: "Bolag", titel: "IT-konsultbolag (AB)", pris: "5 400 000", stad: "Stockholm · Södermalm", size: "Omsättning 7,1 Mkr" },
-  { id: "plp9", kat: "Inkråm", titel: "Gymstudio inkl. utrustning", pris: "610 000", stad: "Stockholm · Södermalm", size: "Verksamhet" },
+  { id: "plp1", kat: "Lokal", titel: "Restauranglokal · Hornstull", pris: "2 250 000", stad: "Stockholm · Södermalm", typ: "Restaurang", yta: 195, hyra: 68_250 },
+  { id: "plp2", kat: "Inkråm", titel: "Bageri & konditori — inkråm", pris: "540 000", stad: "Stockholm · Södermalm", lokalyta: 55, etablerat: 2017 },
+  { id: "plp3", kat: "Bolag", titel: "Redovisningsbyrå (AB)", pris: "3 100 000", stad: "Stockholm · Södermalm", omsattning: "4,2 Mkr", arr: "3,6 Mkr", bolagsform: "AB", grundat: 2012 },
+  { id: "plp4", kat: "Lokal", titel: "Butik · Folkungagatan", pris: "1 050 000", stad: "Stockholm · Södermalm", typ: "Butik", yta: 82, hyra: 31_160 },
+  { id: "plp5", kat: "Inkråm", titel: "Frisörsalong · Åsögatan", pris: "320 000", stad: "Stockholm · Södermalm", lokalyta: 40, etablerat: 2020 },
+  { id: "plp6", kat: "Lokal", titel: "Kontorslokal · Bondegatan", pris: "1 680 000", stad: "Stockholm · Södermalm", typ: "Kontor", yta: 140, hyra: 49_000 },
+  { id: "plp7", kat: "Lokal", titel: "Café · Nytorget", pris: "720 000", stad: "Stockholm · Södermalm", typ: "Café", yta: 58, hyra: 24_360 },
+  { id: "plp8", kat: "Bolag", titel: "IT-konsultbolag (AB)", pris: "5 400 000", stad: "Stockholm · Södermalm", omsattning: "7,1 Mkr", arr: "6,4 Mkr", bolagsform: "AB", grundat: 2016 },
+  { id: "plp9", kat: "Inkråm", titel: "Gymstudio inkl. utrustning", pris: "610 000", stad: "Stockholm · Södermalm", lokalyta: 150, etablerat: 2019 },
 ];
 
 function LokalerPage() {
