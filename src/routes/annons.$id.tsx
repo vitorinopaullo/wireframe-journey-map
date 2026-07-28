@@ -1,8 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Star, CheckCircle2 } from "lucide-react";
+import {
+  Star,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Maximize,
+  Banknote,
+  Tag,
+  Building2,
+  Percent,
+  type LucideIcon,
+} from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
-import { WireBox, WireBtn, WireTag, Annotation, PageHeader, StatusDot } from "@/components/wire";
+import { WireBox, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
 
 export const Route = createFileRoute("/annons/$id")({
@@ -10,12 +21,19 @@ export const Route = createFileRoute("/annons/$id")({
 });
 
 /* ---------- mock data ---------- */
+const FSKATT_TYPER = ["Kontor", "Butik"];
+const ANTAL_BILDER = 4;
+
 const listing = {
   id: "1",
   kategori: "Lokal",
   rubrik: "Restauranglokal · 180 m² · Hornstull",
   underrubrik:
     "Fullt utrustad restauranglokal med uteservering. Lång hyresperiod kvar, fungerande ventilation, A-läge.",
+  adress: "Hornsgatan 45",
+  typ: "Restaurang",
+  yta: 180,
+  hyra: 62_000,
   ort: "Stockholm · Södermalm",
   pris: 1_950_000,
   publicerad: "28 maj 2026",
@@ -52,6 +70,47 @@ const liknande = [
 ];
 
 /* ---------- helpers ---------- */
+function StatTile({
+  icon: Icon,
+  label,
+  value,
+  note,
+  highlight,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  note?: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div
+      className={[
+        "flex items-start gap-3 border p-3",
+        highlight ? "border-foreground bg-foreground text-background" : "border-foreground/30 bg-background",
+      ].join(" ")}
+    >
+      <Icon className={["mt-0.5 h-4 w-4 shrink-0", highlight ? "text-background" : "text-muted-foreground"].join(" ")} />
+      <div>
+        <div
+          className={[
+            "font-mono text-[10px] uppercase tracking-wider",
+            highlight ? "text-background/70" : "text-muted-foreground",
+          ].join(" ")}
+        >
+          {label}
+        </div>
+        <div className="mt-0.5 text-sm font-medium">{value}</div>
+        {note && (
+          <div className="mt-1">
+            <WireTag>{note}</WireTag>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function StickyCTA({
   scrolled,
   saved,
@@ -87,8 +146,14 @@ function ListingDetail() {
   const { id } = Route.useParams();
   const [saved, setSaved] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [bild, setBild] = useState(0);
   const isAuthed = useIsAuthed();
   const navigate = useNavigate();
+
+  const visaForegaende = () => setBild((b) => (b - 1 + ANTAL_BILDER) % ANTAL_BILDER);
+  const visaNasta = () => setBild((b) => (b + 1) % ANTAL_BILDER);
+  const harFSkatt = FSKATT_TYPER.includes(listing.typ);
+  const hyraPerKvm = Math.round(listing.hyra / listing.yta);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 480);
@@ -118,34 +183,64 @@ function ListingDetail() {
         <span>Annons #{id}</span>
       </div>
 
-      <PageHeader
-        eyebrow={`${listing.kategori} · ${listing.ort}`}
-        title={listing.rubrik}
-        subtitle={listing.underrubrik}
-        right={
-          <div className="flex flex-wrap gap-2">
-            <WireTag><CheckCircle2 className="inline-block h-3 w-3 mr-1 align-middle" />Granskad av TreLink</WireTag>
-            <WireTag>Premium</WireTag>
-            <WireTag>{listing.intressenter} intressenter</WireTag>
+      {/* Objektkort — bildkarusell, rubrik och nyckeltal */}
+      <div className="mb-8 space-y-4">
+        <div className="relative h-64 border border-foreground/30 bg-muted/30 md:h-96">
+          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+            [ Bild {bild + 1} av {ANTAL_BILDER} ]
           </div>
-        }
-      />
+          <div className="absolute right-3 top-3">
+            <WireTag>{listing.ort.split(" · ")[0]}</WireTag>
+          </div>
+          <button
+            type="button"
+            onClick={visaForegaende}
+            aria-label="Föregående bild"
+            className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center border border-foreground/40 bg-background transition hover:border-foreground"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={visaNasta}
+            aria-label="Nästa bild"
+            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center border border-foreground/40 bg-background transition hover:border-foreground"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div>
+          <Annotation>{listing.typ} · {listing.ort}</Annotation>
+          <h1 className="mt-1 text-2xl md:text-3xl">
+            {listing.adress} · {listing.yta} m²
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{listing.underrubrik}</p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <WireTag><CheckCircle2 className="inline-block h-3 w-3 mr-1 align-middle" />Granskad av TreLink</WireTag>
+          <WireTag>Premium</WireTag>
+          <WireTag>{listing.intressenter} intressenter</WireTag>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+          <StatTile icon={Maximize} label="Yta" value={`${listing.yta} kvm`} />
+          <StatTile icon={Banknote} label="Pris" value={`${listing.pris.toLocaleString("sv-SE")} kr`} highlight />
+          <StatTile icon={Tag} label="Hyra" value={`${listing.hyra.toLocaleString("sv-SE")} kr/mån`} />
+          <StatTile
+            icon={Building2}
+            label="Typ"
+            value={listing.typ}
+            note={harFSkatt ? "F-skatt" : undefined}
+          />
+          <StatTile icon={Percent} label="Hyra / kvm" value={`${hyraPerKvm} kr/kvm`} />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* ------------- LEFT ------------- */}
         <div className="space-y-6 lg:col-span-2">
-          {/* Galleri */}
-          <div className="grid grid-cols-2 gap-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="flex h-48 items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-xs text-muted-foreground"
-              >
-                [ Bild {i} ]
-              </div>
-            ))}
-          </div>
-
           {/* Trust-rad */}
           <WireBox label="Vad TreLink har verifierat" variant="dashed">
             <ul className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
