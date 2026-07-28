@@ -3,15 +3,34 @@ import { WireBox, WireBtn } from "@/components/wire";
 
 const TABS = [
   { value: "alla",   label: "Alla" },
-  { value: "lokal",  label: "Lokal" },
-  { value: "inkram", label: "Inkråm" },
-  { value: "bolag",  label: "Bolag" },
+  { value: "lokal",  label: "Överlåtelse (Lokalöverlåtelse)" },
+  { value: "inkram", label: "Affärsöverlåtelse" },
+  { value: "bolag",  label: "Bolagsöverlåtelse (Aktieöverlåtelse)" },
 ] as const;
 type TabValue = typeof TABS[number]["value"];
 
 const OMRADE_OPTIONS = ["Södermalm", "Östermalm", "Vasastan", "Kungsholmen", "Göteborg", "Malmö"];
-const VERKSAMHETSTYP_OPTIONS = ["Restaurang", "Café", "Butik", "Frisör", "Kontor", "Skönhetssalong"];
-const LOKALTYP_OPTIONS = ["Kontor", "Butik", "Restaurang", "Lager"];
+
+// Bransch-alternativ per överlåtelsetyp — flikvalet styr vilken lista som visas.
+const VERKSAMHETSTYP_BY_TAB: Record<TabValue, { options: string[]; placeholder: string }> = {
+  alla: {
+    options: ["Restaurang", "Café", "Butik", "Frisör", "Kontor", "Skönhetssalong"],
+    placeholder: "Restaurang / Café / Butik / Frisör…",
+  },
+  lokal: {
+    options: ["Butik", "Kontor", "Lager"],
+    placeholder: "Butik / Kontor / Lager",
+  },
+  inkram: {
+    options: ["Café", "Restaurang", "Frisör/Skönhetssalong"],
+    placeholder: "Café / Restaurang / Frisör/Skönhetssalong",
+  },
+  bolag: {
+    options: ["Verkstad", "Logistik", "Byrå", "E-handel"],
+    placeholder: "Verkstad / Logistik / Byrå / E-handel",
+  },
+};
+
 const PRISINTERVALL_OPTIONS = [
   "0 – 500 000 kr",
   "500 000 – 1 000 000 kr",
@@ -87,7 +106,6 @@ function Dropdown({
 export function SearchBox() {
   const [active, setActive] = useState<TabValue>("alla");
   const [showMoreFilters, setShowMoreFilters] = useState(false);
-  const isLokal = active === "lokal";
 
   return (
     <WireBox label="Sök & filter" className="mb-8">
@@ -116,11 +134,9 @@ export function SearchBox() {
 
         <Dropdown
           key={active}
-          label={isLokal ? "Lokaltyp" : "Verksamhetstyp"}
-          options={isLokal ? LOKALTYP_OPTIONS : VERKSAMHETSTYP_OPTIONS}
-          placeholder={
-            isLokal ? "Kontor / Butik / Restaurang / Lager…" : "Restaurang / Café / Butik / Frisör…"
-          }
+          label="Bransch"
+          options={VERKSAMHETSTYP_BY_TAB[active].options}
+          placeholder={VERKSAMHETSTYP_BY_TAB[active].placeholder}
         />
 
         <Dropdown label="Prisintervall" options={PRISINTERVALL_OPTIONS} placeholder="0 – 5 000 000 kr" />
