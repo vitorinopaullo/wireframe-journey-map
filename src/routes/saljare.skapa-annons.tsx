@@ -96,6 +96,13 @@ const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 // Samma kategorier som TYP-fältet på annonskorten (@/components/ListingCard).
 const VERKSAMHETSTYP_TAGGAR = ["Café & bageri", "Restaurang", "Frisör", "Butik", "Kontor", "Lager"];
 
+// Förslagstaggar för "Vad säljer objektet in?" — läge/lokal-egenskaper och kundunderlag.
+const LAGE_TAGGAR = ["Nära tunnelbanan", "Stora skyltfönster", "Hörnläge", "Nyrenoverat", "Bra parkering", "Uteservering möjlig"];
+const KUNDUNDERLAG_TAGGAR = ["Stamkunder", "Turister", "Kontorskunder", "Återkommande kunder"];
+const LAGET_TAGGAR = ["Nära tunnelbanan", "Nära pendeltåg", "Gångtrafik", "Gatuplan", "Bra skyltläge mot huvudgata", "Nära centrum", "Egen parkering"];
+const UTVECKLING_TAGGAR = ["Lunchservering", "Catering", "Längre öppettider", "E-handel"];
+const ANLEDNING_TAGGAR = ["Pension", "Ny satsning", "Flytt"];
+
 type Draft = {
   cat: CatId;
   ort: string;
@@ -243,10 +250,9 @@ function CreateListing() {
     if (!draft.hyresvardEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.hyresvardEmail))
       errs[1].push("Ange hyresvärdens e-postadress.");
     if (!draft.hyresvardTel) errs[1].push("Ange hyresvärdens telefonnummer.");
-    if (!draft.usp || draft.usp.length < 20)
-      errs[1].push("Beskriv vad som gör verksamheten unik (minst 20 tecken).");
-    if (!draft.kundunderlag) errs[1].push("Beskriv kundunderlaget.");
-    if (!draft.laget) errs[1].push("Beskriv läget.");
+    if (!draft.usp) errs[1].push("Välj minst en tagg för vad som gör verksamheten unik.");
+    if (!draft.kundunderlag) errs[1].push("Välj minst en tagg för kundunderlaget.");
+    if (!draft.laget) errs[1].push("Välj minst en tagg för läget.");
     const missingReq = requiredDocs.filter(
       (d) => d.required && (docStatus(d.name) === "saknas" || docStatus(d.name) === "komplettera")
     );
@@ -493,41 +499,43 @@ function CreateListing() {
                 />
               )}
             </div>
-          </WireBox>
 
-          <WireBox label="Säljande info — hjälper TreLink skriva annonsen" className="mb-6">
-            <div className="grid grid-cols-1 gap-4">
-              <WireArea
-                label="Vad gör verksamheten unik? *"
-                value={draft.usp}
-                onChange={(v) => set("usp", v)}
-                placeholder="Ex. enda specialkaffet i området, egen bageri­produktion, stark närvaro på Instagram…"
-                hint={`${draft.usp.length} tecken · minst 20`}
-              />
-              <WireArea
-                label="Kundunderlag *"
-                value={draft.kundunderlag}
-                onChange={(v) => set("kundunderlag", v)}
-                placeholder="Vilka är kunderna? Stamkunder / kontor / turister? Återkommande?"
-              />
-              <WireArea
-                label="Läget *"
-                value={draft.laget}
-                onChange={(v) => set("laget", v)}
-                placeholder="Gångtrafik, närhet till tunnelbana, hörnläge, skyltfönster mot gatan…"
-              />
-              <WireArea
-                label="Utvecklingsmöjligheter (frivilligt)"
-                value={draft.potential}
-                onChange={(v) => set("potential", v)}
-                placeholder="Vad kan en ny ägare växa? Ex. lunchservering, catering, längre öppettider, e-handel."
-              />
-              <WireArea
-                label="Anledning till försäljning (frivilligt)"
-                value={draft.anledning}
-                onChange={(v) => set("anledning", v)}
-                placeholder="Ex. pension, ny satsning, flytt. Behövs inte i annonsen — hjälper TreLink förstå affären."
-              />
+            <div className="mt-6 border-t border-dashed border-muted-foreground/30 pt-4">
+              <Annotation>
+                Vad säljer objektet in? — korta ord, t.ex. "nära tunnelbanan" eller "stora fönster".
+              </Annotation>
+              <div className="mt-3 grid grid-cols-1 gap-4">
+                <TagMultiSelect
+                  label="Vad gör verksamheten unik? *"
+                  value={draft.usp}
+                  onChange={(v) => set("usp", v)}
+                  suggestions={LAGE_TAGGAR}
+                />
+                <TagMultiSelect
+                  label="Kundunderlag *"
+                  value={draft.kundunderlag}
+                  onChange={(v) => set("kundunderlag", v)}
+                  suggestions={KUNDUNDERLAG_TAGGAR}
+                />
+                <TagMultiSelect
+                  label="Läget *"
+                  value={draft.laget}
+                  onChange={(v) => set("laget", v)}
+                  suggestions={LAGET_TAGGAR}
+                />
+                <TagMultiSelect
+                  label="Utvecklingsmöjligheter (frivilligt)"
+                  value={draft.potential}
+                  onChange={(v) => set("potential", v)}
+                  suggestions={UTVECKLING_TAGGAR}
+                />
+                <TagMultiSelect
+                  label="Anledning till försäljning (frivilligt)"
+                  value={draft.anledning}
+                  onChange={(v) => set("anledning", v)}
+                  suggestions={ANLEDNING_TAGGAR}
+                />
+              </div>
             </div>
           </WireBox>
         </>
@@ -954,6 +962,88 @@ function VerksamhetstypSelect({
         Välj en eller flera kategorier som beskriver verksamheten.
       </span>
     </label>
+  );
+}
+
+function TagMultiSelect({
+  label,
+  value,
+  onChange,
+  suggestions,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  suggestions: string[];
+}) {
+  const [custom, setCustom] = useState("");
+  const selected = value ? value.split(",").map((s) => s.trim()).filter(Boolean) : [];
+
+  function addTag(raw: string) {
+    const tag = raw.trim();
+    if (!tag || selected.includes(tag)) return;
+    onChange([...selected, tag].join(", "));
+  }
+
+  function removeTag(tag: string) {
+    onChange(selected.filter((t) => t !== tag).join(", "));
+  }
+
+  function submitCustom() {
+    if (!custom.trim()) return;
+    addTag(custom);
+    setCustom("");
+  }
+
+  return (
+    <div>
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
+      <div className="border border-dashed border-muted-foreground/50 bg-muted/20 p-3">
+        {selected.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {selected.map((tag) => (
+              <WireTag key={tag} active onClick={() => removeTag(tag)}>
+                {tag} <span aria-hidden="true" className="ml-1">×</span>
+              </WireTag>
+            ))}
+          </div>
+        )}
+        <div className="flex flex-wrap gap-2">
+          {suggestions
+            .filter((tag) => !selected.includes(tag))
+            .map((tag) => (
+              <WireTag key={tag} onClick={() => addTag(tag)}>
+                {tag}
+              </WireTag>
+            ))}
+        </div>
+        <div className="mt-3 flex items-center gap-2">
+          <input
+            type="text"
+            value={custom}
+            onChange={(e) => setCustom(e.target.value.slice(0, 40))}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submitCustom();
+              }
+            }}
+            placeholder="Egen tagg (ett par ord)…"
+            className="h-8 flex-1 border border-dashed border-muted-foreground/50 bg-background px-2 text-sm focus:border-foreground focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={submitCustom}
+            aria-label="Lägg till egen tagg"
+            className="flex h-8 w-8 shrink-0 items-center justify-center border border-dashed border-muted-foreground/50 font-mono text-sm hover:border-foreground"
+          >
+            +
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
