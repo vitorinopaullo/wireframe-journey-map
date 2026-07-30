@@ -164,6 +164,59 @@ const emptyLagerFalt: LagerFalt = {
   antalParkeringsplatser: "",
 };
 
+const SITTPLATSER_ALTERNATIV = ["Ca 30 sittplatser", "Ca 40 sittplatser", "Ca 50 sittplatser"];
+const UTEPLATSER_ALTERNATIV = ["Inga uteplatser", "Ca 20 uteplatser", "Ca 30 uteplatser", "Ca 40 uteplatser"];
+const SOPHANTERING_ALTERNATIV = ["Eget sophrum", "Delat sophrum"];
+const SKICK_I_LOKAL_ALTERNATIV = [
+  "Köket behöver renoveras",
+  "Maskinpark gammal",
+  "Ny maskinpark",
+  "Varierande ålder maskinpark",
+];
+const TYP_AV_KOK_ALTERNATIV = ["Svartplåtskanal", "Pizzakanal", "Cafékök", "Annan ventilationslösning"];
+const MYNDIGHETSKRAV_ALTERNATIV = [
+  "Livsmedelstillstånd",
+  "Alkoholtillstånd",
+  "Fettavskiljare",
+  "OVK",
+  "Sotningsprotokoll",
+];
+
+type ServeringFalt = {
+  lageOmgivning: string;
+  sittplatser: string;
+  uteplatser: string;
+  nyrenoverat: boolean | null;
+  wcPersonal: boolean | null;
+  wcKund: boolean | null;
+  sophantering: string;
+  skickILokal: string;
+  typAvKok: string;
+  myndighetskrav: string;
+};
+
+const emptyServeringFalt: ServeringFalt = {
+  lageOmgivning: "",
+  sittplatser: "",
+  uteplatser: "",
+  nyrenoverat: null,
+  wcPersonal: null,
+  wcKund: null,
+  sophantering: "",
+  skickILokal: "",
+  typAvKok: "",
+  myndighetskrav: "",
+};
+
+// Mappning fältgrupp-id → vilka Verksamhetstyp-taggar som visar den. En grupp kan delas av flera taggar
+// (t.ex. Servering delas av Café & bageri och Restaurang) — den visas då bara en gång.
+const FALTGRUPP_TYPER: Record<string, string[]> = {
+  Kontor: ["Kontor"],
+  Butik: ["Butik"],
+  Lager: ["Lager"],
+  Servering: ["Café & bageri", "Restaurang"],
+};
+
 type Draft = {
   cat: CatId;
   ort: string;
@@ -195,6 +248,7 @@ type Draft = {
     Kontor: KontorFalt;
     Butik: ButikFalt;
     Lager: LagerFalt;
+    Servering: ServeringFalt;
   };
 };
 
@@ -226,6 +280,7 @@ const empty: Draft = {
     Kontor: emptyKontorFalt,
     Butik: emptyButikFalt,
     Lager: emptyLagerFalt,
+    Servering: emptyServeringFalt,
   },
 };
 
@@ -332,7 +387,23 @@ function CreateListing() {
     Lager: () => (
       <LagerFaltgrupp falt={draft.typFalt.Lager} onChange={(key, v) => setTypFalt("Lager", key, v)} />
     ),
+    Servering: () => (
+      <ServeringFaltgrupp
+        falt={draft.typFalt.Servering}
+        onChange={(key, v) => setTypFalt("Servering", key, v)}
+        docStatus={docStatus}
+        setDoc={setDoc}
+      />
+    ),
   };
+
+  const grupperAttVisa = Object.keys(FALTGRUPP_TYPER)
+    .filter((grupp) => FALTGRUPP_TYPER[grupp].some((typ) => valdaTyper.includes(typ)) && TYP_FALTGRUPPER[grupp])
+    .sort(
+      (a, b) =>
+        Math.min(...FALTGRUPP_TYPER[a].map((typ) => VERKSAMHETSTYP_TAGGAR.indexOf(typ))) -
+        Math.min(...FALTGRUPP_TYPER[b].map((typ) => VERKSAMHETSTYP_TAGGAR.indexOf(typ))),
+    );
 
   const validation = useMemo(() => {
     const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [] };
@@ -579,9 +650,9 @@ function CreateListing() {
               )}
             </div>
 
-            {VERKSAMHETSTYP_TAGGAR.filter((typ) => valdaTyper.includes(typ) && TYP_FALTGRUPPER[typ]).map((typ) => (
-              <div key={typ} className="mt-6 border-t border-dashed border-muted-foreground/30 pt-4">
-                {TYP_FALTGRUPPER[typ]()}
+            {grupperAttVisa.map((grupp) => (
+              <div key={grupp} className="mt-6 border-t border-dashed border-muted-foreground/30 pt-4">
+                {TYP_FALTGRUPPER[grupp]()}
               </div>
             ))}
 
@@ -1092,6 +1163,33 @@ function TagToggleGroup({
   );
 }
 
+function SingleTagSelect({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div>
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
+      <div className="flex flex-wrap gap-2 border border-dashed border-muted-foreground/50 bg-muted/20 p-3">
+        {options.map((tag) => (
+          <WireTag key={tag} active={value === tag} onClick={() => onChange(value === tag ? "" : tag)}>
+            {tag}
+          </WireTag>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function KontorFaltgrupp({
   falt,
   onChange,
@@ -1271,6 +1369,127 @@ function LagerFaltgrupp({
           onChange={(v) => onChange("antalParkeringsplatser", v)}
           placeholder="10"
         />
+      </div>
+    </>
+  );
+}
+
+function DocUploadRad({
+  namn,
+  hint,
+  docStatus,
+  setDoc,
+}: {
+  namn: string;
+  hint: string;
+  docStatus: (name: string) => DocState;
+  setDoc: (name: string, s: DocState) => void;
+}) {
+  const status = docStatus(namn);
+  return (
+    <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between">
+      <div className="flex items-start gap-3">
+        <DocStatusDot state={status} />
+        <div>
+          <div className="text-sm font-medium">{namn}</div>
+          <Annotation>{hint}</Annotation>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <DocStatusTag state={status} />
+        {status === "saknas" || status === "komplettera" ? (
+          <WireBtn variant="secondary" onClick={() => setDoc(namn, "uppladdad")}>
+            Ladda upp
+          </WireBtn>
+        ) : (
+          <WireBtn variant="ghost" onClick={() => setDoc(namn, "saknas")}>
+            Byt fil
+          </WireBtn>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ServeringFaltgrupp({
+  falt,
+  onChange,
+  docStatus,
+  setDoc,
+}: {
+  falt: ServeringFalt;
+  onChange: <K extends keyof ServeringFalt>(key: K, v: ServeringFalt[K]) => void;
+  docStatus: (name: string) => DocState;
+  setDoc: (name: string, s: DocState) => void;
+}) {
+  return (
+    <>
+      <Annotation>Servering — fält specifika för café/bageri och restaurang.</Annotation>
+      <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <WireFieldEditable
+          label="Läge/omgivning"
+          value={falt.lageOmgivning}
+          onChange={(v) => onChange("lageOmgivning", v)}
+          placeholder="T.ex. gågata, köpcentrum, bostadsområde"
+        />
+
+        <DocUploadRad
+          namn="Ritning (Servering)"
+          hint="JPG/PDF · planlösning över lokalen"
+          docStatus={docStatus}
+          setDoc={setDoc}
+        />
+
+        <SingleTagSelect
+          label="Sittplatser"
+          options={SITTPLATSER_ALTERNATIV}
+          value={falt.sittplatser}
+          onChange={(v) => onChange("sittplatser", v)}
+        />
+        <SingleTagSelect
+          label="Uteplatser"
+          options={UTEPLATSER_ALTERNATIV}
+          value={falt.uteplatser}
+          onChange={(v) => onChange("uteplatser", v)}
+        />
+        <YesNoToggle label="Nyrenoverat" value={falt.nyrenoverat} onChange={(v) => onChange("nyrenoverat", v)} />
+        <YesNoToggle label="WC personal" value={falt.wcPersonal} onChange={(v) => onChange("wcPersonal", v)} />
+        <YesNoToggle label="WC kund" value={falt.wcKund} onChange={(v) => onChange("wcKund", v)} />
+        <SingleTagSelect
+          label="Sophantering"
+          options={SOPHANTERING_ALTERNATIV}
+          value={falt.sophantering}
+          onChange={(v) => onChange("sophantering", v)}
+        />
+        <SingleTagSelect
+          label="Skick i lokal"
+          options={SKICK_I_LOKAL_ALTERNATIV}
+          value={falt.skickILokal}
+          onChange={(v) => onChange("skickILokal", v)}
+        />
+        <TagToggleGroup
+          label="Typ av kök"
+          options={TYP_AV_KOK_ALTERNATIV}
+          value={falt.typAvKok}
+          onChange={(v) => onChange("typAvKok", v)}
+        />
+
+        <div>
+          <TagToggleGroup
+            label="Myndighetskrav"
+            options={MYNDIGHETSKRAV_ALTERNATIV}
+            value={falt.myndighetskrav}
+            onChange={(v) => onChange("myndighetskrav", v)}
+          />
+          <div className="mt-3">
+            <DocUploadRad
+              namn="Myndighetsdokument (Servering)"
+              hint="JPG/PDF · bifoga tillstånd/protokoll som styrker taggarna ovan"
+              docStatus={docStatus}
+              setDoc={setDoc}
+            />
+          </div>
+        </div>
       </div>
     </>
   );
