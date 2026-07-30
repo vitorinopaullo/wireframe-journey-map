@@ -142,6 +142,28 @@ const emptyButikFalt: ButikFalt = {
   egetSophrum: null,
 };
 
+const KOMMUNIKATION_ALTERNATIV = ["Nära motorväg", "Kollektivtrafik nära"];
+
+type LagerFalt = {
+  lastkaj: boolean | null;
+  portTyp: string;
+  takhojd: string;
+  kontorsrum: string;
+  wc: string;
+  kommunikation: string;
+  antalParkeringsplatser: string;
+};
+
+const emptyLagerFalt: LagerFalt = {
+  lastkaj: null,
+  portTyp: "",
+  takhojd: "",
+  kontorsrum: "",
+  wc: "",
+  kommunikation: "",
+  antalParkeringsplatser: "",
+};
+
 type Draft = {
   cat: CatId;
   ort: string;
@@ -172,6 +194,7 @@ type Draft = {
   typFalt: {
     Kontor: KontorFalt;
     Butik: ButikFalt;
+    Lager: LagerFalt;
   };
 };
 
@@ -202,6 +225,7 @@ const empty: Draft = {
   typFalt: {
     Kontor: emptyKontorFalt,
     Butik: emptyButikFalt,
+    Lager: emptyLagerFalt,
   },
 };
 
@@ -304,6 +328,9 @@ function CreateListing() {
         docStatus={docStatus}
         setDoc={setDoc}
       />
+    ),
+    Lager: () => (
+      <LagerFaltgrupp falt={draft.typFalt.Lager} onChange={(key, v) => setTypFalt("Lager", key, v)} />
     ),
   };
 
@@ -1196,6 +1223,54 @@ function ButikFaltgrupp({
           onChange={(v) => onChange("lagerIFastigheten", v)}
         />
         <YesNoToggle label="Eget sophrum" value={falt.egetSophrum} onChange={(v) => onChange("egetSophrum", v)} />
+      </div>
+    </>
+  );
+}
+
+function LagerFaltgrupp({
+  falt,
+  onChange,
+}: {
+  falt: LagerFalt;
+  onChange: <K extends keyof LagerFalt>(key: K, v: LagerFalt[K]) => void;
+}) {
+  return (
+    <>
+      <Annotation>Lager — fält specifika för lagerlokaler.</Annotation>
+      <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <YesNoToggle label="Lastkaj" value={falt.lastkaj} onChange={(v) => onChange("lastkaj", v)} />
+        <WireFieldEditable
+          label="Typ av port"
+          value={falt.portTyp}
+          onChange={(v) => onChange("portTyp", v)}
+          placeholder="Portstorlek/typ, t.ex. rulljalusi 4x4 m"
+        />
+        <WireFieldEditable
+          label="Takhöjd (m)"
+          value={falt.takhojd}
+          onChange={(v) => onChange("takhojd", v)}
+          placeholder="6"
+        />
+        <WireFieldEditable
+          label="Kontorsrum (antal)"
+          value={falt.kontorsrum}
+          onChange={(v) => onChange("kontorsrum", v)}
+          placeholder="2"
+        />
+        <WireFieldEditable label="WC" value={falt.wc} onChange={(v) => onChange("wc", v)} placeholder="1" />
+        <TagToggleGroup
+          label="Kommunikation"
+          options={KOMMUNIKATION_ALTERNATIV}
+          value={falt.kommunikation}
+          onChange={(v) => onChange("kommunikation", v)}
+        />
+        <WireFieldEditable
+          label="Antal parkeringsplatser"
+          value={falt.antalParkeringsplatser}
+          onChange={(v) => onChange("antalParkeringsplatser", v)}
+          placeholder="10"
+        />
       </div>
     </>
   );
