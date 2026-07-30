@@ -208,6 +208,18 @@ const emptyServeringFalt: ServeringFalt = {
   myndighetskrav: "",
 };
 
+type FrisorFalt = {
+  antalStolar: string;
+  uthyrningAvStol: boolean | null;
+  wcDusch: boolean | null;
+};
+
+const emptyFrisorFalt: FrisorFalt = {
+  antalStolar: "",
+  uthyrningAvStol: null,
+  wcDusch: null,
+};
+
 // Mappning fältgrupp-id → vilka Verksamhetstyp-taggar som visar den. En grupp kan delas av flera taggar
 // (t.ex. Servering delas av Café & bageri och Restaurang) — den visas då bara en gång.
 const FALTGRUPP_TYPER: Record<string, string[]> = {
@@ -215,6 +227,7 @@ const FALTGRUPP_TYPER: Record<string, string[]> = {
   Butik: ["Butik"],
   Lager: ["Lager"],
   Servering: ["Café & bageri", "Restaurang"],
+  Frisor: ["Frisör"],
 };
 
 type Draft = {
@@ -249,6 +262,7 @@ type Draft = {
     Butik: ButikFalt;
     Lager: LagerFalt;
     Servering: ServeringFalt;
+    Frisor: FrisorFalt;
   };
 };
 
@@ -281,6 +295,7 @@ const empty: Draft = {
     Butik: emptyButikFalt,
     Lager: emptyLagerFalt,
     Servering: emptyServeringFalt,
+    Frisor: emptyFrisorFalt,
   },
 };
 
@@ -394,6 +409,9 @@ function CreateListing() {
         docStatus={docStatus}
         setDoc={setDoc}
       />
+    ),
+    Frisor: () => (
+      <FrisorFaltgrupp falt={draft.typFalt.Frisor} onChange={(key, v) => setTypFalt("Frisor", key, v)} />
     ),
   };
 
@@ -1490,6 +1508,34 @@ function ServeringFaltgrupp({
             />
           </div>
         </div>
+      </div>
+    </>
+  );
+}
+
+function FrisorFaltgrupp({
+  falt,
+  onChange,
+}: {
+  falt: FrisorFalt;
+  onChange: <K extends keyof FrisorFalt>(key: K, v: FrisorFalt[K]) => void;
+}) {
+  return (
+    <>
+      <Annotation>Frisör — fält specifika för frisörsalonger.</Annotation>
+      <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <WireFieldEditable
+          label="Antal stolar"
+          value={falt.antalStolar}
+          onChange={(v) => onChange("antalStolar", v)}
+          placeholder="4"
+        />
+        <YesNoToggle
+          label="Uthyrning av stol"
+          value={falt.uthyrningAvStol}
+          onChange={(v) => onChange("uthyrningAvStol", v)}
+        />
+        <YesNoToggle label="WC/dusch" value={falt.wcDusch} onChange={(v) => onChange("wcDusch", v)} />
       </div>
     </>
   );
