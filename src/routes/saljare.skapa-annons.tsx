@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Check } from "lucide-react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
@@ -103,6 +103,45 @@ const LAGET_TAGGAR = ["Nära tunnelbanan", "Nära pendeltåg", "Gångtrafik", "G
 const UTVECKLING_TAGGAR = ["Lunchservering", "Catering", "Längre öppettider", "E-handel"];
 const ANLEDNING_TAGGAR = ["Pension", "Ny satsning", "Flytt"];
 
+// Fältgrupp per Verksamhetstyp — lägg till fler typers fältkonfiguration här.
+const KONTOR_LAYOUT_ALTERNATIV = ["Öppen planlösning", "Bås-planlösning"];
+
+type KontorFalt = {
+  antalWC: string;
+  dusch: boolean | null;
+  antalPlatser: string;
+  konferensrum: boolean | null;
+  layout: string;
+  parkering: boolean | null;
+  vaning: string;
+};
+
+const emptyKontorFalt: KontorFalt = {
+  antalWC: "",
+  dusch: null,
+  antalPlatser: "",
+  konferensrum: null,
+  layout: "",
+  parkering: null,
+  vaning: "",
+};
+
+const BUTIK_LAYOUT_ALTERNATIV = ["Öppen butiksyta", "Uppdelad i rum"];
+
+type ButikFalt = {
+  layout: string;
+  takhojd: string;
+  lagerIFastigheten: boolean | null;
+  egetSophrum: boolean | null;
+};
+
+const emptyButikFalt: ButikFalt = {
+  layout: "",
+  takhojd: "",
+  lagerIFastigheten: null,
+  egetSophrum: null,
+};
+
 type Draft = {
   cat: CatId;
   ort: string;
@@ -129,6 +168,11 @@ type Draft = {
   potential: string;
   premium: boolean;
   docs: Record<string, DocState>;
+  // Fältgrupper per vald Verksamhetstyp — en nyckel per typ som har en egen fältkonfiguration.
+  typFalt: {
+    Kontor: KontorFalt;
+    Butik: ButikFalt;
+  };
 };
 
 const empty: Draft = {
@@ -155,6 +199,10 @@ const empty: Draft = {
   potential: "",
   premium: false,
   docs: {},
+  typFalt: {
+    Kontor: emptyKontorFalt,
+    Butik: emptyButikFalt,
+  },
 };
 
 const STEPS = ["Paket", "Grunduppgifter", "Underlag", "Granska & skicka"] as const;
@@ -180,7 +228,11 @@ function CreateListing() {
               navigate({ to: "/saljare/annons/$id", params: { id: editId }, replace: true });
               return;
             }
-            setDraft({ ...empty, ...item.draft });
+            setDraft({
+              ...empty,
+              ...item.draft,
+              typFalt: { ...empty.typFalt, ...item.draft.typFalt },
+            });
             setStep(4);
             return;
           }
@@ -189,7 +241,11 @@ function CreateListing() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as { draft: Draft; step: number; savedAt: string };
-        setDraft({ ...empty, ...parsed.draft });
+        setDraft({
+          ...empty,
+          ...parsed.draft,
+          typFalt: { ...empty.typFalt, ...parsed.draft.typFalt },
+        });
         setStep(parsed.step ?? 0);
         setSavedAt(parsed.savedAt ?? null);
       }
@@ -216,8 +272,40 @@ function CreateListing() {
   const setDoc = (name: string, s: DocState) =>
     setDraft((d) => ({ ...d, docs: { ...d.docs, [name]: s } }));
 
+  const setTypFalt = <T extends keyof Draft["typFalt"], K extends keyof Draft["typFalt"][T]>(
+    typ: T,
+    key: K,
+    v: Draft["typFalt"][T][K],
+  ) =>
+    setDraft((d) => ({
+      ...d,
+      typFalt: { ...d.typFalt, [typ]: { ...d.typFalt[typ], [key]: v } },
+    }));
+
   const requiredDocs = docsByCat[draft.cat];
   const docStatus = (name: string): DocState => draft.docs[name] ?? "saknas";
+
+  const valdaTyper = draft.verksamhet ? draft.verksamhet.split(",").map((s) => s.trim()).filter(Boolean) : [];
+
+  // Mappning typ → fältgrupp. Lägg till fler nycklar här när fler typers fältgrupper byggs.
+  const TYP_FALTGRUPPER: Record<string, () => ReactNode> = {
+    Kontor: () => (
+      <KontorFaltgrupp
+        falt={draft.typFalt.Kontor}
+        onChange={(key, v) => setTypFalt("Kontor", key, v)}
+        docStatus={docStatus}
+        setDoc={setDoc}
+      />
+    ),
+    Butik: () => (
+      <ButikFaltgrupp
+        falt={draft.typFalt.Butik}
+        onChange={(key, v) => setTypFalt("Butik", key, v)}
+        docStatus={docStatus}
+        setDoc={setDoc}
+      />
+    ),
+  };
 
   const validation = useMemo(() => {
     const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [] };
@@ -463,6 +551,12 @@ function CreateListing() {
                 />
               )}
             </div>
+
+            {VERKSAMHETSTYP_TAGGAR.filter((typ) => valdaTyper.includes(typ) && TYP_FALTGRUPPER[typ]).map((typ) => (
+              <div key={typ} className="mt-6 border-t border-dashed border-muted-foreground/30 pt-4">
+                {TYP_FALTGRUPPER[typ]()}
+              </div>
+            ))}
 
             <div className="mt-6 border-t border-dashed border-muted-foreground/30 pt-4">
               <Annotation>
@@ -908,6 +1002,202 @@ function TagMultiSelect({
         </div>
       </div>
     </div>
+  );
+}
+
+function YesNoToggle({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: boolean | null;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <div>
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
+      <div className="flex gap-2">
+        <WireBtn variant={value === true ? "primary" : "secondary"} onClick={() => onChange(true)}>
+          Ja
+        </WireBtn>
+        <WireBtn variant={value === false ? "primary" : "secondary"} onClick={() => onChange(false)}>
+          Nej
+        </WireBtn>
+      </div>
+    </div>
+  );
+}
+
+function TagToggleGroup({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const selected = value ? value.split(",").map((s) => s.trim()).filter(Boolean) : [];
+
+  function toggle(tag: string) {
+    const next = selected.includes(tag) ? selected.filter((t) => t !== tag) : [...selected, tag];
+    onChange(next.join(", "));
+  }
+
+  return (
+    <div>
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
+      <div className="flex flex-wrap gap-2 border border-dashed border-muted-foreground/50 bg-muted/20 p-3">
+        {options.map((tag) => (
+          <WireTag key={tag} active={selected.includes(tag)} onClick={() => toggle(tag)}>
+            {tag}
+          </WireTag>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function KontorFaltgrupp({
+  falt,
+  onChange,
+  docStatus,
+  setDoc,
+}: {
+  falt: KontorFalt;
+  onChange: <K extends keyof KontorFalt>(key: K, v: KontorFalt[K]) => void;
+  docStatus: (name: string) => DocState;
+  setDoc: (name: string, s: DocState) => void;
+}) {
+  const ritningNamn = "Ritning (Kontor)";
+  const ritningStatus = docStatus(ritningNamn);
+
+  return (
+    <>
+      <Annotation>Kontor — fält specifika för kontorslokaler.</Annotation>
+      <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:col-span-2 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-start gap-3">
+            <DocStatusDot state={ritningStatus} />
+            <div>
+              <div className="text-sm font-medium">Ritning</div>
+              <Annotation>JPG/PDF · planlösning över kontorsytan</Annotation>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <DocStatusTag state={ritningStatus} />
+            {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
+              <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
+                Ladda upp
+              </WireBtn>
+            ) : (
+              <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
+                Byt fil
+              </WireBtn>
+            )}
+          </div>
+        </div>
+
+        <WireFieldEditable
+          label="Antal WC"
+          value={falt.antalWC}
+          onChange={(v) => onChange("antalWC", v)}
+          placeholder="2"
+        />
+        <YesNoToggle label="Dusch" value={falt.dusch} onChange={(v) => onChange("dusch", v)} />
+        <WireFieldEditable
+          label="Antal kontorsplatser"
+          value={falt.antalPlatser}
+          onChange={(v) => onChange("antalPlatser", v)}
+          placeholder="20"
+        />
+        <YesNoToggle label="Konferensrum" value={falt.konferensrum} onChange={(v) => onChange("konferensrum", v)} />
+        <TagToggleGroup
+          label="Layout"
+          options={KONTOR_LAYOUT_ALTERNATIV}
+          value={falt.layout}
+          onChange={(v) => onChange("layout", v)}
+        />
+        <YesNoToggle label="Parkering" value={falt.parkering} onChange={(v) => onChange("parkering", v)} />
+        <WireFieldEditable
+          label="Våning"
+          value={falt.vaning}
+          onChange={(v) => onChange("vaning", v)}
+          placeholder="3 tr"
+        />
+      </div>
+    </>
+  );
+}
+
+function ButikFaltgrupp({
+  falt,
+  onChange,
+  docStatus,
+  setDoc,
+}: {
+  falt: ButikFalt;
+  onChange: <K extends keyof ButikFalt>(key: K, v: ButikFalt[K]) => void;
+  docStatus: (name: string) => DocState;
+  setDoc: (name: string, s: DocState) => void;
+}) {
+  const ritningNamn = "Ritning (Butik)";
+  const ritningStatus = docStatus(ritningNamn);
+
+  return (
+    <>
+      <Annotation>Butik — fält specifika för butikslokaler.</Annotation>
+      <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <TagToggleGroup
+          label="Layout"
+          options={BUTIK_LAYOUT_ALTERNATIV}
+          value={falt.layout}
+          onChange={(v) => onChange("layout", v)}
+        />
+
+        <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:col-span-2 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-start gap-3">
+            <DocStatusDot state={ritningStatus} />
+            <div>
+              <div className="text-sm font-medium">Ritning</div>
+              <Annotation>JPG/PDF · planlösning över butiksytan</Annotation>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <DocStatusTag state={ritningStatus} />
+            {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
+              <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
+                Ladda upp
+              </WireBtn>
+            ) : (
+              <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
+                Byt fil
+              </WireBtn>
+            )}
+          </div>
+        </div>
+
+        <WireFieldEditable
+          label="Takhöjd (m)"
+          value={falt.takhojd}
+          onChange={(v) => onChange("takhojd", v)}
+          placeholder="3,2"
+        />
+        <YesNoToggle
+          label="Lager i fastigheten"
+          value={falt.lagerIFastigheten}
+          onChange={(v) => onChange("lagerIFastigheten", v)}
+        />
+        <YesNoToggle label="Eget sophrum" value={falt.egetSophrum} onChange={(v) => onChange("egetSophrum", v)} />
+      </div>
+    </>
   );
 }
 
