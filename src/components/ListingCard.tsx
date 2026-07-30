@@ -16,7 +16,7 @@ export type Listing = {
   // Inkråm
   lokalyta?: number;
   etablerat?: number;
-  // Bolag
+  // Bolag (även Lokal-annonser inom Restaurang/Café & bageri, se nyckeltalFor)
   omsattning?: string;
   arr?: string;
   bolagsform?: string;
@@ -32,13 +32,18 @@ function MiniStat({ label, value }: { label: string; value: string }) {
   );
 }
 
+const SERVERING_TYPER = ["Restaurang", "Café & bageri", "Café"];
+
 function nyckeltalFor(l: Listing): { label: string; value: string }[] {
   if (l.kat === "Lokal" && l.typ != null && l.yta != null && l.hyra != null) {
+    const ärServering = SERVERING_TYPER.includes(l.typ);
     return [
       { label: "Yta", value: `${l.yta} kvm` },
       { label: "Hyra", value: `${l.hyra.toLocaleString("sv-SE")} kr/mån` },
       { label: "Typ", value: l.typ },
-      { label: "Hyra/kvm", value: `${Math.round(l.hyra / l.yta)} kr/kvm` },
+      ärServering
+        ? { label: "Omsättning", value: l.omsattning ?? "—" }
+        : { label: "Hyra/kvm", value: `${Math.round(l.hyra / l.yta)} kr/kvm` },
     ];
   }
   if (l.kat === "Inkråm" && l.lokalyta != null && l.etablerat != null) {
