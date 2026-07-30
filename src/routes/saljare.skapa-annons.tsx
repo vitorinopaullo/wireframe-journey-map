@@ -97,9 +97,9 @@ const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 const VERKSAMHETSTYP_TAGGAR = ["Café & bageri", "Restaurang", "Frisör", "Butik", "Kontor", "Lager"];
 
 // Förslagstaggar för "Vad säljer objektet in?" — läge/lokal-egenskaper och kundunderlag.
-const LAGE_TAGGAR = ["Nära tunnelbanan", "Stora skyltfönster", "Hörnläge", "Nyrenoverat", "Bra parkering", "Uteservering möjlig"];
+const LAGE_TAGGAR = ["Stora skyltfönster", "Nyrenoverat", "Uteservering möjlig"];
 const KUNDUNDERLAG_TAGGAR = ["Stamkunder", "Turister", "Kontorskunder", "Återkommande kunder"];
-const LAGET_TAGGAR = ["Nära tunnelbanan", "Nära pendeltåg", "Gångtrafik", "Gatuplan", "Bra skyltläge mot huvudgata", "Nära centrum", "Egen parkering"];
+const LAGET_TAGGAR = ["Nära tunnelbanan", "Nära pendeltåg", "Gångtrafik", "Gatuplan", "Bra skyltläge mot huvudgata", "Nära centrum", "Egen parkering", "Hörnläge", "Bra parkering"];
 const UTVECKLING_TAGGAR = ["Lunchservering", "Catering", "Längre öppettider", "E-handel"];
 const ANLEDNING_TAGGAR = ["Pension", "Ny satsning", "Flytt"];
 
@@ -222,8 +222,6 @@ function CreateListing() {
   const validation = useMemo(() => {
     const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [] };
     if (!draft.cat) errs[0].push("Välj paket.");
-    if (!draft.ort) errs[1].push("Ange ort.");
-    if (!draft.adress) errs[1].push("Ange adress.");
     if (!draft.yta) errs[1].push("Ange yta i m².");
     if (!draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
     if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
@@ -250,11 +248,11 @@ function CreateListing() {
       return s === "uppladdad" || s === "granskas" || s === "godkant";
     }).length;
     const fields = [
-      draft.ort, draft.adress, draft.yta, draft.verksamhet,
+      draft.yta, draft.verksamhet,
       draft.hyresvardEmail, draft.hyresvardTel, draft.brfKontakt,
       draft.usp, draft.kundunderlag, draft.laget,
     ].filter(Boolean).length;
-    return Math.round(((fields / 10) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
+    return Math.round(((fields / 8) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
   }, [draft, requiredDocs]);
 
 
@@ -445,19 +443,6 @@ function CreateListing() {
               Fyll i grundfakta så vi vet vad vi jobbar med.
             </Annotation>
             <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <WireFieldEditable
-                label="Ort *"
-                value={draft.ort}
-                onChange={(v) => set("ort", v)}
-                placeholder="Stockholm"
-              />
-              <WireFieldEditable
-                label="Adress *"
-                value={draft.adress}
-                onChange={(v) => set("adress", v)}
-                placeholder="Götgatan 12"
-                hint="Exakt adress visas inte publikt — TreLink använder området i annonsen."
-              />
               <WireFieldEditable
                 label="Yta (m²) *"
                 value={draft.yta}
@@ -749,7 +734,7 @@ function Row({ k, v }: { k: string; v: string }) {
 }
 
 type OnboardingSaljareData = {
-  bolagsuppgifter: { bolag: string; orgnr: string; adress: string };
+  bolagsuppgifter: { bolag: string; orgnr: string; ort: string; adress: string };
   saljaruppgifter: { fornamn: string; efternamn: string; mobil: string; epost: string };
   firmatecknare: { roll: string; fornamn: string; efternamn: string; mail: string; mobil: string } | null;
 };
@@ -775,6 +760,7 @@ function KontoSammanfattning() {
       <dl className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <Row k="Bolag" v={bolagsuppgifter.bolag || "—"} />
         <Row k="Org.nr" v={bolagsuppgifter.orgnr || "—"} />
+        <Row k="Ort" v={bolagsuppgifter.ort || "—"} />
         <Row k="Adress" v={bolagsuppgifter.adress || "—"} />
       </dl>
 

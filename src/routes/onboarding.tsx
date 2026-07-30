@@ -230,6 +230,7 @@ function Step2({
 }) {
   const [telefon, setTelefon] = useState("");
   const [epost, setEpost] = useState("");
+  const [ort, setOrt] = useState("");
   const [adress, setAdress] = useState("");
   const [bolag, setBolag] = useState("");
   const [orgnr, setOrgnr] = useState("");
@@ -252,7 +253,7 @@ function Step2({
       localStorage.setItem(
         ONBOARDING_SALJARE_KEY,
         JSON.stringify({
-          bolagsuppgifter: { bolag, orgnr, adress, presentation },
+          bolagsuppgifter: { bolag, orgnr, ort, adress, presentation },
           saljaruppgifter: {
             fornamn: bankid.fornamn,
             efternamn: bankid.efternamn,
@@ -272,7 +273,7 @@ function Step2({
       personnr: bankid.personnr,
       telefon,
       epost,
-      ...(role === "saljare" && { adress }),
+      ...(role === "saljare" && { ort, adress }),
       ...(bolag && { bolag }),
       ...(orgnr && { orgnr }),
       ...(presentation && { presentation }),
@@ -319,15 +320,14 @@ function Step2({
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <InputField label="Bolag" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
                   <InputField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
-                  <div className="md:col-span-2">
-                    <InputField
-                      label="Adress"
-                      value={adress}
-                      onChange={setAdress}
-                      placeholder="Storgatan 1, 113 27 Stockholm"
-                      hint="Frivilligt — används vid fakturering om affär genomförs"
-                    />
-                  </div>
+                  <InputField label="Ort" value={ort} onChange={setOrt} placeholder="Stockholm" />
+                  <InputField
+                    label="Adress"
+                    value={adress}
+                    onChange={setAdress}
+                    placeholder="Storgatan 1, 113 27"
+                    hint="Frivilligt — används vid fakturering om affär genomförs"
+                  />
                   <div className="md:col-span-2">
                     <InputField
                       label="Företagspresentation"
