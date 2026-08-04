@@ -11,6 +11,7 @@ export type Listing = {
   hasFTax?: boolean;
   // Lokal
   typ?: string;
+  adress?: string;
   yta?: number;
   hyra?: number;
   // Inkråm
@@ -35,6 +36,16 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 const SERVERING_TYPER = ["Restaurang", "Café & bageri", "Café"];
 
 function nyckeltalFor(l: Listing): { label: string; value: string }[] {
+  if (l.kat === "Lokal" && l.typ === "Kontor" && l.yta != null) {
+    const prisKr = Number(l.pris.replace(/\D/g, ""));
+    const prisPerKvm = prisKr > 0 ? Math.round(prisKr / l.yta) : null;
+    return [
+      { label: "Adress", value: l.adress ?? "—" },
+      { label: "Hyra", value: l.hyra != null ? `${l.hyra.toLocaleString("sv-SE")} kr/mån` : "—" },
+      { label: "Yta", value: `${l.yta} kvm` },
+      { label: "Pris/kvm", value: prisPerKvm != null ? `${prisPerKvm.toLocaleString("sv-SE")} kr/kvm` : "—" },
+    ];
+  }
   if (l.kat === "Lokal" && l.typ != null && l.yta != null && l.hyra != null) {
     const ärServering = SERVERING_TYPER.includes(l.typ);
     return [

@@ -104,26 +104,41 @@ const UTVECKLING_TAGGAR = ["Lunchservering", "Catering", "Längre öppettider", 
 const ANLEDNING_TAGGAR = ["Pension", "Ny satsning", "Flytt"];
 
 // Fältgrupp per Verksamhetstyp — lägg till fler typers fältkonfiguration här.
-const KONTOR_LAYOUT_ALTERNATIV = ["Öppen planlösning", "Bås-planlösning"];
+// Kontors gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
+const KONTOR_TAGGAR_LAGE = ["Bra kommunikation", "Parkering", "Hiss"];
+const KONTOR_TAGGAR_INTERIOR = ["Ljust och rymligt", "Nyrenoverad"];
+const KONTOR_TAGGAR_PLANLOSNING = [
+  "Öppet kontorslandskap",
+  "Kök/pentry",
+  "Lunchrum",
+  "Tillgänglighetsanpassad",
+  "Konferensrum",
+  "Mötesrum",
+  "Co-working yta",
+  "Serverrum",
+  "Reception",
+  "Omklädningsrum",
+  "Dusch",
+  "Larm",
+];
+const KONTOR_TAGGAR_EKONOMI = ["OVK godkänt", "Förmånlig hyra", "Starkt bredband möjligt", "Fiberanslutning"];
 
 type KontorFalt = {
-  antalWC: string;
-  dusch: boolean | null;
-  antalPlatser: string;
-  konferensrum: boolean | null;
-  layout: string;
-  parkering: boolean | null;
-  vaning: string;
+  lage: string;
+  interior: string;
+  planlosning: string;
+  ekonomi: string;
+  taggar: string;
+  beskrivning: string;
 };
 
 const emptyKontorFalt: KontorFalt = {
-  antalWC: "",
-  dusch: null,
-  antalPlatser: "",
-  konferensrum: null,
-  layout: "",
-  parkering: null,
-  vaning: "",
+  lage: "",
+  interior: "",
+  planlosning: "",
+  ekonomi: "",
+  taggar: "",
+  beskrivning: "",
 };
 
 const BUTIK_LAYOUT_ALTERNATIV = ["Öppen butiksyta", "Uppdelad i rum"];
@@ -301,6 +316,16 @@ const empty: Draft = {
 
 const STEPS = ["Paket", "Grunduppgifter", "Underlag", "Granska & skicka"] as const;
 
+// Slår ihop sparad typFalt med standardvärden per typ (inte bara per nyckel), så ett utkast som sparades
+// innan en typs fältgrupp fick nya/ändrade fält inte kraschar eller tappar bort de fält som fortfarande finns.
+function mergeTypFalt(saved: Partial<Draft["typFalt"]> | undefined): Draft["typFalt"] {
+  const merged = { ...empty.typFalt };
+  for (const typ of Object.keys(merged) as Array<keyof Draft["typFalt"]>) {
+    merged[typ] = { ...empty.typFalt[typ], ...(saved?.[typ] ?? {}) } as any;
+  }
+  return merged;
+}
+
 function CreateListing() {
   const navigate = useNavigate();
   const { edit: editId } = Route.useSearch();
@@ -325,7 +350,7 @@ function CreateListing() {
             setDraft({
               ...empty,
               ...item.draft,
-              typFalt: { ...empty.typFalt, ...item.draft.typFalt },
+              typFalt: mergeTypFalt(item.draft.typFalt),
             });
             setStep(4);
             return;
@@ -338,7 +363,7 @@ function CreateListing() {
         setDraft({
           ...empty,
           ...parsed.draft,
-          typFalt: { ...empty.typFalt, ...parsed.draft.typFalt },
+          typFalt: mergeTypFalt(parsed.draft.typFalt),
         });
         setStep(parsed.step ?? 0);
         setSavedAt(parsed.savedAt ?? null);
@@ -1229,56 +1254,111 @@ function KontorFaltgrupp({
   return (
     <>
       <Annotation>Kontor — fält specifika för kontorslokaler.</Annotation>
-      <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:col-span-2 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-3">
-            <DocStatusDot state={ritningStatus} />
-            <div>
-              <div className="text-sm font-medium">Ritning</div>
-              <Annotation>JPG/PDF · planlösning över kontorsytan</Annotation>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <DocStatusTag state={ritningStatus} />
-            {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
-              <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
-                Ladda upp
-              </WireBtn>
-            ) : (
-              <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
-                Byt fil
-              </WireBtn>
-            )}
+      <div className="mt-4 space-y-5">
+        <div>
+          <WireTag>Läge</WireTag>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av läge"
+              value={falt.lage}
+              onChange={(v) => onChange("lage", v)}
+              placeholder="Beskriv läget, kommunikationer och parkeringsmöjligheter"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={KONTOR_TAGGAR_LAGE}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
           </div>
         </div>
 
-        <WireFieldEditable
-          label="Antal WC"
-          value={falt.antalWC}
-          onChange={(v) => onChange("antalWC", v)}
-          placeholder="2"
-        />
-        <YesNoToggle label="Dusch" value={falt.dusch} onChange={(v) => onChange("dusch", v)} />
-        <WireFieldEditable
-          label="Antal kontorsplatser"
-          value={falt.antalPlatser}
-          onChange={(v) => onChange("antalPlatser", v)}
-          placeholder="20"
-        />
-        <YesNoToggle label="Konferensrum" value={falt.konferensrum} onChange={(v) => onChange("konferensrum", v)} />
-        <TagToggleGroup
-          label="Layout"
-          options={KONTOR_LAYOUT_ALTERNATIV}
-          value={falt.layout}
-          onChange={(v) => onChange("layout", v)}
-        />
-        <YesNoToggle label="Parkering" value={falt.parkering} onChange={(v) => onChange("parkering", v)} />
-        <WireFieldEditable
-          label="Våning"
-          value={falt.vaning}
-          onChange={(v) => onChange("vaning", v)}
-          placeholder="3 tr"
-        />
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireTag>Interiör/stil</WireTag>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av interiör"
+              value={falt.interior}
+              onChange={(v) => onChange("interior", v)}
+              placeholder="Färg på väggarna, fönsterform, golvmaterial/färg, takhöjd"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={KONTOR_TAGGAR_INTERIOR}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireTag>Planlösning</WireTag>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av planlösning"
+              value={falt.planlosning}
+              onChange={(v) => onChange("planlosning", v)}
+              placeholder="Beskriv hur kontoret är utformat, så detaljerat som möjligt"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={KONTOR_TAGGAR_PLANLOSNING}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireTag>Ekonomi</WireTag>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Vad ingår i hyran"
+              value={falt.ekonomi}
+              onChange={(v) => onChange("ekonomi", v)}
+              placeholder="T.ex. värme, vatten, el"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={KONTOR_TAGGAR_EKONOMI}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireArea
+            label="Beskriv ditt kontor för en ny hyresgäst"
+            value={falt.beskrivning}
+            onChange={(v) => onChange("beskrivning", v)}
+            placeholder="Beskriv gärna så mycket du kan: våning, p-platser för anställda, antal kontorssittplatser — allt som kan göra kontoret intressant för en ny hyresgäst."
+          />
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <DocStatusDot state={ritningStatus} />
+              <div>
+                <div className="text-sm font-medium">Ritning</div>
+                <Annotation>PDF · planlösning över kontorsytan</Annotation>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <DocStatusTag state={ritningStatus} />
+              {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
+                <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
+                  Ladda upp
+                </WireBtn>
+              ) : (
+                <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
+                  Byt fil
+                </WireBtn>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
