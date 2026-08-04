@@ -208,12 +208,14 @@ const emptyLagerFalt: LagerFalt = {
 };
 
 // Serverings gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
+const SERVERING_TAGGAR_LAGE = ["Parkering"];
 const SERVERING_TAGGAR_INTERIOR = ["Modern inredning", "Rustik inredning", "Pub-inredning", "Nyrenoverat"];
 const SERVERING_TAGGAR_PLANLOSNING = [
   "Ca 30 sittplatser",
   "Ca 40 sittplatser",
   "Ca 50 sittplatser",
   "Uteservering",
+  "Ca 30 uteplatser",
   "WC",
   "WC kund",
   "WC personal",
@@ -225,9 +227,24 @@ const SERVERING_TAGGAR_PLANLOSNING = [
   "Bardel",
   "Lager",
   "Kontor",
+  "Eget soprum",
+  "Delat soprum",
 ];
 const SERVERING_TAGGAR_EKONOMI = ["Bunden ölleverantör"];
-const SERVERING_TAGGAR_VENTILATION = ["Svartplåt", "Pizza/bageri-kanal", "Fettavskiljare"];
+const SERVERING_TAGGAR_TYP_AV_KOK = ["Svartplåtskanal", "Pizza kanal", "Café kök", "Annan ventilationslösning"];
+const SERVERING_SKICK_ALTERNATIV = [
+  "Köket behöver renoveras",
+  "Maskinpark gammal",
+  "Ny maskinpark",
+  "Varierande ålder maskinpark",
+];
+const SERVERING_TAGGAR_MYNDIGHETSKRAV = [
+  "Livsmedelstillstånd",
+  "Alkoholtillstånd",
+  "Fettavskiljare",
+  "OVK",
+  "Sotningsprotokoll",
+];
 
 // PDF-uppladdningar specifika för Servering — namn + hjälptext, renderas i en lista.
 const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
@@ -248,7 +265,9 @@ type ServeringFalt = {
   koksutrustning: string;
   alkoholtillstand: string;
   taggar: string;
-  ventilation: string;
+  typAvKok: string;
+  skickILokal: string;
+  myndighetskrav: string;
 };
 
 const emptyServeringFalt: ServeringFalt = {
@@ -259,7 +278,9 @@ const emptyServeringFalt: ServeringFalt = {
   koksutrustning: "",
   alkoholtillstand: "",
   taggar: "",
-  ventilation: "",
+  typAvKok: "",
+  skickILokal: "",
+  myndighetskrav: "",
 };
 
 // Skönhetssalongs gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
@@ -285,6 +306,7 @@ type FrisorFalt = {
   interior: string;
   planlosning: string;
   ekonomi: string;
+  antalStolar: string;
   taggar: string;
   beskrivning: string;
 };
@@ -294,6 +316,7 @@ const emptyFrisorFalt: FrisorFalt = {
   interior: "",
   planlosning: "",
   ekonomi: "",
+  antalStolar: "",
   taggar: "",
   beskrivning: "",
 };
@@ -1739,6 +1762,12 @@ function ServeringFaltgrupp({
               onChange={(v) => onChange("lage", v)}
               placeholder="Beskriv läget, kommunikationer och parkeringsmöjligheter"
             />
+            <TagToggleGroup
+              label="Taggar"
+              options={SERVERING_TAGGAR_LAGE}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
           </div>
         </div>
 
@@ -1756,6 +1785,12 @@ function ServeringFaltgrupp({
               options={SERVERING_TAGGAR_INTERIOR}
               value={falt.taggar}
               onChange={(v) => onChange("taggar", v)}
+            />
+            <SingleTagSelect
+              label="Lokalens skick"
+              options={SERVERING_SKICK_ALTERNATIV}
+              value={falt.skickILokal}
+              onChange={(v) => onChange("skickILokal", v)}
             />
           </div>
         </div>
@@ -1806,10 +1841,22 @@ function ServeringFaltgrupp({
               placeholder="Vad består köket av för utrustning idag? Fungerar allt?"
             />
             <TagToggleGroup
-              label="Typ av ventilation"
-              options={SERVERING_TAGGAR_VENTILATION}
-              value={falt.ventilation}
-              onChange={(v) => onChange("ventilation", v)}
+              label="Typ av kök"
+              options={SERVERING_TAGGAR_TYP_AV_KOK}
+              value={falt.typAvKok}
+              onChange={(v) => onChange("typAvKok", v)}
+            />
+            <TagToggleGroup
+              label="Myndighetskrav"
+              options={SERVERING_TAGGAR_MYNDIGHETSKRAV}
+              value={falt.myndighetskrav}
+              onChange={(v) => onChange("myndighetskrav", v)}
+            />
+            <DocUploadRad
+              namn="Myndighetsdokument (Servering)"
+              hint="JPG/PDF · bifoga tillstånd/protokoll som styrker taggarna ovan"
+              docStatus={docStatus}
+              setDoc={setDoc}
             />
           </div>
         </div>
@@ -1901,6 +1948,12 @@ function FrisorFaltgrupp({
               value={falt.planlosning}
               onChange={(v) => onChange("planlosning", v)}
               placeholder="Beskriv hur salongen är utformad, så detaljerat som möjligt"
+            />
+            <WireFieldEditable
+              label="Antal stolar"
+              value={falt.antalStolar}
+              onChange={(v) => onChange("antalStolar", v)}
+              placeholder="4"
             />
             <TagToggleGroup
               label="Taggar"
