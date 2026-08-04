@@ -22,6 +22,9 @@ export type Listing = {
   arr?: string;
   bolagsform?: string;
   grundat?: number;
+  // Servering (Restaurang/Café & bageri) — se nyckeltalFor
+  antalAnstallda?: number;
+  lonsamt?: boolean;
 };
 
 function MiniStat({ label, value }: { label: string; value: string }) {
@@ -34,7 +37,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 }
 
 const SERVERING_TYPER = ["Restaurang", "Café & bageri", "Café"];
-const ADRESS_HYRA_YTA_PRISKVM_TYPER = ["Kontor", "Butik"];
+const ADRESS_HYRA_YTA_PRISKVM_TYPER = ["Kontor", "Butik", "Lager"];
 
 function nyckeltalFor(l: Listing): { label: string; value: string }[] {
   if (l.kat === "Lokal" && l.typ != null && ADRESS_HYRA_YTA_PRISKVM_TYPER.includes(l.typ) && l.yta != null) {
@@ -47,15 +50,30 @@ function nyckeltalFor(l: Listing): { label: string; value: string }[] {
       { label: "Pris/kvm", value: prisPerKvm != null ? `${prisPerKvm.toLocaleString("sv-SE")} kr/kvm` : "—" },
     ];
   }
+  if (l.kat === "Lokal" && l.typ != null && SERVERING_TYPER.includes(l.typ) && l.yta != null) {
+    return [
+      { label: "Adress", value: l.adress ?? "—" },
+      { label: "Hyra", value: l.hyra != null ? `${l.hyra.toLocaleString("sv-SE")} kr/mån` : "—" },
+      { label: "Yta", value: `${l.yta} kvm` },
+      { label: "Omsättning", value: l.omsattning ?? "—" },
+      { label: "Antal anställda", value: l.antalAnstallda != null ? `${l.antalAnstallda}` : "—" },
+      { label: "Lönsamt", value: l.lonsamt == null ? "—" : l.lonsamt ? "Ja" : "Nej" },
+    ];
+  }
+  if (l.kat === "Lokal" && l.typ === "Skönhetssalong" && l.yta != null) {
+    return [
+      { label: "Adress", value: l.adress ?? "—" },
+      { label: "Hyra", value: l.hyra != null ? `${l.hyra.toLocaleString("sv-SE")} kr/mån` : "—" },
+      { label: "Yta", value: `${l.yta} kvm` },
+      { label: "Omsättning", value: l.omsattning ?? "—" },
+    ];
+  }
   if (l.kat === "Lokal" && l.typ != null && l.yta != null && l.hyra != null) {
-    const ärServering = SERVERING_TYPER.includes(l.typ);
     return [
       { label: "Yta", value: `${l.yta} kvm` },
       { label: "Hyra", value: `${l.hyra.toLocaleString("sv-SE")} kr/mån` },
       { label: "Typ", value: l.typ },
-      ärServering
-        ? { label: "Omsättning", value: l.omsattning ?? "—" }
-        : { label: "Hyra/kvm", value: `${Math.round(l.hyra / l.yta)} kr/kvm` },
+      { label: "Hyra/kvm", value: `${Math.round(l.hyra / l.yta)} kr/kvm` },
     ];
   }
   if (l.kat === "Inkråm" && l.lokalyta != null && l.etablerat != null) {

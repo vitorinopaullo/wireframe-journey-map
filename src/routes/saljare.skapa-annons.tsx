@@ -94,14 +94,14 @@ const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
 // Samma kategorier som TYP-fältet på annonskorten (@/components/ListingCard).
-const VERKSAMHETSTYP_TAGGAR = ["Café & bageri", "Restaurang", "Frisör", "Butik", "Kontor", "Lager"];
+const VERKSAMHETSTYP_TAGGAR = ["Café & bageri", "Restaurang", "Skönhetssalong", "Butik", "Kontor", "Lager"];
 
 // Förslagstaggar för "Vad säljer objektet in?" — läge/lokal-egenskaper och kundunderlag.
 const LAGE_TAGGAR = ["Stora skyltfönster", "Nyrenoverat", "Uteservering möjlig"];
 const KUNDUNDERLAG_TAGGAR = ["Stamkunder", "Turister", "Kontorskunder", "Återkommande kunder"];
 const LAGET_TAGGAR = ["Nära tunnelbanan", "Nära pendeltåg", "Gångtrafik", "Gatuplan", "Bra skyltläge mot huvudgata", "Nära centrum", "Egen parkering", "Hörnläge", "Bra parkering"];
 const UTVECKLING_TAGGAR = ["Lunchservering", "Catering", "Längre öppettider", "E-handel"];
-const ANLEDNING_TAGGAR = ["Pension", "Ny satsning", "Flytt"];
+const ANLEDNING_TAGGAR = ["Pension", "Ny satsning", "Flytt", "Utbränd", "Utlandsflytt"];
 
 // Fältgrupp per Verksamhetstyp — lägg till fler typers fältkonfiguration här.
 // Kontors gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
@@ -174,82 +174,128 @@ const emptyButikFalt: ButikFalt = {
   beskrivning: "",
 };
 
-const KOMMUNIKATION_ALTERNATIV = ["Nära motorväg", "Kollektivtrafik nära"];
+// Lagers gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
+const LAGER_TAGGAR_INTERIOR = ["Takhöjd"];
+const LAGER_TAGGAR_PLANLOSNING = [
+  "Lastkaj",
+  "Soprum",
+  "Markyta",
+  "Varuintag",
+  "Lunchrum",
+  "Omklädningsrum",
+  "WC/dusch",
+  "Typ av port",
+  "Kontorsrum",
+];
+const LAGER_TAGGAR_EKONOMI = ["Oljeskiljare"];
 
 type LagerFalt = {
-  lastkaj: boolean | null;
-  portTyp: string;
-  takhojd: string;
-  kontorsrum: string;
-  wc: string;
-  kommunikation: string;
-  antalParkeringsplatser: string;
+  lage: string;
+  interior: string;
+  planlosning: string;
+  ekonomi: string;
+  taggar: string;
+  beskrivning: string;
 };
 
 const emptyLagerFalt: LagerFalt = {
-  lastkaj: null,
-  portTyp: "",
-  takhojd: "",
-  kontorsrum: "",
-  wc: "",
-  kommunikation: "",
-  antalParkeringsplatser: "",
+  lage: "",
+  interior: "",
+  planlosning: "",
+  ekonomi: "",
+  taggar: "",
+  beskrivning: "",
 };
 
-const SITTPLATSER_ALTERNATIV = ["Ca 30 sittplatser", "Ca 40 sittplatser", "Ca 50 sittplatser"];
-const UTEPLATSER_ALTERNATIV = ["Inga uteplatser", "Ca 20 uteplatser", "Ca 30 uteplatser", "Ca 40 uteplatser"];
-const SOPHANTERING_ALTERNATIV = ["Eget sophrum", "Delat sophrum"];
-const SKICK_I_LOKAL_ALTERNATIV = [
-  "Köket behöver renoveras",
-  "Maskinpark gammal",
-  "Ny maskinpark",
-  "Varierande ålder maskinpark",
+// Serverings gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
+const SERVERING_TAGGAR_INTERIOR = ["Modern inredning", "Rustik inredning", "Pub-inredning", "Nyrenoverat"];
+const SERVERING_TAGGAR_PLANLOSNING = [
+  "Ca 30 sittplatser",
+  "Ca 40 sittplatser",
+  "Ca 50 sittplatser",
+  "Uteservering",
+  "WC",
+  "WC kund",
+  "WC personal",
+  "Personalutrymme",
+  "Omklädningsrum",
+  "Kylrum",
+  "Frysrum",
+  "Diskrum",
+  "Bardel",
+  "Lager",
+  "Kontor",
 ];
-const TYP_AV_KOK_ALTERNATIV = ["Svartplåtskanal", "Pizzakanal", "Cafékök", "Annan ventilationslösning"];
-const MYNDIGHETSKRAV_ALTERNATIV = [
-  "Livsmedelstillstånd",
-  "Alkoholtillstånd",
-  "Fettavskiljare",
-  "OVK",
-  "Sotningsprotokoll",
+const SERVERING_TAGGAR_EKONOMI = ["Bunden ölleverantör"];
+const SERVERING_TAGGAR_VENTILATION = ["Svartplåt", "Pizza/bageri-kanal", "Fettavskiljare"];
+
+// PDF-uppladdningar specifika för Servering — namn + hjälptext, renderas i en lista.
+const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
+  { namn: "Ritning (Servering)", hint: "PDF · planlösning över lokalen" },
+  { namn: "OVK (Servering)", hint: "PDF · obligatorisk ventilationskontroll" },
+  { namn: "Serveringstillstånd (Servering)", hint: "PDF · tillstånd för alkoholservering" },
+  { namn: "Uteserveringsritning (Servering)", hint: "PDF · ritning över uteserveringsyta" },
+  { namn: "Miljöförvaltning (Servering)", hint: "PDF · dokument från miljöförvaltningen" },
+  { namn: "Brandskyddsdokument (Servering)", hint: "PDF · brandskyddsdokumentation" },
+  { namn: "Leasingavtal (Servering)", hint: "PDF · t.ex. kassa-, telefoni- och wifiavtal" },
 ];
 
 type ServeringFalt = {
-  lageOmgivning: string;
-  sittplatser: string;
-  uteplatser: string;
-  nyrenoverat: boolean | null;
-  wcPersonal: boolean | null;
-  wcKund: boolean | null;
-  sophantering: string;
-  skickILokal: string;
-  typAvKok: string;
-  myndighetskrav: string;
+  lage: string;
+  interior: string;
+  planlosning: string;
+  ekonomi: string;
+  koksutrustning: string;
+  alkoholtillstand: string;
+  taggar: string;
+  ventilation: string;
 };
 
 const emptyServeringFalt: ServeringFalt = {
-  lageOmgivning: "",
-  sittplatser: "",
-  uteplatser: "",
-  nyrenoverat: null,
-  wcPersonal: null,
-  wcKund: null,
-  sophantering: "",
-  skickILokal: "",
-  typAvKok: "",
-  myndighetskrav: "",
+  lage: "",
+  interior: "",
+  planlosning: "",
+  ekonomi: "",
+  koksutrustning: "",
+  alkoholtillstand: "",
+  taggar: "",
+  ventilation: "",
 };
 
+// Skönhetssalongs gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
+const FRISOR_TAGGAR_LAGE = ["Trafikerat läge", "Hörnlokal"];
+const FRISOR_TAGGAR_INTERIOR = ["Modern inredning", "Takhöjd"];
+const FRISOR_TAGGAR_PLANLOSNING = [
+  "Lunchrum",
+  "Omklädningsrum",
+  "Lager i fastigheten",
+  "Soprum",
+  "Lastkaj",
+  "Apotek",
+  "Klädesbutik",
+  "Optik",
+  "Kontor",
+  "WC",
+  "Dusch",
+];
+const FRISOR_TAGGAR_EKONOMI = ["Uthyrning av stol"];
+
 type FrisorFalt = {
-  antalStolar: string;
-  uthyrningAvStol: boolean | null;
-  wcDusch: boolean | null;
+  lage: string;
+  interior: string;
+  planlosning: string;
+  ekonomi: string;
+  taggar: string;
+  beskrivning: string;
 };
 
 const emptyFrisorFalt: FrisorFalt = {
-  antalStolar: "",
-  uthyrningAvStol: null,
-  wcDusch: null,
+  lage: "",
+  interior: "",
+  planlosning: "",
+  ekonomi: "",
+  taggar: "",
+  beskrivning: "",
 };
 
 // Mappning fältgrupp-id → vilka Verksamhetstyp-taggar som visar den. En grupp kan delas av flera taggar
@@ -259,7 +305,7 @@ const FALTGRUPP_TYPER: Record<string, string[]> = {
   Butik: ["Butik"],
   Lager: ["Lager"],
   Servering: ["Café & bageri", "Restaurang"],
-  Frisor: ["Frisör"],
+  Frisor: ["Skönhetssalong"],
 };
 
 type Draft = {
@@ -442,7 +488,12 @@ function CreateListing() {
       />
     ),
     Lager: () => (
-      <LagerFaltgrupp falt={draft.typFalt.Lager} onChange={(key, v) => setTypFalt("Lager", key, v)} />
+      <LagerFaltgrupp
+        falt={draft.typFalt.Lager}
+        onChange={(key, v) => setTypFalt("Lager", key, v)}
+        docStatus={docStatus}
+        setDoc={setDoc}
+      />
     ),
     Servering: () => (
       <ServeringFaltgrupp
@@ -453,7 +504,12 @@ function CreateListing() {
       />
     ),
     Frisor: () => (
-      <FrisorFaltgrupp falt={draft.typFalt.Frisor} onChange={(key, v) => setTypFalt("Frisor", key, v)} />
+      <FrisorFaltgrupp
+        falt={draft.typFalt.Frisor}
+        onChange={(key, v) => setTypFalt("Frisor", key, v)}
+        docStatus={docStatus}
+        setDoc={setDoc}
+      />
     ),
   };
 
@@ -1057,13 +1113,8 @@ function VerksamhetstypSelect({
   value: string;
   onChange: (v: string) => void;
 }) {
-  const selected = value ? value.split(",").map((s) => s.trim()).filter(Boolean) : [];
-
-  function toggle(tag: string) {
-    const next = selected.includes(tag)
-      ? selected.filter((t) => t !== tag)
-      : [...selected, tag];
-    onChange(next.join(", "));
+  function select(tag: string) {
+    onChange(value === tag ? "" : tag);
   }
 
   return (
@@ -1073,13 +1124,13 @@ function VerksamhetstypSelect({
       </span>
       <div className="flex flex-wrap gap-2 border border-dashed border-muted-foreground/50 bg-muted/20 p-3">
         {VERKSAMHETSTYP_TAGGAR.map((tag) => (
-          <WireTag key={tag} active={selected.includes(tag)} onClick={() => toggle(tag)}>
+          <WireTag key={tag} active={value === tag} onClick={() => select(tag)}>
             {tag}
           </WireTag>
         ))}
       </div>
       <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">
-        Välj en eller flera kategorier som beskriver verksamheten.
+        Välj den kategori som bäst beskriver verksamheten.
       </span>
     </label>
   );
@@ -1165,6 +1216,10 @@ function TagMultiSelect({
       </div>
     </div>
   );
+}
+
+function FaltgruppRubrik({ children }: { children: ReactNode }) {
+  return <h4 className="text-sm font-semibold text-foreground">{children}</h4>;
 }
 
 function YesNoToggle({
@@ -1273,7 +1328,7 @@ function KontorFaltgrupp({
       <Annotation>Kontor — fält specifika för kontorslokaler.</Annotation>
       <div className="mt-4 space-y-5">
         <div>
-          <WireTag>Läge</WireTag>
+          <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <WireFieldEditable
               label="Beskrivning av läge"
@@ -1291,7 +1346,7 @@ function KontorFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <WireTag>Interiör/stil</WireTag>
+          <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <WireFieldEditable
               label="Beskrivning av interiör"
@@ -1309,7 +1364,7 @@ function KontorFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <WireTag>Planlösning</WireTag>
+          <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <WireFieldEditable
               label="Beskrivning av planlösning"
@@ -1327,7 +1382,7 @@ function KontorFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <WireTag>Ekonomi</WireTag>
+          <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <WireFieldEditable
               label="Vad ingår i hyran"
@@ -1400,7 +1455,7 @@ function ButikFaltgrupp({
       <Annotation>Butik — fält specifika för butikslokaler.</Annotation>
       <div className="mt-4 space-y-5">
         <div>
-          <WireTag>Läge</WireTag>
+          <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <WireFieldEditable
               label="Beskrivning av läge"
@@ -1418,7 +1473,7 @@ function ButikFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <WireTag>Interiör/stil</WireTag>
+          <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <WireFieldEditable
               label="Beskrivning av interiör"
@@ -1436,7 +1491,7 @@ function ButikFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <WireTag>Planlösning</WireTag>
+          <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <WireFieldEditable
               label="Beskrivning av planlösning"
@@ -1454,7 +1509,7 @@ function ButikFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <WireTag>Ekonomi</WireTag>
+          <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <WireFieldEditable
               label="Vad ingår i hyran"
@@ -1505,46 +1560,119 @@ function ButikFaltgrupp({
 function LagerFaltgrupp({
   falt,
   onChange,
+  docStatus,
+  setDoc,
 }: {
   falt: LagerFalt;
   onChange: <K extends keyof LagerFalt>(key: K, v: LagerFalt[K]) => void;
+  docStatus: (name: string) => DocState;
+  setDoc: (name: string, s: DocState) => void;
 }) {
+  const ritningNamn = "Ritning (Lager)";
+  const ritningStatus = docStatus(ritningNamn);
+
   return (
     <>
-      <Annotation>Lager — fält specifika för lagerlokaler.</Annotation>
-      <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <YesNoToggle label="Lastkaj" value={falt.lastkaj} onChange={(v) => onChange("lastkaj", v)} />
-        <WireFieldEditable
-          label="Typ av port"
-          value={falt.portTyp}
-          onChange={(v) => onChange("portTyp", v)}
-          placeholder="Portstorlek/typ, t.ex. rulljalusi 4x4 m"
-        />
-        <WireFieldEditable
-          label="Takhöjd (m)"
-          value={falt.takhojd}
-          onChange={(v) => onChange("takhojd", v)}
-          placeholder="6"
-        />
-        <WireFieldEditable
-          label="Kontorsrum (antal)"
-          value={falt.kontorsrum}
-          onChange={(v) => onChange("kontorsrum", v)}
-          placeholder="2"
-        />
-        <WireFieldEditable label="WC" value={falt.wc} onChange={(v) => onChange("wc", v)} placeholder="1" />
-        <TagToggleGroup
-          label="Kommunikation"
-          options={KOMMUNIKATION_ALTERNATIV}
-          value={falt.kommunikation}
-          onChange={(v) => onChange("kommunikation", v)}
-        />
-        <WireFieldEditable
-          label="Antal parkeringsplatser"
-          value={falt.antalParkeringsplatser}
-          onChange={(v) => onChange("antalParkeringsplatser", v)}
-          placeholder="10"
-        />
+      <Annotation>Lager — fält specifika för lager/industrilokaler.</Annotation>
+      <div className="mt-4 space-y-5">
+        <div>
+          <FaltgruppRubrik>Läge</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av läge"
+              value={falt.lage}
+              onChange={(v) => onChange("lage", v)}
+              placeholder="Beskriv läget, kommunikationer och parkeringsmöjligheter"
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av interiör"
+              value={falt.interior}
+              onChange={(v) => onChange("interior", v)}
+              placeholder="Färg på väggarna, fönsterform, golvmaterial/färg, takhöjd"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={LAGER_TAGGAR_INTERIOR}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av planlösning"
+              value={falt.planlosning}
+              onChange={(v) => onChange("planlosning", v)}
+              placeholder="Beskriv hur lagret är utformat, så detaljerat som möjligt"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={LAGER_TAGGAR_PLANLOSNING}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Vad ingår i hyran"
+              value={falt.ekonomi}
+              onChange={(v) => onChange("ekonomi", v)}
+              placeholder="T.ex. värme, vatten, el"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={LAGER_TAGGAR_EKONOMI}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireArea
+            label="Beskriv ditt lager för en ny hyresgäst"
+            value={falt.beskrivning}
+            onChange={(v) => onChange("beskrivning", v)}
+            placeholder="Beskriv gärna så mycket du kan om lagret/industrilokalen — allt som kan göra objektet intressant för en ny hyresgäst."
+          />
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <DocStatusDot state={ritningStatus} />
+              <div>
+                <div className="text-sm font-medium">Ritning</div>
+                <Annotation>PDF · planlösning över lagerytan</Annotation>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <DocStatusTag state={ritningStatus} />
+              {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
+                <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
+                  Ladda upp
+                </WireBtn>
+              ) : (
+                <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
+                  Byt fil
+                </WireBtn>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
@@ -1600,70 +1728,110 @@ function ServeringFaltgrupp({
 }) {
   return (
     <>
-      <Annotation>Servering — fält specifika för café/bageri och restaurang.</Annotation>
-      <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <WireFieldEditable
-          label="Läge/omgivning"
-          value={falt.lageOmgivning}
-          onChange={(v) => onChange("lageOmgivning", v)}
-          placeholder="T.ex. gågata, köpcentrum, bostadsområde"
-        />
-
-        <DocUploadRad
-          namn="Ritning (Servering)"
-          hint="JPG/PDF · planlösning över lokalen"
-          docStatus={docStatus}
-          setDoc={setDoc}
-        />
-
-        <SingleTagSelect
-          label="Sittplatser"
-          options={SITTPLATSER_ALTERNATIV}
-          value={falt.sittplatser}
-          onChange={(v) => onChange("sittplatser", v)}
-        />
-        <SingleTagSelect
-          label="Uteplatser"
-          options={UTEPLATSER_ALTERNATIV}
-          value={falt.uteplatser}
-          onChange={(v) => onChange("uteplatser", v)}
-        />
-        <YesNoToggle label="Nyrenoverat" value={falt.nyrenoverat} onChange={(v) => onChange("nyrenoverat", v)} />
-        <YesNoToggle label="WC personal" value={falt.wcPersonal} onChange={(v) => onChange("wcPersonal", v)} />
-        <YesNoToggle label="WC kund" value={falt.wcKund} onChange={(v) => onChange("wcKund", v)} />
-        <SingleTagSelect
-          label="Sophantering"
-          options={SOPHANTERING_ALTERNATIV}
-          value={falt.sophantering}
-          onChange={(v) => onChange("sophantering", v)}
-        />
-        <SingleTagSelect
-          label="Skick i lokal"
-          options={SKICK_I_LOKAL_ALTERNATIV}
-          value={falt.skickILokal}
-          onChange={(v) => onChange("skickILokal", v)}
-        />
-        <TagToggleGroup
-          label="Typ av kök"
-          options={TYP_AV_KOK_ALTERNATIV}
-          value={falt.typAvKok}
-          onChange={(v) => onChange("typAvKok", v)}
-        />
-
+      <Annotation>Servering — fält specifika för restaurang, café, bageri och pub.</Annotation>
+      <div className="mt-4 space-y-5">
         <div>
-          <TagToggleGroup
-            label="Myndighetskrav"
-            options={MYNDIGHETSKRAV_ALTERNATIV}
-            value={falt.myndighetskrav}
-            onChange={(v) => onChange("myndighetskrav", v)}
-          />
-          <div className="mt-3">
-            <DocUploadRad
-              namn="Myndighetsdokument (Servering)"
-              hint="JPG/PDF · bifoga tillstånd/protokoll som styrker taggarna ovan"
-              docStatus={docStatus}
-              setDoc={setDoc}
+          <FaltgruppRubrik>Läge</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av läge"
+              value={falt.lage}
+              onChange={(v) => onChange("lage", v)}
+              placeholder="Beskriv läget, kommunikationer och parkeringsmöjligheter"
             />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Interiör och skick</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av interiör och skick"
+              value={falt.interior}
+              onChange={(v) => onChange("interior", v)}
+              placeholder="Färg på väggarna, fönsterform, golvmaterial/färg, takhöjd, stil idag, när renoverades det sist"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={SERVERING_TAGGAR_INTERIOR}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av planlösning"
+              value={falt.planlosning}
+              onChange={(v) => onChange("planlosning", v)}
+              placeholder="Beskriv hur restaurangen är utformad, så detaljerat som möjligt"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={SERVERING_TAGGAR_PLANLOSNING}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Vad ingår i hyran"
+              value={falt.ekonomi}
+              onChange={(v) => onChange("ekonomi", v)}
+              placeholder="T.ex. värme, vatten, el"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={SERVERING_TAGGAR_EKONOMI}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Köksutrustning</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireArea
+              label="Beskriv köksutrustningen"
+              value={falt.koksutrustning}
+              onChange={(v) => onChange("koksutrustning", v)}
+              placeholder="Vad består köket av för utrustning idag? Fungerar allt?"
+            />
+            <TagToggleGroup
+              label="Typ av ventilation"
+              options={SERVERING_TAGGAR_VENTILATION}
+              value={falt.ventilation}
+              onChange={(v) => onChange("ventilation", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Alkoholtillstånd</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireArea
+              label="Beskriv serveringen"
+              value={falt.alkoholtillstand}
+              onChange={(v) => onChange("alkoholtillstand", v)}
+              placeholder="Vad serveras mest idag? Till vilken tid kan ni servera? Något man bör känna till gällande tillståndet, t.ex. med grannar eller myndigheter?"
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Dokument</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            {SERVERING_UPPLADDNINGAR.map((doc) => (
+              <DocUploadRad key={doc.namn} namn={doc.namn} hint={doc.hint} docStatus={docStatus} setDoc={setDoc} />
+            ))}
           </div>
         </div>
       </div>
@@ -1674,26 +1842,125 @@ function ServeringFaltgrupp({
 function FrisorFaltgrupp({
   falt,
   onChange,
+  docStatus,
+  setDoc,
 }: {
   falt: FrisorFalt;
   onChange: <K extends keyof FrisorFalt>(key: K, v: FrisorFalt[K]) => void;
+  docStatus: (name: string) => DocState;
+  setDoc: (name: string, s: DocState) => void;
 }) {
+  const ritningNamn = "Ritning (Skönhetssalong)";
+  const ritningStatus = docStatus(ritningNamn);
+
   return (
     <>
-      <Annotation>Frisör — fält specifika för frisörsalonger.</Annotation>
-      <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <WireFieldEditable
-          label="Antal stolar"
-          value={falt.antalStolar}
-          onChange={(v) => onChange("antalStolar", v)}
-          placeholder="4"
-        />
-        <YesNoToggle
-          label="Uthyrning av stol"
-          value={falt.uthyrningAvStol}
-          onChange={(v) => onChange("uthyrningAvStol", v)}
-        />
-        <YesNoToggle label="WC/dusch" value={falt.wcDusch} onChange={(v) => onChange("wcDusch", v)} />
+      <Annotation>Skönhetssalong — fält specifika för skönhetssalonger.</Annotation>
+      <div className="mt-4 space-y-5">
+        <div>
+          <FaltgruppRubrik>Läge</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av läge"
+              value={falt.lage}
+              onChange={(v) => onChange("lage", v)}
+              placeholder="Beskriv läget, kommunikationer och parkeringsmöjligheter"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={FRISOR_TAGGAR_LAGE}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av interiör"
+              value={falt.interior}
+              onChange={(v) => onChange("interior", v)}
+              placeholder="Färg på väggarna, fönsterform, golvmaterial/färg, takhöjd"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={FRISOR_TAGGAR_INTERIOR}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av planlösning"
+              value={falt.planlosning}
+              onChange={(v) => onChange("planlosning", v)}
+              placeholder="Beskriv hur salongen är utformad, så detaljerat som möjligt"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={FRISOR_TAGGAR_PLANLOSNING}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Vad ingår i hyran"
+              value={falt.ekonomi}
+              onChange={(v) => onChange("ekonomi", v)}
+              placeholder="T.ex. värme, vatten, el"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={FRISOR_TAGGAR_EKONOMI}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireArea
+            label="Beskriv din salong för en ny hyresgäst"
+            value={falt.beskrivning}
+            onChange={(v) => onChange("beskrivning", v)}
+            placeholder="Beskriv gärna: varuintag, hur den är inredd idag, tillgång till soprum, p-platser, lager i fastigheten, WC/dusch, lunchrum, antal stolar, antal tvättplatser."
+          />
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <DocStatusDot state={ritningStatus} />
+              <div>
+                <div className="text-sm font-medium">Ritning</div>
+                <Annotation>PDF · planlösning över salongsytan</Annotation>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <DocStatusTag state={ritningStatus} />
+              {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
+                <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
+                  Ladda upp
+                </WireBtn>
+              ) : (
+                <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
+                  Byt fil
+                </WireBtn>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
