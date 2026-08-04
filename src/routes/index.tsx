@@ -36,7 +36,7 @@ const dummyListings: Listing[] = [
   { id: "1", kat: "Lokal", titel: "Restauranglokal · Södermalm", pris: "1 950 000", stad: "Stockholm", typ: "Restaurang", yta: 180, hyra: 63_000, hasFTax: true, omsattning: "3,4 Mkr" },
   { id: "2", kat: "Inkråm", titel: "Café & bageri — inkråm", pris: "850 000", stad: "Göteborg", lokalyta: 60, etablerat: 2016, hasFTax: true },
   { id: "3", kat: "Bolag", titel: "E-handelsbolag (AB)", pris: "4 200 000", stad: "Malmö", omsattning: "6,8 Mkr", arr: "5,2 Mkr", bolagsform: "AB", grundat: 2017, hasFTax: true },
-  { id: "4", kat: "Lokal", titel: "Butik · Vasastan", pris: "1 200 000", stad: "Stockholm", typ: "Butik", yta: 95, hyra: 33_250 },
+  { id: "4", kat: "Lokal", titel: "Butik · Vasastan", pris: "1 200 000", stad: "Stockholm", typ: "Butik", adress: "Odengatan 30", yta: 95, hyra: 33_250 },
   { id: "5", kat: "Inkråm", titel: "Frisörsalong", pris: "420 000", stad: "Uppsala", lokalyta: 45, etablerat: 2019 },
   { id: "6", kat: "Bolag", titel: "SaaS-bolag · B2B", pris: "12 500 000", stad: "Remote", omsattning: "4,1 Mkr", arr: "4 Mkr", bolagsform: "AB", grundat: 2020 },
 ];
@@ -46,7 +46,7 @@ const sodermalamListings: Listing[] = [
   { id: "s2", kat: "Lokal", titel: "Café med uteservering · SoFo", pris: "680 000", stad: "Stockholm · Södermalm", typ: "Café", yta: 65, hyra: 26_000, omsattning: "1,8 Mkr" },
   { id: "s3", kat: "Lokal", titel: "Kontorslokal · Hornsgatan", pris: "1 450 000", stad: "Stockholm · Södermalm", typ: "Kontor", adress: "Hornsgatan 45", yta: 120, hyra: 42_000 },
   { id: "s4", kat: "Inkråm", titel: "Blomsteraffär inkl. inventarier", pris: "390 000", stad: "Stockholm · Södermalm", lokalyta: 35, etablerat: 2018 },
-  { id: "s5", kat: "Lokal", titel: "Butik · Götgatan", pris: "950 000", stad: "Stockholm · Södermalm", typ: "Butik", yta: 78, hyra: 29_640 },
+  { id: "s5", kat: "Lokal", titel: "Butik · Götgatan", pris: "950 000", stad: "Stockholm · Södermalm", typ: "Butik", adress: "Götgatan 55", yta: 78, hyra: 29_640 },
 ];
 
 const ostermalmListings: Listing[] = [

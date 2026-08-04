@@ -34,9 +34,10 @@ function MiniStat({ label, value }: { label: string; value: string }) {
 }
 
 const SERVERING_TYPER = ["Restaurang", "Café & bageri", "Café"];
+const ADRESS_HYRA_YTA_PRISKVM_TYPER = ["Kontor", "Butik"];
 
 function nyckeltalFor(l: Listing): { label: string; value: string }[] {
-  if (l.kat === "Lokal" && l.typ === "Kontor" && l.yta != null) {
+  if (l.kat === "Lokal" && l.typ != null && ADRESS_HYRA_YTA_PRISKVM_TYPER.includes(l.typ) && l.yta != null) {
     const prisKr = Number(l.pris.replace(/\D/g, ""));
     const prisPerKvm = prisKr > 0 ? Math.round(prisKr / l.yta) : null;
     return [

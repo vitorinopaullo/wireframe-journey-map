@@ -141,20 +141,37 @@ const emptyKontorFalt: KontorFalt = {
   beskrivning: "",
 };
 
-const BUTIK_LAYOUT_ALTERNATIV = ["Öppen butiksyta", "Uppdelad i rum"];
+// Butiks gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
+const BUTIK_TAGGAR_LAGE = ["Trafikerat läge", "Hörnlokal"];
+const BUTIK_TAGGAR_INTERIOR = ["Modern inredning", "Takhöjd"];
+const BUTIK_TAGGAR_PLANLOSNING = [
+  "Lunchrum",
+  "Omklädningsrum",
+  "Lager i fastigheten",
+  "Soprum",
+  "Lastkaj",
+  "Apotek",
+  "Klädesbutik",
+  "Optik",
+  "Kontor",
+];
 
 type ButikFalt = {
-  layout: string;
-  takhojd: string;
-  lagerIFastigheten: boolean | null;
-  egetSophrum: boolean | null;
+  lage: string;
+  interior: string;
+  planlosning: string;
+  ekonomi: string;
+  taggar: string;
+  beskrivning: string;
 };
 
 const emptyButikFalt: ButikFalt = {
-  layout: "",
-  takhojd: "",
-  lagerIFastigheten: null,
-  egetSophrum: null,
+  lage: "",
+  interior: "",
+  planlosning: "",
+  ekonomi: "",
+  taggar: "",
+  beskrivning: "",
 };
 
 const KOMMUNIKATION_ALTERNATIV = ["Nära motorväg", "Kollektivtrafik nära"];
@@ -1381,48 +1398,105 @@ function ButikFaltgrupp({
   return (
     <>
       <Annotation>Butik — fält specifika för butikslokaler.</Annotation>
-      <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <TagToggleGroup
-          label="Layout"
-          options={BUTIK_LAYOUT_ALTERNATIV}
-          value={falt.layout}
-          onChange={(v) => onChange("layout", v)}
-        />
-
-        <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:col-span-2 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-3">
-            <DocStatusDot state={ritningStatus} />
-            <div>
-              <div className="text-sm font-medium">Ritning</div>
-              <Annotation>JPG/PDF · planlösning över butiksytan</Annotation>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <DocStatusTag state={ritningStatus} />
-            {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
-              <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
-                Ladda upp
-              </WireBtn>
-            ) : (
-              <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
-                Byt fil
-              </WireBtn>
-            )}
+      <div className="mt-4 space-y-5">
+        <div>
+          <WireTag>Läge</WireTag>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av läge"
+              value={falt.lage}
+              onChange={(v) => onChange("lage", v)}
+              placeholder="Beskriv läget, kommunikationer och parkeringsmöjligheter"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={BUTIK_TAGGAR_LAGE}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
           </div>
         </div>
 
-        <WireFieldEditable
-          label="Takhöjd (m)"
-          value={falt.takhojd}
-          onChange={(v) => onChange("takhojd", v)}
-          placeholder="3,2"
-        />
-        <YesNoToggle
-          label="Lager i fastigheten"
-          value={falt.lagerIFastigheten}
-          onChange={(v) => onChange("lagerIFastigheten", v)}
-        />
-        <YesNoToggle label="Eget sophrum" value={falt.egetSophrum} onChange={(v) => onChange("egetSophrum", v)} />
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireTag>Interiör/stil</WireTag>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av interiör"
+              value={falt.interior}
+              onChange={(v) => onChange("interior", v)}
+              placeholder="Färg på väggarna, fönsterform, golvmaterial/färg, takhöjd"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={BUTIK_TAGGAR_INTERIOR}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireTag>Planlösning</WireTag>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Beskrivning av planlösning"
+              value={falt.planlosning}
+              onChange={(v) => onChange("planlosning", v)}
+              placeholder="Beskriv hur butiken är utformad, så detaljerat som möjligt"
+            />
+            <TagToggleGroup
+              label="Taggar"
+              options={BUTIK_TAGGAR_PLANLOSNING}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireTag>Ekonomi</WireTag>
+          <div className="mt-2 space-y-3">
+            <WireFieldEditable
+              label="Vad ingår i hyran"
+              value={falt.ekonomi}
+              onChange={(v) => onChange("ekonomi", v)}
+              placeholder="T.ex. värme, vatten, el"
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireArea
+            label="Beskriv din butik för en ny hyresgäst"
+            value={falt.beskrivning}
+            onChange={(v) => onChange("beskrivning", v)}
+            placeholder="Beskriv gärna: varuintag, hur den är inredd idag, tillgång till soprum, p-platser, lager i fastigheten, WC/dusch, lunchrum."
+          />
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <DocStatusDot state={ritningStatus} />
+              <div>
+                <div className="text-sm font-medium">Ritning</div>
+                <Annotation>PDF · planlösning över butiksytan</Annotation>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <DocStatusTag state={ritningStatus} />
+              {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
+                <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
+                  Ladda upp
+                </WireBtn>
+              ) : (
+                <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
+                  Byt fil
+                </WireBtn>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
