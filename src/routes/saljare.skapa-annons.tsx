@@ -29,7 +29,7 @@ const cats: {
     one: "Du överlåter rätten till en hyreslokal — inget bolag, ingen verksamhet byter ägare.",
     avgift: "29 900 kr vid genomförd affär",
     tid: "Typiskt 3–6 veckor",
-    trelink: "TreLink granskar hyresavtal & inventarier. Hyresvärden måste godkänna köparen.",
+    trelink: "TreLink kommer att granska de bifogade dokumenten för att sammanställa en annons och avtal och komma igång med processen.",
     who: "Bäst för: restauranger, butiker, salonger som vill släppa lokalen vidare.",
   },
   {
@@ -431,8 +431,8 @@ function CreateListing() {
     if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
       errs[1].push("Org.nr i format 556xxx-xxxx.");
     if (!draft.hyresvardEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.hyresvardEmail))
-      errs[1].push("Ange hyresvärdens e-postadress.");
-    if (!draft.hyresvardTel) errs[1].push("Ange hyresvärdens telefonnummer.");
+      errs[2].push("Ange hyresvärdens e-postadress.");
+    if (!draft.hyresvardTel) errs[2].push("Ange hyresvärdens telefonnummer.");
     if (!draft.usp) errs[1].push("Välj minst en tagg för vad som gör verksamheten unik.");
     if (!draft.kundunderlag) errs[1].push("Välj minst en tagg för kundunderlaget.");
     if (!draft.laget) errs[1].push("Välj minst en tagg för läget.");
@@ -480,7 +480,7 @@ function CreateListing() {
         title={STEPS[step]}
         subtitle={editId
           ? "Ändringarna skickas till TreLink för ny granskning innan annonsen publiceras igen."
-          : "Gratis att annonsera. Paketavgiften tas ut först vid genomförd affär. TreLink granskar innan publicering."}
+          : "På denna plattform så hjälper vi dig att förmedla din lokal, ifrån att annonsera (hitta köpare), köpeavtal, presentation till hyresvärden till avslut och kvittenser. Här har du en plattform som agerar som din mäklare/fastighetskonsult och är med dig i hela processen till avslutat affär. Ingen debitering sker förrän affären är klar och då lyfts en förmedlingsprovision ut ur klientmedelskontot för sedan betala ut resten."}
 
         right={
           <div className="flex flex-col items-end gap-1">
@@ -577,75 +577,13 @@ function CreateListing() {
         <>
           <KontoSammanfattning />
 
-          <WireBox label="Hyresvärd & BRF" className="mb-6">
-            <p className="text-sm text-muted-foreground">
-              TreLink behöver kontaktuppgifter till hyresvärden för att få godkännande av överlåtelse.
-              Vid BRF anger du kontaktpersonen i föreningen.
-            </p>
-            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <WireFieldEditable
-                label="Hyresvärdens namn"
-                value={draft.hyresvardNamn}
-                onChange={(v) => set("hyresvardNamn", v)}
-                placeholder="Fastighetsbolaget AB"
-                hint="Namn på hyresvärd, fastighetsägare eller bostadsrättsförening."
-              />
-              <WireFieldEditable
-                label="Hyresvärdens telefon *"
-                value={draft.hyresvardTel}
-                onChange={(v) => set("hyresvardTel", v)}
-                placeholder="+46 8 123 45 67"
-              />
-              {(() => {
-                const email = draft.hyresvardEmail;
-                const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-                const showError = email.length === 0 || !emailValid;
-                const errorMsg = email.length === 0
-                  ? "Hyresvärdens e-postadress krävs för att gå vidare"
-                  : "Ange en giltig e-postadress (t.ex. namn@företag.se)";
-                return (
-                  <label className="block">
-                    <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                      HYRESVÄRD E-POST <span className="text-red-600">*</span>
-                    </span>
-                    <input
-                      type="email"
-                      required
-                      aria-required="true"
-                      aria-invalid={showError}
-                      value={email}
-                      onChange={(e) => set("hyresvardEmail", e.target.value)}
-                      placeholder="info@fastighetsbolaget.se"
-                      className={`block h-10 w-full border border-dashed bg-muted/20 px-3 text-sm focus:outline-none ${
-                        showError
-                          ? "border-red-600 focus:border-red-700"
-                          : "border-muted-foreground/50 focus:border-foreground"
-                      }`}
-                    />
-                    {showError && (
-                      <span className="mt-1 block text-[11px] text-red-600">{errorMsg}</span>
-                    )}
-                    <span className="mt-1 block text-[11px] text-muted-foreground">
-                      Trelink skickar ett informationsmejl till hyresvärden när uppdragsavtalet är signerat. Detta krävs för att processen ska kunna starta.
-                    </span>
-                  </label>
-                );
-              })()}
-              <WireFieldEditable
-                label="BRF-kontaktperson"
-                value={draft.brfKontakt}
-                onChange={(v) => set("brfKontakt", v)}
-                placeholder="För- och efternamn på kontaktperson i föreningen"
-                hint="Frivilligt — fylls i om objektet ligger i en bostadsrättsförening"
-              />
-            </div>
-          </WireBox>
-
           <WireBox label="Objektet" className="mb-6">
-            <Annotation>
-              TreLink sätter annonsrubrik och pris åt dig — vi kan marknaden och prissätter mot rätt köpargrupp.
-              Fyll i grundfakta så vi vet vad vi jobbar med.
-            </Annotation>
+            <p className="text-base font-semibold text-foreground">Vad är det vi förmedlar?</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Med hjälp av er och oss kan vi tillsammans formulera en annonstext med hjälp av AI. Hjälp oss att
+              komma igång och fyll i så utförligt som möjligt nedan. Om annonsen är tydlig och informativ har vi
+              större chans att förmedla detta objekt. Klicka på objektstyp så kan vi sätta igång.
+            </p>
             <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
               <WireFieldEditable
                 label="Yta (m²) *"
@@ -719,7 +657,72 @@ function CreateListing() {
 
       {/* STEP 2 — Underlag */}
       {step === 2 && (
-        <WireBox label={`Underlag för ${activeCat.name}`} className="mb-6">
+        <>
+          <WireBox label="Hyresvärd & BRF" className="mb-6">
+            <p className="text-sm text-muted-foreground">
+              TreLink behöver kontaktuppgifter till hyresvärden för att få godkännande av överlåtelse.
+              Vid BRF anger du kontaktpersonen i föreningen.
+            </p>
+            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <WireFieldEditable
+                label="Hyresvärdens namn"
+                value={draft.hyresvardNamn}
+                onChange={(v) => set("hyresvardNamn", v)}
+                placeholder="Fastighetsbolaget AB"
+                hint="Namn på hyresvärd, fastighetsägare eller bostadsrättsförening."
+              />
+              <WireFieldEditable
+                label="Hyresvärdens telefon *"
+                value={draft.hyresvardTel}
+                onChange={(v) => set("hyresvardTel", v)}
+                placeholder="+46 8 123 45 67"
+              />
+              {(() => {
+                const email = draft.hyresvardEmail;
+                const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                const showError = email.length === 0 || !emailValid;
+                const errorMsg = email.length === 0
+                  ? "Hyresvärdens e-postadress krävs för att gå vidare"
+                  : "Ange en giltig e-postadress (t.ex. namn@företag.se)";
+                return (
+                  <label className="block">
+                    <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      HYRESVÄRD E-POST <span className="text-red-600">*</span>
+                    </span>
+                    <input
+                      type="email"
+                      required
+                      aria-required="true"
+                      aria-invalid={showError}
+                      value={email}
+                      onChange={(e) => set("hyresvardEmail", e.target.value)}
+                      placeholder="info@fastighetsbolaget.se"
+                      className={`block h-10 w-full border border-dashed bg-muted/20 px-3 text-sm focus:outline-none ${
+                        showError
+                          ? "border-red-600 focus:border-red-700"
+                          : "border-muted-foreground/50 focus:border-foreground"
+                      }`}
+                    />
+                    {showError && (
+                      <span className="mt-1 block text-[11px] text-red-600">{errorMsg}</span>
+                    )}
+                    <span className="mt-1 block text-[11px] text-muted-foreground">
+                      Trelink skickar ett informationsmejl till hyresvärden när uppdragsavtalet är signerat. Detta krävs för att processen ska kunna starta.
+                    </span>
+                  </label>
+                );
+              })()}
+              <WireFieldEditable
+                label="BRF-kontaktperson"
+                value={draft.brfKontakt}
+                onChange={(v) => set("brfKontakt", v)}
+                placeholder="För- och efternamn på kontaktperson i föreningen"
+                hint="Frivilligt — fylls i om objektet ligger i en bostadsrättsförening"
+              />
+            </div>
+          </WireBox>
+
+          <WireBox label={`Underlag för ${activeCat.name}`} className="mb-6">
           <Annotation>* = obligatoriskt för att kunna skicka på granskning. Övriga stärker annonsen men går att komplettera senare.</Annotation>
           <div className="mt-3 space-y-3">
             {requiredDocs.map((d) => {
@@ -763,6 +766,7 @@ function CreateListing() {
             </p>
           </div>
         </WireBox>
+        </>
       )}
 
       {/* STEP 3 — Granska & skicka */}
