@@ -664,7 +664,7 @@ const empty: Draft = {
   },
 };
 
-const STEPS = ["Paket", "Grunduppgifter", "Underlag", "Granska & skicka"] as const;
+const STEPS = ["Typ av lokal", "Grunduppgifter", "Underlag", "Granska & skicka"] as const;
 
 // Slår ihop sparad typFalt med standardvärden per typ (inte bara per nyckel), så ett utkast som sparades
 // innan en typs fältgrupp fick nya/ändrade fält inte kraschar eller tappar bort de fält som fortfarande finns.
