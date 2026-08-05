@@ -17,6 +17,7 @@ export type Session = {
 
 const SESSION_KEY = "trelink-session";
 const ADMIN_QUEUE_KEY = "trelink-admin-nya-konton";
+export const ADMIN_ACCOUNTS_STORAGE_KEY = ADMIN_QUEUE_KEY;
 
 const FIXTURES: BankIdPayload[] = [
   { personnr: "19850312-4455", fornamn: "Anna", efternamn: "Bergström", verifieradAt: 0 },
