@@ -17,6 +17,7 @@ type AccountStatus = "inloggad" | "roll-vald" | "komplett";
 function accountStatus(a: AdminAccountEvent): AccountStatus {
   if (!a.role) return "inloggad";
   if (!a.profil) return "roll-vald";
+  if (a.role === "saljare" && !(a.profil.bolag?.trim() && a.profil.orgnr?.trim())) return "roll-vald";
   return "komplett";
 }
 
