@@ -1,44 +1,50 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
-import { PageHeader, Annotation, WireTag } from "@/components/wire";
+import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
 import { readAnnonser, STORAGE_KEY, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import { docsByCat, type CatId } from "@/lib/annons-model";
 
 export const Route = createFileRoute("/admin/annonser/")({
   component: AdminAnnonser,
 });
 
+const KAT_NAMN: Record<CatId, "Lokal" | "Inkråm" | "Bolag"> = {
+  overlatelse: "Lokal",
+  inkram: "Inkråm",
+  aktie: "Bolag",
+};
+
 type Row = {
   id: string;
-  objektBolag: string;
-  verksamhetstyp: string;
-  ort: string;
+  titel: string;
+  kat: "Lokal" | "Inkråm" | "Bolag";
   status: WorkflowState | null;
-  senastSparad: number;
+  inkommen: string;
+  docsInlamnade: number;
+  docsTotal: number;
 };
 
 function toRows(list: any[]): Row[] {
   return list
     .map((item) => {
-      const timelineTs = item.workflow?.timeline?.[0]?.ts;
-      const senastSparad = timelineTs
-        ? new Date(timelineTs).getTime()
-        : item.skickadAt
-        ? new Date(item.skickadAt).getTime()
-        : 0;
+      const catId: CatId | undefined = item.draft?.cat;
+      const specs = catId ? docsByCat[catId] ?? [] : [];
+      const docs = item.draft?.docs ?? {};
       return {
         id: item.id,
-        objektBolag: item.titel || "—",
-        verksamhetstyp: item.draft?.verksamhet || "—",
-        ort: item.ort || item.draft?.ort || "—",
+        titel: item.titel || "—",
+        kat: catId ? KAT_NAMN[catId] : "Lokal",
         status: (item.workflow?.state as WorkflowState) ?? null,
-        senastSparad,
+        inkommen: item.skickadAt || "",
+        docsInlamnade: specs.filter((d) => (docs[d.name] ?? "saknas") !== "saknas").length,
+        docsTotal: specs.length,
       };
     })
-    .sort((a, b) => b.senastSparad - a.senastSparad);
+    .sort((a, b) => (b.inkommen || "").localeCompare(a.inkommen || ""));
 }
 
-function formatTid(ts: number) {
+function formatTid(ts: string) {
   if (!ts) return "—";
   return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
 }
@@ -54,8 +60,11 @@ const STATUS_TONE: Record<WorkflowState, "neutral" | "warn" | "success" | "dange
   publicerad: "success",
 };
 
-function StatusTag({ state }: { state: WorkflowState }) {
-  const tone = STATUS_TONE[state];
+function StatusTag({ status }: { status: WorkflowState | null }) {
+  if (!status) {
+    return <WireTag>—</WireTag>;
+  }
+  const tone = STATUS_TONE[status];
   const cls =
     tone === "success"
       ? "border-foreground bg-foreground text-background"
@@ -65,10 +74,8 @@ function StatusTag({ state }: { state: WorkflowState }) {
       ? "border-amber-500/70 text-amber-700 bg-amber-50/60 dark:text-amber-500 dark:bg-amber-500/10"
       : "border-foreground/40 text-muted-foreground";
   return (
-    <span
-      className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${cls}`}
-    >
-      {stateLabel[state]}
+    <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${cls}`}>
+      {stateLabel[status]}
     </span>
   );
 }
@@ -100,62 +107,49 @@ function AdminAnnonser() {
       <PageHeader
         eyebrow="TreLink Admin"
         title="Annonser"
-        subtitle="Annonser inskickade av säljare, sorterade efter senast sparad."
+        subtitle="Alla annonser som skickats in via säljarflödet, sorterade efter senast inkommen."
       />
 
-      {rows.length === 0 ? (
-        <Annotation>Inga annonser inkomna än</Annotation>
-      ) : (
-        <div className="overflow-x-auto border border-foreground/30 bg-background">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-foreground/30 bg-muted/30">
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Objekt/Bolag
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Verksamhetstyp
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Ort
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Status
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Senast sparad
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-dashed divide-muted-foreground/30">
-              {rows.map((r) => (
-                <tr
-                  key={r.id}
-                  onClick={() => navigate({ to: "/admin/annonser/$id", params: { id: r.id } })}
-                  className={`cursor-pointer transition-colors duration-500 hover:bg-muted/40 ${
-                    justUpdatedId === r.id ? "bg-foreground/10" : ""
-                  }`}
-                >
-                  <td className="px-3 py-2">{r.objektBolag}</td>
-                  <td className="px-3 py-2">{r.verksamhetstyp}</td>
-                  <td className="px-3 py-2">{r.ort}</td>
-                  <td className="px-3 py-2">
-                    {r.status ? <StatusTag state={r.status} /> : <WireTag>—</WireTag>}
-                  </td>
-                  <td className="px-3 py-2 font-mono text-xs">
-                    {formatTid(r.senastSparad)}
-                    {justUpdatedId === r.id && (
-                      <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                        ● nytt
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="space-y-3">
+        {rows.length === 0 && (
+          <WireBox variant="dashed">
+            <Annotation>Inga annonser inkomna än.</Annotation>
+          </WireBox>
+        )}
+        {rows.map((r) => (
+          <div
+            key={r.id}
+            onClick={() => navigate({ to: "/admin/annonser/$id", params: { id: r.id } })}
+            className="cursor-pointer"
+          >
+            <WireBox
+              className={`flex flex-col gap-4 transition-colors duration-500 hover:border-foreground md:flex-row md:items-center ${
+                justUpdatedId === r.id ? "bg-foreground/10" : ""
+              }`}
+            >
+              <div className="flex-1 min-w-0">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <WireTag>{r.kat}</WireTag>
+                  <StatusTag status={r.status} />
+                  <span className="font-mono text-[10px] text-muted-foreground">#{r.id}</span>
+                  {justUpdatedId === r.id && (
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      ● nytt
+                    </span>
+                  )}
+                </div>
+                <h3 className="font-medium">{r.titel}</h3>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+                  <span>
+                    Dokument: {r.docsInlamnade}/{r.docsTotal} inlämnade
+                  </span>
+                  <span>Inkommen: {formatTid(r.inkommen)}</span>
+                </div>
+              </div>
+            </WireBox>
+          </div>
+        ))}
+      </div>
     </AdminLayout>
   );
 }
