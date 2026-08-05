@@ -54,6 +54,8 @@ import { Route as SaljareMinaAnnonserRouteImport } from './routes/saljare.mina-a
 import { Route as SaljareSkapaAnnonsRouteImport } from './routes/saljare.skapa-annons'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as AdminAnnonserIndexRouteImport } from './routes/admin.annonser.index'
+import { Route as AdminAnnonserIdRouteImport } from './routes/admin.annonser.$id'
 import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
 import { Route as GeorgeAnnonsFlodeIdRouteImport } from './routes/george.annons-flode.$id'
 import { Route as GeorgeAnnonserIndexRouteImport } from './routes/george.annonser.index'
@@ -288,6 +290,16 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminAnnonserIndexRoute = AdminAnnonserIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminAnnonserRoute,
+} as any)
+const AdminAnnonserIdRoute = AdminAnnonserIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminAnnonserRoute,
+} as any)
 const AnnonsIdIntresseRoute = AnnonsIdIntresseRouteImport.update({
   id: '/intresse',
   path: '/intresse',
@@ -335,7 +347,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/affarer': typeof AdminAffarerRoute
-  '/admin/annonser': typeof AdminAnnonserRoute
+  '/admin/annonser': typeof AdminAnnonserRouteWithChildren
   '/admin/anvandare': typeof AdminAnvandareRoute
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
@@ -360,10 +372,12 @@ export interface FileRoutesByFullPath {
   '/george/': typeof GeorgeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annons-flode/$id': typeof GeorgeAnnonsFlodeIdRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
+  '/admin/annonser/': typeof AdminAnnonserIndexRoute
   '/george/annonser/': typeof GeorgeAnnonserIndexRoute
 }
 export interface FileRoutesByTo {
@@ -387,7 +401,6 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/affarer': typeof AdminAffarerRoute
-  '/admin/annonser': typeof AdminAnnonserRoute
   '/admin/anvandare': typeof AdminAnvandareRoute
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
@@ -411,10 +424,12 @@ export interface FileRoutesByTo {
   '/george': typeof GeorgeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annons-flode/$id': typeof GeorgeAnnonsFlodeIdRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
+  '/admin/annonser': typeof AdminAnnonserIndexRoute
   '/george/annonser': typeof GeorgeAnnonserIndexRoute
 }
 export interface FileRoutesById {
@@ -439,7 +454,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/affarer': typeof AdminAffarerRoute
-  '/admin/annonser': typeof AdminAnnonserRoute
+  '/admin/annonser': typeof AdminAnnonserRouteWithChildren
   '/admin/anvandare': typeof AdminAnvandareRoute
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
@@ -464,10 +479,12 @@ export interface FileRoutesById {
   '/george/': typeof GeorgeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/george/annons-flode/$id': typeof GeorgeAnnonsFlodeIdRoute
   '/george/annonser/$id': typeof GeorgeAnnonserIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
+  '/admin/annonser/': typeof AdminAnnonserIndexRoute
   '/george/annonser/': typeof GeorgeAnnonserIndexRoute
 }
 export interface FileRouteTypes {
@@ -518,10 +535,12 @@ export interface FileRouteTypes {
     | '/george/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/annonser/$id'
     | '/annons/$id/intresse'
     | '/george/annons-flode/$id'
     | '/george/annonser/$id'
     | '/saljare/annons/$id'
+    | '/admin/annonser/'
     | '/george/annonser/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -545,7 +564,6 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin/affarer'
-    | '/admin/annonser'
     | '/admin/anvandare'
     | '/admin/installningar'
     | '/admin/kopare'
@@ -569,10 +587,12 @@ export interface FileRouteTypes {
     | '/george'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/annonser/$id'
     | '/annons/$id/intresse'
     | '/george/annons-flode/$id'
     | '/george/annonser/$id'
     | '/saljare/annons/$id'
+    | '/admin/annonser'
     | '/george/annonser'
   id:
     | '__root__'
@@ -621,10 +641,12 @@ export interface FileRouteTypes {
     | '/george/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/annonser/$id'
     | '/annons/$id/intresse'
     | '/george/annons-flode/$id'
     | '/george/annonser/$id'
     | '/saljare/annons/$id'
+    | '/admin/annonser/'
     | '/george/annonser/'
   fileRoutesById: FileRoutesById
 }
@@ -649,7 +671,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AdminAffarerRoute: typeof AdminAffarerRoute
-  AdminAnnonserRoute: typeof AdminAnnonserRoute
+  AdminAnnonserRoute: typeof AdminAnnonserRouteWithChildren
   AdminAnvandareRoute: typeof AdminAnvandareRoute
   AdminInstallningarRoute: typeof AdminInstallningarRoute
   AdminKopareRoute: typeof AdminKopareRoute
@@ -995,6 +1017,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/annonser/': {
+      id: '/admin/annonser/'
+      path: '/'
+      fullPath: '/admin/annonser/'
+      preLoaderRoute: typeof AdminAnnonserIndexRouteImport
+      parentRoute: typeof AdminAnnonserRoute
+    }
+    '/admin/annonser/$id': {
+      id: '/admin/annonser/$id'
+      path: '/$id'
+      fullPath: '/admin/annonser/$id'
+      preLoaderRoute: typeof AdminAnnonserIdRouteImport
+      parentRoute: typeof AdminAnnonserRoute
+    }
     '/annons/$id/intresse': {
       id: '/annons/$id/intresse'
       path: '/intresse'
@@ -1032,6 +1068,20 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminAnnonserRouteChildren {
+  AdminAnnonserIdRoute: typeof AdminAnnonserIdRoute
+  AdminAnnonserIndexRoute: typeof AdminAnnonserIndexRoute
+}
+
+const AdminAnnonserRouteChildren: AdminAnnonserRouteChildren = {
+  AdminAnnonserIdRoute: AdminAnnonserIdRoute,
+  AdminAnnonserIndexRoute: AdminAnnonserIndexRoute,
+}
+
+const AdminAnnonserRouteWithChildren = AdminAnnonserRoute._addFileChildren(
+  AdminAnnonserRouteChildren,
+)
 
 interface AnnonsIdRouteChildren {
   AnnonsIdIntresseRoute: typeof AnnonsIdIntresseRoute
@@ -1081,7 +1131,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AdminAffarerRoute: AdminAffarerRoute,
-  AdminAnnonserRoute: AdminAnnonserRoute,
+  AdminAnnonserRoute: AdminAnnonserRouteWithChildren,
   AdminAnvandareRoute: AdminAnvandareRoute,
   AdminInstallningarRoute: AdminInstallningarRoute,
   AdminKopareRoute: AdminKopareRoute,
