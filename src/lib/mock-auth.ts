@@ -69,6 +69,7 @@ export function signInWithBankId(bankid: BankIdPayload): Session {
           createdAt: Date.now(),
         };
   setSession(s);
+  upsertAdminAccount(s.userId, { bankid: s.bankid });
   return s;
 }
 
@@ -82,25 +83,40 @@ export function updateSession(patch: Partial<Session>) {
   setSession({ ...s, ...patch });
 }
 
-/* ---------- Admin-kö: nya konton skickas hit ---------- */
+/* ---------- Admin-kö: konton skapas vid BankID-inloggning, fylls på successivt ---------- */
 export type AdminAccountEvent = {
   id: string;
-  createdAt: number;
   userId: string;
-  role: "kopare" | "saljare";
   bankid: BankIdPayload;
-  profil: Record<string, string>;
+  createdAt: number; // tidpunkt för BankID-inloggning
+  updatedAt: number;
+  role?: "kopare" | "saljare";
+  profil?: Record<string, string>;
 };
 
-export function pushAdminAccount(ev: Omit<AdminAccountEvent, "id" | "createdAt">) {
+/** Skapar kontot vid första inloggning, uppdaterar samma post vid roll-val och onboarding-slut. */
+export function upsertAdminAccount(
+  userId: string,
+  patch: { bankid?: BankIdPayload; role?: "kopare" | "saljare"; profil?: Record<string, string> },
+) {
   if (typeof window === "undefined") return;
   const raw = window.localStorage.getItem(ADMIN_QUEUE_KEY);
   const list: AdminAccountEvent[] = raw ? JSON.parse(raw) : [];
-  list.unshift({
-    ...ev,
-    id: `acc_${Date.now()}`,
-    createdAt: Date.now(),
-  });
+  const now = Date.now();
+  const idx = list.findIndex((a) => a.userId === userId);
+  if (idx >= 0) {
+    list[idx] = { ...list[idx], ...patch, updatedAt: now };
+  } else if (patch.bankid) {
+    list.unshift({
+      id: `acc_${now}`,
+      userId,
+      bankid: patch.bankid,
+      createdAt: now,
+      updatedAt: now,
+      role: patch.role,
+      profil: patch.profil,
+    });
+  }
   window.localStorage.setItem(ADMIN_QUEUE_KEY, JSON.stringify(list));
 }
 

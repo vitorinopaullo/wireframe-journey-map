@@ -57,18 +57,18 @@ function Users() {
                 <div>
                   <Annotation>Roll</Annotation>
                   <div className="mt-1">
-                    <WireTag>{a.role === "kopare" ? "Köpare" : "Säljare"}</WireTag>
+                    <WireTag>{a.role === "kopare" ? "Köpare" : a.role === "saljare" ? "Säljare" : "—"}</WireTag>
                   </div>
                 </div>
                 <div>
                   <Annotation>Kontakt</Annotation>
-                  <div className="mt-1 text-xs">{a.profil.epost}</div>
-                  <div className="font-mono text-xs text-muted-foreground">{a.profil.telefon}</div>
+                  <div className="mt-1 text-xs">{a.profil?.epost || "—"}</div>
+                  <div className="font-mono text-xs text-muted-foreground">{a.profil?.telefon || ""}</div>
                 </div>
                 <div>
                   <Annotation>Bolag</Annotation>
-                  <div className="mt-1 text-xs">{a.profil.bolag || "—"}</div>
-                  <div className="font-mono text-xs text-muted-foreground">{a.profil.orgnr || ""}</div>
+                  <div className="mt-1 text-xs">{a.profil?.bolag || "—"}</div>
+                  <div className="font-mono text-xs text-muted-foreground">{a.profil?.orgnr || ""}</div>
                 </div>
               </li>
             ))}

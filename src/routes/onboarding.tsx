@@ -11,7 +11,7 @@ import {
   WireTag,
   StatusDot,
 } from "@/components/wire";
-import { getSession, pushAdminAccount, updateSession } from "@/lib/mock-auth";
+import { getSession, upsertAdminAccount, updateSession } from "@/lib/mock-auth";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
@@ -42,15 +42,16 @@ function Onboarding() {
     { n: 2, label: "Dina uppgifter" },
   ] as const;
 
+  function handleRoleChosen() {
+    if (!role || !session) return;
+    upsertAdminAccount(session.userId, { role });
+    setStep(2);
+  }
+
   function handleFinish(profil: Record<string, string>) {
     if (!role || !bankid || !session) return;
     updateSession({ role });
-    pushAdminAccount({
-      userId: session.userId,
-      role,
-      bankid,
-      profil,
-    });
+    upsertAdminAccount(session.userId, { role, profil });
     navigate({ to: "/dashboard", search: { mode: role } });
   }
 
@@ -96,7 +97,7 @@ function Onboarding() {
         <Step1
           role={role}
           onPick={(r) => setRole(r)}
-          onNext={() => role && setStep(2)}
+          onNext={handleRoleChosen}
         />
       )}
 
@@ -277,6 +278,15 @@ function Step2({
       ...(bolag && { bolag }),
       ...(orgnr && { orgnr }),
       ...(presentation && { presentation }),
+      ...(role === "saljare" && { arFirmatecknare: arFirmatecknare ? "ja" : "nej" }),
+      ...(role === "saljare" &&
+        !arFirmatecknare && {
+          ftRoll,
+          ftFornamn,
+          ftEfternamn,
+          ftMail,
+          ftMobil,
+        }),
     });
   }
 
