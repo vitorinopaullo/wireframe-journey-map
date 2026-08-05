@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { initialWorkflow, logEntry, canSellerEdit } from "@/lib/annons-workflow";
@@ -682,6 +682,7 @@ function CreateListing() {
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<Draft>(empty);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [uppdragsavtalOpen, setUppdragsavtalOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -935,6 +936,13 @@ function CreateListing() {
               );
             })}
           </div>
+          <button
+            type="button"
+            onClick={() => setUppdragsavtalOpen(true)}
+            className="mt-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground underline decoration-dashed hover:text-foreground"
+          >
+            Se hur ett uppdragsavtal kan se ut →
+          </button>
           <div className="mt-4 border-t border-dashed border-muted-foreground/30 pt-4">
             <Annotation>Vad TreLink gör för dig</Annotation>
             <p className="mt-1 text-sm">{activeCat.trelink}</p>
@@ -952,6 +960,13 @@ function CreateListing() {
           </div>
         </WireBox>
       )}
+
+      <UppdragsavtalPreviewModal
+        open={uppdragsavtalOpen}
+        onClose={() => setUppdragsavtalOpen(false)}
+        activeCat={activeCat}
+        premium={draft.premium}
+      />
 
       {/* STEP 1 — Grunduppgifter */}
       {step === 1 && (
@@ -1348,6 +1363,106 @@ function KontoSammanfattning() {
         </div>
       </div>
     </WireBox>
+  );
+}
+
+function UppdragsavtalPreviewModal({
+  open,
+  onClose,
+  activeCat,
+  premium,
+}: {
+  open: boolean;
+  onClose: () => void;
+  activeCat: (typeof cats)[number];
+  premium: boolean;
+}) {
+  const [bolagsnamn, setBolagsnamn] = useState("[Bolagsnamn]");
+
+  useEffect(() => {
+    if (!open) return;
+    try {
+      const raw = localStorage.getItem(ONBOARDING_SALJARE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw) as OnboardingSaljareData;
+        setBolagsnamn(data.bolagsuppgifter?.bolag || "[Bolagsnamn]");
+      }
+    } catch {
+      /* noop */
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const avgift = premium ? `${activeCat.avgift} + 2 500 kr (premium-tillägg)` : activeCat.avgift;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 p-4" onClick={onClose}>
+      <div
+        className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-foreground bg-background"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-foreground/30 px-4 py-3">
+          <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+            Förhandsvisning · Uppdragsavtal
+          </div>
+          <button
+            onClick={onClose}
+            className="font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground"
+          >
+            Stäng <X className="inline-block h-3.5 w-3.5 ml-0.5 align-middle" />
+          </button>
+        </div>
+
+        <div className="border-l-2 border-amber-500/70 bg-amber-50/60 px-4 py-3 dark:bg-amber-500/5">
+          <p className="font-mono text-xs font-semibold uppercase tracking-widest text-amber-700 dark:text-amber-500">
+            Utkast — exempel, ej bindande
+          </p>
+        </div>
+
+        <div className="space-y-5 p-6">
+          <div>
+            <h2 className="text-xl font-semibold">Uppdragsavtal — TreLink</h2>
+            <Annotation>Exempeldokument · faktiskt avtal upprättas digitalt av TreLink</Annotation>
+          </div>
+
+          <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+            <Annotation>Parter</Annotation>
+            <p className="mt-1 text-sm">
+              TreLink AB (nedan "TreLink") och {bolagsnamn} (nedan "Uppdragsgivaren"), avseende
+              förmedling enligt paketet {activeCat.name}.
+            </p>
+          </div>
+
+          <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+            <Annotation>Avgift</Annotation>
+            <p className="mt-1 text-sm">{avgift}. Avgiften utgår endast vid genomförd affär.</p>
+          </div>
+
+          <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+            <Annotation>Villkor i korthet</Annotation>
+            <ul className="mt-2 space-y-2 text-sm">
+              <li>· TreLink skriver annonstexten och sätter priset — Uppdragsgivaren redigerar inte publicerat innehåll.</li>
+              <li>· Köpare är anonyma under processen (K-koder). Ingen direktkontakt sker mellan köpare och säljare.</li>
+              <li>· UC-kontroll på köparen genomförs först efter signerat köpeavtal och inbetald handpenning.</li>
+              <li>· TreLink granskar inkommet underlag inom 24 timmar på vardagar.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
