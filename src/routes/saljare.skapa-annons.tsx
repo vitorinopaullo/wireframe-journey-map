@@ -4,6 +4,21 @@ import { Check, X } from "lucide-react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { initialWorkflow, logEntry, canSellerEdit } from "@/lib/annons-workflow";
+import {
+  type CatId,
+  cats,
+  type DocState,
+  type DocSpec,
+  docsByCat,
+  VERKSAMHETSTYP_TAGGAR,
+  type KontorFalt,
+  type ButikFalt,
+  type LagerFalt,
+  type ServeringFalt,
+  type FrisorFalt,
+  FALTGRUPP_TYPER,
+  type Draft,
+} from "@/lib/annons-model";
 
 export const Route = createFileRoute("/saljare/skapa-annons")({
   component: CreateListing,
@@ -12,89 +27,9 @@ export const Route = createFileRoute("/saljare/skapa-annons")({
 
 
 
-type CatId = "overlatelse" | "inkram" | "aktie";
-
-const cats: {
-  id: CatId;
-  name: string;
-  one: string;
-  avgift: string;
-  tid: string;
-  trelink: string;
-  who: string;
-}[] = [
-  {
-    id: "overlatelse",
-    name: "Överlåtelse",
-    one: "Du överlåter rätten till en hyreslokal — inget bolag, ingen verksamhet byter ägare.",
-    avgift: "29 900 kr vid genomförd affär",
-    tid: "Typiskt 3–6 veckor",
-    trelink: "TreLink kommer att granska de bifogade dokumenten för att sammanställa en annons och avtal och komma igång med processen.",
-    who: "Bäst för: restauranger, butiker, salonger som vill släppa lokalen vidare.",
-  },
-  {
-    id: "inkram",
-    name: "Inkråm",
-    one: "Tillgångar och verksamhet säljs till köparens bolag — du behåller ditt AB.",
-    avgift: "39 900 kr vid genomförd affär",
-    tid: "Typiskt 6–10 veckor",
-    trelink: "TreLink granskar dokument: tillgångar, ekonomi, avtal.",
-    who: "Bäst för: när du vill sälja verksamheten men behålla bolagsmanteln.",
-  },
-  {
-    id: "aktie",
-    name: "Aktieöverlåtelse",
-    one: "Hela bolaget byter ägare. Alla avtal, anställda och historik följer med.",
-    avgift: "79 900 kr vid genomförd affär",
-    tid: "Typiskt 8–14 veckor",
-    trelink: "TreLink kör full DD: AML, verklig huvudman, årsredovisningar, avtal.",
-    who: "Bäst för: lönsamma bolag med substans där köparen vill ta över allt.",
-  },
-];
-
-type DocState = "saknas" | "uppladdad" | "granskas" | "godkant" | "komplettera";
-
-type DocSpec = { name: string; krav: string; required: boolean };
-
-const docsByCat: Record<CatId, DocSpec[]> = {
-  overlatelse: [
-    { name: "Överlåtelseavtal", krav: "PDF · signerat av båda parter (mall finns hos TreLink)", required: true },
-    { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
-    { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
-    { name: "Bilder på lokalen", krav: "JPG/PNG · minst 6 st · dagsljus", required: true },
-  ],
-  inkram: [
-    { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
-    { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
-    { name: "Rörelseresultat", krav: "PDF från bokföring · senaste perioden", required: true },
-    { name: "Bilder på verksamheten", krav: "JPG/PNG · minst 6 st · dagsljus", required: true },
-    { name: "Balansräkning", krav: "PDF · senaste perioden", required: false },
-    { name: "Årsredovisning", krav: "PDF · signerad", required: false },
-  ],
-  aktie: [
-    { name: "Köpeavtal / aktieöverlåtelseavtal", krav: "PDF · mall finns hos TreLink", required: true },
-    { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
-    { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
-    { name: "Rörelseresultat", krav: "PDF från bokföring", required: true },
-    { name: "Bilder", krav: "JPG/PNG · minst 6 st · dagsljus", required: true },
-    { name: "Balansräkning", krav: "PDF · senaste perioden", required: false },
-    { name: "Årsredovisning", krav: "PDF · signerad", required: false },
-    { name: "Registreringsbevis", krav: "PDF · max 1 mån gammalt", required: false },
-    { name: "Bolagsordning", krav: "PDF · aktuell", required: false },
-    { name: "Aktiebrev / aktiebok", krav: "PDF/bild · aktuell", required: false },
-    { name: "Bolagspärm", krav: "PDF · protokoll m.m.", required: false },
-    { name: "Företagsinteckning", krav: "PDF · om det finns", required: false },
-    { name: "Anställningsavtal", krav: "PDF per anställd · personuppgifter maskas av TreLink", required: false },
-    { name: "Sociala medier", krav: "Länkar/handles till konton som följer med", required: false },
-  ],
-};
-
 const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
 // Sparas av onboardingflödet ("Sätt upp ditt konto") — läses här för att visa en sammanfattning.
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
-
-// Samma kategorier som TYP-fältet på annonskorten (@/components/ListingCard).
-const VERKSAMHETSTYP_TAGGAR = ["Butik", "Kontor", "Lager", "Mat och dryck", "Skönhetssalong"];
 
 // Förslagstaggar för "Vad säljer objektet in?" — läge/lokal-egenskaper och kundunderlag.
 const LAGE_TAGGAR = ["Stora skyltfönster", "Nyrenoverat", "Uteservering möjlig"];
@@ -174,15 +109,6 @@ const KONTOR_TAGGAR_TEKNISK_INFO = [
   "Elladdstation",
   "Serverrum",
 ];
-
-type KontorFalt = {
-  lage: string;
-  interior: string;
-  planlosning: string;
-  ekonomi: string;
-  taggar: string;
-  beskrivning: string;
-};
 
 const emptyKontorFalt: KontorFalt = {
   lage: "",
@@ -264,15 +190,6 @@ const BUTIK_TAGGAR_TEKNISK_INFO = [
   "Serverrum",
 ];
 
-type ButikFalt = {
-  lage: string;
-  interior: string;
-  planlosning: string;
-  ekonomi: string;
-  taggar: string;
-  beskrivning: string;
-};
-
 const emptyButikFalt: ButikFalt = {
   lage: "",
   interior: "",
@@ -352,15 +269,6 @@ const LAGER_TAGGAR_TEKNISK_INFO = [
   "Elladdstation",
   "Serverrum",
 ];
-
-type LagerFalt = {
-  lage: string;
-  interior: string;
-  planlosning: string;
-  ekonomi: string;
-  taggar: string;
-  beskrivning: string;
-};
 
 const emptyLagerFalt: LagerFalt = {
   lage: "",
@@ -467,23 +375,6 @@ const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
   { namn: "Inventarielista (Servering)", hint: "PDF · fylls i via mall online" },
 ];
 
-type ServeringFalt = {
-  underrubrik: string;
-  lage: string;
-  interior: string;
-  planlosning: string;
-  ekonomi: string;
-  koksutrustning: string;
-  alkoholtillstand: string;
-  utvecklingsmojlighet: string;
-  anledningTillForsaljning: string;
-  taggar: string;
-  typAvKok: string;
-  skickILokal: string;
-  myndighetskrav: string;
-  ovrigInfo: string;
-};
-
 const emptyServeringFalt: ServeringFalt = {
   underrubrik: "",
   lage: "",
@@ -563,17 +454,6 @@ const FRISOR_TAGGAR_PLANLOSNING = [
 ];
 const FRISOR_TAGGAR_EKONOMI = ["Förmånlig hyra", "Värme ingår", "Vatten ingår", "Momsbefriad hyra", "Ventilation ingår", "Stabil förening"];
 
-type FrisorFalt = {
-  underrubrik: string;
-  lage: string;
-  interior: string;
-  planlosning: string;
-  ekonomi: string;
-  antalStolar: string;
-  taggar: string;
-  beskrivning: string;
-};
-
 const emptyFrisorFalt: FrisorFalt = {
   underrubrik: "",
   lage: "",
@@ -583,52 +463,6 @@ const emptyFrisorFalt: FrisorFalt = {
   antalStolar: "",
   taggar: "",
   beskrivning: "",
-};
-
-// Mappning fältgrupp-id → vilka Verksamhetstyp-taggar som visar den. En grupp kan delas av flera taggar
-// (t.ex. Servering delas av Café & bageri och Restaurang) — den visas då bara en gång.
-const FALTGRUPP_TYPER: Record<string, string[]> = {
-  Kontor: ["Kontor"],
-  Butik: ["Butik"],
-  Lager: ["Lager"],
-  Servering: ["Mat och dryck"],
-  Frisor: ["Skönhetssalong"],
-};
-
-type Draft = {
-  cat: CatId;
-  ort: string;
-  adress: string;
-  yta: string;
-  verksamhet: string;
-  orgnr: string;
-  // Hyresvärd & BRF
-  hyresvardNamn: string;
-  hyresvardEmail: string;
-  hyresvardTel: string;
-  brfKontakt: string;
-  // Säljande info till TreLink (används för att skriva annonstexten)
-  verksamhetSedan: string;
-  oppettider: string;
-  anstallda: string;
-  omsattning: string;
-  resultat: string;
-  usp: string;
-  kundunderlag: string;
-  laget: string;
-  inventarier: string;
-  anledning: string;
-  potential: string;
-  premium: boolean;
-  docs: Record<string, DocState>;
-  // Fältgrupper per vald Verksamhetstyp — en nyckel per typ som har en egen fältkonfiguration.
-  typFalt: {
-    Kontor: KontorFalt;
-    Butik: ButikFalt;
-    Lager: LagerFalt;
-    Servering: ServeringFalt;
-    Frisor: FrisorFalt;
-  };
 };
 
 const empty: Draft = {
