@@ -45,12 +45,12 @@ const sections = [
     title: "TreLink · adminzon — separat",
     color: "TreLink",
     links: [
-      ["/george", "Att-göra idag"],
-      ["/george/annonser", "Granska annonser"],
-      ["/george/affarer", "Driv affärer"],
-      ["/george/hyresvard", "Hyresvärd"],
-      ["/george/fakturor", "Fakturor & medel"],
-      ["/george/anvandare", "Användare & statistik"],
+      ["/admin", "Översikt"],
+      ["/admin/annonser", "Annonser"],
+      ["/admin/kopare", "Köpare/Intressenter"],
+      ["/admin/affarer", "Affärer/Uppdrag"],
+      ["/admin/anvandare", "Användare"],
+      ["/admin/installningar", "Inställningar"],
     ],
   },
   {

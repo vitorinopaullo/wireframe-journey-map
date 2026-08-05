@@ -62,7 +62,7 @@ function Login() {
 
           <WireBox label="TreLink · adminzon" variant="dashed">
             <p className="mb-3 text-sm text-muted-foreground">Separat inloggning för mäklarnav.</p>
-            <WireBtn variant="secondary" to="/george">Gå till adminzon →</WireBtn>
+            <WireBtn variant="secondary" to="/admin">Gå till adminzon →</WireBtn>
           </WireBox>
         </div>
       </div>
