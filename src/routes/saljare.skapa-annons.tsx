@@ -105,23 +105,75 @@ const ANLEDNING_TAGGAR = ["Pension", "Ny satsning", "Flytt", "Utbränd", "Utland
 
 // Fältgrupp per Verksamhetstyp — lägg till fler typers fältkonfiguration här.
 // Kontors gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
-const KONTOR_TAGGAR_LAGE = ["Bra kommunikation", "Parkering", "Hiss"];
-const KONTOR_TAGGAR_INTERIOR = ["Ljust och rymligt", "Nyrenoverad"];
-const KONTOR_TAGGAR_PLANLOSNING = [
-  "Öppet kontorslandskap",
-  "Kök/pentry",
-  "Lunchrum",
-  "Tillgänglighetsanpassad",
-  "Konferensrum",
-  "Mötesrum",
-  "Co-working yta",
-  "Serverrum",
-  "Reception",
-  "Omklädningsrum",
-  "Dusch",
-  "Larm",
+const KONTOR_TAGGAR_LAGE = [
+  "Trafikerat läge",
+  "Hörnlokal",
+  "Bakgata",
+  "Stenkast från mötesplats",
+  "Kollektivtrafik",
+  "Parkering",
+  "Cykelvägar",
+  "Grönområden",
+  "Nära gym",
+  "Nära restauranger",
+  "Nära apotek",
+  "Nära livsmedelsbutik",
+  "Hiss",
 ];
-const KONTOR_TAGGAR_EKONOMI = ["OVK godkänt", "Förmånlig hyra", "Starkt bredband möjligt", "Fiberanslutning"];
+const KONTOR_TAGGAR_INTERIOR = [
+  "Modernt",
+  "Renoveringsbehov",
+  "Rustik",
+  "Retro",
+  "Hög takhöjd",
+  "Konferensrum",
+  "Tysta rum",
+  "Samarbetsytor",
+  "Mötesrum",
+  "Lounge",
+  "Lunchrum",
+  "Reglerbart ljus",
+  "Naturmaterial",
+  "Miljömärkta material",
+  "Hyllsystem",
+  "Omklädningsrum",
+  "Reception",
+  "Ljust",
+  "Rymligt",
+];
+const KONTOR_TAGGAR_PLANLOSNING = [
+  "Lunchrum",
+  "Wc/dusch",
+  "Wc",
+  "Förråd/lager",
+  "Lastkaj",
+  "Ritning",
+  "Öppen planlösning",
+  "Skrivbordsbås",
+  "Många indelade rum",
+  "Tysta rum",
+  "Konferensrum",
+  "Lounge",
+  "Kundväntrum",
+  "Stora fönster",
+  "Mycket ljusinsläpp",
+  "Typ av kök – pentry",
+  "Fullt kök",
+  "Inflyttningsklart",
+  "Tillgänglighetsanpassad",
+  "Co-working yta",
+];
+const KONTOR_TAGGAR_EKONOMI = ["Förmånlig hyra", "Värme ingår", "Vatten ingår", "Momsbefriad hyra", "Ventilation ingår", "Stabil förening"];
+const KONTOR_TAGGAR_TEKNISK_INFO = [
+  "Fiberanslutning",
+  "OVK godkänt",
+  "God ventilation",
+  "Larm",
+  "Wifi",
+  "Mötesteknik",
+  "Elladdstation",
+  "Serverrum",
+];
 
 type KontorFalt = {
   lage: string;
@@ -142,19 +194,74 @@ const emptyKontorFalt: KontorFalt = {
 };
 
 // Butiks gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
-const BUTIK_TAGGAR_LAGE = ["Trafikerat läge", "Hörnlokal"];
-const BUTIK_TAGGAR_INTERIOR = ["Modern inredning", "Takhöjd"];
-const BUTIK_TAGGAR_EKONOMI = ["Förmånlig hyra", "OVK godkänt", "Fiberanslutning"];
+const BUTIK_TAGGAR_LAGE = [
+  "Trafikerat läge",
+  "Hörnlokal",
+  "Bakgata",
+  "Stenkast från mötesplats",
+  "Kollektivtrafik",
+  "Parkering",
+  "Cykelvägar",
+  "Grönområden",
+  "Nära gym",
+  "Nära restauranger",
+  "Nära apotek",
+  "Nära livsmedelsbutik",
+  "Hiss",
+];
+const BUTIK_TAGGAR_INTERIOR = [
+  "Modernt",
+  "Renoveringsbehov",
+  "Rustik",
+  "Retro",
+  "Hög takhöjd",
+  "Konferensrum",
+  "Tysta rum",
+  "Samarbetsytor",
+  "Mötesrum",
+  "Lounge",
+  "Lunchrum",
+  "Reglerbart ljus",
+  "Naturmaterial",
+  "Miljömärkta material",
+  "Hyllsystem",
+  "Omklädningsrum",
+  "Reception",
+  "Ljust",
+  "Rymligt",
+];
 const BUTIK_TAGGAR_PLANLOSNING = [
   "Lunchrum",
-  "Omklädningsrum",
-  "Lager i fastigheten",
-  "Soprum",
+  "Wc/dusch",
+  "Wc",
+  "Förråd/lager",
   "Lastkaj",
-  "Apotek",
-  "Klädesbutik",
-  "Optik",
-  "Kontor",
+  "Ritning",
+  "Öppen planlösning",
+  "Skrivbordsbås",
+  "Många indelade rum",
+  "Tysta rum",
+  "Konferensrum",
+  "Lounge",
+  "Kundväntrum",
+  "Stora fönster",
+  "Mycket ljusinsläpp",
+  "Typ av kök – pentry",
+  "Fullt kök",
+  "Inflyttningsklart",
+  "Tillgänglighetsanpassad",
+  "Co-working yta",
+];
+const BUTIK_TAGGAR_EKONOMI = ["Förmånlig hyra", "Värme ingår", "Vatten ingår", "Momsbefriad hyra", "Ventilation ingår", "Stabil förening"];
+const BUTIK_TAGGAR_TEKNISK_INFO = [
+  "Fiberanslutning",
+  "OVK godkänt",
+  "God ventilation",
+  "Larm",
+  "Wifi",
+  "Mötesteknik",
+  "Elladdstation",
+  "Serverrum",
 ];
 
 type ButikFalt = {
@@ -176,20 +283,75 @@ const emptyButikFalt: ButikFalt = {
 };
 
 // Lagers gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
-const LAGER_TAGGAR_LAGE = ["Nära motorväg", "Bra kommunikation", "Lastbilstillgänglig"];
-const LAGER_TAGGAR_INTERIOR = ["Takhöjd"];
-const LAGER_TAGGAR_PLANLOSNING = [
-  "Lastkaj",
-  "Soprum",
-  "Markyta",
-  "Varuintag",
-  "Lunchrum",
-  "Omklädningsrum",
-  "WC/dusch",
-  "Typ av port",
-  "Kontorsrum",
+const LAGER_TAGGAR_LAGE = [
+  "Trafikerat läge",
+  "Hörnlokal",
+  "Bakgata",
+  "Stenkast från mötesplats",
+  "Kollektivtrafik",
+  "Parkering",
+  "Cykelvägar",
+  "Grönområden",
+  "Nära gym",
+  "Nära restauranger",
+  "Nära apotek",
+  "Nära livsmedelsbutik",
+  "Hiss",
 ];
-const LAGER_TAGGAR_EKONOMI = ["Oljeskiljare"];
+const LAGER_TAGGAR_INTERIOR = [
+  "Modernt",
+  "Renoveringsbehov",
+  "Rustik",
+  "Retro",
+  "Hög takhöjd",
+  "Konferensrum",
+  "Tysta rum",
+  "Samarbetsytor",
+  "Mötesrum",
+  "Lounge",
+  "Lunchrum",
+  "Reglerbart ljus",
+  "Naturmaterial",
+  "Miljömärkta material",
+  "Hyllsystem",
+  "Omklädningsrum",
+  "Reception",
+  "Ljust",
+  "Rymligt",
+];
+const LAGER_TAGGAR_PLANLOSNING = [
+  "Lunchrum",
+  "Wc/dusch",
+  "Wc",
+  "Förråd/lager",
+  "Lastkaj",
+  "Ritning",
+  "Öppen planlösning",
+  "Skrivbordsbås",
+  "Många indelade rum",
+  "Tysta rum",
+  "Konferensrum",
+  "Lounge",
+  "Kundväntrum",
+  "Stora fönster",
+  "Mycket ljusinsläpp",
+  "Typ av kök – pentry",
+  "Fullt kök",
+  "Inflyttningsklart",
+  "Tillgänglighetsanpassad",
+  "Co-working yta",
+];
+const LAGER_TAGGAR_EKONOMI = ["Förmånlig hyra", "Värme ingår", "Vatten ingår", "Momsbefriad hyra", "Ventilation ingår", "Stabil förening"];
+const LAGER_TAGGAR_TEKNISK_INFO = [
+  "Fiberanslutning",
+  "OVK godkänt",
+  "God ventilation",
+  "Larm",
+  "Wifi",
+  "Mötesteknik",
+  "Elladdstation",
+  "Serverrum",
+];
 
 type LagerFalt = {
   lage: string;
@@ -210,47 +372,88 @@ const emptyLagerFalt: LagerFalt = {
 };
 
 // Serverings gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
-const SERVERING_TAGGAR_LAGE = ["Parkering"];
-const SERVERING_TAGGAR_INTERIOR = ["Modern inredning", "Rustik inredning", "Pub-inredning", "Nyrenoverat"];
+const SERVERING_UNDERRUBRIK = ["Restaurang", "Café", "Bageri", "Bistro", "Pub", "Vinbar"];
+const SERVERING_TAGGAR_LAGE = [
+  "Trafikerat läge",
+  "Stadsmiljö",
+  "Hörnlokal",
+  "Bakgata",
+  "Stenkast från mötesplats",
+  "Kollektivtrafik",
+  "Parkering",
+  "Cykelvägar",
+  "Grönområden",
+  "Nära gym",
+  "Nära restauranger",
+  "Nära apotek",
+  "Nära livsmedelsbutik",
+  "Uteservering",
+];
+const SERVERING_TAGGAR_INTERIOR = [
+  "Modernt",
+  "Renoveringsbehov av servering",
+  "Rustik",
+  "Högt i tak",
+  "Retro",
+  "Pub-inredning",
+  "Ny maskinpark",
+  "Gammal maskinpark",
+  "Funktionsduglig maskinpark",
+  "Renoveringsbehov av kök",
+];
 const SERVERING_TAGGAR_PLANLOSNING = [
   "Ca 30 sittplatser",
   "Ca 40 sittplatser",
   "Ca 50 sittplatser",
   "Ca 30 uteplatser",
-  "WC kund",
-  "WC personal",
-  "Personalutrymme",
+  "Stor uteservering",
   "Omklädningsrum",
+  "Personaltoalett",
+  "Gästtoalett",
   "Kylrum",
-  "Frysrum",
   "Diskrum",
+  "Frysrum",
   "Bardel",
   "Lager",
   "Eget soprum",
-  "Delat soprum",
+  "Torrt förråd",
 ];
-const SERVERING_TAGGAR_EKONOMI = ["Bunden ölleverantör"];
-const SERVERING_TAGGAR_ALKOHOLTILLSTAND = [
-  "Fullständiga rättigheter",
-  "Vin & öl",
-  "Endast öl",
-  "Ingen alkoholservering",
-  "Sen servering (efter 01)",
+const SERVERING_TAGGAR_EKONOMI = [
+  "Förmånlig hyra",
+  "Värme ingår",
+  "Vatten ingår",
+  "Momsbefriad hyra",
+  "Ventilation ingår",
+  "Leasingavtal",
+  "Företagslån",
+  "Ölleverantör",
+  "Kassaavtal",
 ];
-const SERVERING_TAGGAR_TYP_AV_KOK = ["Svartplåtskanal", "Pizza kanal", "Café kök", "Annan ventilationslösning"];
-const SERVERING_SKICK_ALTERNATIV = [
-  "Köket behöver renoveras",
-  "Maskinpark gammal",
-  "Ny maskinpark",
-  "Varierande ålder maskinpark",
+const SERVERING_TAGGAR_TYP_AV_KOK = [
+  "Svartplåtskanal",
+  "Pizzakanal",
+  "Varmluftsugn ok",
+  "Cafélokal",
+  "Bagerianpassad",
+  "Annan ventilation",
 ];
-const SERVERING_TAGGAR_MYNDIGHETSKRAV = [
-  "Livsmedelstillstånd",
+const SERVERING_TAGGAR_UTVECKLINGSMOJLIGHET = [
+  "Byte av koncept",
+  "Ny meny",
+  "Renovering",
   "Alkoholtillstånd",
-  "Fettavskiljare",
-  "OVK",
-  "Sotningsprotokoll",
+  "Utbyte av personal",
+  "Nytänk",
+  "Sociala medier-annonsering",
 ];
+const SERVERING_TAGGAR_ANLEDNING_FORSALJNING = [
+  "Pension",
+  "Andra intressen",
+  "Går med förlust",
+  "Personalproblem",
+  "Uppbrytning av partnerskap",
+];
+const SERVERING_TAGGAR_MYNDIGHETSKRAV = ["Serveringstillstånd", "Uteservering", "Livsmedelsintyg", "Brandskyddsdokumentation"];
 
 // PDF-uppladdningar specifika för Servering — namn + hjälptext, renderas i en lista.
 const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
@@ -261,57 +464,107 @@ const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
   { namn: "Miljöförvaltning (Servering)", hint: "PDF · dokument från miljöförvaltningen" },
   { namn: "Brandskyddsdokument (Servering)", hint: "PDF · brandskyddsdokumentation" },
   { namn: "Leasingavtal (Servering)", hint: "PDF · t.ex. kassa-, telefoni- och wifiavtal" },
+  { namn: "Inventarielista (Servering)", hint: "PDF · fylls i via mall online" },
 ];
 
 type ServeringFalt = {
+  underrubrik: string;
   lage: string;
   interior: string;
   planlosning: string;
   ekonomi: string;
   koksutrustning: string;
   alkoholtillstand: string;
+  utvecklingsmojlighet: string;
+  anledningTillForsaljning: string;
   taggar: string;
   typAvKok: string;
   skickILokal: string;
   myndighetskrav: string;
+  ovrigInfo: string;
 };
 
 const emptyServeringFalt: ServeringFalt = {
+  underrubrik: "",
   lage: "",
   interior: "",
   planlosning: "",
   ekonomi: "",
   koksutrustning: "",
   alkoholtillstand: "",
+  utvecklingsmojlighet: "",
+  anledningTillForsaljning: "",
   taggar: "",
   typAvKok: "",
   skickILokal: "",
   myndighetskrav: "",
+  ovrigInfo: "",
 };
 
 // Skönhetssalongs gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
-const FRISOR_TAGGAR_LAGE = ["Trafikerat läge", "Hörnlokal"];
-const FRISOR_TAGGAR_INTERIOR = ["Modern inredning", "Takhöjd"];
-const FRISOR_TAGGAR_PLANLOSNING = [
-  "1-2 stolar",
-  "3-4 stolar",
-  "5-6 stolar",
-  "7+ stolar",
-  "Lunchrum",
-  "Omklädningsrum",
-  "Lager i fastigheten",
-  "Soprum",
-  "Lastkaj",
-  "Apotek",
-  "Klädesbutik",
-  "Optik",
-  "Kontor",
-  "WC",
-  "Dusch",
+const FRISOR_UNDERRUBRIK = ["Frisör", "Nagelsalong", "Massage", "Estetisk"];
+const FRISOR_TAGGAR_LAGE = [
+  "Trafikerat läge",
+  "Hörnlokal",
+  "Bakgata",
+  "Stenkast från mötesplats",
+  "Kollektivtrafik",
+  "Parkering",
+  "Cykelvägar",
+  "Grönområden",
+  "Nära gym",
+  "Nära restauranger",
+  "Nära apotek",
+  "Nära livsmedelsbutik",
+  "Hiss",
 ];
-const FRISOR_TAGGAR_EKONOMI = ["Uthyrning av stol"];
+const FRISOR_TAGGAR_INTERIOR = [
+  "Modernt",
+  "Renoveringsbehov",
+  "Rustik",
+  "Retro",
+  "Hög takhöjd",
+  "Konferensrum",
+  "Tysta rum",
+  "Samarbetsytor",
+  "Mötesrum",
+  "Lounge",
+  "Lunchrum",
+  "Reglerbart ljus",
+  "Naturmaterial",
+  "Miljömärkta material",
+  "Hyllsystem",
+  "Omklädningsrum",
+  "Reception",
+  "Ljust",
+  "Rymligt",
+];
+const FRISOR_TAGGAR_PLANLOSNING = [
+  "Lunchrum",
+  "Wc/dusch",
+  "Wc",
+  "Förråd/lager",
+  "Lastkaj",
+  "Ritning",
+  "Öppen planlösning",
+  "Skrivbordsbås",
+  "Många indelade rum",
+  "Tysta rum",
+  "Konferensrum",
+  "Lounge",
+  "Kundväntrum",
+  "Stora fönster",
+  "Mycket ljusinsläpp",
+  "Typ av kök – pentry",
+  "Fullt kök",
+  "Inflyttningsklart",
+  "Tillgänglighetsanpassad",
+  "Co-working yta",
+];
+const FRISOR_TAGGAR_EKONOMI = ["Förmånlig hyra", "Värme ingår", "Vatten ingår", "Momsbefriad hyra", "Ventilation ingår", "Stabil förening"];
 
 type FrisorFalt = {
+  underrubrik: string;
   lage: string;
   interior: string;
   planlosning: string;
@@ -322,6 +575,7 @@ type FrisorFalt = {
 };
 
 const emptyFrisorFalt: FrisorFalt = {
+  underrubrik: "",
   lage: "",
   interior: "",
   planlosning: "",
@@ -1367,11 +1621,24 @@ function KontorFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Teknisk info</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <TagToggleGroup
+              label="Taggar"
+              options={KONTOR_TAGGAR_TEKNISK_INFO}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
           <WireArea
-            label="Beskriv ditt kontor för en ny hyresgäst"
+            label="Övrig info"
             value={falt.beskrivning}
             onChange={(v) => onChange("beskrivning", v)}
-            placeholder="Beskriv gärna så mycket du kan: våning, p-platser för anställda, antal kontorssittplatser — allt som kan göra kontoret intressant för en ny hyresgäst."
+            placeholder="T.ex. vilken våning, gatuparkering, garage, yta, antal arbetsplatser."
+            maxLength={140}
           />
         </div>
 
@@ -1470,11 +1737,24 @@ function ButikFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Teknisk info</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <TagToggleGroup
+              label="Taggar"
+              options={BUTIK_TAGGAR_TEKNISK_INFO}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
           <WireArea
-            label="Beskriv din butik för en ny hyresgäst"
+            label="Övrig info"
             value={falt.beskrivning}
             onChange={(v) => onChange("beskrivning", v)}
-            placeholder="Beskriv gärna: varuintag, hur den är inredd idag, tillgång till soprum, p-platser, lager i fastigheten, WC/dusch, lunchrum."
+            placeholder="T.ex. vilken våning, gatuparkering, garage, yta, antal arbetsplatser."
+            maxLength={140}
           />
         </div>
 
@@ -1573,11 +1853,24 @@ function LagerFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Teknisk info</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <TagToggleGroup
+              label="Taggar"
+              options={LAGER_TAGGAR_TEKNISK_INFO}
+              value={falt.taggar}
+              onChange={(v) => onChange("taggar", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
           <WireArea
-            label="Beskriv ditt lager för en ny hyresgäst"
+            label="Övrig info"
             value={falt.beskrivning}
             onChange={(v) => onChange("beskrivning", v)}
-            placeholder="Beskriv gärna så mycket du kan om lagret/industrilokalen — allt som kan göra objektet intressant för en ny hyresgäst."
+            placeholder="T.ex. vilken våning, gatuparkering, garage, yta, antal arbetsplatser."
+            maxLength={140}
           />
         </div>
 
@@ -1662,6 +1955,18 @@ function ServeringFaltgrupp({
       <Annotation>Mat och dryck — fält specifika för restaurang, café, bageri och pub.</Annotation>
       <div className="mt-4 space-y-5">
         <div>
+          <FaltgruppRubrik>Typ av verksamhet</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <SingleTagSelect
+              label="Välj den som stämmer bäst"
+              options={SERVERING_UNDERRUBRIK}
+              value={falt.underrubrik}
+              onChange={(v) => onChange("underrubrik", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1681,12 +1986,6 @@ function ServeringFaltgrupp({
               options={SERVERING_TAGGAR_INTERIOR}
               value={falt.taggar}
               onChange={(v) => onChange("taggar", v)}
-            />
-            <SingleTagSelect
-              label="Lokalens skick"
-              options={SERVERING_SKICK_ALTERNATIV}
-              value={falt.skickILokal}
-              onChange={(v) => onChange("skickILokal", v)}
             />
           </div>
         </div>
@@ -1716,16 +2015,46 @@ function ServeringFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <FaltgruppRubrik>Köksutrustning</FaltgruppRubrik>
+          <FaltgruppRubrik>Köksteknik</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Typ av kök"
+              label="Taggar"
               options={SERVERING_TAGGAR_TYP_AV_KOK}
               value={falt.typAvKok}
               onChange={(v) => onChange("typAvKok", v)}
             />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Utvecklingsmöjlighet</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Myndighetskrav"
+              label="Taggar"
+              options={SERVERING_TAGGAR_UTVECKLINGSMOJLIGHET}
+              value={falt.utvecklingsmojlighet}
+              onChange={(v) => onChange("utvecklingsmojlighet", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Anledning till försäljning</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <TagToggleGroup
+              label="Taggar"
+              options={SERVERING_TAGGAR_ANLEDNING_FORSALJNING}
+              value={falt.anledningTillForsaljning}
+              onChange={(v) => onChange("anledningTillForsaljning", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <FaltgruppRubrik>Myndighetskrav</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <TagToggleGroup
+              label="Taggar"
               options={SERVERING_TAGGAR_MYNDIGHETSKRAV}
               value={falt.myndighetskrav}
               onChange={(v) => onChange("myndighetskrav", v)}
@@ -1740,15 +2069,13 @@ function ServeringFaltgrupp({
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <FaltgruppRubrik>Alkoholtillstånd</FaltgruppRubrik>
-          <div className="mt-2 space-y-3">
-            <TagToggleGroup
-              label="Taggar"
-              options={SERVERING_TAGGAR_ALKOHOLTILLSTAND}
-              value={falt.alkoholtillstand}
-              onChange={(v) => onChange("alkoholtillstand", v)}
-            />
-          </div>
+          <WireArea
+            label="Övrig info"
+            value={falt.ovrigInfo}
+            onChange={(v) => onChange("ovrigInfo", v)}
+            placeholder="Berätta mer om din restaurang och vad du tycker är viktigt att veta som köpare."
+            maxLength={140}
+          />
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
@@ -1783,6 +2110,18 @@ function FrisorFaltgrupp({
       <Annotation>Skönhetssalong — fält specifika för skönhetssalonger.</Annotation>
       <div className="mt-4 space-y-5">
         <div>
+          <FaltgruppRubrik>Typ av verksamhet</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <SingleTagSelect
+              label="Välj den som stämmer bäst"
+              options={FRISOR_UNDERRUBRIK}
+              value={falt.underrubrik}
+              onChange={(v) => onChange("underrubrik", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1832,10 +2171,11 @@ function FrisorFaltgrupp({
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
           <WireArea
-            label="Beskriv din salong för en ny hyresgäst"
+            label="Övrig info"
             value={falt.beskrivning}
             onChange={(v) => onChange("beskrivning", v)}
-            placeholder="Beskriv gärna: varuintag, hur den är inredd idag, tillgång till soprum, p-platser, lager i fastigheten, WC/dusch, lunchrum, antal stolar, antal tvättplatser."
+            placeholder="T.ex. antal stolar/arbetsplatser, om man kan hyra ut en stol/rum."
+            maxLength={140}
           />
         </div>
 
@@ -1903,12 +2243,14 @@ function WireArea({
   onChange,
   placeholder,
   hint,
+  maxLength,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   hint?: string;
+  maxLength?: number;
 }) {
   return (
     <label className="block">
@@ -1917,12 +2259,19 @@ function WireArea({
       </span>
       <textarea
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(maxLength ? e.target.value.slice(0, maxLength) : e.target.value)}
         placeholder={placeholder}
         rows={3}
+        maxLength={maxLength}
         className="block w-full border border-dashed border-muted-foreground/50 bg-muted/20 p-3 text-sm focus:border-foreground focus:outline-none"
       />
-      {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
+      {maxLength ? (
+        <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">
+          {value.length}/{maxLength} tecken
+        </span>
+      ) : (
+        hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>
+      )}
     </label>
   );
 }
