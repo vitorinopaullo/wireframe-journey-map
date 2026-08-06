@@ -4,6 +4,7 @@ import { Check, X } from "lucide-react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { initialWorkflow, logEntry, canSellerEdit } from "@/lib/annons-workflow";
+import { getSession } from "@/lib/mock-auth";
 import {
   type CatId,
   cats,
@@ -1093,6 +1094,7 @@ function CreateListing() {
                     status: "Granskas",
                     premium: draft.premium,
                     skickadAt: now.toISOString(),
+                    sellerPersonnr: getSession()?.bankid.personnr,
                     draft,
                   };
                   if (editId) {
