@@ -19,15 +19,16 @@ const SESSION_KEY = "trelink-session";
 const ADMIN_QUEUE_KEY = "trelink-admin-nya-konton";
 export const ADMIN_ACCOUNTS_STORAGE_KEY = ADMIN_QUEUE_KEY;
 
-const FIXTURES: BankIdPayload[] = [
+// Fast set av testpersoner — personnumret är stabilt per person så att samma
+// testperson alltid matchar samma konto (se upsertAdminAccount).
+export const BANKID_TESTPERSONER: BankIdPayload[] = [
   { personnr: "19850312-4455", fornamn: "Anna", efternamn: "Bergström", verifieradAt: 0 },
   { personnr: "19790914-1122", fornamn: "Erik", efternamn: "Lindqvist", verifieradAt: 0 },
   { personnr: "19920128-7788", fornamn: "Sara", efternamn: "Andersson", verifieradAt: 0 },
 ];
 
-export function mockBankIdSample(): BankIdPayload {
-  const pick = FIXTURES[Math.floor(Math.random() * FIXTURES.length)];
-  return { ...pick, verifieradAt: Date.now() };
+export function mockBankIdVerify(testperson: BankIdPayload): BankIdPayload {
+  return { ...testperson, verifieradAt: Date.now() };
 }
 
 export function getSession(): Session | null {

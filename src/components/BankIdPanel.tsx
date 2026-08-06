@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { WireBox, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
-import { mockBankIdSample, signInWithBankId, type BankIdPayload } from "@/lib/mock-auth";
+import { BANKID_TESTPERSONER, mockBankIdVerify, signInWithBankId, type BankIdPayload } from "@/lib/mock-auth";
 
 type Phase = "idle" | "startar" | "vantar" | "verifierar" | "klar";
 
@@ -15,6 +15,7 @@ export function BankIdPanel({
 }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [bankid, setBankid] = useState<BankIdPayload | null>(null);
+  const [testperson, setTestperson] = useState<BankIdPayload>(BANKID_TESTPERSONER[0]);
 
   useEffect(() => {
     if (phase === "startar") {
@@ -27,7 +28,7 @@ export function BankIdPanel({
     }
     if (phase === "verifierar") {
       const t = setTimeout(() => {
-        const b = mockBankIdSample();
+        const b = mockBankIdVerify(testperson);
         setBankid(b);
         signInWithBankId(b);
         setPhase("klar");
@@ -38,7 +39,7 @@ export function BankIdPanel({
       const t = setTimeout(() => onDone(bankid), 400);
       return () => clearTimeout(t);
     }
-  }, [phase, bankid, onDone]);
+  }, [phase, bankid, onDone, testperson]);
 
   const steg: { key: Phase; label: string }[] = [
     { key: "startar", label: "Öppnar BankID" },
@@ -66,6 +67,26 @@ export function BankIdPanel({
               </p>
             </div>
           </div>
+          <div>
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              Testperson (prototyp)
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {BANKID_TESTPERSONER.map((p) => (
+                <button
+                  key={p.personnr}
+                  onClick={() => setTestperson(p)}
+                  className={`border px-3 py-1.5 text-sm ${
+                    testperson.personnr === p.personnr
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-foreground/30 hover:border-foreground"
+                  }`}
+                >
+                  {p.fornamn} {p.efternamn}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="flex flex-col gap-2">
             <WireBtn onClick={() => setPhase("startar")}>Öppna BankID på denna enhet →</WireBtn>
             <WireBtn variant="secondary" onClick={() => setPhase("startar")}>
@@ -74,7 +95,8 @@ export function BankIdPanel({
           </div>
           <Annotation>
             <span className="mt-2 block">
-              Inga andra inloggningssätt finns. Alla parter på TreLink är verifierade med BankID.
+              Inga andra inloggningssätt finns. Alla parter på TreLink är verifierade med BankID. Samma testperson
+              ger alltid samma personnummer, så samma konto uppdateras vid ny inloggning.
             </span>
           </Annotation>
         </div>
