@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
+import { ContractExpiryBanner } from "@/components/ContractExpiryBanner";
 import { canSellerEdit, stateHint, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
 
 export const Route = createFileRoute("/saljare/mina-annonser")({
@@ -18,8 +19,12 @@ type Item = {
   ort?: string;
   pris?: string;
   skickadAt?: string;
-  workflow?: { state: WorkflowState };
+  workflow?: { state: WorkflowState; avtalSignedAt?: string };
 };
+
+function daysSince(iso: string) {
+  return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));
+}
 
 const seed: Item[] = [
   { id: "1", titel: "Restauranglokal · Södermalm", status: "Publicerad", views: 1240, intresse: 14, premium: true },
@@ -58,57 +63,63 @@ function MyListings() {
           const label = st ? stateLabel[st] : i.status;
           const hint = st ? stateHint[st] : `${i.views} visningar · ${i.intresse} intresseanmälningar`;
           const editable = st ? canSellerEdit(st) : true;
+          const avtalSignedAt = i.workflow?.avtalSignedAt;
           return (
-            <WireBox key={i.id} className="flex flex-col gap-4 md:flex-row md:items-center">
-              <div className="flex h-24 w-36 shrink-0 items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-[10px] text-muted-foreground">
-                [ Bild ]
-              </div>
-              <div className="flex-1">
-                <div className="mb-1 flex items-center gap-2">
-                  <WireTag>{label}</WireTag>
-                  {i.premium && <WireTag>Premium</WireTag>}
-                  {st === "komplettering" && <WireTag>Åtgärd krävs</WireTag>}
-                  {st === "utkast-till-saljare" && <WireTag>Åtgärd krävs</WireTag>}
-                  {st === "avtal-vantar-signering" && <WireTag>Signera</WireTag>}
+            <div key={i.id}>
+              {avtalSignedAt && (
+                <ContractExpiryBanner daysLive={daysSince(avtalSignedAt)} objectLabel={i.titel} />
+              )}
+              <WireBox className="flex flex-col gap-4 md:flex-row md:items-center">
+                <div className="flex h-24 w-36 shrink-0 items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-[10px] text-muted-foreground">
+                  [ Bild ]
                 </div>
-                {isNew ? (
-                  <Link to="/saljare/annons/$id" params={{ id: i.id }} className="font-medium hover:underline">
-                    {i.titel}
-                  </Link>
-                ) : (
-                  <Link to="/annons/$id" params={{ id: i.id }} className="font-medium hover:underline">
-                    {i.titel}
-                  </Link>
-                )}
-                <Annotation>
-                  <span className="mt-1 block normal-case tracking-normal text-muted-foreground text-[11px] font-sans">
-                    {hint}
-                  </span>
-                </Annotation>
-              </div>
-              <div className="flex gap-2">
-                {isNew ? (
-                  <>
-                    <WireBtn to="/saljare/annons/$id" params={{ id: i.id }}>
-                      Öppna ärendet →
-                    </WireBtn>
-                    {editable && (
-                      <WireBtn variant="secondary" to={`/saljare/skapa-annons?edit=${i.id}`}>
-                        Redigera
+                <div className="flex-1">
+                  <div className="mb-1 flex items-center gap-2">
+                    <WireTag>{label}</WireTag>
+                    {i.premium && <WireTag>Premium</WireTag>}
+                    {st === "komplettering" && <WireTag>Åtgärd krävs</WireTag>}
+                    {st === "utkast-till-saljare" && <WireTag>Åtgärd krävs</WireTag>}
+                    {st === "avtal-vantar-signering" && <WireTag>Signera</WireTag>}
+                  </div>
+                  {isNew ? (
+                    <Link to="/saljare/annons/$id" params={{ id: i.id }} className="font-medium hover:underline">
+                      {i.titel}
+                    </Link>
+                  ) : (
+                    <Link to="/annons/$id" params={{ id: i.id }} className="font-medium hover:underline">
+                      {i.titel}
+                    </Link>
+                  )}
+                  <Annotation>
+                    <span className="mt-1 block normal-case tracking-normal text-muted-foreground text-[11px] font-sans">
+                      {hint}
+                    </span>
+                  </Annotation>
+                </div>
+                <div className="flex gap-2">
+                  {isNew ? (
+                    <>
+                      <WireBtn to="/saljare/annons/$id" params={{ id: i.id }}>
+                        Öppna ärendet →
                       </WireBtn>
-                    )}
-                    {st === "avvisad" && (
-                      <WireBtn variant="ghost" onClick={() => remove(i.id)}>Ta bort</WireBtn>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <WireBtn variant="secondary">Redigera</WireBtn>
-                    <WireBtn variant="ghost">Pausa</WireBtn>
-                  </>
-                )}
-              </div>
-            </WireBox>
+                      {editable && (
+                        <WireBtn variant="secondary" to={`/saljare/skapa-annons?edit=${i.id}`}>
+                          Redigera
+                        </WireBtn>
+                      )}
+                      {st === "avvisad" && (
+                        <WireBtn variant="ghost" onClick={() => remove(i.id)}>Ta bort</WireBtn>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <WireBtn variant="secondary">Redigera</WireBtn>
+                      <WireBtn variant="ghost">Pausa</WireBtn>
+                    </>
+                  )}
+                </div>
+              </WireBox>
+            </div>
           );
         })}
       </div>

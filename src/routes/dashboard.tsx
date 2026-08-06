@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
-import { ContractExpiryBanner } from "@/components/ContractExpiryBanner";
 import { readAnnonser, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
 
 const searchSchema = z.object({
@@ -61,10 +60,6 @@ function Dashboard() {
         }
         right={<WireTag>BankID-verifierad</WireTag>}
       />
-
-      {mode === "saljare" && (
-        <ContractExpiryBanner daysLive={80} objectLabel="Inkråm · Café · Stockholm" />
-      )}
 
       {affar && (
         <WireBox label="Pågående affär · status" className="mb-6">
