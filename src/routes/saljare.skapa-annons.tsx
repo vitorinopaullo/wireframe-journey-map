@@ -517,6 +517,16 @@ function CreateListing() {
   const [draft, setDraft] = useState<Draft>(empty);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [uppdragsavtalOpen, setUppdragsavtalOpen] = useState(false);
+  const [bolagOrt, setBolagOrt] = useState("");
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ONBOARDING_SALJARE_KEY);
+      if (raw) setBolagOrt(JSON.parse(raw).bolagsuppgifter?.ort || "");
+    } catch {
+      /* noop */
+    }
+  }, []);
 
   useEffect(() => {
     try {
@@ -968,16 +978,12 @@ function CreateListing() {
             <dl className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <Row k="Paket" v={activeCat.name} />
               <Row k="Avgift vid affär" v={activeCat.avgift} />
-              <Row k="Ort" v={draft.ort || "—"} />
-              <Row k="Adress" v={draft.adress || "—"} />
               <Row k="Yta" v={draft.yta ? `${draft.yta} m²` : "—"} />
               <Row k="Verksamhet" v={draft.verksamhet || "—"} />
               <Row k="Hyresvärd e-post" v={draft.hyresvardEmail || "—"} />
               <Row k="Hyresvärd telefon" v={draft.hyresvardTel || "—"} />
               <Row k="BRF-kontaktperson" v={draft.brfKontakt || "—"} />
               <Row k="Nyckeltal" v="Hämtas från uppladdade dokument" />
-
-              {draft.cat === "aktie" && <Row k="Org.nr" v={draft.orgnr || "—"} />}
             </dl>
           </WireBox>
 
@@ -1080,8 +1086,8 @@ function CreateListing() {
                   const list = JSON.parse(raw) as any[];
                   const now = new Date();
                   const base = {
-                    titel: `${activeCat.name} · ${draft.verksamhet || "Nytt objekt"} · ${draft.ort || ""}`.trim(),
-                    ort: draft.ort,
+                    titel: `${activeCat.name} · ${draft.verksamhet || "Nytt objekt"} · ${bolagOrt || draft.ort || ""}`.trim(),
+                    ort: bolagOrt || draft.ort,
                     pris: "TreLink sätter pris",
                     cat: draft.cat,
                     status: "Granskas",

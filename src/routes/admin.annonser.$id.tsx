@@ -186,7 +186,7 @@ function AdminAnnonsDetail() {
         onboarding.firmatecknare.mail &&
         onboarding.firmatecknare.mobil
       ));
-  const grundOk = !!(draft.ort && draft.adress && draft.yta && draft.verksamhet);
+  const grundOk = !!(draft.yta && draft.verksamhet);
   const taggFaltValues = TAGG_FALT.map((f) => draft[f.key]);
   const taggarOk = taggFaltValues.every(Boolean);
   const typFaltOk =
@@ -553,11 +553,8 @@ function AdminAnnonsDetail() {
 
         <WireBox label="Grunduppgifter">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field k="Ort" v={draft.ort} />
-            <Field k="Adress" v={draft.adress} />
             <Field k="Yta" v={draft.yta ? `${draft.yta} m²` : undefined} />
             <Field k="Verksamhetstyp" v={draft.verksamhet} />
-            <Field k="Org.nr" v={draft.orgnr} />
           </div>
         </WireBox>
 
