@@ -3,7 +3,19 @@ import { useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getAnnons, patchAnnons, logEntry, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
-import { cats, docsByCat, FALTGRUPP_TYPER, type CatId, type DocSpec, type DocState } from "@/lib/annons-model";
+import {
+  cats,
+  docsByCat,
+  FALTGRUPP_TYPER,
+  type CatId,
+  type DocSpec,
+  type DocState,
+  type KontorFalt,
+  type ButikFalt,
+  type LagerFalt,
+  type ServeringFalt,
+  type FrisorFalt,
+} from "@/lib/annons-model";
 
 export const Route = createFileRoute("/admin/annonser/$id")({
   component: AdminAnnonsDetail,
@@ -26,14 +38,6 @@ function readOnboardingSaljare(): OnboardingSaljareData | null {
   }
 }
 
-const TAGG_FALT: { key: string; label: string }[] = [
-  { key: "usp", label: "Vad gör verksamheten unik" },
-  { key: "kundunderlag", label: "Kundunderlag" },
-  { key: "laget", label: "Läget" },
-  { key: "potential", label: "Utvecklingsmöjligheter" },
-  { key: "anledning", label: "Anledning till försäljning" },
-];
-
 const GRUPP_NAMN: Record<string, string> = {
   Kontor: "Kontor",
   Butik: "Butik",
@@ -44,27 +48,51 @@ const GRUPP_NAMN: Record<string, string> = {
 
 type GruppFalt = { key: string; label: string; isTags?: boolean };
 
+// Måste spegla de fält säljaren faktiskt fyller i per verksamhetstyp
+// (KontorFalt/ButikFalt/LagerFalt/ServeringFalt/FrisorFalt i annons-model.ts
+// och motsvarande *Faltgrupp-komponenter i saljare.skapa-annons.tsx).
+// Om ett fält läggs till i någon av de typerna, måste det läggas till här
+// också — annars visas det aldrig för TreLink.
 const GRUPP_FALT: Record<string, GruppFalt[]> = {
   Kontor: [
-    { key: "taggar", label: "Taggar (läge/interiör/planlösning/ekonomi/teknisk info)", isTags: true },
+    { key: "lage", label: "Läge", isTags: true },
+    { key: "interior", label: "Interiör/stil", isTags: true },
+    { key: "planlosning", label: "Planlösning", isTags: true },
+    { key: "ekonomi", label: "Ekonomi", isTags: true },
+    { key: "taggar", label: "Teknisk info", isTags: true },
     { key: "beskrivning", label: "Övrig info" },
   ],
   Butik: [
-    { key: "taggar", label: "Taggar (läge/interiör/planlösning/ekonomi/teknisk info)", isTags: true },
+    { key: "lage", label: "Läge", isTags: true },
+    { key: "interior", label: "Interiör/stil", isTags: true },
+    { key: "planlosning", label: "Planlösning", isTags: true },
+    { key: "ekonomi", label: "Ekonomi", isTags: true },
+    { key: "taggar", label: "Teknisk info", isTags: true },
     { key: "beskrivning", label: "Övrig info" },
   ],
   Lager: [
-    { key: "taggar", label: "Taggar (läge/interiör/planlösning/ekonomi/teknisk info)", isTags: true },
+    { key: "lage", label: "Läge", isTags: true },
+    { key: "interior", label: "Interiör/stil", isTags: true },
+    { key: "planlosning", label: "Planlösning", isTags: true },
+    { key: "ekonomi", label: "Ekonomi", isTags: true },
+    { key: "taggar", label: "Teknisk info", isTags: true },
     { key: "beskrivning", label: "Övrig info" },
   ],
   Frisor: [
     { key: "underrubrik", label: "Typ av verksamhet" },
-    { key: "taggar", label: "Taggar (läge/interiör/planlösning/ekonomi)", isTags: true },
+    { key: "lage", label: "Läge", isTags: true },
+    { key: "interior", label: "Interiör/stil", isTags: true },
+    { key: "planlosning", label: "Planlösning", isTags: true },
+    { key: "ekonomi", label: "Ekonomi", isTags: true },
+    { key: "antalStolar", label: "Antal stolar" },
     { key: "beskrivning", label: "Övrig info" },
   ],
   Servering: [
     { key: "underrubrik", label: "Typ av verksamhet" },
-    { key: "taggar", label: "Taggar (läge/interiör/planlösning/ekonomi)", isTags: true },
+    { key: "lage", label: "Läge", isTags: true },
+    { key: "interior", label: "Interiör och skick", isTags: true },
+    { key: "planlosning", label: "Planlösning", isTags: true },
+    { key: "ekonomi", label: "Ekonomi", isTags: true },
     { key: "typAvKok", label: "Köksteknik", isTags: true },
     { key: "utvecklingsmojlighet", label: "Utvecklingsmöjlighet", isTags: true },
     { key: "anledningTillForsaljning", label: "Anledning till försäljning", isTags: true },
@@ -72,6 +100,62 @@ const GRUPP_FALT: Record<string, GruppFalt[]> = {
     { key: "ovrigInfo", label: "Övrig info" },
   ],
 };
+
+// Kompileringstidsskydd: om ett fält läggs till i någon *Falt-typ i
+// annons-model.ts men glöms bort här, misslyckas `satisfies`-kontrollen nedan.
+const FALT_TYPE_KEYS: Record<string, string[]> = {
+  Kontor: Object.keys(
+    { lage: "", interior: "", planlosning: "", ekonomi: "", taggar: "", beskrivning: "" } satisfies KontorFalt,
+  ),
+  Butik: Object.keys(
+    { lage: "", interior: "", planlosning: "", ekonomi: "", taggar: "", beskrivning: "" } satisfies ButikFalt,
+  ),
+  Lager: Object.keys(
+    { lage: "", interior: "", planlosning: "", ekonomi: "", taggar: "", beskrivning: "" } satisfies LagerFalt,
+  ),
+  Frisor: Object.keys(
+    {
+      underrubrik: "",
+      lage: "",
+      interior: "",
+      planlosning: "",
+      ekonomi: "",
+      antalStolar: "",
+      taggar: "",
+      beskrivning: "",
+    } satisfies FrisorFalt,
+  ),
+  Servering: Object.keys(
+    {
+      underrubrik: "",
+      lage: "",
+      interior: "",
+      planlosning: "",
+      ekonomi: "",
+      koksutrustning: "",
+      alkoholtillstand: "",
+      utvecklingsmojlighet: "",
+      anledningTillForsaljning: "",
+      taggar: "",
+      typAvKok: "",
+      skickILokal: "",
+      myndighetskrav: "",
+      ovrigInfo: "",
+    } satisfies ServeringFalt,
+  ),
+};
+
+if (import.meta.env.DEV) {
+  for (const [grupp, keys] of Object.entries(FALT_TYPE_KEYS)) {
+    const mapped = new Set((GRUPP_FALT[grupp] ?? []).map((f) => f.key));
+    const missing = keys.filter((k) => !mapped.has(k));
+    if (missing.length > 0) {
+      console.warn(
+        `[admin.annonser.$id] GRUPP_FALT.${grupp} saknar fält som finns i annons-model.ts men aldrig visas för TreLink: ${missing.join(", ")}`,
+      );
+    }
+  }
+}
 
 function groupForTyp(typ: string): string | undefined {
   return Object.keys(FALTGRUPP_TYPER).find((g) => FALTGRUPP_TYPER[g].includes(typ));
@@ -187,10 +271,13 @@ function AdminAnnonsDetail() {
         onboarding.firmatecknare.mobil
       ));
   const grundOk = !!(draft.yta && draft.verksamhet);
-  const taggFaltValues = TAGG_FALT.map((f) => draft[f.key]);
-  const taggarOk = taggFaltValues.every(Boolean);
   const typFaltOk =
-    valdaGrupper.length > 0 && valdaGrupper.every((g) => !!draft.typFalt?.[g]?.taggar);
+    valdaGrupper.length > 0 &&
+    valdaGrupper.every((g) =>
+      GRUPP_FALT[g]
+        .filter((f) => f.isTags)
+        .every((f) => !!draft.typFalt?.[g]?.[f.key]),
+    );
   const hyresvardOk = !!(draft.hyresvardNamn && draft.hyresvardEmail && draft.hyresvardTel);
   const paketOk = !!(item?.cat || draft.cat);
   const docsMissing = stats.obligatoriskaTotal - stats.obligatoriskaOk;
@@ -201,7 +288,6 @@ function AdminAnnonsDetail() {
     { label: "Firmatecknare", ok: firmatecknareOk },
     { label: "Grunduppgifter", ok: grundOk },
     { label: "Verksamhetstyp", ok: typFaltOk },
-    { label: "Taggar", ok: taggarOk },
     { label: docsMissing > 0 ? `${docsMissing} dokument saknas` : "Dokument", ok: docsMissing === 0 },
     { label: "Hyresvärd", ok: hyresvardOk },
     { label: "Paket", ok: paketOk },
@@ -555,14 +641,6 @@ function AdminAnnonsDetail() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field k="Yta" v={draft.yta ? `${draft.yta} m²` : undefined} />
             <Field k="Verksamhetstyp" v={draft.verksamhet} />
-          </div>
-        </WireBox>
-
-        <WireBox label="Taggar & underlag">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {TAGG_FALT.map((f) => (
-              <Field key={f.key} k={f.label} v={draft[f.key]} />
-            ))}
           </div>
         </WireBox>
 

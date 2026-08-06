@@ -1533,8 +1533,8 @@ function KontorFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={KONTOR_TAGGAR_LAGE}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.lage}
+              onChange={(v) => onChange("lage", v)}
             />
           </div>
         </div>
@@ -1545,8 +1545,8 @@ function KontorFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={KONTOR_TAGGAR_INTERIOR}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.interior}
+              onChange={(v) => onChange("interior", v)}
             />
           </div>
         </div>
@@ -1557,8 +1557,8 @@ function KontorFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={KONTOR_TAGGAR_PLANLOSNING}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.planlosning}
+              onChange={(v) => onChange("planlosning", v)}
             />
           </div>
         </div>
@@ -1569,8 +1569,8 @@ function KontorFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={KONTOR_TAGGAR_EKONOMI}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.ekonomi}
+              onChange={(v) => onChange("ekonomi", v)}
             />
           </div>
         </div>
@@ -1649,8 +1649,8 @@ function ButikFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={BUTIK_TAGGAR_LAGE}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.lage}
+              onChange={(v) => onChange("lage", v)}
             />
           </div>
         </div>
@@ -1661,8 +1661,8 @@ function ButikFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={BUTIK_TAGGAR_INTERIOR}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.interior}
+              onChange={(v) => onChange("interior", v)}
             />
           </div>
         </div>
@@ -1673,8 +1673,8 @@ function ButikFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={BUTIK_TAGGAR_PLANLOSNING}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.planlosning}
+              onChange={(v) => onChange("planlosning", v)}
             />
           </div>
         </div>
@@ -1685,8 +1685,8 @@ function ButikFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={BUTIK_TAGGAR_EKONOMI}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.ekonomi}
+              onChange={(v) => onChange("ekonomi", v)}
             />
           </div>
         </div>
@@ -1765,8 +1765,8 @@ function LagerFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={LAGER_TAGGAR_LAGE}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.lage}
+              onChange={(v) => onChange("lage", v)}
             />
           </div>
         </div>
@@ -1777,8 +1777,8 @@ function LagerFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={LAGER_TAGGAR_INTERIOR}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.interior}
+              onChange={(v) => onChange("interior", v)}
             />
           </div>
         </div>
@@ -1789,8 +1789,8 @@ function LagerFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={LAGER_TAGGAR_PLANLOSNING}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.planlosning}
+              onChange={(v) => onChange("planlosning", v)}
             />
           </div>
         </div>
@@ -1801,8 +1801,8 @@ function LagerFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={LAGER_TAGGAR_EKONOMI}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.ekonomi}
+              onChange={(v) => onChange("ekonomi", v)}
             />
           </div>
         </div>
@@ -1927,8 +1927,8 @@ function ServeringFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={SERVERING_TAGGAR_LAGE}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.lage}
+              onChange={(v) => onChange("lage", v)}
             />
           </div>
         </div>
@@ -1939,8 +1939,8 @@ function ServeringFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={SERVERING_TAGGAR_INTERIOR}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.interior}
+              onChange={(v) => onChange("interior", v)}
             />
           </div>
         </div>
@@ -1951,8 +1951,8 @@ function ServeringFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={SERVERING_TAGGAR_PLANLOSNING}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.planlosning}
+              onChange={(v) => onChange("planlosning", v)}
             />
           </div>
         </div>
@@ -1963,8 +1963,8 @@ function ServeringFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={SERVERING_TAGGAR_EKONOMI}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.ekonomi}
+              onChange={(v) => onChange("ekonomi", v)}
             />
           </div>
         </div>
@@ -2082,8 +2082,8 @@ function FrisorFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={FRISOR_TAGGAR_LAGE}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.lage}
+              onChange={(v) => onChange("lage", v)}
             />
           </div>
         </div>
@@ -2094,8 +2094,8 @@ function FrisorFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={FRISOR_TAGGAR_INTERIOR}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.interior}
+              onChange={(v) => onChange("interior", v)}
             />
           </div>
         </div>
@@ -2106,8 +2106,8 @@ function FrisorFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={FRISOR_TAGGAR_PLANLOSNING}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.planlosning}
+              onChange={(v) => onChange("planlosning", v)}
             />
           </div>
         </div>
@@ -2118,10 +2118,19 @@ function FrisorFaltgrupp({
             <TagToggleGroup
               label="Taggar"
               options={FRISOR_TAGGAR_EKONOMI}
-              value={falt.taggar}
-              onChange={(v) => onChange("taggar", v)}
+              value={falt.ekonomi}
+              onChange={(v) => onChange("ekonomi", v)}
             />
           </div>
+        </div>
+
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <WireFieldEditable
+            label="Antal stolar"
+            value={falt.antalStolar}
+            onChange={(v) => onChange("antalStolar", v)}
+            placeholder="4"
+          />
         </div>
 
         <div className="border-t border-dashed border-muted-foreground/30 pt-4">
@@ -2129,7 +2138,7 @@ function FrisorFaltgrupp({
             label="Övrig info"
             value={falt.beskrivning}
             onChange={(v) => onChange("beskrivning", v)}
-            placeholder="T.ex. antal stolar/arbetsplatser, om man kan hyra ut en stol/rum."
+            placeholder="T.ex. om man kan hyra ut en stol/rum."
             maxLength={140}
           />
         </div>
