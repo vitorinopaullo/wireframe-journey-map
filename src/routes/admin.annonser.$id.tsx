@@ -215,6 +215,7 @@ function AdminAnnonsDetail() {
   const [rejectOpen, setRejectOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [rejectNote, setRejectNote] = useState("");
+  const [prisInput, setPrisInput] = useState("");
 
   useEffect(() => {
     setItem(getAnnons(id) ?? null);
@@ -246,6 +247,8 @@ function AdminAnnonsDetail() {
   const st: WorkflowState | null = item?.workflow?.state ?? null;
   const canApprove =
     st === "granskas" && stats.obligatoriskaTotal > 0 && stats.obligatoriskaOk === stats.obligatoriskaTotal && stats.kompl === 0;
+  const prisValid = prisInput.trim() !== "" && Number(prisInput) > 0;
+  const canApproveMedPris = canApprove && prisValid;
 
   const valdaGrupper = Array.from(
     new Set(
@@ -334,13 +337,19 @@ function AdminAnnonsDetail() {
   };
 
   const approveAnnons = () => {
-    if (!canApprove) return;
+    if (!canApproveMedPris) return;
+    const prisFormaterat = Number(prisInput).toLocaleString("sv-SE");
     patchAnnons(id, (it) => {
       const now = new Date().toISOString();
       return {
         ...it,
+        pris: prisFormaterat,
         workflow: logEntry(
-          logEntry({ ...it.workflow, state: "avtal-vantar-signering", avtalSentAt: now }, "TreLink", "Godkände annonsen"),
+          logEntry(
+            { ...it.workflow, state: "avtal-vantar-signering", avtalSentAt: now },
+            "TreLink",
+            `Godkände annonsen · Pris satt till ${prisFormaterat} kr`,
+          ),
           "System",
           "Uppdragsavtal skickat till säljaren via e-post (Signicat-länk)",
         ),
@@ -448,17 +457,36 @@ function AdminAnnonsDetail() {
               Avvisa annons
             </WireBtn>
             <button
-              disabled={!canApprove}
+              disabled={!canApproveMedPris}
               onClick={approveAnnons}
               className={`border px-4 py-2 text-sm font-medium ${
-                canApprove
+                canApproveMedPris
                   ? "border-foreground bg-foreground text-background hover:opacity-80"
                   : "border-muted-foreground/30 bg-muted/30 text-muted-foreground cursor-not-allowed"
               }`}
             >
-              {canApprove ? "Godkänn annons →" : "Godkänn annons (lås upp först)"}
+              {canApproveMedPris ? "Godkänn annons →" : "Godkänn annons (lås upp först)"}
             </button>
           </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-end gap-3 border-t border-dashed border-foreground/20 pt-3">
+          <label className="block">
+            <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              Sätt pris (kr)
+            </span>
+            <input
+              type="number"
+              min="0"
+              value={prisInput}
+              onChange={(e) => setPrisInput(e.target.value)}
+              placeholder="1 200 000"
+              className="h-9 w-48 border border-foreground/40 bg-background px-3 text-sm"
+            />
+          </label>
+          <span className="max-w-xs text-xs text-muted-foreground">
+            TreLink sätter priset baserat på underlaget — detta blir det pris köpare ser.
+          </span>
         </div>
       </div>
 
