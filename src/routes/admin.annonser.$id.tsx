@@ -218,10 +218,21 @@ function AdminAnnonsDetail() {
   const [rejectNote, setRejectNote] = useState("");
   const [prisInput, setPrisInput] = useState("");
   const [mailPreview, setMailPreview] = useState<MailData | null>(null);
+  const [utkastRubrik, setUtkastRubrik] = useState("");
+  const [utkastBeskrivning, setUtkastBeskrivning] = useState("");
+  const [utkastPris, setUtkastPris] = useState("");
 
   useEffect(() => {
     setItem(getAnnons(id) ?? null);
   }, [id, tick]);
+
+  useEffect(() => {
+    if (!item) return;
+    setUtkastRubrik((prev) => prev || item.workflow?.utkast?.rubrik || "");
+    setUtkastBeskrivning((prev) => prev || item.workflow?.utkast?.beskrivning || "");
+    setUtkastPris((prev) => prev || item.workflow?.utkast?.pris || item.pris || "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item?.id]);
 
   const refresh = () => setTick((t) => t + 1);
 
@@ -399,6 +410,28 @@ function AdminAnnonsDetail() {
     refresh();
   };
 
+  const sendDraftToSeller = () => {
+    if (!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()) return;
+    patchAnnons(id, (it) => ({
+      ...it,
+      workflow: logEntry(
+        {
+          ...it.workflow,
+          state: "utkast-till-saljare",
+          utkast: {
+            rubrik: utkastRubrik,
+            beskrivning: utkastBeskrivning,
+            pris: utkastPris,
+            sentAt: new Date().toISOString(),
+          },
+        },
+        "TreLink",
+        "Annonstextutkast skickat för granskning",
+      ),
+    }));
+    refresh();
+  };
+
   const cat = cats.find((c) => c.id === (item.cat ?? draft.cat));
 
   const sellerEpost = sellerAccount?.profil?.epost || onboarding?.saljaruppgifter.epost || "—";
@@ -412,6 +445,14 @@ function AdminAnnonsDetail() {
         till: sellerEpost,
         amne: `Uppdragsavtal för signering — ${item.titel}`,
         brodtext: `Hej ${sellerFornamn || "där"},\n\nTreLink har granskat och godkänt ditt objekt "${item.titel}". Uppdragsavtalet väntar på din signatur — logga in på TreLink för att granska och signera via Signicat.\n\nGodkänt pris: ${item.pris || "—"} kr\nAvgift: ${cat ? `${cat.avgift}${item.premium ? " + 2 500 kr (premium-tillägg)" : ""}` : "—"}\n\nMed vänliga hälsningar,\nTreLink`,
+      };
+    }
+    if (text === "Annonstextutkast skickat för granskning") {
+      return {
+        fran: "TreLink <redaktion@trelink.se>",
+        till: sellerEpost,
+        amne: `Ditt annonsutkast är klart för granskning — ${item.titel}`,
+        brodtext: `Hej ${sellerFornamn || "där"},\n\nVi har skrivit annonstexten för "${item.titel}" baserat på ditt underlag. Logga in på TreLink för att förhandsgranska texten som köpare ser den — godkänn eller lämna feedback.\n\nMed vänliga hälsningar,\nTreLink`,
       };
     }
     return null;
@@ -566,6 +607,67 @@ function AdminAnnonsDetail() {
                 Avvisa & meddela säljare
               </button>
             </div>
+          </div>
+        </WireBox>
+      )}
+
+      {(st === "hyresvard-notifiering" || st === "utkast-feedback") && (
+        <WireBox label="Skriv annonstext" className="mb-6">
+          {st === "utkast-feedback" && item.workflow?.saljareFeedback && (
+            <div className="mb-4 border-l-2 border-amber-500/70 bg-amber-50/60 px-3 py-2 dark:bg-amber-500/10">
+              <Annotation>Säljarens feedback</Annotation>
+              <p className="mt-1 text-sm">{item.workflow.saljareFeedback.msg}</p>
+            </div>
+          )}
+          <div className="space-y-4">
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Rubrik
+              </span>
+              <input
+                type="text"
+                value={utkastRubrik}
+                onChange={(e) => setUtkastRubrik(e.target.value)}
+                placeholder="T.ex. Välskött café i centrala Stockholm"
+                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Beskrivning
+              </span>
+              <textarea
+                value={utkastBeskrivning}
+                onChange={(e) => setUtkastBeskrivning(e.target.value)}
+                rows={6}
+                placeholder="Skriv annonstexten baserat på säljarens underlag…"
+                className="w-full border border-foreground/40 bg-background px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Pris (kr)
+              </span>
+              <input
+                type="text"
+                value={utkastPris}
+                onChange={(e) => setUtkastPris(e.target.value)}
+                className="h-10 w-48 border border-foreground/40 bg-background px-3 text-sm"
+              />
+            </label>
+          </div>
+          <div className="mt-4">
+            <button
+              disabled={!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()}
+              onClick={sendDraftToSeller}
+              className={`border px-4 py-2 text-sm font-medium ${
+                utkastRubrik.trim() && utkastBeskrivning.trim() && utkastPris.trim()
+                  ? "border-foreground bg-foreground text-background hover:opacity-80"
+                  : "border-muted-foreground/30 bg-muted/30 text-muted-foreground cursor-not-allowed"
+              }`}
+            >
+              Skicka utkast till säljaren →
+            </button>
           </div>
         </WireBox>
       )}

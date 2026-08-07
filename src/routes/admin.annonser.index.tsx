@@ -80,10 +80,38 @@ function StatusTag({ status }: { status: WorkflowState | null }) {
   );
 }
 
+type TabId = "granskning" | "signering" | "text" | "godkannande" | "publicerad" | "avvisad";
+
+const TABS: { id: TabId; label: string; states: (WorkflowState | null)[] }[] = [
+  { id: "granskning", label: "Att granska", states: ["granskas", "komplettering", null] },
+  { id: "signering", label: "Väntar på signering", states: ["avtal-vantar-signering"] },
+  { id: "text", label: "Redo att skriva text", states: ["hyresvard-notifiering"] },
+  { id: "godkannande", label: "Väntar på godkännande", states: ["utkast-till-saljare", "utkast-feedback"] },
+  { id: "publicerad", label: "Publicerade", states: ["publicerad"] },
+  { id: "avvisad", label: "Avvisade", states: ["avvisad"] },
+];
+
+function tabForStatus(status: WorkflowState | null): TabId {
+  return TABS.find((t) => t.states.includes(status))?.id ?? "granskning";
+}
+
+function defaultTab(rows: Row[]): TabId {
+  const counts = new Map<TabId, number>();
+  for (const r of rows) {
+    const tab = tabForStatus(r.status);
+    counts.set(tab, (counts.get(tab) ?? 0) + 1);
+  }
+  if ((counts.get("granskning") ?? 0) > 0) return "granskning";
+  if ((counts.get("text") ?? 0) > 0) return "text";
+  const firstWithContent = TABS.find((t) => (counts.get(t.id) ?? 0) > 0);
+  return firstWithContent?.id ?? "granskning";
+}
+
 function AdminAnnonser() {
   const navigate = useNavigate();
   const [rows, setRows] = useState<Row[]>(() => toRows(readAnnonser()));
   const [justUpdatedId, setJustUpdatedId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabId>(() => defaultTab(toRows(readAnnonser())));
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
@@ -110,13 +138,33 @@ function AdminAnnonser() {
         subtitle="Alla ärenden som skickats in via säljarflödet, sorterade efter senast inkommen."
       />
 
+      <div className="mb-4 flex flex-wrap gap-2">
+        {TABS.map((t) => {
+          const count = rows.filter((r) => tabForStatus(r.status) === t.id).length;
+          const active = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider ${
+                active
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-foreground/40 text-muted-foreground hover:border-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label} ({count})
+            </button>
+          );
+        })}
+      </div>
+
       <div className="space-y-3">
-        {rows.length === 0 && (
+        {rows.filter((r) => tabForStatus(r.status) === activeTab).length === 0 && (
           <WireBox variant="dashed">
-            <Annotation>Inga ärenden inkomna än.</Annotation>
+            <Annotation>Inga ärenden i denna flik.</Annotation>
           </WireBox>
         )}
-        {rows.map((r) => (
+        {rows.filter((r) => tabForStatus(r.status) === activeTab).map((r) => (
           <div
             key={r.id}
             onClick={() => navigate({ to: "/admin/annonser/$id", params: { id: r.id } })}
@@ -131,6 +179,11 @@ function AdminAnnonser() {
                 <div className="mb-1 flex flex-wrap items-center gap-2">
                   <WireTag>{r.kat}</WireTag>
                   <StatusTag status={r.status} />
+                  {r.status === "hyresvard-notifiering" && (
+                    <span className="inline-flex items-center border border-foreground bg-foreground px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-background">
+                      Redo att skriva annonstext
+                    </span>
+                  )}
                   <span className="font-mono text-[10px] text-muted-foreground">#{r.id}</span>
                   {justUpdatedId === r.id && (
                     <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
