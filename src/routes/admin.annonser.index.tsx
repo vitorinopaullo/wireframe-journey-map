@@ -80,6 +80,39 @@ function StatusTag({ status }: { status: WorkflowState | null }) {
   );
 }
 
+type NextActor = "trelink" | "saljare" | null;
+
+const NEXT_ACTOR: Record<WorkflowState, NextActor> = {
+  granskas: "trelink",
+  komplettering: "trelink",
+  "hyresvard-notifiering": "trelink",
+  "avtal-vantar-signering": "saljare",
+  "utkast-till-saljare": "saljare",
+  "utkast-feedback": "trelink",
+  publicerad: null,
+  avvisad: null,
+};
+
+function NextActorTag({ status }: { status: WorkflowState | null }) {
+  if (!status) return null;
+  const actor = NEXT_ACTOR[status];
+  if (!actor) return null;
+  if (actor === "trelink") {
+    return (
+      <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground">
+        <span className="inline-block h-2 w-2 rounded-full bg-foreground" />
+        TreLink
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+      <span className="inline-block h-2 w-2 rounded-full border border-foreground/50 bg-background" />
+      Säljare
+    </span>
+  );
+}
+
 type TabId = "granskning" | "signering" | "text" | "godkannande" | "publicerad" | "avvisad";
 
 const TABS: { id: TabId; label: string; states: (WorkflowState | null)[] }[] = [
@@ -179,6 +212,7 @@ function AdminAnnonser() {
                 <div className="mb-1 flex flex-wrap items-center gap-2">
                   <WireTag>{r.kat}</WireTag>
                   <StatusTag status={r.status} />
+                  <NextActorTag status={r.status} />
                   {r.status === "hyresvard-notifiering" && (
                     <span className="inline-flex items-center border border-foreground bg-foreground px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-background">
                       Redo att skriva annonstext
