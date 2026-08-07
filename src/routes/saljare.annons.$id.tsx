@@ -7,6 +7,7 @@ import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/
 import { SignicatFlow } from "@/components/SignicatFlow";
 import { AnnonsPreviewOverlay } from "@/components/AnnonsPreviewOverlay";
 import { ContractExpiryCountdown } from "@/components/ContractExpiryBanner";
+import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import {
   getAnnons,
   logEntry,
@@ -93,6 +94,7 @@ function SellerAnnonsDetail() {
   const [kompletteringFiles, setKompletteringFiles] = useState<string[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [onboarding, setOnboarding] = useState<OnboardingSaljareData | null>(null);
+  const [mailPreview, setMailPreview] = useState<MailData | null>(null);
 
   useEffect(() => {
     try {
@@ -175,8 +177,10 @@ function SellerAnnonsDetail() {
       }
       if (target === "hyresvard-notifiering") {
         const m1 = "Uppdragsavtal signerat av säljaren";
+        const m1b = "Bekräftelsemejl skickat till dig: Uppdragsavtal signerat";
         const m2 = "Informationsmejl skickat till hyresvärden";
         if (!hasText(m1)) nwf = logEntry(nwf, "System", m1);
+        if (!hasText(m1b)) nwf = logEntry(nwf, "System", m1b);
         if (!hasText(m2)) nwf = logEntry(nwf, "TreLink", m2);
         nwf.avtalSignedAt = nwf.avtalSignedAt ?? new Date().toISOString();
         nwf.hyresvardNotifieradAt = nwf.hyresvardNotifieradAt ?? new Date().toISOString();
@@ -232,6 +236,7 @@ function SellerAnnonsDetail() {
         hyresvardNotifieradAt: now,
       };
       nwf = logEntry(nwf, "Säljare", "Uppdragsavtal signerat");
+      nwf = logEntry(nwf, "System", "Bekräftelsemejl skickat till dig: Uppdragsavtal signerat");
       nwf = logEntry(nwf, "TreLink", "Informationsmejl skickat till hyresvärden");
       return { ...it, workflow: nwf };
     });
@@ -291,6 +296,47 @@ function SellerAnnonsDetail() {
     ? `${onboarding.saljaruppgifter.fornamn} ${onboarding.saljaruppgifter.efternamn}`
     : undefined;
   const avtalFirmatecknareRoll = onboarding?.firmatecknare?.roll || "Firmatecknare";
+
+  const sellerEpost = onboarding?.saljaruppgifter.epost || "—";
+  const sellerFornamn = onboarding?.saljaruppgifter.fornamn || "";
+  const hyresvardEpost = item.draft?.hyresvardEmail || "—";
+
+  // Mappar en loggad tidslinjetext till innehållet i det (simulerade) mail som skickades då.
+  function mailForLogEntry(text: string): MailData | null {
+    if (text === "Bekräftelsemejl skickat till dig: Uppdragsavtal signerat") {
+      return {
+        fran: "TreLink <avtal@trelink.se>",
+        till: sellerEpost,
+        amne: `Bekräftelse: uppdragsavtal signerat — ${item.titel}`,
+        brodtext: `Hej ${sellerFornamn || "där"},\n\nVi bekräftar att uppdragsavtalet för "${item.titel}" nu är signerat. Nästa steg är att vi kontaktar din hyresvärd med information om den påbörjade processen.\n\nMed vänliga hälsningar,\nTreLink`,
+      };
+    }
+    if (text === "Informationsmejl skickat till hyresvärden") {
+      return {
+        fran: "TreLink <info@trelink.se>",
+        till: hyresvardEpost,
+        amne: `Information: pågående lokalöverlåtelse — ${item.titel}`,
+        brodtext: `Hej,\n\nVi vill informera om att en process för överlåtelse av lokalen "${item.titel}" har påbörjats via TreLink. Ni behöver inte agera i detta skede — vid en eventuell affär återkommer vi för godkännande av ny hyresgäst innan tillträde.\n\nMed vänliga hälsningar,\nTreLink`,
+      };
+    }
+    if (text === "Annonstextutkast skickat för granskning") {
+      return {
+        fran: "TreLink <redaktion@trelink.se>",
+        till: sellerEpost,
+        amne: `Ditt annonsutkast är klart för granskning — ${item.titel}`,
+        brodtext: `Hej ${sellerFornamn || "där"},\n\nVi har skrivit annonstexten för "${item.titel}" baserat på ditt underlag. Logga in på TreLink för att förhandsgranska texten som köpare ser den — godkänn eller lämna feedback.\n\nMed vänliga hälsningar,\nTreLink`,
+      };
+    }
+    if (text === "Bekräftelsemejl skickat till säljaren") {
+      return {
+        fran: "TreLink <no-reply@trelink.se>",
+        till: sellerEpost,
+        amne: `Din annons är nu publicerad — ${item.titel}`,
+        brodtext: `Hej ${sellerFornamn || "där"},\n\nGrattis! Din annons "${item.titel}" är nu live på trelink.se. Du kan följa intresseanmälningar och affärens status direkt i din TreLink-panel.\n\nMed vänliga hälsningar,\nTreLink`,
+      };
+    }
+    return null;
+  }
 
   return (
     <AppLayout mode="saljare">
@@ -790,19 +836,25 @@ function SellerAnnonsDetail() {
         <div>
           <WireBox label="Ärendehistorik · synlig för dig & TreLink">
             <ul className="mt-1 max-h-[400px] overflow-y-auto space-y-3 pr-1">
-              {(wf.timeline ?? []).map((l, i) => (
-                <li key={i} className="border-l-2 border-foreground/40 pl-3">
-                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                    {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
-                  </div>
-                  <div className="text-sm">{l.text}</div>
-                </li>
-              ))}
+              {(wf.timeline ?? []).map((l, i) => {
+                const mail = mailForLogEntry(l.text);
+                return (
+                  <li key={i} className="border-l-2 border-foreground/40 pl-3">
+                    <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
+                    </div>
+                    <div className="text-sm">{l.text}</div>
+                    {mail && <VisaMailLank onClick={() => setMailPreview(mail)} />}
+                  </li>
+                );
+              })}
             </ul>
           </WireBox>
           <ContractExpiryCountdown daysLive={80} signedAt={wf?.avtalSignedAt} />
         </div>
       </div>
+
+      <MailPreview open={!!mailPreview} mail={mailPreview} onClose={() => setMailPreview(null)} />
 
       {showLandlordUpdate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">

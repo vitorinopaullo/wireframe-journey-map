@@ -4,6 +4,7 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getAnnons, patchAnnons, logEntry, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
 import { readAdminAccounts } from "@/lib/mock-auth";
+import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import {
   cats,
   docsByCat,
@@ -216,6 +217,7 @@ function AdminAnnonsDetail() {
   const [rejectReason, setRejectReason] = useState("");
   const [rejectNote, setRejectNote] = useState("");
   const [prisInput, setPrisInput] = useState("");
+  const [mailPreview, setMailPreview] = useState<MailData | null>(null);
 
   useEffect(() => {
     setItem(getAnnons(id) ?? null);
@@ -398,6 +400,22 @@ function AdminAnnonsDetail() {
   };
 
   const cat = cats.find((c) => c.id === (item.cat ?? draft.cat));
+
+  const sellerEpost = sellerAccount?.profil?.epost || onboarding?.saljaruppgifter.epost || "—";
+  const sellerFornamn = sellerAccount?.bankid.fornamn || onboarding?.saljaruppgifter.fornamn || "";
+
+  // Mappar en loggad tidslinjetext till innehållet i det (simulerade) mail som skickades då.
+  function mailForLogEntry(text: string): MailData | null {
+    if (text === "Uppdragsavtal skickat till säljaren via e-post (Signicat-länk)") {
+      return {
+        fran: "TreLink <avtal@trelink.se>",
+        till: sellerEpost,
+        amne: `Uppdragsavtal för signering — ${item.titel}`,
+        brodtext: `Hej ${sellerFornamn || "där"},\n\nTreLink har granskat och godkänt ditt objekt "${item.titel}". Uppdragsavtalet väntar på din signatur — logga in på TreLink för att granska och signera via Signicat.\n\nGodkänt pris: ${item.pris || "—"} kr\nAvgift: ${cat ? `${cat.avgift}${item.premium ? " + 2 500 kr (premium-tillägg)" : ""}` : "—"}\n\nMed vänliga hälsningar,\nTreLink`,
+      };
+    }
+    return null;
+  }
 
   return (
     <AdminLayout>
@@ -723,14 +741,18 @@ function AdminAnnonsDetail() {
         <div className="space-y-4">
           <WireBox label="Beslutslogg · synlig för säljaren" className="sticky top-24">
             <ul className="space-y-3">
-              {(item.workflow?.timeline ?? []).map((l: any, i: number) => (
-                <li key={i} className="border-l-2 border-foreground/40 pl-3">
-                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                    {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
-                  </div>
-                  <div className="text-sm">{l.text}</div>
-                </li>
-              ))}
+              {(item.workflow?.timeline ?? []).map((l: any, i: number) => {
+                const mail = mailForLogEntry(l.text);
+                return (
+                  <li key={i} className="border-l-2 border-foreground/40 pl-3">
+                    <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
+                    </div>
+                    <div className="text-sm">{l.text}</div>
+                    {mail && <VisaMailLank onClick={() => setMailPreview(mail)} />}
+                  </li>
+                );
+              })}
             </ul>
             <Annotation>
               <span className="mt-3 block">↳ Inget hemligt här. Säljaren ser exakt samma logg i sin vy.</span>
@@ -738,6 +760,8 @@ function AdminAnnonsDetail() {
           </WireBox>
         </div>
       </div>
+
+      <MailPreview open={!!mailPreview} mail={mailPreview} onClose={() => setMailPreview(null)} />
     </AdminLayout>
   );
 }
