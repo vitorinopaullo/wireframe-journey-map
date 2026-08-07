@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getAnnons, patchAnnons, logEntry, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import { readAdminAccounts } from "@/lib/mock-auth";
 import {
   cats,
   docsByCat,
@@ -223,6 +224,9 @@ function AdminAnnonsDetail() {
 
   const draft = item?.draft ?? {};
   const onboarding = readOnboardingSaljare();
+  const sellerAccount = item?.sellerPersonnr
+    ? readAdminAccounts().find((a) => a.bankid.personnr === item.sellerPersonnr)
+    : undefined;
   const catId: CatId | undefined = draft.cat;
   const specs: DocSpec[] = catId ? docsByCat[catId] ?? [] : [];
   const docsState: Record<string, DocState> = draft.docs ?? {};
@@ -398,6 +402,27 @@ function AdminAnnonsDetail() {
         subtitle={st ? stateLabel[st] : "Status okänd"}
       />
 
+      {sellerAccount ? (
+        <Link
+          to="/admin/anvandare/$id"
+          params={{ id: sellerAccount.id }}
+          className="mb-6 inline-flex items-center gap-1.5 border border-dashed border-muted-foreground/40 px-3 py-2 text-sm hover:border-foreground"
+        >
+          <span className="text-muted-foreground">Inskickad av</span>
+          <span className="font-medium">
+            {sellerAccount.bankid.fornamn} {sellerAccount.bankid.efternamn}
+          </span>
+          {sellerAccount.profil?.bolag && (
+            <span className="text-muted-foreground">· {sellerAccount.profil.bolag}</span>
+          )}
+          <span aria-hidden>→</span>
+        </Link>
+      ) : (
+        <div className="mb-6 inline-block border border-dashed border-muted-foreground/40 px-3 py-2 text-sm text-muted-foreground">
+          Inskickad av okänt konto — ingen kontokoppling hittades.
+        </div>
+      )}
+
       {/* Sticky sammanfattning + huvudåtgärder */}
       <div className="sticky top-0 z-30 mb-6 border border-foreground/30 bg-background px-4 py-3 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -500,101 +525,19 @@ function AdminAnnonsDetail() {
       )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Dokumentlistan */}
-        <div className="lg:col-span-2 space-y-3">
-          <Annotation>Granska varje dokument separat · beslut loggas direkt</Annotation>
-          {specs.length === 0 && (
-            <WireBox variant="dashed">
-              <Annotation>Inga dokumentkrav hittades för denna annons.</Annotation>
-            </WireBox>
-          )}
-          {specs.map((d) => {
-            const state = docsState[d.name] ?? "saknas";
-            return (
-              <WireBox key={d.name}>
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="mb-1 flex flex-wrap items-center gap-2">
-                      <DocStateBadge state={state} />
-                      {d.required ? <WireTag>obligatorisk</WireTag> : <span className="font-mono text-[10px] text-muted-foreground">valfri</span>}
-                    </div>
-                    <h4 className="font-medium">{d.name}</h4>
-                    <Annotation>{d.krav}</Annotation>
-                  </div>
-                  <div className="flex shrink-0 gap-2">
-                    <WireBtn variant="ghost" className="text-xs">Förhandsgranska</WireBtn>
-                    {state !== "godkant" && (
-                      <WireBtn variant="secondary" onClick={() => approveDoc(d.name)}>Godkänn</WireBtn>
-                    )}
-                    <WireBtn variant="ghost" onClick={() => setActiveDoc(activeDoc === d.name ? null : d.name)}>
-                      Begär komplettering
-                    </WireBtn>
-                  </div>
-                </div>
+        {/* Annonsens underlag — alla sektioner visas alltid, även tomma, i samma ordning som säljaren fyller i dem */}
+        <div className="lg:col-span-2 space-y-6">
+          <Annotation>Annonsens underlag · alla sektioner visas alltid, även ofullständiga</Annotation>
 
-                {activeDoc === d.name && (
-                  <div className="mt-4 border-t border-dashed border-muted-foreground/40 pt-3">
-                    <span className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                      Snabbmallar
-                    </span>
-                    <div className="mb-3 flex flex-wrap gap-2">
-                      {kompletteringsMallar.map((m) => (
-                        <button
-                          key={m}
-                          onClick={() => setDocKomplText(m)}
-                          className="border border-dashed border-muted-foreground/50 px-2 py-1 text-left font-mono text-[10px] text-muted-foreground hover:border-foreground hover:text-foreground"
-                        >
-                          + {m.slice(0, 40)}…
-                        </button>
-                      ))}
-                    </div>
-                    <textarea
-                      value={docKomplText}
-                      onChange={(e) => setDocKomplText(e.target.value)}
-                      rows={3}
-                      placeholder="Skriv tydligt vad säljaren ska göra. Detta skickas direkt till säljaren."
-                      className="w-full border border-foreground/50 bg-background px-3 py-2 text-sm"
-                    />
-                    <div className="mt-2 flex justify-end gap-2">
-                      <WireBtn variant="ghost" onClick={() => { setActiveDoc(null); setDocKomplText(""); }}>Avbryt</WireBtn>
-                      <button
-                        disabled={!docKomplText.trim()}
-                        onClick={() => requestDocKomplettering(d.name)}
-                        className={`border px-4 py-2 text-sm font-medium ${docKomplText.trim() ? "border-foreground bg-foreground text-background hover:opacity-80" : "border-muted-foreground/30 text-muted-foreground"}`}
-                      >
-                        Skicka begäran →
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </WireBox>
-            );
-          })}
-        </div>
-
-        {/* Sidopanel: logg */}
-        <div className="space-y-4">
-          <WireBox label="Beslutslogg · synlig för säljaren">
-            <ul className="space-y-3">
-              {(item.workflow?.timeline ?? []).map((l: any, i: number) => (
-                <li key={i} className="border-l-2 border-foreground/40 pl-3">
-                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                    {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
-                  </div>
-                  <div className="text-sm">{l.text}</div>
-                </li>
-              ))}
-            </ul>
-            <Annotation>
-              <span className="mt-3 block">↳ Inget hemligt här. Säljaren ser exakt samma logg i sin vy.</span>
-            </Annotation>
-          </WireBox>
-        </div>
-      </div>
-
-      {/* Annonsens underlag — alla sektioner visas alltid, även tomma */}
-      <div className="mt-8 space-y-6">
-        <Annotation>Annonsens underlag · alla sektioner visas alltid, även ofullständiga</Annotation>
+          <WireBox label="Typ av lokal">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Field k="Paket" v={cat?.name} />
+            <Field
+              k="Avgift"
+              v={cat ? `${cat.avgift}${item.premium ? " + 2 500 kr (premium-tillägg)" : ""}` : undefined}
+            />
+          </div>
+        </WireBox>
 
         <WireBox label="Bolagsuppgifter">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -674,15 +617,98 @@ function AdminAnnonsDetail() {
           </div>
         </WireBox>
 
-        <WireBox label="Vald paketnivå">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field k="Paket" v={cat?.name} />
-            <Field
-              k="Avgift"
-              v={cat ? `${cat.avgift}${item.premium ? " + 2 500 kr (premium-tillägg)" : ""}` : undefined}
-            />
+        <div>
+          <Annotation>Granska varje dokument separat · beslut loggas direkt</Annotation>
+          <div className="mt-3 space-y-3">
+            {specs.length === 0 && (
+              <WireBox variant="dashed">
+                <Annotation>Inga dokumentkrav hittades för denna annons.</Annotation>
+              </WireBox>
+            )}
+            {specs.map((d) => {
+              const state = docsState[d.name] ?? "saknas";
+              return (
+                <WireBox key={d.name}>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="mb-1 flex flex-wrap items-center gap-2">
+                        <DocStateBadge state={state} />
+                        {d.required ? <WireTag>obligatorisk</WireTag> : <span className="font-mono text-[10px] text-muted-foreground">valfri</span>}
+                      </div>
+                      <h4 className="font-medium">{d.name}</h4>
+                      <Annotation>{d.krav}</Annotation>
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <WireBtn variant="ghost" className="text-xs">Förhandsgranska</WireBtn>
+                      {state !== "godkant" && (
+                        <WireBtn variant="secondary" onClick={() => approveDoc(d.name)}>Godkänn</WireBtn>
+                      )}
+                      <WireBtn variant="ghost" onClick={() => setActiveDoc(activeDoc === d.name ? null : d.name)}>
+                        Begär komplettering
+                      </WireBtn>
+                    </div>
+                  </div>
+
+                  {activeDoc === d.name && (
+                    <div className="mt-4 border-t border-dashed border-muted-foreground/40 pt-3">
+                      <span className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Snabbmallar
+                      </span>
+                      <div className="mb-3 flex flex-wrap gap-2">
+                        {kompletteringsMallar.map((m) => (
+                          <button
+                            key={m}
+                            onClick={() => setDocKomplText(m)}
+                            className="border border-dashed border-muted-foreground/50 px-2 py-1 text-left font-mono text-[10px] text-muted-foreground hover:border-foreground hover:text-foreground"
+                          >
+                            + {m.slice(0, 40)}…
+                          </button>
+                        ))}
+                      </div>
+                      <textarea
+                        value={docKomplText}
+                        onChange={(e) => setDocKomplText(e.target.value)}
+                        rows={3}
+                        placeholder="Skriv tydligt vad säljaren ska göra. Detta skickas direkt till säljaren."
+                        className="w-full border border-foreground/50 bg-background px-3 py-2 text-sm"
+                      />
+                      <div className="mt-2 flex justify-end gap-2">
+                        <WireBtn variant="ghost" onClick={() => { setActiveDoc(null); setDocKomplText(""); }}>Avbryt</WireBtn>
+                        <button
+                          disabled={!docKomplText.trim()}
+                          onClick={() => requestDocKomplettering(d.name)}
+                          className={`border px-4 py-2 text-sm font-medium ${docKomplText.trim() ? "border-foreground bg-foreground text-background hover:opacity-80" : "border-muted-foreground/30 text-muted-foreground"}`}
+                        >
+                          Skicka begäran →
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </WireBox>
+              );
+            })}
           </div>
-        </WireBox>
+          </div>
+        </div>
+
+        {/* Sidopanel: logg */}
+        <div className="space-y-4">
+          <WireBox label="Beslutslogg · synlig för säljaren" className="sticky top-24">
+            <ul className="space-y-3">
+              {(item.workflow?.timeline ?? []).map((l: any, i: number) => (
+                <li key={i} className="border-l-2 border-foreground/40 pl-3">
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
+                  </div>
+                  <div className="text-sm">{l.text}</div>
+                </li>
+              ))}
+            </ul>
+            <Annotation>
+              <span className="mt-3 block">↳ Inget hemligt här. Säljaren ser exakt samma logg i sin vy.</span>
+            </Annotation>
+          </WireBox>
+        </div>
       </div>
     </AdminLayout>
   );
