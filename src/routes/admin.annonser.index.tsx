@@ -106,14 +106,14 @@ function AdminAnnonser() {
     <AdminLayout>
       <PageHeader
         eyebrow="TreLink Admin"
-        title="Annonser"
-        subtitle="Alla annonser som skickats in via säljarflödet, sorterade efter senast inkommen."
+        title="Granskning"
+        subtitle="Alla ärenden som skickats in via säljarflödet, sorterade efter senast inkommen."
       />
 
       <div className="space-y-3">
         {rows.length === 0 && (
           <WireBox variant="dashed">
-            <Annotation>Inga annonser inkomna än.</Annotation>
+            <Annotation>Inga ärenden inkomna än.</Annotation>
           </WireBox>
         )}
         {rows.map((r) => (

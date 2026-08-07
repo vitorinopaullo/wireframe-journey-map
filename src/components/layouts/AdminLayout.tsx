@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 const adminNav = [
   { to: "/admin", label: "Översikt" },
-  { to: "/admin/annonser", label: "Annonser" },
+  { to: "/admin/annonser", label: "Granskning" },
   { to: "/admin/kopare", label: "Köpare/Intressenter" },
   { to: "/admin/affarer", label: "Affärer/Uppdrag" },
   { to: "/admin/anvandare", label: "Användare" },

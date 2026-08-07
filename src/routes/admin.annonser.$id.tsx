@@ -297,7 +297,7 @@ function AdminAnnonsDetail() {
     return (
       <AdminLayout>
         <Link to="/admin/annonser" className="mb-4 inline-block text-xs text-muted-foreground underline hover:text-foreground">
-          ← Tillbaka till Annonser
+          ← Tillbaka till Granskning
         </Link>
         <PageHeader eyebrow="TreLink Admin" title="Annonsen kunde inte hittas" />
       </AdminLayout>
@@ -389,7 +389,7 @@ function AdminAnnonsDetail() {
   return (
     <AdminLayout>
       <Link to="/admin/annonser" className="mb-4 inline-block text-xs text-muted-foreground underline hover:text-foreground">
-        ← Tillbaka till Annonser
+        ← Tillbaka till Granskning
       </Link>
 
       <PageHeader

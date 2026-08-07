@@ -46,7 +46,7 @@ const sections = [
     color: "TreLink",
     links: [
       ["/admin", "Översikt"],
-      ["/admin/annonser", "Annonser"],
+      ["/admin/annonser", "Granskning"],
       ["/admin/kopare", "Köpare/Intressenter"],
       ["/admin/affarer", "Affärer/Uppdrag"],
       ["/admin/anvandare", "Användare"],
