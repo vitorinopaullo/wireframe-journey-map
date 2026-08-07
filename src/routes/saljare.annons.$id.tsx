@@ -15,7 +15,15 @@ import {
   type WorkflowState,
   type WorkflowData,
 } from "@/lib/annons-workflow";
+import { cats } from "@/lib/annons-model";
 
+const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
+
+type OnboardingSaljareData = {
+  bolagsuppgifter: { bolag: string; orgnr: string; ort: string; adress: string; presentation?: string };
+  saljaruppgifter: { fornamn: string; efternamn: string; mobil: string; epost: string };
+  firmatecknare: { roll: string; fornamn: string; efternamn: string; mail: string; mobil: string } | null;
+};
 
 export const Route = createFileRoute("/saljare/annons/$id")({
   component: SellerAnnonsDetail,
@@ -84,6 +92,16 @@ function SellerAnnonsDetail() {
   const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
   const [kompletteringFiles, setKompletteringFiles] = useState<string[]>([]);
   const [dragOver, setDragOver] = useState(false);
+  const [onboarding, setOnboarding] = useState<OnboardingSaljareData | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ONBOARDING_SALJARE_KEY);
+      if (raw) setOnboarding(JSON.parse(raw));
+    } catch {
+      /* noop */
+    }
+  }, []);
 
 
 
@@ -262,6 +280,17 @@ function SellerAnnonsDetail() {
     setKompletteringFiles([]);
     refresh();
   };
+
+  const avtalCat = cats.find((c) => c.id === (item.cat ?? item.draft?.cat));
+  const avtalAvgift = avtalCat
+    ? `${avtalCat.avgift}${item.premium ? " + 2 500 kr (premium-tillägg)" : ""}`
+    : undefined;
+  const avtalFirmatecknareNamn = onboarding?.firmatecknare
+    ? `${onboarding.firmatecknare.fornamn} ${onboarding.firmatecknare.efternamn}`
+    : onboarding
+    ? `${onboarding.saljaruppgifter.fornamn} ${onboarding.saljaruppgifter.efternamn}`
+    : undefined;
+  const avtalFirmatecknareRoll = onboarding?.firmatecknare?.roll || "Firmatecknare";
 
   return (
     <AppLayout mode="saljare">
@@ -528,6 +557,55 @@ function SellerAnnonsDetail() {
                   Trelink har granskat och godkänt ditt objekt. Innan vi kan gå vidare behöver du signera
                   uppdragsavtalet. Det reglerar villkoren för förmedlingsuppdraget.
                 </p>
+
+                <div className="mt-5 space-y-4 border border-foreground/30 bg-muted/10 p-4">
+                  <div>
+                    <h3 className="text-lg font-semibold">Uppdragsavtal — TreLink</h3>
+                    <Annotation>Underlag för signering · upprättas digitalt av TreLink</Annotation>
+                  </div>
+
+                  <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+                    <Annotation>Parter</Annotation>
+                    <p className="mt-1 text-sm">
+                      TreLink AB (nedan "TreLink") och {onboarding?.bolagsuppgifter.bolag || "—"}
+                      {onboarding?.bolagsuppgifter.orgnr ? ` (org.nr ${onboarding.bolagsuppgifter.orgnr})` : ""} (nedan
+                      "Uppdragsgivaren"), företrätt av {avtalFirmatecknareNamn || "—"} ({avtalFirmatecknareRoll}).
+                    </p>
+                  </div>
+
+                  <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+                    <Annotation>Objektet</Annotation>
+                    <p className="mt-1 text-sm">
+                      {item.draft?.verksamhet || "—"}
+                      {item.draft?.yta ? ` · ${item.draft.yta} m²` : ""} ·{" "}
+                      {onboarding?.bolagsuppgifter.adress || onboarding?.bolagsuppgifter.ort || "—"}
+                      {onboarding?.bolagsuppgifter.adress && onboarding?.bolagsuppgifter.ort
+                        ? `, ${onboarding.bolagsuppgifter.ort}`
+                        : ""}
+                    </p>
+                  </div>
+
+                  <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+                    <Annotation>Godkänt pris</Annotation>
+                    <p className="mt-1 text-sm">{item.pris ? `${item.pris} kr` : "—"}</p>
+                  </div>
+
+                  <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+                    <Annotation>Avgift</Annotation>
+                    <p className="mt-1 text-sm">{avtalAvgift || "—"}. Avgiften utgår endast vid genomförd affär.</p>
+                  </div>
+
+                  <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+                    <Annotation>Villkor i korthet</Annotation>
+                    <ul className="mt-2 space-y-2 text-sm">
+                      <li>· TreLink skriver annonstexten och sätter priset — Uppdragsgivaren redigerar inte publicerat innehåll.</li>
+                      <li>· Köpare är anonyma under processen (K-koder). Ingen direktkontakt sker mellan köpare och säljare.</li>
+                      <li>· UC-kontroll på köparen genomförs först efter signerat köpeavtal och inbetald handpenning.</li>
+                      <li>· TreLink granskar inkommet underlag inom 24 timmar på vardagar.</li>
+                    </ul>
+                  </div>
+                </div>
+
                 <div className="mt-4">
                   <WireBtn className="w-full" onClick={openSignicat}>
                     Öppna och signera via Signicat →
