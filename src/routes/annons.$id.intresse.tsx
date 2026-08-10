@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation, PageHeader, StatusDot } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
+import { genererateKKod, readBuyerInterests, writeBuyerInterests } from "@/lib/kopare-workflow";
 
 export const Route = createFileRoute("/annons/$id/intresse")({
   component: InterestWizard,
@@ -144,7 +145,6 @@ function InterestWizard() {
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<Draft>(TOM);
   const [savedAt, setSavedAt] = useState<number | null>(null);
-  const [skickat, setSkickat] = useState(false);
 
 
   /* ladda utkast */
@@ -204,55 +204,17 @@ function InterestWizard() {
   const skicka = () => {
     if (!alltOk) return;
     localStorage.removeItem(STORAGE_KEY);
-    setSkickat(true);
+    const interests = readBuyerInterests();
+    const interest = {
+      id: `bi-${Date.now()}`,
+      annonsId: id,
+      kKod: genererateKKod(),
+      status: "väntar-pdf" as const,
+      skapadAt: new Date().toISOString(),
+    };
+    writeBuyerInterests([...interests, interest]);
+    nav({ to: "/annons/$id/underlag", params: { id } });
   };
-
-  /* ---------- KVITTO ---------- */
-  if (skickat) {
-    return (
-      <PublicLayout>
-        <PageHeader
-          eyebrow="Intresseanmälan skickad"
-          title="Tack — vi tar det härifrån"
-          subtitle="TreLink har fått din anmälan och hör av sig inom 24 timmar."
-        />
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <WireBox label="Vad händer nu?" className="lg:col-span-2">
-            <ol className="space-y-4">
-              {[
-                ["TreLink granskar dig (UC + identitet)", "active", "~ 24 h"],
-                ["Säljaren får din anonyma profil", "pending", "1–2 dagar"],
-                ["TreLink matchar — affär startar", "pending", "3–5 dagar"],
-                ["Handpenning, signering, tillträde", "pending", "Beror på hyresvärd"],
-              ].map(([l, s, tid]) => (
-                <li key={l as string} className="flex gap-4">
-                  <StatusDot state={s as never} />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{l}</span>
-                      <span className="font-mono text-xs text-muted-foreground">{tid}</span>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </WireBox>
-          <div className="space-y-3">
-            <WireBtn to="/kopare/affarer" className="w-full">
-              Till mina affärer →
-            </WireBtn>
-            <WireBtn variant="secondary" to="/" className="w-full">
-              Fortsätt bläddra
-            </WireBtn>
-            <WireBox variant="ghost">
-              <Annotation>Referens</Annotation>
-              <p className="mt-1 font-mono text-sm">INT-{id}-{Date.now().toString().slice(-5)}</p>
-            </WireBox>
-          </div>
-        </div>
-      </PublicLayout>
-    );
-  }
 
   /* ---------- WIZARD ---------- */
   return (

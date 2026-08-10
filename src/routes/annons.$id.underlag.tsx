@@ -1,0 +1,123 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { PublicLayout } from "@/components/layouts/PublicLayout";
+import { WireBox, WireBtn, Annotation, PageHeader } from "@/components/wire";
+import { useIsAuthed } from "@/hooks/use-session";
+import { readBuyerInterests, patchBuyerInterest, type BuyerInterest } from "@/lib/kopare-workflow";
+
+export const Route = createFileRoute("/annons/$id/underlag")({
+  component: UnderlagsGranskning,
+});
+
+function UnderlagsGranskning() {
+  const { id } = Route.useParams();
+  const nav = useNavigate();
+  const isAuthed = useIsAuthed();
+
+  useEffect(() => {
+    if (isAuthed === false) {
+      nav({ to: "/logga-in", search: { next: `/annons/${id}/underlag` } });
+    }
+  }, [isAuthed, id, nav]);
+
+  const [interest, setInterest] = useState<BuyerInterest | undefined>(() =>
+    getLatestInterestForAnnons(id),
+  );
+  const [pdfOppnad, setPdfOppnad] = useState(false);
+
+  if (!interest) {
+    return (
+      <PublicLayout>
+        <PageHeader eyebrow="Underlag" title="Ingen intresseanmälan hittad" />
+        <WireBox variant="dashed">
+          <Annotation>Du behöver skicka en intresseanmälan för denna annons först.</Annotation>
+        </WireBox>
+        <WireBtn to="/annons/$id" params={{ id }} className="mt-4">
+          ← Till annonsen
+        </WireBtn>
+      </PublicLayout>
+    );
+  }
+
+  const besluta = (status: "vill-ga-vidare" | "avböjt") => {
+    patchBuyerInterest(interest.id, (item) => ({
+      ...item,
+      status,
+      beslutAt: new Date().toISOString(),
+    }));
+    setInterest((prev) => (prev ? { ...prev, status, beslutAt: new Date().toISOString() } : prev));
+  };
+
+  return (
+    <PublicLayout>
+      <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
+        <Link to="/annons/$id" params={{ id }} className="hover:underline">
+          ← Tillbaka till annonsen
+        </Link>
+      </div>
+
+      <PageHeader
+        eyebrow={`Annons #${id}`}
+        title="Granska underlaget"
+        subtitle="Läs igenom informationsmemorandumet innan du bestämmer dig."
+      />
+
+      <div className="mx-auto max-w-2xl space-y-6">
+        <WireBox label="Informationsmemorandum">
+          <p className="text-sm text-muted-foreground">
+            Detaljerat underlag om verksamheten — ekonomi, avtal och nyckeltal.
+          </p>
+          <WireBtn
+            className="mt-4"
+            onClick={() => {
+              window.open("about:blank", "_blank");
+              setPdfOppnad(true);
+            }}
+          >
+            Öppna PDF →
+          </WireBtn>
+          {pdfOppnad && <Annotation>✓ Underlaget öppnat</Annotation>}
+        </WireBox>
+
+        {pdfOppnad && interest.status === "väntar-pdf" && (
+          <WireBox label="Ditt beslut">
+            <p className="text-sm font-medium">Vill du gå vidare och lägga bud på objektet?</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <WireBtn onClick={() => besluta("vill-ga-vidare")}>Ja, jag vill lägga bud</WireBtn>
+              <WireBtn variant="secondary" onClick={() => besluta("avböjt")}>
+                Nej, avböj
+              </WireBtn>
+            </div>
+          </WireBox>
+        )}
+
+        {interest.status === "vill-ga-vidare" && (
+          <WireBox label="Intresse registrerat" variant="dashed">
+            <p className="text-sm">
+              Din K-kod <span className="font-mono font-medium">{interest.kKod}</span> är
+              registrerad. TreLink kontaktar dig när nästa steg är klart.
+            </p>
+          </WireBox>
+        )}
+
+        {interest.status === "avböjt" && (
+          <WireBox label="Intresse avslutat" variant="dashed">
+            <p className="text-sm text-muted-foreground">
+              Ditt intresse för denna annons har avslutats. Tack för att du tittade!
+            </p>
+          </WireBox>
+        )}
+
+        <Annotation>
+          K-koden ({interest.kKod}) är den identifierare TreLink/säljaren ser — ditt namn visas
+          aldrig för säljaren i detta steg.
+        </Annotation>
+      </div>
+    </PublicLayout>
+  );
+}
+
+function getLatestInterestForAnnons(annonsId: string): BuyerInterest | undefined {
+  const matches = readBuyerInterests().filter((i) => i.annonsId === annonsId);
+  return matches[matches.length - 1];
+}

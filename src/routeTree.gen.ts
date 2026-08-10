@@ -52,7 +52,9 @@ import { Route as AdminAnnonserIndexRouteImport } from './routes/admin.annonser.
 import { Route as AdminAnnonserIdRouteImport } from './routes/admin.annonser.$id'
 import { Route as AdminAnvandareIndexRouteImport } from './routes/admin.anvandare.index'
 import { Route as AdminAnvandareIdRouteImport } from './routes/admin.anvandare.$id'
+import { Route as AnnonsIdIndexRouteImport } from './routes/annons.$id.index'
 import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
+import { Route as AnnonsIdUnderlagRouteImport } from './routes/annons.$id.underlag'
 import { Route as SaljareAnnonsIdRouteImport } from './routes/saljare.annons.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -273,9 +275,19 @@ const AdminAnvandareIdRoute = AdminAnvandareIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminAnvandareRoute,
 } as any)
+const AnnonsIdIndexRoute = AnnonsIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AnnonsIdRoute,
+} as any)
 const AnnonsIdIntresseRoute = AnnonsIdIntresseRouteImport.update({
   id: '/intresse',
   path: '/intresse',
+  getParentRoute: () => AnnonsIdRoute,
+} as any)
+const AnnonsIdUnderlagRoute = AnnonsIdUnderlagRouteImport.update({
+  id: '/underlag',
+  path: '/underlag',
   getParentRoute: () => AnnonsIdRoute,
 } as any)
 const SaljareAnnonsIdRoute = SaljareAnnonsIdRouteImport.update({
@@ -327,9 +339,11 @@ export interface FileRoutesByFullPath {
   '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
+  '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/admin/annonser/': typeof AdminAnnonserIndexRoute
   '/admin/anvandare/': typeof AdminAnvandareIndexRoute
+  '/annons/$id/': typeof AnnonsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -355,7 +369,6 @@ export interface FileRoutesByTo {
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
   '/affar/$id': typeof AffarIdRoute
-  '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
@@ -372,9 +385,11 @@ export interface FileRoutesByTo {
   '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
+  '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/admin/annonser': typeof AdminAnnonserIndexRoute
   '/admin/anvandare': typeof AdminAnvandareIndexRoute
+  '/annons/$id': typeof AnnonsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -420,9 +435,11 @@ export interface FileRoutesById {
   '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
+  '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/admin/annonser/': typeof AdminAnnonserIndexRoute
   '/admin/anvandare/': typeof AdminAnvandareIndexRoute
+  '/annons/$id/': typeof AnnonsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -469,9 +486,11 @@ export interface FileRouteTypes {
     | '/admin/annonser/$id'
     | '/admin/anvandare/$id'
     | '/annons/$id/intresse'
+    | '/annons/$id/underlag'
     | '/saljare/annons/$id'
     | '/admin/annonser/'
     | '/admin/anvandare/'
+    | '/annons/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -497,7 +516,6 @@ export interface FileRouteTypes {
     | '/admin/installningar'
     | '/admin/kopare'
     | '/affar/$id'
-    | '/annons/$id'
     | '/kopare/affarer'
     | '/kopare/bevakningar'
     | '/kopare/favoriter'
@@ -514,9 +532,11 @@ export interface FileRouteTypes {
     | '/admin/annonser/$id'
     | '/admin/anvandare/$id'
     | '/annons/$id/intresse'
+    | '/annons/$id/underlag'
     | '/saljare/annons/$id'
     | '/admin/annonser'
     | '/admin/anvandare'
+    | '/annons/$id'
   id:
     | '__root__'
     | '/'
@@ -561,9 +581,11 @@ export interface FileRouteTypes {
     | '/admin/annonser/$id'
     | '/admin/anvandare/$id'
     | '/annons/$id/intresse'
+    | '/annons/$id/underlag'
     | '/saljare/annons/$id'
     | '/admin/annonser/'
     | '/admin/anvandare/'
+    | '/annons/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -912,11 +934,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnvandareIdRouteImport
       parentRoute: typeof AdminAnvandareRoute
     }
+    '/annons/$id/': {
+      id: '/annons/$id/'
+      path: '/'
+      fullPath: '/annons/$id/'
+      preLoaderRoute: typeof AnnonsIdIndexRouteImport
+      parentRoute: typeof AnnonsIdRoute
+    }
     '/annons/$id/intresse': {
       id: '/annons/$id/intresse'
       path: '/intresse'
       fullPath: '/annons/$id/intresse'
       preLoaderRoute: typeof AnnonsIdIntresseRouteImport
+      parentRoute: typeof AnnonsIdRoute
+    }
+    '/annons/$id/underlag': {
+      id: '/annons/$id/underlag'
+      path: '/underlag'
+      fullPath: '/annons/$id/underlag'
+      preLoaderRoute: typeof AnnonsIdUnderlagRouteImport
       parentRoute: typeof AnnonsIdRoute
     }
     '/saljare/annons/$id': {
@@ -959,10 +995,14 @@ const AdminAnvandareRouteWithChildren = AdminAnvandareRoute._addFileChildren(
 
 interface AnnonsIdRouteChildren {
   AnnonsIdIntresseRoute: typeof AnnonsIdIntresseRoute
+  AnnonsIdUnderlagRoute: typeof AnnonsIdUnderlagRoute
+  AnnonsIdIndexRoute: typeof AnnonsIdIndexRoute
 }
 
 const AnnonsIdRouteChildren: AnnonsIdRouteChildren = {
   AnnonsIdIntresseRoute: AnnonsIdIntresseRoute,
+  AnnonsIdUnderlagRoute: AnnonsIdUnderlagRoute,
+  AnnonsIdIndexRoute: AnnonsIdIndexRoute,
 }
 
 const AnnonsIdRouteWithChildren = AnnonsIdRoute._addFileChildren(
