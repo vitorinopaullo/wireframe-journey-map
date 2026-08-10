@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
-import { getAnnons, patchAnnons, logEntry, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
 import { readAdminAccounts } from "@/lib/mock-auth";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import {
@@ -201,8 +201,7 @@ const kompletteringsMallar = [
 const PROCESS_STEPS: { label: string; states: WorkflowState[] }[] = [
   { label: "Granskning", states: ["granskas", "komplettering"] },
   { label: "Avtal", states: ["avtal-vantar-signering"] },
-  { label: "Hyresvärd", states: ["hyresvard-notifiering"] },
-  { label: "Annonstext", states: ["utkast-till-saljare"] },
+  { label: "Annonstext", states: ["hyresvard-notifiering", "utkast-till-saljare"] },
   { label: "Godkännande", states: ["utkast-feedback"] },
   { label: "Publicerad", states: ["publicerad"] },
 ];
@@ -299,6 +298,15 @@ function AdminAnnonsDetail() {
   useEffect(() => {
     setItem(getAnnons(id) ?? null);
   }, [id, tick]);
+
+  useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key !== null && e.key !== STORAGE_KEY) return;
+      setItem(getAnnons(id) ?? null);
+    }
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [id]);
 
   useEffect(() => {
     if (!item) return;
@@ -510,6 +518,7 @@ function AdminAnnonsDetail() {
 
   const sellerEpost = sellerAccount?.profil?.epost || onboarding?.saljaruppgifter.epost || "—";
   const sellerFornamn = sellerAccount?.bankid.fornamn || onboarding?.saljaruppgifter.fornamn || "";
+  const hyresvardEpost = draft.hyresvardEmail || "—";
 
   // Mappar en loggad tidslinjetext till innehållet i det (simulerade) mail som skickades då.
   function mailForLogEntry(text: string): MailData | null {
@@ -519,6 +528,14 @@ function AdminAnnonsDetail() {
         till: sellerEpost,
         amne: `Uppdragsavtal för signering — ${item.titel}`,
         brodtext: `Hej ${sellerFornamn || "där"},\n\nTreLink har granskat och godkänt ditt objekt "${item.titel}". Uppdragsavtalet väntar på din signatur — logga in på TreLink för att granska och signera via Signicat.\n\nGodkänt pris: ${item.pris || "—"} kr\nAvgift: ${cat ? `${cat.avgift}${item.premium ? " + 2 500 kr (premium-tillägg)" : ""}` : "—"}\n\nMed vänliga hälsningar,\nTreLink`,
+      };
+    }
+    if (text === "Informationsmejl skickat till hyresvärden") {
+      return {
+        fran: "TreLink <info@trelink.se>",
+        till: hyresvardEpost,
+        amne: `Information: pågående lokalöverlåtelse — ${item.titel}`,
+        brodtext: `Hej,\n\nVi vill informera om att en process för överlåtelse av lokalen "${item.titel}" har påbörjats via TreLink. Ni behöver inte agera i detta skede — vid en eventuell affär återkommer vi för godkännande av ny hyresgäst innan tillträde.\n\nMed vänliga hälsningar,\nTreLink`,
       };
     }
     if (text === "Annonstextutkast skickat för granskning") {
@@ -689,6 +706,21 @@ function AdminAnnonsDetail() {
 
       {(st === "hyresvard-notifiering" || st === "utkast-feedback") && (
         <WireBox label="Skriv annonstext" className="mb-6">
+          {st === "hyresvard-notifiering" && (
+            <div className="mb-4 flex flex-wrap items-center gap-2 border-l-2 border-foreground/40 bg-muted/30 px-3 py-2 text-sm">
+              <span>✓ Hyresvärden är automatiskt informerad via Signicat</span>
+              {(() => {
+                const hyresvardMail = (item.workflow?.timeline ?? []).some(
+                  (l: any) => l.text === "Informationsmejl skickat till hyresvärden",
+                );
+                return hyresvardMail ? (
+                  <VisaMailLank
+                    onClick={() => setMailPreview(mailForLogEntry("Informationsmejl skickat till hyresvärden"))}
+                  />
+                ) : null;
+              })()}
+            </div>
+          )}
           {st === "utkast-feedback" && item.workflow?.saljareFeedback && (
             <div className="mb-4 border-l-2 border-amber-500/70 bg-amber-50/60 px-3 py-2 dark:bg-amber-500/10">
               <Annotation>Säljarens feedback</Annotation>
@@ -744,6 +776,32 @@ function AdminAnnonsDetail() {
             >
               Skicka utkast till säljaren →
             </button>
+          </div>
+        </WireBox>
+      )}
+
+      {st === "utkast-till-saljare" && (
+        <WireBox label="Väntar på säljarens godkännande" className="mb-6" variant="dashed">
+          <p className="text-sm text-muted-foreground">
+            Utkastet är skickat — inget krävs av TreLink just nu. Säljaren godkänner eller lämnar feedback.
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Field k="Skickad rubrik" v={item.workflow?.utkast?.rubrik} />
+            <Field k="Skickat pris" v={item.workflow?.utkast?.pris ? `${item.workflow.utkast.pris} kr` : undefined} />
+          </div>
+        </WireBox>
+      )}
+
+      {st === "publicerad" && (
+        <WireBox label="🎉 Annonsen är publicerad" className="mb-6" variant="dashed">
+          <p className="text-sm text-muted-foreground">Klart — inget mer krävs. Annonsen är live på trelink.se.</p>
+          <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Field
+              k="Publicerad"
+              v={item.workflow?.publiceradAt ? new Date(item.workflow.publiceradAt).toLocaleString("sv-SE") : undefined}
+            />
+            <Field k="Slutgiltig rubrik" v={item.workflow?.utkast?.rubrik || item.titel} />
+            <Field k="Slutgiltigt pris" v={(item.workflow?.utkast?.pris || item.pris) ? `${item.workflow?.utkast?.pris || item.pris} kr` : undefined} />
           </div>
         </WireBox>
       )}
