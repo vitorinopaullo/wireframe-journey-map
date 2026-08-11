@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { WireTag } from "@/components/wire";
+import { nyckeltalFor } from "@/lib/nyckeltal";
 
 export type Listing = {
   id: string;
@@ -9,20 +10,12 @@ export type Listing = {
   stad: string;
   // F-Skatt är ett fristående fält satt av säljaren — oberoende av kategori/typ.
   hasFTax?: boolean;
-  // Lokal
   typ?: string;
   adress?: string;
   yta?: number;
   hyra?: number;
-  // Inkråm
-  lokalyta?: number;
-  etablerat?: number;
-  // Bolag (även Lokal-annonser inom Restaurang/Café & bageri, se nyckeltalFor)
+  // Mat & dryck / Skönhetssalong — se nyckeltalFor
   omsattning?: string;
-  arr?: string;
-  bolagsform?: string;
-  grundat?: number;
-  // Servering (Restaurang/Café & bageri) — se nyckeltalFor
   antalAnstallda?: number;
   lonsamt?: boolean;
 };
@@ -34,63 +27,6 @@ function MiniStat({ label, value }: { label: string; value: string }) {
       <div className="mt-0.5 truncate text-xs font-medium">{value}</div>
     </div>
   );
-}
-
-const SERVERING_TYPER = ["Restaurang", "Café & bageri", "Café"];
-const ADRESS_HYRA_YTA_PRISKVM_TYPER = ["Kontor", "Butik", "Lager"];
-
-function nyckeltalFor(l: Listing): { label: string; value: string }[] {
-  if (l.kat === "Lokal" && l.typ != null && ADRESS_HYRA_YTA_PRISKVM_TYPER.includes(l.typ) && l.yta != null) {
-    const prisKr = Number(l.pris.replace(/\D/g, ""));
-    const prisPerKvm = prisKr > 0 ? Math.round(prisKr / l.yta) : null;
-    return [
-      { label: "Adress", value: l.adress ?? "—" },
-      { label: "Hyra", value: l.hyra != null ? `${l.hyra.toLocaleString("sv-SE")} kr/mån` : "—" },
-      { label: "Yta", value: `${l.yta} kvm` },
-      { label: "Pris/kvm", value: prisPerKvm != null ? `${prisPerKvm.toLocaleString("sv-SE")} kr/kvm` : "—" },
-    ];
-  }
-  if (l.kat === "Lokal" && l.typ != null && SERVERING_TYPER.includes(l.typ) && l.yta != null) {
-    return [
-      { label: "Adress", value: l.adress ?? "—" },
-      { label: "Hyra", value: l.hyra != null ? `${l.hyra.toLocaleString("sv-SE")} kr/mån` : "—" },
-      { label: "Yta", value: `${l.yta} kvm` },
-      { label: "Omsättning", value: l.omsattning ?? "—" },
-      { label: "Antal anställda", value: l.antalAnstallda != null ? `${l.antalAnstallda}` : "—" },
-      { label: "Lönsamt", value: l.lonsamt == null ? "—" : l.lonsamt ? "Ja" : "Nej" },
-    ];
-  }
-  if (l.kat === "Lokal" && l.typ === "Skönhetssalong" && l.yta != null) {
-    return [
-      { label: "Adress", value: l.adress ?? "—" },
-      { label: "Hyra", value: l.hyra != null ? `${l.hyra.toLocaleString("sv-SE")} kr/mån` : "—" },
-      { label: "Yta", value: `${l.yta} kvm` },
-      { label: "Omsättning", value: l.omsattning ?? "—" },
-    ];
-  }
-  if (l.kat === "Lokal" && l.typ != null && l.yta != null && l.hyra != null) {
-    return [
-      { label: "Yta", value: `${l.yta} kvm` },
-      { label: "Hyra", value: `${l.hyra.toLocaleString("sv-SE")} kr/mån` },
-      { label: "Typ", value: l.typ },
-      { label: "Hyra/kvm", value: `${Math.round(l.hyra / l.yta)} kr/kvm` },
-    ];
-  }
-  if (l.kat === "Inkråm" && l.lokalyta != null && l.etablerat != null) {
-    return [
-      { label: "Lokalyta", value: `${l.lokalyta} kvm` },
-      { label: "Etablerat", value: `${l.etablerat}` },
-    ];
-  }
-  if (l.kat === "Bolag" && l.omsattning && l.arr && l.bolagsform && l.grundat != null) {
-    return [
-      { label: "Omsättning", value: l.omsattning },
-      { label: "ARR", value: l.arr },
-      { label: "Bolagsform", value: l.bolagsform },
-      { label: "Grundat", value: `${l.grundat}` },
-    ];
-  }
-  return [];
 }
 
 export function ListingCard({ l }: { l: Listing }) {
@@ -110,7 +46,6 @@ export function ListingCard({ l }: { l: Listing }) {
         <div className="mb-1 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <WireTag>{l.kat}</WireTag>
-            {l.hasFTax && <WireTag>F-skatt</WireTag>}
           </div>
           <span className="text-xs text-muted-foreground">{l.stad}</span>
         </div>

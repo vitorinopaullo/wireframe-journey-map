@@ -1,20 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import {
-  Star,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Maximize,
-  Banknote,
-  Tag,
-  Building2,
-  Percent,
-  type LucideIcon,
-} from "lucide-react";
+import { Star, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
+import { nyckeltalFor } from "@/lib/nyckeltal";
 
 export const Route = createFileRoute("/annons/$id/")({
   component: ListingDetail,
@@ -41,14 +31,8 @@ const listing = {
   uppdaterad: "12 jun 2026",
   visningar: 412,
   intressenter: 7,
-  nyckeltal: [
-    ["Omsättning", "8,4 Mkr"],
-    ["Resultat", "+ 1,1 Mkr"],
-    ["Hyra/mån", "62 000 kr"],
-    ["Anställda", "9 st"],
-    ["Hyresperiod kvar", "4 år + 3"],
-    ["Etablerad", "2014"],
-  ],
+  omsattning: "8,4 Mkr",
+  lonsamt: true,
   dokument: [
     { namn: "Hyreskontrakt.pdf", status: "godkänt" },
     { namn: "Resultaträkning 2024.pdf", status: "godkänt" },
@@ -71,40 +55,6 @@ const liknande = [
 ];
 
 /* ---------- helpers ---------- */
-function StatTile({
-  icon: Icon,
-  label,
-  value,
-  highlight,
-}: {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div
-      className={[
-        "flex items-start gap-3 border p-3",
-        highlight ? "border-foreground bg-foreground text-background" : "border-foreground/30 bg-background",
-      ].join(" ")}
-    >
-      <Icon className={["mt-0.5 h-4 w-4 shrink-0", highlight ? "text-background" : "text-muted-foreground"].join(" ")} />
-      <div>
-        <div
-          className={[
-            "font-mono text-[10px] uppercase tracking-wider",
-            highlight ? "text-background/70" : "text-muted-foreground",
-          ].join(" ")}
-        >
-          {label}
-        </div>
-        <div className="mt-0.5 text-sm font-medium">{value}</div>
-      </div>
-    </div>
-  );
-}
-
 function StickyCTA({
   scrolled,
   saved,
@@ -146,7 +96,16 @@ function ListingDetail() {
 
   const visaForegaende = () => setBild((b) => (b - 1 + ANTAL_BILDER) % ANTAL_BILDER);
   const visaNasta = () => setBild((b) => (b + 1) % ANTAL_BILDER);
-  const hyraPerKvm = Math.round(listing.hyra / listing.yta);
+  const nyckeltal = nyckeltalFor({
+    typ: listing.typ,
+    pris: String(listing.pris),
+    adress: listing.adress,
+    yta: listing.yta,
+    hyra: listing.hyra,
+    hasFTax: listing.hasFTax,
+    omsattning: listing.omsattning,
+    lonsamt: listing.lonsamt,
+  });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 480);
@@ -217,14 +176,6 @@ function ListingDetail() {
           <WireTag>{listing.intressenter} intressenter</WireTag>
           {listing.hasFTax && <WireTag>F-skatt</WireTag>}
         </div>
-
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-          <StatTile icon={Maximize} label="Yta" value={`${listing.yta} kvm`} />
-          <StatTile icon={Banknote} label="Pris" value={`${listing.pris.toLocaleString("sv-SE")} kr`} highlight />
-          <StatTile icon={Tag} label="Hyra" value={`${listing.hyra.toLocaleString("sv-SE")} kr/mån`} />
-          <StatTile icon={Building2} label="Typ" value={listing.typ} />
-          <StatTile icon={Percent} label="Hyra / kvm" value={`${hyraPerKvm} kr/kvm`} />
-        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -265,10 +216,10 @@ function ListingDetail() {
           {/* Nyckeltal */}
           <WireBox label="Nyckeltal">
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-              {listing.nyckeltal.map(([k, v]) => (
-                <div key={k}>
-                  <Annotation>{k}</Annotation>
-                  <div className="mt-1 font-mono text-lg">{v}</div>
+              {nyckeltal.map((n) => (
+                <div key={n.label}>
+                  <Annotation>{n.label}</Annotation>
+                  <div className="mt-1 font-mono text-lg">{n.value}</div>
                 </div>
               ))}
             </div>
