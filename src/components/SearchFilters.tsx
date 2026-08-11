@@ -1,35 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { WireBox, WireBtn } from "@/components/wire";
 
-const TABS = [
-  { value: "alla",   label: "Alla" },
-  { value: "lokal",  label: "Överlåtelse (Lokalöverlåtelse)" },
-  { value: "inkram", label: "Affärsöverlåtelse" },
-  { value: "bolag",  label: "Bolagsöverlåtelse (Aktieöverlåtelse)" },
-] as const;
-type TabValue = typeof TABS[number]["value"];
-
 const OMRADE_OPTIONS = ["Södermalm", "Östermalm", "Vasastan", "Kungsholmen", "Göteborg", "Malmö"];
 
-// Bransch-alternativ per överlåtelsetyp — flikvalet styr vilken lista som visas.
-const VERKSAMHETSTYP_BY_TAB: Record<TabValue, { options: string[]; placeholder: string }> = {
-  alla: {
-    options: ["Restaurang", "Café", "Butik", "Frisör", "Kontor", "Skönhetssalong"],
-    placeholder: "Restaurang / Café / Butik / Frisör…",
-  },
-  lokal: {
-    options: ["Butik", "Kontor", "Lager"],
-    placeholder: "Butik / Kontor / Lager",
-  },
-  inkram: {
-    options: ["Café", "Restaurang", "Frisör/Skönhetssalong"],
-    placeholder: "Café / Restaurang / Frisör/Skönhetssalong",
-  },
-  bolag: {
-    options: ["Verkstad", "Logistik", "Byrå", "E-handel"],
-    placeholder: "Verkstad / Logistik / Byrå / E-handel",
-  },
-};
+const VERKSAMHETSTYP_OPTIONS = [
+  "Butik",
+  "Kontor",
+  "Lager",
+  "Restaurang",
+  "Café",
+  "Bageri",
+  "Bistro",
+  "Pub",
+  "Vinbar",
+  "Frisör",
+  "Nagelsalong",
+  "Massage",
+  "Estetisk",
+];
 
 const PRISINTERVALL_OPTIONS = [
   "0 – 500 000 kr",
@@ -38,7 +26,6 @@ const PRISINTERVALL_OPTIONS = [
   "5 000 000 kr +",
 ];
 const STORLEK_OPTIONS = ["0 – 50 m²", "50 – 100 m²", "100 – 250 m²", "250+ m²"];
-const PUBLICERAD_OPTIONS = ["Senaste 24 timmarna", "Senaste veckan", "Senaste månaden", "Alla"];
 
 function Dropdown({
   label,
@@ -104,62 +91,26 @@ function Dropdown({
 }
 
 export function SearchBox() {
-  const [active, setActive] = useState<TabValue>("alla");
-  const [showMoreFilters, setShowMoreFilters] = useState(false);
-
   return (
     <WireBox label="Sök & filter" className="mb-8">
-      {/* Transaktionstyp-flikar */}
-      <div className="mb-5 flex overflow-x-auto">
-        {TABS.map((tab, i) => (
-          <button
-            key={tab.value}
-            onClick={() => setActive(tab.value)}
-            className={[
-              "relative shrink-0 px-5 py-2 font-mono text-[11px] uppercase tracking-wider transition",
-              i > 0 ? "-ml-px" : "",
-              active === tab.value
-                ? "z-10 border border-foreground bg-foreground text-background"
-                : "border border-foreground/30 bg-background text-muted-foreground hover:z-10 hover:border-foreground hover:text-foreground",
-            ].join(" ")}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
       {/* Sökfält */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-[2fr_1fr_1fr]">
-        <Dropdown label="Område" options={OMRADE_OPTIONS} placeholder="Gata, stadsdel eller ort" />
-
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Dropdown
-          key={active}
-          label="Bransch"
-          options={VERKSAMHETSTYP_BY_TAB[active].options}
-          placeholder={VERKSAMHETSTYP_BY_TAB[active].placeholder}
+          label="Verksamhetstyp"
+          options={VERKSAMHETSTYP_OPTIONS}
+          placeholder="Butik / Kontor / Restaurang…"
         />
 
-        <Dropdown label="Prisintervall" options={PRISINTERVALL_OPTIONS} placeholder="0 – 5 000 000 kr" />
-      </div>
+        <Dropdown label="Område" options={OMRADE_OPTIONS} placeholder="Gata, stadsdel eller ort" />
 
-      {/* Fler filter — expanderas inline, samma gridmall som sökfälten ovan */}
-      {showMoreFilters && (
-        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-[2fr_1fr_1fr]">
-          <div className="hidden md:block" aria-hidden="true" />
-          <Dropdown label="Storlek (m²)" options={STORLEK_OPTIONS} placeholder="Valfri storlek" />
-          <Dropdown label="Publicerad" options={PUBLICERAD_OPTIONS} placeholder="Alla datum" />
-        </div>
-      )}
+        <Dropdown label="Pris" options={PRISINTERVALL_OPTIONS} placeholder="0 – 5 000 000 kr" />
+
+        <Dropdown label="Storlek" options={STORLEK_OPTIONS} placeholder="Valfri storlek" />
+      </div>
 
       {/* Åtgärder */}
       <div className="mt-4 flex items-center gap-5">
         <WireBtn className="px-10">Sök</WireBtn>
-        <button
-          onClick={() => setShowMoreFilters((s) => !s)}
-          className="font-mono text-xs text-muted-foreground transition hover:text-foreground"
-        >
-          {showMoreFilters ? "Dölj filter −" : "Fler filter +"}
-        </button>
       </div>
     </WireBox>
   );
