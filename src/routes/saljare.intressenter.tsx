@@ -1,19 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
+import { readBuyerInterests, type BuyerInterestStatus } from "@/lib/kopare-workflow";
+import { getAnnons } from "@/lib/annons-workflow";
 
 export const Route = createFileRoute("/saljare/intressenter")({
   component: Interest,
 });
 
-const rows = [
-  { date: "14 jun", annons: "Restauranglokal · Södermalm", code: "K-208", state: "Ny" },
-  { date: "13 jun", annons: "Restauranglokal · Södermalm", code: "K-204", state: "Matchad" },
-  { date: "11 jun", annons: "Restauranglokal · Södermalm", code: "K-198", state: "Bedöms av TreLink" },
-  { date: "10 jun", annons: "Restauranglokal · Södermalm", code: "K-191", state: "Avvisad" },
-];
+const STATUS_LABEL: Record<BuyerInterestStatus, string> = {
+  "väntar-pdf": "Ny",
+  "vill-ga-vidare": "Matchad",
+  avböjt: "Avvisad",
+};
+
+function formatDatum(ts: string) {
+  if (!ts) return "—";
+  return new Date(ts).toLocaleDateString("sv-SE", { day: "numeric", month: "short" });
+}
 
 function Interest() {
+  const rows = readBuyerInterests()
+    .slice()
+    .sort((a, b) => (b.skapadAt || "").localeCompare(a.skapadAt || ""))
+    .map((i) => ({
+      date: formatDatum(i.skapadAt),
+      annons: getAnnons(i.annonsId)?.titel || `Annons #${i.annonsId}`,
+      code: i.kKod,
+      state: STATUS_LABEL[i.status],
+    }));
+
   return (
     <AppLayout mode="saljare">
       <PageHeader
@@ -22,26 +38,30 @@ function Interest() {
         subtitle="Du ser ATT det finns intresse — TreLink driver matchningen. Köparens identitet skyddas tills signering."
       />
       <WireBox>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-foreground/30 text-left text-muted-foreground">
-              <th className="py-2 font-mono text-[10px] uppercase tracking-wider">Datum</th>
-              <th className="font-mono text-[10px] uppercase tracking-wider">Annons</th>
-              <th className="font-mono text-[10px] uppercase tracking-wider">Köpare</th>
-              <th className="font-mono text-[10px] uppercase tracking-wider">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r, i) => (
-              <tr key={i} className="border-b border-dashed border-muted-foreground/30">
-                <td className="py-3">{r.date}</td>
-                <td>{r.annons}</td>
-                <td className="font-mono">{r.code}</td>
-                <td><WireTag>{r.state}</WireTag></td>
+        {rows.length === 0 ? (
+          <Annotation>Inga intresseanmälningar än.</Annotation>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-foreground/30 text-left text-muted-foreground">
+                <th className="py-2 font-mono text-[10px] uppercase tracking-wider">Datum</th>
+                <th className="font-mono text-[10px] uppercase tracking-wider">Annons</th>
+                <th className="font-mono text-[10px] uppercase tracking-wider">Köpare</th>
+                <th className="font-mono text-[10px] uppercase tracking-wider">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((r, i) => (
+                <tr key={i} className="border-b border-dashed border-muted-foreground/30">
+                  <td className="py-3">{r.date}</td>
+                  <td>{r.annons}</td>
+                  <td className="font-mono">{r.code}</td>
+                  <td><WireTag>{r.state}</WireTag></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
         <Annotation>
           <span className="mt-4 block">Inga kontaktuppgifter visas. Besked från TreLink kommer via mejl.</span>
         </Annotation>

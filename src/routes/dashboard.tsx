@@ -4,6 +4,7 @@ import { z } from "zod";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
 import { readAnnonser, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
+import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY } from "@/lib/kopare-workflow";
 
 const searchSchema = z.object({
   mode: z.enum(["kopare", "saljare"]).catch("kopare").default("kopare"),
@@ -33,14 +34,22 @@ function annonserSummary(list: any[]) {
     .join(" · ");
 }
 
+function intresseanmalningarHint(list: ReturnType<typeof readBuyerInterests>) {
+  if (list.length === 0) return "Inga intresseanmälningar än";
+  const vantarPdf = list.filter((i) => i.status === "väntar-pdf").length;
+  if (vantarPdf === 0) return `${list.length} intresseanmälningar totalt`;
+  return `${vantarPdf} väntar på PDF-granskning`;
+}
+
 function Dashboard() {
   const { mode } = Route.useSearch();
   const [annonser, setAnnonser] = useState<any[]>(() => readAnnonser());
+  const [buyerInterests, setBuyerInterests] = useState(() => readBuyerInterests());
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
-      if (e.key !== STORAGE_KEY) return;
-      setAnnonser(readAnnonser());
+      if (e.key === STORAGE_KEY) setAnnonser(readAnnonser());
+      if (e.key === KOPARE_STORAGE_KEY) setBuyerInterests(readBuyerInterests());
     }
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
@@ -106,9 +115,9 @@ function Dashboard() {
           />
           <DashCard
             title="Intresseanmälningar"
-            value="0"
+            value={String(buyerInterests.length)}
             link="/saljare/intressenter"
-            hint="Inga intresseanmälningar än"
+            hint={intresseanmalningarHint(buyerInterests)}
           />
           <DashCard
             title="Mina affärer"

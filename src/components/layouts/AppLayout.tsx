@@ -1,5 +1,7 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY } from "@/lib/kopare-workflow";
 
 type Mode = "kopare" | "saljare";
 
@@ -19,10 +21,28 @@ const sellerNav = [
   { to: "/saljare/affarer", label: "Mina affärer" },
 ];
 
+function useObehandladeIntressenCount() {
+  const [count, setCount] = useState(
+    () => readBuyerInterests().filter((i) => i.status === "väntar-pdf").length,
+  );
+
+  useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key !== null && e.key !== KOPARE_STORAGE_KEY) return;
+      setCount(readBuyerInterests().filter((i) => i.status === "väntar-pdf").length);
+    }
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  return count;
+}
+
 export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode }) {
   const nav = mode === "kopare" ? buyerNav : sellerNav;
   const otherMode: Mode = mode === "kopare" ? "saljare" : "kopare";
   const location = useLocation();
+  const obehandladeIntressen = useObehandladeIntressenCount();
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-foreground/20">
@@ -76,6 +96,11 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
                   }`}
                 >
                   {n.label}
+                  {n.label === "Intressenter" && obehandladeIntressen > 0 && (
+                    <span className="ml-2 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 font-mono text-[10px] text-destructive-foreground">
+                      {obehandladeIntressen}
+                    </span>
+                  )}
                 </Link>
               );
             })}

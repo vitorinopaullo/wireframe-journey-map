@@ -40,7 +40,7 @@ export function getBuyerInterest(id: string): BuyerInterest | undefined {
 }
 
 /** "K-" + 4 slumpsiffror, unik mot befintliga poster. */
-export function genererateKKod(): string {
+export function genereraKKod(): string {
   const existing = new Set(readBuyerInterests().map((i) => i.kKod));
   let kod: string;
   do {

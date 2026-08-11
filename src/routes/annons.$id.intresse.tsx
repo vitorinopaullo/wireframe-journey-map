@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation, PageHeader, StatusDot } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
-import { genererateKKod, readBuyerInterests, writeBuyerInterests } from "@/lib/kopare-workflow";
+import { genereraKKod, readBuyerInterests, writeBuyerInterests } from "@/lib/kopare-workflow";
 
 export const Route = createFileRoute("/annons/$id/intresse")({
   component: InterestWizard,
@@ -208,7 +208,7 @@ function InterestWizard() {
     const interest = {
       id: `bi-${Date.now()}`,
       annonsId: id,
-      kKod: genererateKKod(),
+      kKod: genereraKKod(),
       status: "väntar-pdf" as const,
       skapadAt: new Date().toISOString(),
     };
