@@ -51,13 +51,13 @@ export const docsByCat: Record<CatId, DocSpec[]> = {
     { name: "Överlåtelseavtal", krav: "PDF · signerat av båda parter (mall finns hos TreLink)", required: true },
     { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
     { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
-    { name: "Bilder på lokalen", krav: "JPG/PNG · minst 6 st · dagsljus", required: true },
+    { name: "Bilder på lokalen", krav: "JPG/PNG · minst 8 st · dagsljus", required: true },
   ],
   inkram: [
     { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
     { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
     { name: "Rörelseresultat", krav: "PDF från bokföring · senaste perioden", required: true },
-    { name: "Bilder på verksamheten", krav: "JPG/PNG · minst 6 st · dagsljus", required: true },
+    { name: "Bilder på verksamheten", krav: "JPG/PNG · minst 8 st · dagsljus", required: true },
     { name: "Balansräkning", krav: "PDF · senaste perioden", required: false },
     { name: "Årsredovisning", krav: "PDF · signerad", required: false },
   ],
@@ -66,7 +66,7 @@ export const docsByCat: Record<CatId, DocSpec[]> = {
     { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
     { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
     { name: "Rörelseresultat", krav: "PDF från bokföring", required: true },
-    { name: "Bilder", krav: "JPG/PNG · minst 6 st · dagsljus", required: true },
+    { name: "Bilder", krav: "JPG/PNG · minst 8 st · dagsljus", required: true },
     { name: "Balansräkning", krav: "PDF · senaste perioden", required: false },
     { name: "Årsredovisning", krav: "PDF · signerad", required: false },
     { name: "Registreringsbevis", krav: "PDF · max 1 mån gammalt", required: false },
@@ -173,6 +173,8 @@ export type Draft = {
   potential: string;
   premium: boolean;
   docs: Record<string, DocState>;
+  // Platshållarbilder för galleriuppladdningen i Underlag-steget — se docsByCat's bild-dokument.
+  bilder: string[];
   // Fältgrupper per vald Verksamhetstyp — en nyckel per typ som har en egen fältkonfiguration.
   typFalt: {
     Kontor: KontorFalt;

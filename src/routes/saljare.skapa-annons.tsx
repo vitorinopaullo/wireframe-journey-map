@@ -29,6 +29,9 @@ export const Route = createFileRoute("/saljare/skapa-annons")({
 
 
 const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
+// Antal platshållarbilder som krävs i bild-galleriet, se docsByCat i annons-model.ts.
+const BILD_ANTAL_KRAV = 8;
+const isBildDoc = (name: string) => name.startsWith("Bilder");
 // Sparas av onboardingflödet ("Sätt upp ditt konto") — läses här för att visa en sammanfattning.
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
@@ -490,6 +493,7 @@ const empty: Draft = {
   potential: "",
   premium: false,
   docs: {},
+  bilder: [],
   typFalt: {
     Kontor: emptyKontorFalt,
     Butik: emptyButikFalt,
@@ -586,6 +590,16 @@ function CreateListing() {
 
   const setDoc = (name: string, s: DocState) =>
     setDraft((d) => ({ ...d, docs: { ...d.docs, [name]: s } }));
+
+  const addBildPlaceholder = (docName: string) =>
+    setDraft((d) => {
+      const bilder = [...d.bilder, `Bild ${d.bilder.length + 1}`];
+      return {
+        ...d,
+        bilder,
+        docs: { ...d.docs, [docName]: bilder.length >= BILD_ANTAL_KRAV ? "uppladdad" : "saknas" },
+      };
+    });
 
   const setTypFalt = <T extends keyof Draft["typFalt"], K extends keyof Draft["typFalt"][T]>(
     typ: T,
@@ -931,6 +945,17 @@ function CreateListing() {
           <div className="mt-3 space-y-3">
             {requiredDocs.map((d) => {
               const s = docStatus(d.name);
+              if (isBildDoc(d.name)) {
+                return (
+                  <BildGalleri
+                    key={d.name}
+                    doc={d}
+                    status={s}
+                    bilder={draft.bilder}
+                    onUpload={() => addBildPlaceholder(d.name)}
+                  />
+                );
+              }
               return (
                 <div
                   key={d.name}
@@ -1136,6 +1161,65 @@ function CreateListing() {
         </div>
       </div>
     </AppLayout>
+  );
+}
+
+function BildGalleri({
+  doc,
+  status,
+  bilder,
+  onUpload,
+}: {
+  doc: DocSpec;
+  status: DocState;
+  bilder: string[];
+  onUpload: () => void;
+}) {
+  return (
+    <div className="border border-dashed border-muted-foreground/40 p-3">
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-sm font-medium">
+            {doc.name}
+            {doc.required ? <span> *</span> : <span className="text-muted-foreground"> (frivilligt)</span>}
+          </div>
+          <Annotation>{doc.krav}</Annotation>
+        </div>
+        <div className="flex items-center gap-2">
+          <DocStatusDot state={status} />
+          <DocStatusTag state={status} />
+        </div>
+      </div>
+      <p className="mb-3 text-sm text-muted-foreground">
+        Föreslagna bilder: 1 bild av fasad/skylt, 2-3 bilder av interiör/ytan, 1 bild av entré, 1 bild av
+        eventuell uteplats eller specialutrustning, 1-2 bilder av detaljer som gör objektet attraktivt.
+      </p>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {Array.from({ length: BILD_ANTAL_KRAV }).map((_, i) => {
+          const uppladdad = i < bilder.length;
+          return (
+            <div
+              key={i}
+              className="flex h-24 flex-col items-center justify-center gap-1 border border-dashed border-muted-foreground/40 bg-muted/30 text-center text-[10px] text-muted-foreground"
+            >
+              {uppladdad ? (
+                <span>✓ {bilder[i]}</span>
+              ) : (
+                <>
+                  <span>[ Bild {i + 1} ]</span>
+                  <WireBtn variant="ghost" className="px-2 py-1 text-[10px]" onClick={onUpload}>
+                    Ladda upp
+                  </WireBtn>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <Annotation>
+        <span className="mt-3 block">{bilder.length} av {BILD_ANTAL_KRAV} bilder uppladdade</span>
+      </Annotation>
+    </div>
   );
 }
 
