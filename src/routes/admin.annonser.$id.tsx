@@ -293,6 +293,7 @@ function AdminAnnonsDetail() {
   const [mailPreview, setMailPreview] = useState<MailData | null>(null);
   const [utkastRubrik, setUtkastRubrik] = useState("");
   const [utkastBeskrivning, setUtkastBeskrivning] = useState("");
+  const [utkastYta, setUtkastYta] = useState("");
   const [utkastPris, setUtkastPris] = useState("");
 
   useEffect(() => {
@@ -312,6 +313,7 @@ function AdminAnnonsDetail() {
     if (!item) return;
     setUtkastRubrik((prev) => prev || item.workflow?.utkast?.rubrik || "");
     setUtkastBeskrivning((prev) => prev || item.workflow?.utkast?.beskrivning || "");
+    setUtkastYta((prev) => prev || item.workflow?.utkast?.yta || item.draft?.yta || "");
     setUtkastPris((prev) => prev || item.workflow?.utkast?.pris || item.pris || "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item?.id]);
@@ -372,7 +374,8 @@ function AdminAnnonsDetail() {
         onboarding.firmatecknare.mail &&
         onboarding.firmatecknare.mobil
       ));
-  const grundOk = !!(draft.yta && draft.verksamhet);
+  const grundOk = !!(draft.adress && draft.verksamhet);
+  const ytaOk = !!(item?.workflow?.utkast?.yta);
   const typFaltOk =
     valdaGrupper.length > 0 &&
     valdaGrupper.every((g) =>
@@ -390,6 +393,7 @@ function AdminAnnonsDetail() {
     { label: "Firmatecknare", ok: firmatecknareOk },
     { label: "Grunduppgifter", ok: grundOk },
     { label: "Verksamhetstyp", ok: typFaltOk },
+    { label: "Yta", ok: ytaOk },
     { label: docsMissing > 0 ? `${docsMissing} dokument saknas` : "Dokument", ok: docsMissing === 0 },
     { label: "Hyresvärd", ok: hyresvardOk },
     { label: "Paket", ok: paketOk },
@@ -493,7 +497,7 @@ function AdminAnnonsDetail() {
   };
 
   const sendDraftToSeller = () => {
-    if (!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()) return;
+    if (!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastYta.trim() || !utkastPris.trim()) return;
     patchAnnons(id, (it) => ({
       ...it,
       workflow: logEntry(
@@ -503,6 +507,7 @@ function AdminAnnonsDetail() {
           utkast: {
             rubrik: utkastRubrik,
             beskrivning: utkastBeskrivning,
+            yta: utkastYta,
             pris: utkastPris,
             sentAt: new Date().toISOString(),
           },
@@ -754,6 +759,18 @@ function AdminAnnonsDetail() {
             </label>
             <label className="block">
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Yta (m²)
+              </span>
+              <input
+                type="text"
+                value={utkastYta}
+                onChange={(e) => setUtkastYta(e.target.value)}
+                placeholder="180"
+                className="h-10 w-48 border border-foreground/40 bg-background px-3 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Pris (kr)
               </span>
               <input
@@ -766,10 +783,10 @@ function AdminAnnonsDetail() {
           </div>
           <div className="mt-4">
             <button
-              disabled={!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()}
+              disabled={!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastYta.trim() || !utkastPris.trim()}
               onClick={sendDraftToSeller}
               className={`border px-4 py-2 text-sm font-medium ${
-                utkastRubrik.trim() && utkastBeskrivning.trim() && utkastPris.trim()
+                utkastRubrik.trim() && utkastBeskrivning.trim() && utkastYta.trim() && utkastPris.trim()
                   ? "border-foreground bg-foreground text-background hover:opacity-80"
                   : "border-muted-foreground/30 bg-muted/30 text-muted-foreground cursor-not-allowed"
               }`}
@@ -864,7 +881,7 @@ function AdminAnnonsDetail() {
 
         <WireBox label="Grunduppgifter">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field k="Yta" v={draft.yta ? `${draft.yta} m²` : undefined} />
+            <Field k="Försäljningsadress" v={draft.adress} />
             <Field k="Verksamhetstyp" v={draft.verksamhet} />
           </div>
         </WireBox>

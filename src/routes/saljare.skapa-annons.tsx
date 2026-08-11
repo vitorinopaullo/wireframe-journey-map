@@ -657,7 +657,7 @@ function CreateListing() {
   const validation = useMemo(() => {
     const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [] };
     if (!draft.cat) errs[0].push("Välj paket.");
-    if (!draft.yta) errs[1].push("Ange yta i m².");
+    if (!draft.adress) errs[1].push("Ange försäljningsadress.");
     if (!draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
     if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
       errs[1].push("Org.nr i format 556xxx-xxxx.");
@@ -680,7 +680,7 @@ function CreateListing() {
       return s === "uppladdad" || s === "granskas" || s === "godkant";
     }).length;
     const fields = [
-      draft.yta, draft.verksamhet,
+      draft.adress, draft.verksamhet,
       draft.hyresvardEmail, draft.hyresvardTel, draft.brfKontakt,
     ].filter(Boolean).length;
     return Math.round(((fields / 5) * 0.4 + (okDocs / Math.max(req.length, 1)) * 0.6) * 100);
@@ -827,10 +827,11 @@ function CreateListing() {
             </p>
             <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
               <WireFieldEditable
-                label="Yta (m²) *"
-                value={draft.yta}
-                onChange={(v) => set("yta", v)}
-                placeholder="180"
+                label="Försäljningsadress *"
+                value={draft.adress}
+                onChange={(v) => set("adress", v)}
+                placeholder="Hornsgatan 45, Stockholm"
+                hint="Adressen till objektet som säljs — kan skilja sig från bolagets registrerade adress."
               />
               <VerksamhetstypSelect
                 value={draft.verksamhet}
@@ -979,7 +980,7 @@ function CreateListing() {
             <dl className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <Row k="Paket" v={activeCat.name} />
               <Row k="Avgift vid affär" v={activeCat.avgift} />
-              <Row k="Yta" v={draft.yta ? `${draft.yta} m²` : "—"} />
+              <Row k="Försäljningsadress" v={draft.adress || "—"} />
               <Row k="Verksamhet" v={draft.verksamhet || "—"} />
               <Row k="Hyresvärd e-post" v={draft.hyresvardEmail || "—"} />
               <Row k="Hyresvärd telefon" v={draft.hyresvardTel || "—"} />

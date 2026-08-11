@@ -50,6 +50,7 @@ export type AnnonsUtkast = {
   rubrik: string;
   beskrivning: string;
   pris: string;
+  yta: string;
   sentAt: string;
 };
 
