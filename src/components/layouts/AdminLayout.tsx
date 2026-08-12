@@ -1,5 +1,8 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { WireTag } from "@/components/wire";
+import { readAnnonser, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
 
 const adminNav = [
   { to: "/admin", label: "Översikt" },
@@ -10,8 +13,37 @@ const adminNav = [
   { to: "/admin/installningar", label: "Inställningar" },
 ];
 
+// "Bollen ligger hos TreLink" — samma states som NEXT_ACTOR i
+// admin.index.tsx / admin.annonser.index.tsx (duplicerad, ej exporterad där).
+const TRELINK_ACTION_STATES: WorkflowState[] = [
+  "granskas",
+  "komplettering",
+  "hyresvard-notifiering",
+  "utkast-feedback",
+];
+
+function useGranskningCount() {
+  const count = () => readAnnonser().filter((a) => TRELINK_ACTION_STATES.includes(a.workflow?.state)).length;
+  const [n, setN] = useState(count);
+
+  useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key !== null && e.key !== STORAGE_KEY) return;
+      setN(count());
+    }
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  return n;
+}
+
 export function AdminLayout({ children }: { children?: ReactNode }) {
   const location = useLocation();
+  const granskningCount = useGranskningCount();
+  const navCounts: Record<string, number> = {
+    "/admin/annonser": granskningCount,
+  };
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-foreground/20 bg-foreground text-background">
@@ -32,17 +64,19 @@ export function AdminLayout({ children }: { children?: ReactNode }) {
           <nav className="flex flex-col gap-1">
             {adminNav.map((n) => {
               const active = location.pathname === n.to;
+              const count = navCounts[n.to] ?? 0;
               return (
                 <Link
                   key={n.to}
                   to={n.to}
-                  className={`border-l-2 px-3 py-2 text-sm ${
+                  className={`flex items-center justify-between gap-2 border-l-2 px-3 py-2 text-sm ${
                     active
                       ? "border-foreground bg-muted/40 font-medium"
                       : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {n.label}
+                  {count > 0 && <WireTag active>{count}</WireTag>}
                 </Link>
               );
             })}
