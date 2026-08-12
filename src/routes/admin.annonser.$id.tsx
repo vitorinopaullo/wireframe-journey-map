@@ -160,6 +160,27 @@ if (import.meta.env.DEV) {
   }
 }
 
+// Ritning-dokument som säljaren laddar upp per Verksamhetstyp, sparade fristående
+// i draft.docs (utanför docsByCat) — se t.ex. KontorFaltgrupp/ServeringFaltgrupp i
+// saljare.skapa-annons.tsx. Måste hållas i synk med FALTGRUPP_TYPER — annars
+// visas dokumentet aldrig för TreLink.
+const RITNING_DOC_BY_GRUPP: Record<string, { name: string; krav: string }> = {
+  Kontor: { name: "Ritning (Kontor)", krav: "PDF · planlösning över kontorsytan" },
+  Butik: { name: "Ritning (Butik)", krav: "PDF · planlösning över butiksytan" },
+  Lager: { name: "Ritning (Lager)", krav: "PDF · planlösning över lagerytan" },
+  Servering: { name: "Ritning (Servering)", krav: "PDF · planlösning över lokalen" },
+  Frisor: { name: "Ritning (Skönhetssalong)", krav: "PDF · planlösning över salongsytan" },
+};
+
+if (import.meta.env.DEV) {
+  const missingRitning = Object.keys(FALTGRUPP_TYPER).filter((g) => !RITNING_DOC_BY_GRUPP[g]);
+  if (missingRitning.length > 0) {
+    console.warn(
+      `[admin.annonser.$id] RITNING_DOC_BY_GRUPP saknar Ritning-dokument för: ${missingRitning.join(", ")} — dokumentet visas aldrig för TreLink.`,
+    );
+  }
+}
+
 function groupForTyp(typ: string): string | undefined {
   return Object.keys(FALTGRUPP_TYPER).find((g) => FALTGRUPP_TYPER[g].includes(typ));
 }
@@ -452,7 +473,20 @@ function AdminAnnonsDetail() {
     ? readAdminAccounts().find((a) => a.bankid.personnr === item.sellerPersonnr)
     : undefined;
   const catId: CatId | undefined = draft.cat;
-  const specs: DocSpec[] = catId ? docsByCat[catId] ?? [] : [];
+  const valdaGrupper = Array.from(
+    new Set(
+      (draft.verksamhet ? String(draft.verksamhet).split(",") : [])
+        .map((s: string) => s.trim())
+        .filter(Boolean)
+        .map((typ: string) => groupForTyp(typ))
+        .filter(Boolean) as string[],
+    ),
+  );
+  const ritningSpecs: DocSpec[] = valdaGrupper
+    .map((g) => RITNING_DOC_BY_GRUPP[g])
+    .filter(Boolean)
+    .map((r) => ({ name: r.name, krav: r.krav, required: false }));
+  const specs: DocSpec[] = [...(catId ? docsByCat[catId] ?? [] : []), ...ritningSpecs];
   const docsState: Record<string, DocState> = draft.docs ?? {};
 
   const ytaNum = Number(draft.yta);
@@ -476,16 +510,6 @@ function AdminAnnonsDetail() {
     st === "granskas" && stats.obligatoriskaTotal > 0 && stats.obligatoriskaOk === stats.obligatoriskaTotal && stats.kompl === 0;
   const prisValid = prisInput.trim() !== "" && Number(prisInput) > 0;
   const canApproveMedPris = canApprove && prisValid;
-
-  const valdaGrupper = Array.from(
-    new Set(
-      (draft.verksamhet ? String(draft.verksamhet).split(",") : [])
-        .map((s: string) => s.trim())
-        .filter(Boolean)
-        .map((typ: string) => groupForTyp(typ))
-        .filter(Boolean) as string[],
-    ),
-  );
 
   const bolagOk = !!(
     onboarding?.bolagsuppgifter.bolag &&
