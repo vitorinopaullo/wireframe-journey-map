@@ -293,7 +293,6 @@ function AdminAnnonsDetail() {
   const [mailPreview, setMailPreview] = useState<MailData | null>(null);
   const [utkastRubrik, setUtkastRubrik] = useState("");
   const [utkastBeskrivning, setUtkastBeskrivning] = useState("");
-  const [utkastYta, setUtkastYta] = useState("");
   const [utkastPris, setUtkastPris] = useState("");
 
   useEffect(() => {
@@ -313,7 +312,6 @@ function AdminAnnonsDetail() {
     if (!item) return;
     setUtkastRubrik((prev) => prev || item.workflow?.utkast?.rubrik || "");
     setUtkastBeskrivning((prev) => prev || item.workflow?.utkast?.beskrivning || "");
-    setUtkastYta((prev) => prev || item.workflow?.utkast?.yta || item.draft?.yta || "");
     setUtkastPris((prev) => prev || item.workflow?.utkast?.pris || item.pris || "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item?.id]);
@@ -328,6 +326,10 @@ function AdminAnnonsDetail() {
   const catId: CatId | undefined = draft.cat;
   const specs: DocSpec[] = catId ? docsByCat[catId] ?? [] : [];
   const docsState: Record<string, DocState> = draft.docs ?? {};
+
+  const ytaNum = Number(draft.yta);
+  const hyraNum = Number(draft.hyra);
+  const kvmPris = ytaNum > 0 && hyraNum > 0 ? Math.round((hyraNum * 12) / ytaNum) : null;
 
   const stats = useMemo(() => {
     const obligatoriska = specs.filter((s) => s.required);
@@ -409,6 +411,11 @@ function AdminAnnonsDetail() {
       </AdminLayout>
     );
   }
+
+  const setDraftField = (key: string, value: string) => {
+    patchAnnons(id, (it) => ({ ...it, draft: { ...it.draft, [key]: value } }));
+    refresh();
+  };
 
   const approveDoc = (docName: string) => {
     patchAnnons(id, (it) => ({
@@ -497,7 +504,7 @@ function AdminAnnonsDetail() {
   };
 
   const sendDraftToSeller = () => {
-    if (!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastYta.trim() || !utkastPris.trim()) return;
+    if (!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()) return;
     patchAnnons(id, (it) => ({
       ...it,
       workflow: logEntry(
@@ -507,7 +514,7 @@ function AdminAnnonsDetail() {
           utkast: {
             rubrik: utkastRubrik,
             beskrivning: utkastBeskrivning,
-            yta: utkastYta,
+            yta: it.draft?.yta || "",
             pris: utkastPris,
             sentAt: new Date().toISOString(),
           },
@@ -647,6 +654,81 @@ function AdminAnnonsDetail() {
         </div>
       </div>
 
+      {(st === "granskas" || st === "komplettering") && (
+        <WireBox label="Fastighetsinfo & prissättning" className="mb-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Yta (m²)
+              </span>
+              <input
+                type="text"
+                value={draft.yta || ""}
+                onChange={(e) => setDraftField("yta", e.target.value)}
+                placeholder="180"
+                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Hyra (kr/mån)
+              </span>
+              <input
+                type="text"
+                value={draft.hyra || ""}
+                onChange={(e) => setDraftField("hyra", e.target.value)}
+                placeholder="45 000"
+                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Fastighetsskatt (kr/år)
+              </span>
+              <input
+                type="text"
+                value={draft.fastighetsskatt || ""}
+                onChange={(e) => setDraftField("fastighetsskatt", e.target.value)}
+                placeholder="12 000"
+                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Fastighetsbeteckning
+              </span>
+              <input
+                type="text"
+                value={draft.fastighetsbeteckning || ""}
+                onChange={(e) => setDraftField("fastighetsbeteckning", e.target.value)}
+                placeholder="Innerstaden 12:34"
+                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+              />
+            </label>
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Kvadratmeterpris (kr/kvm/år)
+              </span>
+              <div className="flex h-10 items-center border border-dashed border-muted-foreground/40 bg-muted/20 px-3 text-sm text-muted-foreground">
+                {kvmPris != null ? `${kvmPris.toLocaleString("sv-SE")} kr/kvm/år` : "—"}
+              </div>
+            </div>
+            <div>
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Karta
+              </span>
+              <div className="flex h-24 flex-col items-center justify-center gap-1 border border-dashed border-muted-foreground/40 bg-muted/30 text-center text-xs text-muted-foreground">
+                <span>[ Karta ]</span>
+                <span>{draft.adress || "Ingen adress angiven"}</span>
+              </div>
+            </div>
+          </div>
+        </WireBox>
+      )}
+
       {komplOpen && (
         <WireBox label="Begär komplettering · hela annonsen" className="mb-6">
           <textarea
@@ -759,18 +841,6 @@ function AdminAnnonsDetail() {
             </label>
             <label className="block">
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Yta (m²)
-              </span>
-              <input
-                type="text"
-                value={utkastYta}
-                onChange={(e) => setUtkastYta(e.target.value)}
-                placeholder="180"
-                className="h-10 w-48 border border-foreground/40 bg-background px-3 text-sm"
-              />
-            </label>
-            <label className="block">
-              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Pris (kr)
               </span>
               <input
@@ -783,10 +853,10 @@ function AdminAnnonsDetail() {
           </div>
           <div className="mt-4">
             <button
-              disabled={!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastYta.trim() || !utkastPris.trim()}
+              disabled={!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()}
               onClick={sendDraftToSeller}
               className={`border px-4 py-2 text-sm font-medium ${
-                utkastRubrik.trim() && utkastBeskrivning.trim() && utkastYta.trim() && utkastPris.trim()
+                utkastRubrik.trim() && utkastBeskrivning.trim() && utkastPris.trim()
                   ? "border-foreground bg-foreground text-background hover:opacity-80"
                   : "border-muted-foreground/30 bg-muted/30 text-muted-foreground cursor-not-allowed"
               }`}

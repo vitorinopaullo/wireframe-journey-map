@@ -152,6 +152,10 @@ export type Draft = {
   ort: string;
   adress: string;
   yta: string;
+  // Fastighetsinfo & prissättning — sätts av TreLink under Granskning.
+  hyra: string;
+  fastighetsskatt: string;
+  fastighetsbeteckning: string;
   verksamhet: string;
   orgnr: string;
   // Hyresvärd & BRF
