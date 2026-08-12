@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { Pencil } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
@@ -163,29 +164,156 @@ function groupForTyp(typ: string): string | undefined {
   return Object.keys(FALTGRUPP_TYPER).find((g) => FALTGRUPP_TYPER[g].includes(typ));
 }
 
-function Field({ k, v }: { k: string; v?: string }) {
-  const missing = !v;
+function EditedMark() {
   return (
-    <div className="border-b border-dashed border-muted-foreground/30 pb-2">
-      <Annotation>{k}</Annotation>
-      <div className={`mt-1 text-sm ${missing ? "text-amber-700 dark:text-amber-500" : ""}`}>
-        {missing ? "⚠️ Ej ifyllt" : v}
+    <span
+      title="Redigerat av TreLink"
+      className="font-mono text-[9px] uppercase tracking-wider text-foreground"
+    >
+      · TreLink
+    </span>
+  );
+}
+
+function Field({
+  k,
+  v,
+  edited,
+  onSave,
+}: {
+  k: string;
+  v?: string;
+  edited?: boolean;
+  onSave?: (value: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draftVal, setDraftVal] = useState(v ?? "");
+  const missing = !v;
+
+  useEffect(() => {
+    if (!editing) setDraftVal(v ?? "");
+  }, [v, editing]);
+
+  if (!onSave) {
+    return (
+      <div className="border-b border-dashed border-muted-foreground/30 pb-2">
+        <Annotation>{k}</Annotation>
+        <div className={`mt-1 text-sm ${missing ? "text-amber-700 dark:text-amber-500" : ""}`}>
+          {missing ? "⚠️ Ej ifyllt" : v}
+        </div>
       </div>
+    );
+  }
+
+  const commit = () => {
+    setEditing(false);
+    const next = draftVal.trim();
+    if (next !== (v ?? "")) onSave(next);
+  };
+
+  return (
+    <div className={`border-b pb-2 ${edited ? "border-foreground" : "border-dashed border-muted-foreground/30"}`}>
+      <div className="flex items-center gap-1.5">
+        <Annotation>{k}</Annotation>
+        {edited && <EditedMark />}
+      </div>
+      {editing ? (
+        <input
+          autoFocus
+          type="text"
+          value={draftVal}
+          onChange={(e) => setDraftVal(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") commit();
+            if (e.key === "Escape") {
+              setDraftVal(v ?? "");
+              setEditing(false);
+            }
+          }}
+          className="mt-1 h-8 w-full border border-foreground/50 bg-background px-2 text-sm"
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className="mt-1 flex w-full items-center justify-between gap-2 text-left text-sm hover:text-foreground"
+        >
+          <span className={missing ? "text-amber-700 dark:text-amber-500" : ""}>
+            {missing ? "⚠️ Ej ifyllt" : v}
+          </span>
+          <Pencil className="h-3 w-3 shrink-0 text-muted-foreground" />
+        </button>
+      )}
     </div>
   );
 }
 
-function TagsField({ k, v }: { k: string; v?: string }) {
+function TagsField({
+  k,
+  v,
+  edited,
+  onSave,
+}: {
+  k: string;
+  v?: string;
+  edited?: boolean;
+  onSave: (value: string) => void;
+}) {
   const tags = v ? v.split(",").map((t) => t.trim()).filter(Boolean) : [];
+  const [custom, setCustom] = useState("");
+
+  const removeTag = (tag: string) => onSave(tags.filter((t) => t !== tag).join(", "));
+  const addTag = (raw: string) => {
+    const tag = raw.trim();
+    if (!tag || tags.includes(tag)) return;
+    onSave([...tags, tag].join(", "));
+  };
+  const submitCustom = () => {
+    if (!custom.trim()) return;
+    addTag(custom);
+    setCustom("");
+  };
+
   return (
-    <div className="border-b border-dashed border-muted-foreground/30 pb-2">
-      <Annotation>{k}</Annotation>
+    <div className={`border-b pb-2 ${edited ? "border-foreground" : "border-dashed border-muted-foreground/30"}`}>
+      <div className="flex items-center gap-1.5">
+        <Annotation>{k}</Annotation>
+        {edited && <EditedMark />}
+      </div>
       <div className="mt-1 flex flex-wrap gap-1.5">
         {tags.length > 0 ? (
-          tags.map((t) => <WireTag key={t}>{t}</WireTag>)
+          tags.map((t) => (
+            <WireTag key={t} active onClick={() => removeTag(t)}>
+              {t} <span aria-hidden className="ml-1">×</span>
+            </WireTag>
+          ))
         ) : (
           <span className="text-sm text-amber-700 dark:text-amber-500">⚠️ Ej ifyllt</span>
         )}
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <input
+          type="text"
+          value={custom}
+          onChange={(e) => setCustom(e.target.value.slice(0, 40))}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submitCustom();
+            }
+          }}
+          placeholder="Egen tagg…"
+          className="h-7 flex-1 border border-dashed border-muted-foreground/50 bg-background px-2 text-xs focus:border-foreground focus:outline-none"
+        />
+        <button
+          type="button"
+          onClick={submitCustom}
+          aria-label="Lägg till egen tagg"
+          className="flex h-7 w-7 shrink-0 items-center justify-center border border-dashed border-muted-foreground/50 font-mono text-xs hover:border-foreground"
+        >
+          +
+        </button>
       </div>
     </div>
   );
@@ -414,6 +542,56 @@ function AdminAnnonsDetail() {
 
   const setDraftField = (key: string, value: string) => {
     patchAnnons(id, (it) => ({ ...it, draft: { ...it.draft, [key]: value } }));
+    refresh();
+  };
+
+  // Sparar ett fält TreLink korrigerat och markerar det i trelinkEdits — skiljer
+  // TreLinks rättningar från säljarens ursprungliga underlag (se EditedMark).
+  const saveDraftField = (key: string, editKey?: string) => (value: string) => {
+    patchAnnons(id, (it) => ({
+      ...it,
+      draft: { ...it.draft, [key]: value },
+      trelinkEdits: { ...it.trelinkEdits, [editKey ?? `draft.${key}`]: true },
+    }));
+    refresh();
+  };
+
+  const saveTypFaltField = (grupp: string, key: string) => (value: string) => {
+    patchAnnons(id, (it) => ({
+      ...it,
+      draft: {
+        ...it.draft,
+        typFalt: { ...it.draft?.typFalt, [grupp]: { ...it.draft?.typFalt?.[grupp], [key]: value } },
+      },
+      trelinkEdits: { ...it.trelinkEdits, [`typFalt.${grupp}.${key}`]: true },
+    }));
+    refresh();
+  };
+
+  const saveOnboardingField =
+    (editKey: string, apply: (data: OnboardingSaljareData, value: string) => OnboardingSaljareData) =>
+    (value: string) => {
+      const current = readOnboardingSaljare();
+      if (!current) return;
+      localStorage.setItem(ONBOARDING_SALJARE_KEY, JSON.stringify(apply(current, value)));
+      patchAnnons(id, (it) => ({ ...it, trelinkEdits: { ...it.trelinkEdits, [editKey]: true } }));
+      refresh();
+    };
+
+  const splitName = (full: string) => {
+    const parts = full.trim().split(/\s+/).filter(Boolean);
+    return { fornamn: parts[0] ?? "", efternamn: parts.slice(1).join(" ") };
+  };
+
+  const savePaket = (value: string) => {
+    const match = cats.find((c) => c.name.toLowerCase() === value.trim().toLowerCase());
+    if (!match) return;
+    patchAnnons(id, (it) => ({
+      ...it,
+      cat: match.id,
+      draft: { ...it.draft, cat: match.id },
+      trelinkEdits: { ...it.trelinkEdits, "draft.cat": true },
+    }));
     refresh();
   };
 
@@ -900,7 +1078,12 @@ function AdminAnnonsDetail() {
 
           <WireBox label="Typ av lokal">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field k="Paket" v={cat?.name} />
+            <Field
+              k="Paket"
+              v={cat?.name}
+              edited={!!item.trelinkEdits?.["draft.cat"]}
+              onSave={savePaket}
+            />
             <Field
               k="Avgift"
               v={cat ? `${cat.avgift}${item.premium ? " + 2 500 kr (premium-tillägg)" : ""}` : undefined}
@@ -910,12 +1093,49 @@ function AdminAnnonsDetail() {
 
         <WireBox label="Bolagsuppgifter">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field k="Bolag" v={onboarding?.bolagsuppgifter.bolag} />
-            <Field k="Org.nr" v={draft.orgnr || onboarding?.bolagsuppgifter.orgnr} />
-            <Field k="Ort" v={onboarding?.bolagsuppgifter.ort} />
-            <Field k="Adress" v={onboarding?.bolagsuppgifter.adress} />
+            <Field
+              k="Bolag"
+              v={onboarding?.bolagsuppgifter.bolag}
+              edited={!!item.trelinkEdits?.["onboarding.bolag.bolag"]}
+              onSave={saveOnboardingField("onboarding.bolag.bolag", (d, v) => ({
+                ...d,
+                bolagsuppgifter: { ...d.bolagsuppgifter, bolag: v },
+              }))}
+            />
+            <Field
+              k="Org.nr"
+              v={draft.orgnr || onboarding?.bolagsuppgifter.orgnr}
+              edited={!!item.trelinkEdits?.["draft.orgnr"]}
+              onSave={saveDraftField("orgnr")}
+            />
+            <Field
+              k="Ort"
+              v={onboarding?.bolagsuppgifter.ort}
+              edited={!!item.trelinkEdits?.["onboarding.bolag.ort"]}
+              onSave={saveOnboardingField("onboarding.bolag.ort", (d, v) => ({
+                ...d,
+                bolagsuppgifter: { ...d.bolagsuppgifter, ort: v },
+              }))}
+            />
+            <Field
+              k="Adress"
+              v={onboarding?.bolagsuppgifter.adress}
+              edited={!!item.trelinkEdits?.["onboarding.bolag.adress"]}
+              onSave={saveOnboardingField("onboarding.bolag.adress", (d, v) => ({
+                ...d,
+                bolagsuppgifter: { ...d.bolagsuppgifter, adress: v },
+              }))}
+            />
             <div className="md:col-span-2">
-              <Field k="Företagspresentation" v={onboarding?.bolagsuppgifter.presentation} />
+              <Field
+                k="Företagspresentation"
+                v={onboarding?.bolagsuppgifter.presentation}
+                edited={!!item.trelinkEdits?.["onboarding.bolag.presentation"]}
+                onSave={saveOnboardingField("onboarding.bolag.presentation", (d, v) => ({
+                  ...d,
+                  bolagsuppgifter: { ...d.bolagsuppgifter, presentation: v },
+                }))}
+              />
             </div>
           </div>
         </WireBox>
@@ -925,9 +1145,30 @@ function AdminAnnonsDetail() {
             <Field
               k="Namn"
               v={onboarding ? `${onboarding.saljaruppgifter.fornamn} ${onboarding.saljaruppgifter.efternamn}` : undefined}
+              edited={!!item.trelinkEdits?.["onboarding.kontakt.namn"]}
+              onSave={saveOnboardingField("onboarding.kontakt.namn", (d, v) => {
+                const { fornamn, efternamn } = splitName(v);
+                return { ...d, saljaruppgifter: { ...d.saljaruppgifter, fornamn, efternamn } };
+              })}
             />
-            <Field k="Mobil" v={onboarding?.saljaruppgifter.mobil} />
-            <Field k="E-post" v={onboarding?.saljaruppgifter.epost} />
+            <Field
+              k="Mobil"
+              v={onboarding?.saljaruppgifter.mobil}
+              edited={!!item.trelinkEdits?.["onboarding.kontakt.mobil"]}
+              onSave={saveOnboardingField("onboarding.kontakt.mobil", (d, v) => ({
+                ...d,
+                saljaruppgifter: { ...d.saljaruppgifter, mobil: v },
+              }))}
+            />
+            <Field
+              k="E-post"
+              v={onboarding?.saljaruppgifter.epost}
+              edited={!!item.trelinkEdits?.["onboarding.kontakt.epost"]}
+              onSave={saveOnboardingField("onboarding.kontakt.epost", (d, v) => ({
+                ...d,
+                saljaruppgifter: { ...d.saljaruppgifter, epost: v },
+              }))}
+            />
           </div>
         </WireBox>
 
@@ -940,10 +1181,40 @@ function AdminAnnonsDetail() {
             <>
               <div className="mb-3 text-sm">Kontaktpersonen är inte firmatecknare — se uppgifter nedan.</div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <Field k="Roll" v={onboarding.firmatecknare.roll} />
-                <Field k="Namn" v={`${onboarding.firmatecknare.fornamn} ${onboarding.firmatecknare.efternamn}`} />
-                <Field k="Mail" v={onboarding.firmatecknare.mail} />
-                <Field k="Mobil" v={onboarding.firmatecknare.mobil} />
+                <Field
+                  k="Roll"
+                  v={onboarding.firmatecknare.roll}
+                  edited={!!item.trelinkEdits?.["onboarding.firmatecknare.roll"]}
+                  onSave={saveOnboardingField("onboarding.firmatecknare.roll", (d, v) =>
+                    d.firmatecknare ? { ...d, firmatecknare: { ...d.firmatecknare, roll: v } } : d,
+                  )}
+                />
+                <Field
+                  k="Namn"
+                  v={`${onboarding.firmatecknare.fornamn} ${onboarding.firmatecknare.efternamn}`}
+                  edited={!!item.trelinkEdits?.["onboarding.firmatecknare.namn"]}
+                  onSave={saveOnboardingField("onboarding.firmatecknare.namn", (d, v) => {
+                    if (!d.firmatecknare) return d;
+                    const { fornamn, efternamn } = splitName(v);
+                    return { ...d, firmatecknare: { ...d.firmatecknare, fornamn, efternamn } };
+                  })}
+                />
+                <Field
+                  k="Mail"
+                  v={onboarding.firmatecknare.mail}
+                  edited={!!item.trelinkEdits?.["onboarding.firmatecknare.mail"]}
+                  onSave={saveOnboardingField("onboarding.firmatecknare.mail", (d, v) =>
+                    d.firmatecknare ? { ...d, firmatecknare: { ...d.firmatecknare, mail: v } } : d,
+                  )}
+                />
+                <Field
+                  k="Mobil"
+                  v={onboarding.firmatecknare.mobil}
+                  edited={!!item.trelinkEdits?.["onboarding.firmatecknare.mobil"]}
+                  onSave={saveOnboardingField("onboarding.firmatecknare.mobil", (d, v) =>
+                    d.firmatecknare ? { ...d, firmatecknare: { ...d.firmatecknare, mobil: v } } : d,
+                  )}
+                />
               </div>
             </>
           )}
@@ -951,8 +1222,18 @@ function AdminAnnonsDetail() {
 
         <WireBox label="Grunduppgifter">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field k="Försäljningsadress" v={draft.adress} />
-            <Field k="Verksamhetstyp" v={draft.verksamhet} />
+            <Field
+              k="Försäljningsadress"
+              v={draft.adress}
+              edited={!!item.trelinkEdits?.["draft.adress"]}
+              onSave={saveDraftField("adress")}
+            />
+            <Field
+              k="Verksamhetstyp"
+              v={draft.verksamhet}
+              edited={!!item.trelinkEdits?.["draft.verksamhet"]}
+              onSave={saveDraftField("verksamhet")}
+            />
           </div>
         </WireBox>
 
@@ -966,10 +1247,23 @@ function AdminAnnonsDetail() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {GRUPP_FALT[grupp].map((f) => {
                   const value = draft.typFalt?.[grupp]?.[f.key];
+                  const editKey = `typFalt.${grupp}.${f.key}`;
                   return f.isTags ? (
-                    <TagsField key={f.key} k={f.label} v={value} />
+                    <TagsField
+                      key={f.key}
+                      k={f.label}
+                      v={value}
+                      edited={!!item.trelinkEdits?.[editKey]}
+                      onSave={saveTypFaltField(grupp, f.key)}
+                    />
                   ) : (
-                    <Field key={f.key} k={f.label} v={value} />
+                    <Field
+                      key={f.key}
+                      k={f.label}
+                      v={value}
+                      edited={!!item.trelinkEdits?.[editKey]}
+                      onSave={saveTypFaltField(grupp, f.key)}
+                    />
                   );
                 })}
               </div>
@@ -979,10 +1273,30 @@ function AdminAnnonsDetail() {
 
         <WireBox label="Hyresvärd & BRF">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field k="Hyresvärd namn" v={draft.hyresvardNamn} />
-            <Field k="Hyresvärd e-post" v={draft.hyresvardEmail} />
-            <Field k="Hyresvärd telefon" v={draft.hyresvardTel} />
-            <Field k="BRF-kontaktperson" v={draft.brfKontakt} />
+            <Field
+              k="Hyresvärd namn"
+              v={draft.hyresvardNamn}
+              edited={!!item.trelinkEdits?.["draft.hyresvardNamn"]}
+              onSave={saveDraftField("hyresvardNamn")}
+            />
+            <Field
+              k="Hyresvärd e-post"
+              v={draft.hyresvardEmail}
+              edited={!!item.trelinkEdits?.["draft.hyresvardEmail"]}
+              onSave={saveDraftField("hyresvardEmail")}
+            />
+            <Field
+              k="Hyresvärd telefon"
+              v={draft.hyresvardTel}
+              edited={!!item.trelinkEdits?.["draft.hyresvardTel"]}
+              onSave={saveDraftField("hyresvardTel")}
+            />
+            <Field
+              k="BRF-kontaktperson"
+              v={draft.brfKontakt}
+              edited={!!item.trelinkEdits?.["draft.brfKontakt"]}
+              onSave={saveDraftField("brfKontakt")}
+            />
           </div>
         </WireBox>
 
