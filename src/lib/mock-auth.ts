@@ -1,6 +1,8 @@
 // Prototyp/mock av BankID-baserad auth + TreLink admin-kö.
 // Persistas i localStorage. Ingen riktig backend.
 
+import { addNotis } from "@/lib/admin-notiser";
+
 export type BankIdPayload = {
   personnr: string;
   fornamn: string;
@@ -106,10 +108,20 @@ export function upsertAdminAccount(
   const now = Date.now();
   const idx = list.findIndex((a) => a.userId === userId);
   if (idx >= 0) {
+    const roleChanged = !!patch.role && list[idx].role !== patch.role;
     list[idx] = { ...list[idx], ...patch, updatedAt: now };
+    if (roleChanged) {
+      const { fornamn, efternamn } = list[idx].bankid;
+      addNotis(
+        "anvandare",
+        `${fornamn} ${efternamn} valde roll: ${patch.role === "saljare" ? "Säljare" : "Köpare"}`,
+        `/admin/anvandare/${list[idx].id}`,
+      );
+    }
   } else if (patch.bankid) {
+    const id = `acc_${now}`;
     list.unshift({
-      id: `acc_${now}`,
+      id,
       userId,
       bankid: patch.bankid,
       createdAt: now,
@@ -117,6 +129,11 @@ export function upsertAdminAccount(
       role: patch.role,
       profil: patch.profil,
     });
+    addNotis(
+      "anvandare",
+      `Nytt konto: ${patch.bankid.fornamn} ${patch.bankid.efternamn}`,
+      `/admin/anvandare/${id}`,
+    );
   }
   window.localStorage.setItem(ADMIN_QUEUE_KEY, JSON.stringify(list));
 }

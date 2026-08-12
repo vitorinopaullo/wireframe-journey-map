@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { WireTag } from "@/components/wire";
 import { readAnnonser, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
+import { unreadCountByKategori, STORAGE_KEY as NOTISER_STORAGE_KEY, type AdminNotisKategori } from "@/lib/admin-notiser";
 
 const adminNav = [
   { to: "/admin", label: "Översikt" },
@@ -38,11 +39,30 @@ function useGranskningCount() {
   return n;
 }
 
+// Generisk badge-räknare för notissystemet i admin-notiser.ts — Köpare/Affärer
+// kan koppla in fler kategorier här senare utan omskrivning.
+function useNotisCount(kategori: AdminNotisKategori) {
+  const [n, setN] = useState(() => unreadCountByKategori(kategori));
+
+  useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key !== null && e.key !== NOTISER_STORAGE_KEY) return;
+      setN(unreadCountByKategori(kategori));
+    }
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [kategori]);
+
+  return n;
+}
+
 export function AdminLayout({ children }: { children?: ReactNode }) {
   const location = useLocation();
   const granskningCount = useGranskningCount();
+  const anvandareNotisCount = useNotisCount("anvandare");
   const navCounts: Record<string, number> = {
     "/admin/annonser": granskningCount,
+    "/admin/anvandare": anvandareNotisCount,
   };
   return (
     <div className="min-h-screen bg-background text-foreground">

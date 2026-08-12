@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { PageHeader, Annotation, WireTag } from "@/components/wire";
 import { readAdminAccounts, ADMIN_ACCOUNTS_STORAGE_KEY, type AdminAccountEvent } from "@/lib/mock-auth";
+import { markKategoriRead } from "@/lib/admin-notiser";
 
 export const Route = createFileRoute("/admin/anvandare/")({
   component: AdminAnvandare,
@@ -61,6 +62,10 @@ function AdminAnvandare() {
   const [justUpdatedId, setJustUpdatedId] = useState<string | null>(null);
   const [rollFilter, setRollFilter] = useState<RollFilter>("alla");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("alla");
+
+  useEffect(() => {
+    markKategoriRead("anvandare");
+  }, []);
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
