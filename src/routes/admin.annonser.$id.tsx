@@ -427,6 +427,42 @@ const avvisningsOrsaker = [
   "Bristfälligt underlag trots komplettering",
 ];
 
+// Samma platshållarbox som i Fastighetsinfo & prissättning (Granskning-steget).
+function KartaPlaceholder({ adress }: { adress?: string }) {
+  return (
+    <div className="flex h-24 flex-col items-center justify-center gap-1 border border-dashed border-muted-foreground/40 bg-muted/30 text-center text-xs text-muted-foreground">
+      <span>[ Karta ]</span>
+      <span>{adress || "Ingen adress angiven"}</span>
+    </div>
+  );
+}
+
+// Läsvy av de platshållarbilder säljaren laddat upp i Underlag-steget (se
+// BildGalleri i saljare.skapa-annons.tsx) — bara till referens för TreLink.
+function BilderOversikt({ bilder }: { bilder?: string[] }) {
+  const uppladdade = bilder ?? [];
+  if (uppladdade.length === 0) {
+    return <div className="text-sm text-amber-700 dark:text-amber-500">⚠️ Inga bilder uppladdade ännu.</div>;
+  }
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {uppladdade.map((bild) => (
+          <div
+            key={bild}
+            className="flex h-16 items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-[10px] text-muted-foreground"
+          >
+            ✓ {bild}
+          </div>
+        ))}
+      </div>
+      <Annotation>
+        <span className="mt-2 block">{uppladdade.length} bilder uppladdade</span>
+      </Annotation>
+    </>
+  );
+}
+
 function AdminAnnonsDetail() {
   const { id } = Route.useParams();
   const [item, setItem] = useState<any | null>(null);
@@ -506,6 +542,9 @@ function AdminAnnonsDetail() {
   }, [item]);
 
   const st: WorkflowState | null = item?.workflow?.state ?? null;
+  // TreLink skriver/reviderar annonstexten — underlaget begränsas till det som
+  // faktiskt behövs för att skriva text, resten hörde till Granskning-beslutet.
+  const skrivFasen = st === "hyresvard-notifiering" || st === "utkast-feedback";
   const canApprove =
     st === "granskas" && stats.obligatoriskaTotal > 0 && stats.obligatoriskaOk === stats.obligatoriskaTotal && stats.kompl === 0;
   const prisValid = prisInput.trim() !== "" && Number(prisInput) > 0;
@@ -922,10 +961,7 @@ function AdminAnnonsDetail() {
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Karta
               </span>
-              <div className="flex h-24 flex-col items-center justify-center gap-1 border border-dashed border-muted-foreground/40 bg-muted/30 text-center text-xs text-muted-foreground">
-                <span>[ Karta ]</span>
-                <span>{draft.adress || "Ingen adress angiven"}</span>
-              </div>
+              <KartaPlaceholder adress={draft.adress} />
             </div>
           </div>
         </WireBox>
@@ -1100,6 +1136,8 @@ function AdminAnnonsDetail() {
         <div className="lg:col-span-2 space-y-6">
           <Annotation>Annonsens underlag · alla sektioner visas alltid, även ofullständiga</Annotation>
 
+          {!skrivFasen && (
+          <>
           <WireBox label="Typ av lokal">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field
@@ -1243,6 +1281,8 @@ function AdminAnnonsDetail() {
             </>
           )}
         </WireBox>
+        </>
+        )}
 
         <WireBox label="Grunduppgifter">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -1258,6 +1298,15 @@ function AdminAnnonsDetail() {
               edited={!!item.trelinkEdits?.["draft.verksamhet"]}
               onSave={saveDraftField("verksamhet")}
             />
+            {skrivFasen && (
+              <>
+                <Field k="Yta" v={draft.yta ? `${draft.yta} m²` : undefined} />
+                <Field k="Hyra" v={draft.hyra ? `${draft.hyra} kr/mån` : undefined} />
+                <Field k="Fastighetsskatt" v={draft.fastighetsskatt ? `${draft.fastighetsskatt} kr/år` : undefined} />
+                <Field k="Fastighetsbeteckning" v={draft.fastighetsbeteckning} />
+                <Field k="Kvadratmeterpris" v={kvmPris != null ? `${kvmPris.toLocaleString("sv-SE")} kr/kvm/år` : undefined} />
+              </>
+            )}
           </div>
         </WireBox>
 
@@ -1295,6 +1344,8 @@ function AdminAnnonsDetail() {
           ))
         )}
 
+        {!skrivFasen && (
+        <>
         <WireBox label="Hyresvärd & BRF">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field
@@ -1396,6 +1447,19 @@ function AdminAnnonsDetail() {
             })}
           </div>
           </div>
+        </>
+        )}
+
+        {skrivFasen && (
+          <>
+            <WireBox label="Bilder">
+              <BilderOversikt bilder={draft.bilder} />
+            </WireBox>
+            <WireBox label="Karta">
+              <KartaPlaceholder adress={draft.adress} />
+            </WireBox>
+          </>
+        )}
         </div>
 
         {/* Sidopanel: logg */}
