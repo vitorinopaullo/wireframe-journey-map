@@ -1,5 +1,7 @@
-import { Link, Outlet } from "@tanstack/react-router";
+import { Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { getSession, subscribeSession, signOut, type Session } from "@/lib/mock-auth";
 
 const navItems = [
   { to: "/", label: "Sök annonser" },
@@ -44,6 +46,16 @@ const footerCols: { title: string; links: { to: string; label: string }[]; blurb
 ];
 
 export function PublicLayout({ children }: { children?: ReactNode }) {
+  const [session, setSessionState] = useState<Session | null>(() => getSession());
+  const navigate = useNavigate();
+
+  useEffect(() => subscribeSession(() => setSessionState(getSession())), []);
+
+  function handleLogout() {
+    signOut();
+    navigate({ to: "/" });
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-foreground/20">
@@ -63,16 +75,49 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
               </Link>
             ))}
           </nav>
-          <div className="flex gap-2">
-            <Link to="/logga-in" className="border border-foreground/40 px-3 py-1.5 text-sm">
-              Logga in
-            </Link>
-            <Link
-              to="/registrera"
-              className="border border-foreground bg-foreground px-3 py-1.5 text-sm text-background"
-            >
-              Registrera (BankID)
-            </Link>
+          <div className="flex items-center gap-2">
+            {!session ? (
+              <>
+                <Link to="/logga-in" className="border border-foreground/40 px-3 py-1.5 text-sm">
+                  Logga in
+                </Link>
+                <Link
+                  to="/registrera"
+                  className="border border-foreground bg-foreground px-3 py-1.5 text-sm text-background"
+                >
+                  Registrera (BankID)
+                </Link>
+              </>
+            ) : session.role ? (
+              <>
+                <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Läge
+                </span>
+                <div className="flex border border-foreground/40">
+                  <Link
+                    to="/dashboard"
+                    search={{ mode: "kopare" }}
+                    className={`px-3 py-1 text-xs ${session.role === "kopare" ? "bg-foreground text-background" : "text-foreground"}`}
+                  >
+                    Köpare
+                  </Link>
+                  <Link
+                    to="/dashboard"
+                    search={{ mode: "saljare" }}
+                    className={`px-3 py-1 text-xs ${session.role === "saljare" ? "bg-foreground text-background" : "text-foreground"}`}
+                  >
+                    Säljare
+                  </Link>
+                </div>
+                <button onClick={handleLogout} className="text-xs text-muted-foreground hover:text-foreground">
+                  Logga ut
+                </button>
+              </>
+            ) : (
+              <Link to="/onboarding" className="border border-foreground/40 px-3 py-1.5 text-sm">
+                Slutför kontosättning →
+              </Link>
+            )}
           </div>
         </div>
       </header>
