@@ -838,7 +838,7 @@ function AdminAnnonsDetail() {
       )}
 
       {/* Sticky sammanfattning + huvudåtgärder */}
-      <div className="sticky top-0 z-30 mb-6 border border-foreground/30 bg-background px-4 py-3 shadow-sm">
+      <div className="sticky bottom-0 z-30 mb-6 border border-foreground/30 bg-background px-4 py-3 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-1.5">
             {checklist.map((c) => (
@@ -874,30 +874,27 @@ function AdminAnnonsDetail() {
             </button>
           </div>
         </div>
-
-        <div className="mt-3 flex flex-wrap items-end gap-3 border-t border-dashed border-foreground/20 pt-3">
-          <label className="block">
-            <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-              Sätt pris (kr)
-            </span>
-            <input
-              type="number"
-              min="0"
-              value={prisInput}
-              onChange={(e) => setPrisInput(e.target.value)}
-              placeholder="1 200 000"
-              className="h-9 w-48 border border-foreground/40 bg-background px-3 text-sm"
-            />
-          </label>
-          <span className="max-w-xs text-xs text-muted-foreground">
-            TreLink sätter priset baserat på underlaget — detta blir det pris köpare ser.
-          </span>
-        </div>
       </div>
 
       {(st === "granskas" || st === "komplettering") && (
         <WireBox label="Fastighetsinfo & prissättning" className="mb-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Sätt pris (kr)
+              </span>
+              <input
+                type="number"
+                min="0"
+                value={prisInput}
+                onChange={(e) => setPrisInput(e.target.value)}
+                placeholder="1 200 000"
+                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+              />
+              <span className="mt-1 block text-[11px] text-muted-foreground">
+                TreLink sätter priset baserat på underlaget — detta blir det pris köpare ser.
+              </span>
+            </label>
             <label className="block">
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Yta (m²)
