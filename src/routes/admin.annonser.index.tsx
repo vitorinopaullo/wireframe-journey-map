@@ -55,8 +55,6 @@ const STATUS_TONE: Record<WorkflowState, "neutral" | "warn" | "success" | "dange
   avvisad: "danger",
   "avtal-vantar-signering": "warn",
   "hyresvard-notifiering": "neutral",
-  "utkast-till-saljare": "warn",
-  "utkast-feedback": "neutral",
   publicerad: "success",
 };
 
@@ -87,8 +85,6 @@ const NEXT_ACTOR: Record<WorkflowState, NextActor> = {
   komplettering: "trelink",
   "hyresvard-notifiering": "trelink",
   "avtal-vantar-signering": "saljare",
-  "utkast-till-saljare": "saljare",
-  "utkast-feedback": "trelink",
   publicerad: null,
   avvisad: null,
 };
@@ -113,13 +109,12 @@ function NextActorTag({ status }: { status: WorkflowState | null }) {
   );
 }
 
-type TabId = "granskning" | "signering" | "text" | "godkannande" | "publicerad" | "avvisad";
+type TabId = "granskning" | "signering" | "text" | "publicerad" | "avvisad";
 
 const TABS: { id: TabId; label: string; states: (WorkflowState | null)[] }[] = [
   { id: "granskning", label: "Att granska", states: ["granskas", "komplettering", null] },
   { id: "signering", label: "Väntar på signering", states: ["avtal-vantar-signering"] },
   { id: "text", label: "Redo att skriva text", states: ["hyresvard-notifiering"] },
-  { id: "godkannande", label: "Väntar på godkännande", states: ["utkast-till-saljare", "utkast-feedback"] },
   { id: "publicerad", label: "Publicerade", states: ["publicerad"] },
   { id: "avvisad", label: "Avvisade", states: ["avvisad"] },
 ];

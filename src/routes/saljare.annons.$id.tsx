@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { X, Lock, Upload, Paperclip, FileText, Mail, PenLine, Search, CheckCircle2 } from "lucide-react";
+import { X, Lock, Upload, Paperclip, FileText, Mail, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
 import { SignicatFlow } from "@/components/SignicatFlow";
-import { AnnonsPreviewOverlay } from "@/components/AnnonsPreviewOverlay";
 import { ContractExpiryCountdown } from "@/components/ContractExpiryBanner";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
@@ -35,7 +34,6 @@ const flowSteps: { state: WorkflowState; label: string }[] = [
   { state: "granskas", label: "Granskning" },
   { state: "avtal-vantar-signering", label: "Uppdragsavtal" },
   { state: "hyresvard-notifiering", label: "Hyresvärd" },
-  { state: "utkast-till-saljare", label: "Annonsutkast" },
   { state: "publicerad", label: "Publicerad" },
 ];
 
@@ -45,9 +43,7 @@ const stateOrder: Record<WorkflowState, number> = {
   "avvisad": 0,
   "avtal-vantar-signering": 1,
   "hyresvard-notifiering": 2,
-  "utkast-till-saljare": 3,
-  "utkast-feedback": 3,
-  "publicerad": 4,
+  "publicerad": 3,
 };
 
 // Timeline texts and WorkflowData fields that are introduced at each step order.
@@ -60,11 +56,7 @@ const stepTextsMap: Record<number, string[]> = {
     "Informationsmejl skickat till hyresvärden",
   ],
   3: [
-    "Annonstextutkast skickat för granskning",
-    "Lämnade feedback på annonsutkastet",
-  ],
-  4: [
-    "Annonstexten godkänd",
+    "TreLink publicerade annonsen",
     "Annons publicerad på trelink.se",
     "Bekräftelsemejl skickat till säljaren",
   ],
@@ -73,8 +65,7 @@ const stepTextsMap: Record<number, string[]> = {
 const stepFieldsMap: Record<number, (keyof WorkflowData)[]> = {
   1: ["avtalSentAt"],
   2: ["avtalSignedAt", "hyresvardNotifieradAt"],
-  3: ["saljareFeedback"],
-  4: ["publiceradAt"],
+  3: ["publiceradAt"],
 };
 
 function nowSv() {
@@ -85,13 +76,9 @@ function SellerAnnonsDetail() {
   const { id } = Route.useParams();
   const [item, setItem] = useState<any | null>(null);
   const [tick, setTick] = useState(0);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [feedbackText, setFeedbackText] = useState("");
   const [signicatOpen, setSignicatOpen] = useState(false);
   const [showLandlordUpdate, setShowLandlordUpdate] = useState(false);
   const [newLandlordEmail, setNewLandlordEmail] = useState("");
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
   const [kompletteringFiles, setKompletteringFiles] = useState<string[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [onboarding, setOnboarding] = useState<OnboardingSaljareData | null>(null);
@@ -148,7 +135,7 @@ function SellerAnnonsDetail() {
       // Backward jump: purge timeline entries and reset fields from later steps.
       if (targetOrder < originalOrder) {
         const textsToRemove = new Set<string>();
-        for (let ord = targetOrder + 1; ord <= 4; ord++) {
+        for (let ord = targetOrder + 1; ord <= 3; ord++) {
           (stepTextsMap[ord] ?? []).forEach((t) => textsToRemove.add(t));
         }
         nwf.timeline = nwf.timeline.filter(
@@ -156,7 +143,7 @@ function SellerAnnonsDetail() {
             !textsToRemove.has(l.text) &&
             !(targetOrder < 2 && l.text.startsWith("Nytt informationsmejl skickat till")),
         );
-        for (let ord = targetOrder + 1; ord <= 4; ord++) {
+        for (let ord = targetOrder + 1; ord <= 3; ord++) {
           for (const field of stepFieldsMap[ord] ?? []) {
             delete (nwf as any)[field];
           }
@@ -186,17 +173,11 @@ function SellerAnnonsDetail() {
         nwf.avtalSignedAt = nwf.avtalSignedAt ?? new Date().toISOString();
         nwf.hyresvardNotifieradAt = nwf.hyresvardNotifieradAt ?? new Date().toISOString();
       }
-      if (target === "utkast-till-saljare") {
-        const msg = "Annonstextutkast skickat för granskning";
-        if (!hasText(msg)) nwf = logEntry(nwf, "TreLink", msg);
-      }
       if (target === "publicerad") {
-        const m1 = "Annonstexten godkänd";
-        const m2 = "Annons publicerad på trelink.se";
-        const m3 = "Bekräftelsemejl skickat till säljaren";
-        if (!hasText(m1)) nwf = logEntry(nwf, "Säljare", m1);
-        if (!hasText(m2)) nwf = logEntry(nwf, "TreLink", m2);
-        if (!hasText(m3)) nwf = logEntry(nwf, "System", m3);
+        const m1 = "TreLink publicerade annonsen";
+        const m2 = "Bekräftelsemejl skickat till säljaren";
+        if (!hasText(m1)) nwf = logEntry(nwf, "TreLink", m1);
+        if (!hasText(m2)) nwf = logEntry(nwf, "System", m2);
         nwf.publiceradAt = nwf.publiceradAt ?? new Date().toISOString();
       }
       if (target === "avvisad") {
@@ -246,35 +227,6 @@ function SellerAnnonsDetail() {
     refresh();
   };
 
-
-  const approveDraft = () => {
-    patchAnnons(id, (it) => {
-      const now = new Date().toISOString();
-      let nwf: WorkflowData = { ...it.workflow, state: "publicerad", publiceradAt: now };
-      nwf = logEntry(nwf, "Säljare", "Annonstexten godkänd");
-      nwf = logEntry(nwf, "TreLink", "Annons publicerad på trelink.se");
-      nwf = logEntry(nwf, "System", "Bekräftelsemejl skickat till säljaren");
-      return { ...it, status: "Publicerad", publiceradAt: now, workflow: nwf };
-    });
-    toast("Trelink publicerar din annons inom kort");
-    refresh();
-  };
-
-  const sendFeedback = () => {
-    if (!feedbackText.trim()) return;
-    patchAnnons(id, (it) => ({
-      ...it,
-      workflow: logEntry(
-        { ...it.workflow, state: "utkast-feedback", saljareFeedback: { msg: feedbackText, at: new Date().toISOString() } },
-        "Säljare",
-        `Lämnade feedback på annonsutkastet`,
-      ),
-    }));
-    toast("Feedback skickad — Trelink återkommer med en reviderad version");
-    setFeedbackText("");
-    setShowFeedback(false);
-    refresh();
-  };
 
   const submitKomplettering = () => {
     patchAnnons(id, (it) => {
@@ -676,70 +628,7 @@ function SellerAnnonsDetail() {
             </>
           )}
 
-          {/* STEP 4 · Annonsutkast */}
-          {(st === "utkast-till-saljare" || st === "utkast-feedback") && (
-            <>
-              <WireBox label="Status">
-                <div className="text-sm"><PenLine className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Annonstexten är klar för ditt godkännande.</div>
-                <Annotation>
-                  <span className="mt-2 block">
-                    TRELINK HAR SKRIVIT ANNONSTEXTEN BASERAT PÅ DITT UNDERLAG. GRANSKA OCH GODKÄNN — ELLER LÄMNA FEEDBACK.
-                  </span>
-                </Annotation>
-              </WireBox>
-
-              <WireBox label="Annonstextutkast · skrivet av TreLink">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                  Annonstextutkast · skrivet av Trelink
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Trelink har skrivit annonstexten baserat på ditt underlag. Förhandsgranska hur annonsen
-                  ser ut för köpare — godkänn sedan eller lämna feedback.
-                </p>
-
-                <div className="mt-4">
-                  <WireBtn className="w-full" onClick={() => setPreviewOpen(true)}>
-                    <Search className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Förhandsgranska annons som köpare ser den
-                  </WireBtn>
-                </div>
-
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                  <WireBtn className="w-full sm:w-auto" onClick={() => setConfirmApproveOpen(true)}>
-                    Godkänn annonstexten
-                  </WireBtn>
-                  <WireBtn variant="secondary" onClick={() => setShowFeedback((v) => !v)}>
-                    Lämna feedback
-                  </WireBtn>
-                </div>
-
-
-                {showFeedback && (
-                  <div className="mt-4">
-                    <Annotation>Din feedback till TreLink</Annotation>
-                    <textarea
-                      value={feedbackText}
-                      onChange={(e) => setFeedbackText(e.target.value)}
-                      placeholder="Vad vill du ändra?"
-                      rows={4}
-                      className="mt-1 w-full border border-dashed border-muted-foreground/50 bg-muted/20 p-3 text-sm"
-                    />
-                    <div className="mt-2">
-                      <WireBtn onClick={sendFeedback}>Skicka feedback</WireBtn>
-                    </div>
-                  </div>
-                )}
-
-                {st === "utkast-feedback" && wf.saljareFeedback && (
-                  <div className="mt-4 border-l-2 border-foreground/60 bg-muted/40 px-3 py-2 text-sm">
-                    <Annotation>Din feedback</Annotation>
-                    <div className="mt-1">{wf.saljareFeedback.msg}</div>
-                  </div>
-                )}
-              </WireBox>
-            </>
-          )}
-
-          {/* STEP 5 · Publicerad */}
+          {/* STEP 4 · Publicerad */}
           {st === "publicerad" && (
             <>
               <WireBox label="Status">
@@ -889,52 +778,6 @@ function SellerAnnonsDetail() {
         </div>
       )}
 
-      <AnnonsPreviewOverlay
-        open={previewOpen}
-        item={item}
-        onClose={() => setPreviewOpen(false)}
-        onFeedback={() => {
-          setPreviewOpen(false);
-          setShowFeedback(true);
-          setTimeout(() => {
-            const ta = document.querySelector<HTMLTextAreaElement>("textarea");
-            if (ta) {
-              ta.scrollIntoView({ behavior: "smooth", block: "center" });
-              ta.focus();
-            }
-          }, 100);
-        }}
-        onApprove={() => setConfirmApproveOpen(true)}
-      />
-
-      {confirmApproveOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md border border-foreground/20 bg-background p-6">
-            <h3 className="mb-3 text-base font-semibold">Godkänn annonstexten?</h3>
-            <p className="mb-5 text-sm text-muted-foreground">
-              När du godkänner texten publicerar Trelink din annons. Du kan inte redigera texten efter
-              godkännande — kontakta Trelink om ändringar behövs.
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setConfirmApproveOpen(false)}
-                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
-              >
-                Avbryt
-              </button>
-              <WireBtn
-                onClick={() => {
-                  setConfirmApproveOpen(false);
-                  setPreviewOpen(false);
-                  approveDraft();
-                }}
-              >
-                Ja, godkänn och skicka till Trelink
-              </WireBtn>
-            </div>
-          </div>
-        </div>
-      )}
     </AppLayout>
 
 

@@ -20,7 +20,6 @@ const TRELINK_ACTION_STATES: WorkflowState[] = [
   "granskas",
   "komplettering",
   "hyresvard-notifiering",
-  "utkast-feedback",
 ];
 
 function useGranskningCount() {

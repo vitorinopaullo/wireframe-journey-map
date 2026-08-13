@@ -7,8 +7,6 @@ export type WorkflowState =
   | "avvisad" // TreLink har avvisat annonsen
   | "avtal-vantar-signering" // TreLink har skickat uppdragsavtal till säljaren
   | "hyresvard-notifiering" // Avtal signerat — TreLink ska meddela hyresvärden
-  | "utkast-till-saljare" // TreLink har tagit fram annonsutkast — säljaren ska granska
-  | "utkast-feedback" // Säljaren har lämnat feedback — TreLink justerar
   | "publicerad"; // Annonsen är live
 
 export const stateLabel: Record<WorkflowState, string> = {
@@ -17,8 +15,6 @@ export const stateLabel: Record<WorkflowState, string> = {
   "avvisad": "Avvisad",
   "avtal-vantar-signering": "Uppdragsavtal — väntar på signering",
   "hyresvard-notifiering": "TreLink kontaktar hyresvärden",
-  "utkast-till-saljare": "Annonsutkast — väntar på ditt godkännande",
-  "utkast-feedback": "Feedback lämnad — TreLink justerar",
   "publicerad": "Publicerad",
 };
 
@@ -33,10 +29,6 @@ export const stateHint: Record<WorkflowState, string> = {
     "Uppdragsavtalet är skickat till din e-post. Du kan också signera direkt här — via Signicat + BankID.",
   "hyresvard-notifiering":
     "TreLink skickar ett informationsmail till hyresvärden om att en överlåtelseprocess påbörjats.",
-  "utkast-till-saljare":
-    "TreLink har tagit fram ett annonsutkast baserat på ditt underlag. Godkänn eller lämna feedback.",
-  "utkast-feedback":
-    "TreLink justerar utkastet enligt din feedback och återkommer.",
   "publicerad": "Annonsen är live och synlig för köpare.",
 };
 
@@ -64,7 +56,6 @@ export type WorkflowData = {
   avtalSignedAt?: string;
   hyresvardNotifieradAt?: string;
   utkast?: AnnonsUtkast;
-  saljareFeedback?: { msg: string; at: string };
   publiceradAt?: string;
 };
 

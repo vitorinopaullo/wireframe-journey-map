@@ -8,14 +8,13 @@ export const Route = createFileRoute("/admin/")({
   component: AdminOversikt,
 });
 
-type QueueId = "granskning" | "signering" | "text" | "godkannande" | "publicerad";
+type QueueId = "granskning" | "signering" | "text" | "publicerad";
 
 // Samma indelning som flikarna i Granskning-listan (admin.annonser.index.tsx).
 const QUEUES: { id: QueueId; label: string; states: (WorkflowState | null)[] }[] = [
   { id: "granskning", label: "Att granska", states: ["granskas", "komplettering", null] },
   { id: "signering", label: "Väntar på signering", states: ["avtal-vantar-signering"] },
   { id: "text", label: "Redo att skriva text", states: ["hyresvard-notifiering"] },
-  { id: "godkannande", label: "Väntar på godkännande", states: ["utkast-till-saljare", "utkast-feedback"] },
   { id: "publicerad", label: "Publicerade", states: ["publicerad"] },
 ];
 
@@ -25,8 +24,6 @@ const NEXT_ACTOR: Record<WorkflowState, "trelink" | "saljare" | null> = {
   komplettering: "trelink",
   "hyresvard-notifiering": "trelink",
   "avtal-vantar-signering": "saljare",
-  "utkast-till-saljare": "saljare",
-  "utkast-feedback": "trelink",
   publicerad: null,
   avvisad: null,
 };

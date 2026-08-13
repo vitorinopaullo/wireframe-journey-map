@@ -78,7 +78,6 @@ function MyListings() {
                     <WireTag>{label}</WireTag>
                     {i.premium && <WireTag>Premium</WireTag>}
                     {st === "komplettering" && <WireTag>Åtgärd krävs</WireTag>}
-                    {st === "utkast-till-saljare" && <WireTag>Åtgärd krävs</WireTag>}
                     {st === "avtal-vantar-signering" && <WireTag>Signera</WireTag>}
                   </div>
                   {isNew ? (

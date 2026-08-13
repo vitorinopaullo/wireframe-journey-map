@@ -351,8 +351,7 @@ const kompletteringsMallar = [
 const PROCESS_STEPS: { label: string; states: WorkflowState[] }[] = [
   { label: "Granskning", states: ["granskas", "komplettering"] },
   { label: "Uppdragsavtal", states: ["avtal-vantar-signering"] },
-  { label: "Annonstext", states: ["hyresvard-notifiering", "utkast-till-saljare"] },
-  { label: "Godkännande", states: ["utkast-feedback"] },
+  { label: "Annonstext", states: ["hyresvard-notifiering"] },
   { label: "Publicerad", states: ["publicerad"] },
 ];
 
@@ -640,7 +639,7 @@ function AdminAnnonsDetail() {
   const st: WorkflowState | null = item?.workflow?.state ?? null;
   // TreLink skriver/reviderar annonstexten — underlaget begränsas till det som
   // faktiskt behövs för att skriva text, resten hörde till Granskning-beslutet.
-  const skrivFasen = st === "hyresvard-notifiering" || st === "utkast-feedback";
+  const skrivFasen = st === "hyresvard-notifiering";
   const canApprove =
     st === "granskas" && stats.obligatoriskaTotal > 0 && stats.obligatoriskaOk === stats.obligatoriskaTotal && stats.kompl === 0;
   const prisValid = prisInput.trim() !== "" && Number(prisInput) > 0;
@@ -868,27 +867,37 @@ function AdminAnnonsDetail() {
     refresh();
   };
 
-  const sendDraftToSeller = () => {
+  const publishAnnons = () => {
     if (!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()) return;
-    patchAnnons(id, (it) => ({
-      ...it,
-      draft: { ...it.draft, valdaBilderOrdning: valdaBilder },
-      workflow: logEntry(
-        {
-          ...it.workflow,
-          state: "utkast-till-saljare",
-          utkast: {
-            rubrik: utkastRubrik,
-            beskrivning: utkastBeskrivning,
-            yta: it.draft?.yta || "",
-            pris: utkastPris,
-            sentAt: new Date().toISOString(),
-          },
-        },
-        "TreLink",
-        "Annonstextutkast skickat för granskning",
-      ),
-    }));
+    patchAnnons(id, (it) => {
+      const now = new Date().toISOString();
+      return {
+        ...it,
+        status: "Publicerad",
+        publiceradAt: now,
+        draft: { ...it.draft, valdaBilderOrdning: valdaBilder },
+        workflow: logEntry(
+          logEntry(
+            {
+              ...it.workflow,
+              state: "publicerad",
+              publiceradAt: now,
+              utkast: {
+                rubrik: utkastRubrik,
+                beskrivning: utkastBeskrivning,
+                yta: it.draft?.yta || "",
+                pris: utkastPris,
+                sentAt: now,
+              },
+            },
+            "TreLink",
+            "TreLink publicerade annonsen",
+          ),
+          "System",
+          "Bekräftelsemejl skickat till säljaren",
+        ),
+      };
+    });
     refresh();
   };
 
@@ -946,12 +955,12 @@ function AdminAnnonsDetail() {
         brodtext: `Hej,\n\nVi vill informera om att en process för överlåtelse av lokalen "${item.titel}" har påbörjats via TreLink. Ni behöver inte agera i detta skede — vid en eventuell affär återkommer vi för godkännande av ny hyresgäst innan tillträde.\n\nMed vänliga hälsningar,\nTreLink`,
       };
     }
-    if (text === "Annonstextutkast skickat för granskning") {
+    if (text === "Bekräftelsemejl skickat till säljaren") {
       return {
-        fran: "TreLink <redaktion@trelink.se>",
+        fran: "TreLink <no-reply@trelink.se>",
         till: sellerEpost,
-        amne: `Ditt annonsutkast är klart för granskning — ${item.titel}`,
-        brodtext: `Hej ${sellerFornamn || "där"},\n\nVi har skrivit annonstexten för "${item.titel}" baserat på ditt underlag. Logga in på TreLink för att förhandsgranska texten som köpare ser den — godkänn eller lämna feedback.\n\nMed vänliga hälsningar,\nTreLink`,
+        amne: `Din annons är nu publicerad — ${item.titel}`,
+        brodtext: `Hej ${sellerFornamn || "där"},\n\nGrattis! Din annons "${item.titel}" är nu live på trelink.se. Du kan följa intresseanmälningar och affärens status direkt i din TreLink-panel.\n\nMed vänliga hälsningar,\nTreLink`,
       };
     }
     return null;
@@ -1235,29 +1244,21 @@ function AdminAnnonsDetail() {
         </WireBox>
       )}
 
-      {(st === "hyresvard-notifiering" || st === "utkast-feedback") && (
+      {st === "hyresvard-notifiering" && (
         <WireBox label="Skriv annonstext" className="mb-6">
-          {st === "hyresvard-notifiering" && (
-            <div className="mb-4 flex flex-wrap items-center gap-2 border-l-2 border-foreground/40 bg-muted/30 px-3 py-2 text-sm">
-              <span>✓ Hyresvärden är automatiskt informerad via Signicat</span>
-              {(() => {
-                const hyresvardMail = (item.workflow?.timeline ?? []).some(
-                  (l: any) => l.text === "Informationsmejl skickat till hyresvärden",
-                );
-                return hyresvardMail ? (
-                  <VisaMailLank
-                    onClick={() => setMailPreview(mailForLogEntry("Informationsmejl skickat till hyresvärden"))}
-                  />
-                ) : null;
-              })()}
-            </div>
-          )}
-          {st === "utkast-feedback" && item.workflow?.saljareFeedback && (
-            <div className="mb-4 border-l-2 border-amber-500/70 bg-amber-50/60 px-3 py-2 dark:bg-amber-500/10">
-              <Annotation>Säljarens feedback</Annotation>
-              <p className="mt-1 text-sm">{item.workflow.saljareFeedback.msg}</p>
-            </div>
-          )}
+          <div className="mb-4 flex flex-wrap items-center gap-2 border-l-2 border-foreground/40 bg-muted/30 px-3 py-2 text-sm">
+            <span>✓ Hyresvärden är automatiskt informerad via Signicat</span>
+            {(() => {
+              const hyresvardMail = (item.workflow?.timeline ?? []).some(
+                (l: any) => l.text === "Informationsmejl skickat till hyresvärden",
+              );
+              return hyresvardMail ? (
+                <VisaMailLank
+                  onClick={() => setMailPreview(mailForLogEntry("Informationsmejl skickat till hyresvärden"))}
+                />
+              ) : null;
+            })()}
+          </div>
           <div className="space-y-4">
             <label className="block">
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -1298,27 +1299,15 @@ function AdminAnnonsDetail() {
           <div className="mt-4">
             <button
               disabled={!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()}
-              onClick={sendDraftToSeller}
+              onClick={publishAnnons}
               className={`border px-4 py-2 text-sm font-medium ${
                 utkastRubrik.trim() && utkastBeskrivning.trim() && utkastPris.trim()
                   ? "border-foreground bg-foreground text-background hover:opacity-80"
                   : "border-muted-foreground/30 bg-muted/30 text-muted-foreground cursor-not-allowed"
               }`}
             >
-              Skicka utkast till säljaren →
+              Publicera annons →
             </button>
-          </div>
-        </WireBox>
-      )}
-
-      {st === "utkast-till-saljare" && (
-        <WireBox label="Väntar på säljarens godkännande" className="mb-6" variant="dashed">
-          <p className="text-sm text-muted-foreground">
-            Utkastet är skickat — inget krävs av TreLink just nu. Säljaren godkänner eller lämnar feedback.
-          </p>
-          <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field k="Skickad rubrik" v={item.workflow?.utkast?.rubrik} />
-            <Field k="Skickat pris" v={item.workflow?.utkast?.pris ? `${item.workflow.utkast.pris} kr` : undefined} />
           </div>
         </WireBox>
       )}
