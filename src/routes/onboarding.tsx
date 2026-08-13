@@ -73,7 +73,7 @@ function Onboarding() {
         }
       />
 
-      {role && (
+      {role && step === 2 && (
         <div className="mb-6 flex items-center gap-2 border border-dashed border-muted-foreground/40 bg-muted/20 px-3 py-2">
           <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
             Du registrerar dig som
