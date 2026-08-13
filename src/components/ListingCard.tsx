@@ -1,10 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { WireTag } from "@/components/wire";
 import { nyckeltalFor } from "@/lib/nyckeltal";
+import type { CatId } from "@/lib/annons-model";
 
 export type Listing = {
   id: string;
   kat: string;
+  cat: CatId;
   titel: string;
   pris: string;
   stad: string;

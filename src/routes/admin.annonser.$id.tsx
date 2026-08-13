@@ -7,6 +7,7 @@ import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, type Workflo
 import { readAdminAccounts } from "@/lib/mock-auth";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
+import { GRUPP_MAT_TYPER, GRUPP_SKONHET_TYPER } from "@/lib/nyckeltal";
 import {
   cats,
   docsByCat,
@@ -613,6 +614,12 @@ function AdminAnnonsDetail() {
         .filter(Boolean) as string[],
     ),
   );
+  const verksamhetTyper = (draft.verksamhet ? String(draft.verksamhet).split(",") : [])
+    .map((s: string) => s.trim())
+    .filter(Boolean);
+  const visaOmsattning =
+    (catId === "aktie" || catId === "inkram") &&
+    verksamhetTyper.some((t: string) => GRUPP_MAT_TYPER.includes(t) || GRUPP_SKONHET_TYPER.includes(t));
   const ritningSpecs: DocSpec[] = valdaGrupper
     .map((g) => RITNING_DOC_BY_GRUPP[g])
     .filter(Boolean)
@@ -1107,6 +1114,20 @@ function AdminAnnonsDetail() {
                 className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
               />
             </label>
+            {visaOmsattning && (
+              <label className="block">
+                <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Omsättning
+                </span>
+                <input
+                  type="text"
+                  value={draft.omsattning || ""}
+                  onChange={(e) => setDraftField("omsattning", e.target.value)}
+                  placeholder="1,9 Mkr"
+                  className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+                />
+              </label>
+            )}
           </div>
 
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">

@@ -16,6 +16,7 @@ const ANTAL_BILDER = 4;
 const listing = {
   id: "1",
   kategori: "Lokal",
+  cat: "overlatelse" as const,
   rubrik: "Restauranglokal · 180 m² · Hornstull",
   underrubrik:
     "Fullt utrustad restauranglokal med uteservering. Lång hyresperiod kvar, fungerande ventilation, A-läge.",
@@ -98,6 +99,7 @@ function ListingDetail() {
   const visaNasta = () => setBild((b) => (b + 1) % ANTAL_BILDER);
   const nyckeltal = nyckeltalFor({
     typ: listing.typ,
+    cat: listing.cat,
     pris: String(listing.pris),
     adress: listing.adress,
     yta: listing.yta,
