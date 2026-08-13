@@ -73,6 +73,15 @@ function Onboarding() {
         }
       />
 
+      {role && (
+        <div className="mb-6 flex items-center gap-2 border border-dashed border-muted-foreground/40 bg-muted/20 px-3 py-2">
+          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            Du registrerar dig som
+          </span>
+          <WireTag active>{role === "kopare" ? "Köpare" : "Säljare"}</WireTag>
+        </div>
+      )}
+
       <div className="mb-8 grid grid-cols-2 gap-2">
         {steps.map((s) => {
           const state = s.n < step ? "done" : s.n === step ? "active" : "pending";
@@ -295,17 +304,10 @@ function Step2({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
           {role === "kopare" ? (
-            <WireBox label="Köparuppgifter">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
-                <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
-                <InputField label="Telefon *" value={telefon} onChange={setTelefon} placeholder="+46 70 123 45 67" />
-                <InputField label="E-post *" value={epost} onChange={setEpost} placeholder="namn@exempel.se" type="email" />
-              </div>
-
-              <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
+            <>
+              <WireBox label="Bolagsuppgifter">
                 <div className="mb-3 flex items-center justify-between">
-                  <Annotation>Bolagsuppgifter (frivilligt nu)</Annotation>
+                  <Annotation>Frivilligt nu</Annotation>
                   <WireTag>Krävs innan köp</WireTag>
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -322,8 +324,17 @@ function Step2({
                     />
                   </div>
                 </div>
-              </div>
-            </WireBox>
+              </WireBox>
+
+              <WireBox label="Köparuppgifter">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
+                  <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
+                  <InputField label="Telefon *" value={telefon} onChange={setTelefon} placeholder="+46 70 123 45 67" />
+                  <InputField label="E-post *" value={epost} onChange={setEpost} placeholder="namn@exempel.se" type="email" />
+                </div>
+              </WireBox>
+            </>
           ) : (
             <>
               <WireBox label="Bolagsuppgifter">
