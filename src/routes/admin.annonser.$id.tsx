@@ -6,6 +6,7 @@ import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/
 import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
 import { readAdminAccounts } from "@/lib/mock-auth";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
+import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
 import {
   cats,
   docsByCat,
@@ -349,7 +350,7 @@ const kompletteringsMallar = [
 
 const PROCESS_STEPS: { label: string; states: WorkflowState[] }[] = [
   { label: "Granskning", states: ["granskas", "komplettering"] },
-  { label: "Avtal", states: ["avtal-vantar-signering"] },
+  { label: "Uppdragsavtal", states: ["avtal-vantar-signering"] },
   { label: "Annonstext", states: ["hyresvard-notifiering", "utkast-till-saljare"] },
   { label: "Godkännande", states: ["utkast-feedback"] },
   { label: "Publicerad", states: ["publicerad"] },
@@ -476,6 +477,7 @@ function AdminAnnonsDetail() {
   const [rejectNote, setRejectNote] = useState("");
   const [prisInput, setPrisInput] = useState("");
   const [mailPreview, setMailPreview] = useState<MailData | null>(null);
+  const [avtalPreviewOpen, setAvtalPreviewOpen] = useState(false);
   const [utkastRubrik, setUtkastRubrik] = useState("");
   const [utkastBeskrivning, setUtkastBeskrivning] = useState("");
   const [utkastPris, setUtkastPris] = useState("");
@@ -702,6 +704,7 @@ function AdminAnnonsDetail() {
         ),
       };
     });
+    setAvtalPreviewOpen(false);
     refresh();
   };
 
@@ -772,6 +775,15 @@ function AdminAnnonsDetail() {
   const sellerEpost = sellerAccount?.profil?.epost || onboarding?.saljaruppgifter.epost || "—";
   const sellerFornamn = sellerAccount?.bankid.fornamn || onboarding?.saljaruppgifter.fornamn || "";
   const hyresvardEpost = draft.hyresvardEmail || "—";
+
+  const avtalFirmatecknareNamn = onboarding?.firmatecknare
+    ? `${onboarding.firmatecknare.fornamn} ${onboarding.firmatecknare.efternamn}`
+    : onboarding
+    ? `${onboarding.saljaruppgifter.fornamn} ${onboarding.saljaruppgifter.efternamn}`
+    : undefined;
+  const avtalFirmatecknareRoll = onboarding?.firmatecknare?.roll || "Firmatecknare";
+  const avtalAvgift = cat ? `${cat.avgift}${item.premium ? " + 2 500 kr (premium-tillägg)" : ""}` : undefined;
+  const avtalPrisFormaterat = prisInput.trim() ? Number(prisInput).toLocaleString("sv-SE") : undefined;
 
   // Mappar en loggad tidslinjetext till innehållet i det (simulerade) mail som skickades då.
   function mailForLogEntry(text: string): MailData | null {
@@ -863,14 +875,14 @@ function AdminAnnonsDetail() {
             </WireBtn>
             <button
               disabled={!canApproveMedPris}
-              onClick={approveAnnons}
+              onClick={() => setAvtalPreviewOpen(true)}
               className={`border px-4 py-2 text-sm font-medium ${
                 canApproveMedPris
                   ? "border-foreground bg-foreground text-background hover:opacity-80"
                   : "border-muted-foreground/30 bg-muted/30 text-muted-foreground cursor-not-allowed"
               }`}
             >
-              {canApproveMedPris ? "Godkänn annons →" : "Godkänn annons (lås upp först)"}
+              {canApproveMedPris ? "Skapa uppdragsavtal →" : "Skapa uppdragsavtal (lås upp först)"}
             </button>
           </div>
         </div>
@@ -1482,6 +1494,53 @@ function AdminAnnonsDetail() {
           </WireBox>
         </div>
       </div>
+
+      {avtalPreviewOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 p-4"
+          onClick={() => setAvtalPreviewOpen(false)}
+        >
+          <div
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-foreground bg-background"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 flex items-center justify-between border-b border-foreground/30 bg-background px-4 py-3">
+              <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                Förhandsgranskning · Uppdragsavtal
+              </div>
+              <WireBtn variant="ghost" onClick={() => setAvtalPreviewOpen(false)}>
+                Stäng
+              </WireBtn>
+            </div>
+
+            <div className="space-y-4 p-6">
+              <div className="inline-flex items-center gap-1 border border-foreground bg-foreground px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-background">
+                ✓ TreLink-signatur: Förifylld
+              </div>
+
+              <UppdragsavtalDokument
+                bolag={onboarding?.bolagsuppgifter.bolag}
+                orgnr={onboarding?.bolagsuppgifter.orgnr}
+                firmatecknareNamn={avtalFirmatecknareNamn}
+                firmatecknareRoll={avtalFirmatecknareRoll}
+                verksamhet={draft.verksamhet}
+                yta={draft.yta}
+                adress={draft.adress}
+                ort={onboarding?.bolagsuppgifter.ort}
+                pris={avtalPrisFormaterat}
+                avgift={avtalAvgift}
+              />
+
+              <div className="flex flex-wrap justify-end gap-2 border-t border-dashed border-muted-foreground/30 pt-4">
+                <WireBtn variant="ghost" onClick={() => setAvtalPreviewOpen(false)}>
+                  Redigera
+                </WireBtn>
+                <WireBtn onClick={approveAnnons}>Skicka till säljaren →</WireBtn>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <MailPreview open={!!mailPreview} mail={mailPreview} onClose={() => setMailPreview(null)} />
     </AdminLayout>
