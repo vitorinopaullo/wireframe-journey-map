@@ -60,6 +60,7 @@ export type WorkflowData = {
   komplettering?: { message: string; at: string };
   avvisadReason?: { orsak: string; note: string; at: string };
   avtalSentAt?: string;
+  reminderSentAt?: string;
   avtalSignedAt?: string;
   hyresvardNotifieradAt?: string;
   utkast?: AnnonsUtkast;

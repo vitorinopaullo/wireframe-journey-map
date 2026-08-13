@@ -429,37 +429,129 @@ const avvisningsOrsaker = [
 ];
 
 // Samma platshållarbox som i Fastighetsinfo & prissättning (Granskning-steget).
+// Karta utan API-nyckel via Google Maps' publika embed-URL.
 function KartaPlaceholder({ adress }: { adress?: string }) {
+  if (!adress) {
+    return (
+      <div className="flex h-24 flex-col items-center justify-center gap-1 border border-dashed border-muted-foreground/40 bg-muted/30 text-center text-xs text-muted-foreground">
+        <span>[ Karta ]</span>
+        <span>Ingen adress angiven</span>
+      </div>
+    );
+  }
   return (
-    <div className="flex h-24 flex-col items-center justify-center gap-1 border border-dashed border-muted-foreground/40 bg-muted/30 text-center text-xs text-muted-foreground">
-      <span>[ Karta ]</span>
-      <span>{adress || "Ingen adress angiven"}</span>
+    <div className="h-24 overflow-hidden border border-dashed border-muted-foreground/40">
+      <iframe
+        title="Karta"
+        src={`https://www.google.com/maps?q=${encodeURIComponent(adress)}&output=embed`}
+        className="h-full w-full border-0"
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+      />
     </div>
   );
 }
 
-// Läsvy av de platshållarbilder säljaren laddat upp i Underlag-steget (se
-// BildGalleri i saljare.skapa-annons.tsx) — bara till referens för TreLink.
-function BilderOversikt({ bilder }: { bilder?: string[] }) {
+// Bildgalleri av de platshållarbilder säljaren laddat upp i Underlag-steget (se
+// BildGalleri i saljare.skapa-annons.tsx) — TreLink väljer ut och ordnar vilka
+// som ska visas i annonsen. Val + ordning sparas i draft.valdaBilderOrdning.
+function BilderOversikt({
+  bilder,
+  valda,
+  onChange,
+}: {
+  bilder?: string[];
+  valda: string[];
+  onChange: (next: string[]) => void;
+}) {
   const uppladdade = bilder ?? [];
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+
   if (uppladdade.length === 0) {
     return <div className="text-sm text-amber-700 dark:text-amber-500">⚠️ Inga bilder uppladdade ännu.</div>;
   }
+
+  const maxNadd = valda.length >= 8;
+
+  function toggle(bild: string) {
+    if (valda.includes(bild)) {
+      onChange(valda.filter((b) => b !== bild));
+    } else if (!maxNadd) {
+      onChange([...valda, bild]);
+    }
+  }
+
+  function moveTo(from: number, to: number) {
+    if (from === to) return;
+    const next = [...valda];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    onChange(next);
+  }
+
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {uppladdade.map((bild) => (
-          <div
-            key={bild}
-            className="flex h-16 items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-[10px] text-muted-foreground"
-          >
-            ✓ {bild}
-          </div>
-        ))}
+      <div className="mb-2 flex items-center justify-between">
+        <Annotation>Klicka för att välja bilder till annonsen</Annotation>
+        <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+          {valda.length} av 8 valda
+        </span>
       </div>
-      <Annotation>
-        <span className="mt-2 block">{uppladdade.length} bilder uppladdade</span>
-      </Annotation>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {uppladdade.map((bild) => {
+          const ordning = valda.indexOf(bild);
+          const isVald = ordning !== -1;
+          const disabled = !isVald && maxNadd;
+          return (
+            <button
+              key={bild}
+              type="button"
+              onClick={() => toggle(bild)}
+              disabled={disabled}
+              className={`relative flex h-16 items-center justify-center border text-[10px] ${
+                isVald
+                  ? "border-foreground bg-foreground/10 text-foreground"
+                  : disabled
+                  ? "cursor-not-allowed border-dashed border-muted-foreground/30 bg-muted/20 text-muted-foreground/50"
+                  : "border-dashed border-muted-foreground/40 bg-muted/30 text-muted-foreground hover:border-foreground"
+              }`}
+            >
+              {isVald && (
+                <span className="absolute left-1 top-1 flex h-4 w-4 items-center justify-center border border-foreground bg-foreground font-mono text-[9px] text-background">
+                  {ordning + 1}
+                </span>
+              )}
+              {bild}
+            </button>
+          );
+        })}
+      </div>
+
+      {valda.length > 0 && (
+        <div className="mt-3">
+          <Annotation>Ordning i annonsen · dra för att ändra</Annotation>
+          <div className="mt-1.5 flex flex-wrap gap-2">
+            {valda.map((bild, i) => (
+              <div
+                key={bild}
+                draggable
+                onDragStart={() => setDragIndex(i)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (dragIndex !== null) moveTo(dragIndex, i);
+                  setDragIndex(null);
+                }}
+                onDragEnd={() => setDragIndex(null)}
+                className="flex cursor-move items-center gap-1 border border-foreground/40 bg-background px-2 py-1 text-[10px]"
+              >
+                <span className="font-mono text-muted-foreground">{i + 1}</span>
+                {bild}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -481,6 +573,7 @@ function AdminAnnonsDetail() {
   const [utkastRubrik, setUtkastRubrik] = useState("");
   const [utkastBeskrivning, setUtkastBeskrivning] = useState("");
   const [utkastPris, setUtkastPris] = useState("");
+  const [valdaBilder, setValdaBilder] = useState<string[]>([]);
 
   useEffect(() => {
     setItem(getAnnons(id) ?? null);
@@ -500,6 +593,7 @@ function AdminAnnonsDetail() {
     setUtkastRubrik((prev) => prev || item.workflow?.utkast?.rubrik || "");
     setUtkastBeskrivning((prev) => prev || item.workflow?.utkast?.beskrivning || "");
     setUtkastPris((prev) => prev || item.workflow?.utkast?.pris || item.pris || "");
+    setValdaBilder(item.draft?.valdaBilderOrdning ?? []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item?.id]);
 
@@ -708,6 +802,33 @@ function AdminAnnonsDetail() {
     refresh();
   };
 
+  const sendPaminnelse = () => {
+    patchAnnons(id, (it) => ({
+      ...it,
+      workflow: logEntry(
+        { ...it.workflow, reminderSentAt: new Date().toISOString() },
+        "TreLink",
+        "TreLink skickade en påminnelse om uppdragsavtalet till säljaren",
+      ),
+    }));
+    refresh();
+  };
+
+  const resendAvtal = () => {
+    patchAnnons(id, (it) => {
+      const now = new Date().toISOString();
+      return {
+        ...it,
+        workflow: logEntry(
+          { ...it.workflow, avtalSentAt: now, reminderSentAt: undefined },
+          "TreLink",
+          "TreLink skickade om uppdragsavtalet",
+        ),
+      };
+    });
+    refresh();
+  };
+
   const submitKomplettering = () => {
     if (!komplText.trim()) return;
     patchAnnons(id, (it) => ({
@@ -751,6 +872,7 @@ function AdminAnnonsDetail() {
     if (!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()) return;
     patchAnnons(id, (it) => ({
       ...it,
+      draft: { ...it.draft, valdaBilderOrdning: valdaBilder },
       workflow: logEntry(
         {
           ...it.workflow,
@@ -785,8 +907,29 @@ function AdminAnnonsDetail() {
   const avtalAvgift = cat ? `${cat.avgift}${item.premium ? " + 2 500 kr (premium-tillägg)" : ""}` : undefined;
   const avtalPrisFormaterat = prisInput.trim() ? Number(prisInput).toLocaleString("sv-SE") : undefined;
 
+  const avtalSentAt = item.workflow?.avtalSentAt;
+  const daysSinceAvtalSent = avtalSentAt
+    ? Math.floor((Date.now() - new Date(avtalSentAt).getTime()) / (1000 * 60 * 60 * 24))
+    : null;
+
   // Mappar en loggad tidslinjetext till innehållet i det (simulerade) mail som skickades då.
   function mailForLogEntry(text: string): MailData | null {
+    if (text === "TreLink skickade en påminnelse om uppdragsavtalet till säljaren") {
+      return {
+        fran: "TreLink <avtal@trelink.se>",
+        till: sellerEpost,
+        amne: `Påminnelse: uppdragsavtal väntar på signering — ${item.titel}`,
+        brodtext: `Hej ${sellerFornamn || "där"},\n\nVi ser att uppdragsavtalet för "${item.titel}" ännu inte är signerat. Logga in på TreLink för att granska och signera via Signicat.\n\nMed vänliga hälsningar,\nTreLink`,
+      };
+    }
+    if (text === "TreLink skickade om uppdragsavtalet") {
+      return {
+        fran: "TreLink <avtal@trelink.se>",
+        till: sellerEpost,
+        amne: `Uppdragsavtal för signering — ${item.titel}`,
+        brodtext: `Hej ${sellerFornamn || "där"},\n\nVi skickar uppdragsavtalet för "${item.titel}" till dig igen. Logga in på TreLink för att granska och signera via Signicat.\n\nGodkänt pris: ${item.pris || "—"} kr\nAvgift: ${cat ? `${cat.avgift}${item.premium ? " + 2 500 kr (premium-tillägg)" : ""}` : "—"}\n\nMed vänliga hälsningar,\nTreLink`,
+      };
+    }
     if (text === "Uppdragsavtal skickat till säljaren via e-post (Signicat-länk)") {
       return {
         fran: "TreLink <avtal@trelink.se>",
@@ -1034,6 +1177,60 @@ function AdminAnnonsDetail() {
                 Avvisa & meddela säljare
               </button>
             </div>
+          </div>
+        </WireBox>
+      )}
+
+      {st === "avtal-vantar-signering" && (
+        <WireBox label="Uppdragsavtal · väntar på signering" className="mb-6">
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+              <span>
+                Skickat: {avtalSentAt ? new Date(avtalSentAt).toLocaleDateString("sv-SE") : "—"}
+                {daysSinceAvtalSent !== null && ` · ${daysSinceAvtalSent} dagar sedan`}
+              </span>
+              {(() => {
+                const reminderMail = (item.workflow?.timeline ?? []).some(
+                  (l: any) => l.text === "TreLink skickade en påminnelse om uppdragsavtalet till säljaren",
+                );
+                return reminderMail ? (
+                  <VisaMailLank
+                    onClick={() =>
+                      setMailPreview(mailForLogEntry("TreLink skickade en påminnelse om uppdragsavtalet till säljaren"))
+                    }
+                  />
+                ) : null;
+              })()}
+            </div>
+
+            {daysSinceAvtalSent !== null && daysSinceAvtalSent >= 5 && (
+              <div className="flex flex-wrap items-center justify-between gap-3 border-l-2 border-amber-500/70 bg-amber-50/60 px-3 py-2 dark:bg-amber-500/10">
+                <span className="text-sm font-medium text-amber-700 dark:text-amber-500">
+                  ⚠️ Avtalet har inte signerats — 5 dagar har passerat
+                </span>
+                <div className="flex items-center gap-2">
+                  <WireBtn onClick={resendAvtal}>Skicka om avtal →</WireBtn>
+                  {(() => {
+                    const resendMail = (item.workflow?.timeline ?? []).some(
+                      (l: any) => l.text === "TreLink skickade om uppdragsavtalet",
+                    );
+                    return resendMail ? (
+                      <VisaMailLank onClick={() => setMailPreview(mailForLogEntry("TreLink skickade om uppdragsavtalet"))} />
+                    ) : null;
+                  })()}
+                </div>
+              </div>
+            )}
+
+            {daysSinceAvtalSent !== null &&
+              daysSinceAvtalSent >= 3 &&
+              daysSinceAvtalSent < 5 &&
+              !item.workflow?.reminderSentAt && (
+                <div className="flex flex-wrap items-center justify-between gap-3 border-l-2 border-foreground/40 bg-muted/30 px-3 py-2">
+                  <span className="text-sm">Påminnelse bör skickas</span>
+                  <WireBtn onClick={sendPaminnelse}>Skicka påminnelse →</WireBtn>
+                </div>
+              )}
           </div>
         </WireBox>
       )}
@@ -1462,7 +1659,7 @@ function AdminAnnonsDetail() {
         {skrivFasen && (
           <>
             <WireBox label="Bilder">
-              <BilderOversikt bilder={draft.bilder} />
+              <BilderOversikt bilder={draft.bilder} valda={valdaBilder} onChange={setValdaBilder} />
             </WireBox>
             <WireBox label="Karta">
               <KartaPlaceholder adress={draft.adress} />
