@@ -1032,17 +1032,14 @@ function AdminAnnonsDetail() {
             <WireBtn variant="ghost" onClick={() => setRejectOpen((v) => !v)}>
               Avvisa annons
             </WireBtn>
-            <button
+            <WireBtn
+              variant="primary"
               disabled={!canApproveMedPris}
               onClick={() => setAvtalPreviewOpen(true)}
-              className={`border px-4 py-2 text-sm font-medium ${
-                canApproveMedPris
-                  ? "border-foreground bg-foreground text-background hover:opacity-80"
-                  : "border-muted-foreground/30 bg-muted/30 text-muted-foreground cursor-not-allowed"
-              }`}
+              className={!canApproveMedPris ? "cursor-not-allowed border-muted-foreground/30 bg-muted/30 text-muted-foreground hover:opacity-100" : ""}
             >
               {canApproveMedPris ? "Skapa uppdragsavtal →" : "Skapa uppdragsavtal (lås upp först)"}
-            </button>
+            </WireBtn>
           </div>
         </div>
       </div>
@@ -1162,13 +1159,14 @@ function AdminAnnonsDetail() {
             <WireBtn variant="ghost" onClick={() => { setKomplOpen(false); setKomplText(""); }}>
               Avbryt
             </WireBtn>
-            <button
+            <WireBtn
+              variant="secondary"
               disabled={!komplText.trim()}
               onClick={submitKomplettering}
-              className={`border px-4 py-2 text-sm font-medium ${komplText.trim() ? "border-foreground bg-foreground text-background hover:opacity-80" : "border-muted-foreground/30 text-muted-foreground"}`}
+              className={!komplText.trim() ? "cursor-not-allowed border-muted-foreground/30 text-muted-foreground hover:opacity-100" : ""}
             >
               Skicka begäran →
-            </button>
+            </WireBtn>
           </div>
         </WireBox>
       )}
@@ -1199,13 +1197,14 @@ function AdminAnnonsDetail() {
             </div>
             <div className="flex justify-end gap-2">
               <WireBtn variant="ghost" onClick={() => setRejectOpen(false)}>Avbryt</WireBtn>
-              <button
+              <WireBtn
+                variant="secondary"
                 onClick={reject}
                 disabled={!rejectReason}
-                className={`border px-4 py-2 text-sm font-medium ${rejectReason ? "border-foreground bg-foreground text-background hover:opacity-80" : "border-muted-foreground/30 text-muted-foreground"}`}
+                className={!rejectReason ? "cursor-not-allowed border-muted-foreground/30 text-muted-foreground hover:opacity-100" : ""}
               >
                 Avvisa & meddela säljare
-              </button>
+              </WireBtn>
             </div>
           </div>
         </WireBox>
@@ -1318,17 +1317,18 @@ function AdminAnnonsDetail() {
             </label>
           </div>
           <div className="mt-4">
-            <button
+            <WireBtn
+              variant="primary"
               disabled={!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()}
               onClick={publishAnnons}
-              className={`border px-4 py-2 text-sm font-medium ${
-                utkastRubrik.trim() && utkastBeskrivning.trim() && utkastPris.trim()
-                  ? "border-foreground bg-foreground text-background hover:opacity-80"
-                  : "border-muted-foreground/30 bg-muted/30 text-muted-foreground cursor-not-allowed"
-              }`}
+              className={
+                !(utkastRubrik.trim() && utkastBeskrivning.trim() && utkastPris.trim())
+                  ? "cursor-not-allowed border-muted-foreground/30 bg-muted/30 text-muted-foreground hover:opacity-100"
+                  : ""
+              }
             >
               Publicera annons →
-            </button>
+            </WireBtn>
           </div>
         </WireBox>
       )}
@@ -1648,13 +1648,14 @@ function AdminAnnonsDetail() {
                       />
                       <div className="mt-2 flex justify-end gap-2">
                         <WireBtn variant="ghost" onClick={() => { setActiveDoc(null); setDocKomplText(""); }}>Avbryt</WireBtn>
-                        <button
+                        <WireBtn
+                          variant="secondary"
                           disabled={!docKomplText.trim()}
                           onClick={() => requestDocKomplettering(d.name)}
-                          className={`border px-4 py-2 text-sm font-medium ${docKomplText.trim() ? "border-foreground bg-foreground text-background hover:opacity-80" : "border-muted-foreground/30 text-muted-foreground"}`}
+                          className={!docKomplText.trim() ? "cursor-not-allowed border-muted-foreground/30 text-muted-foreground hover:opacity-100" : ""}
                         >
                           Skicka begäran →
-                        </button>
+                        </WireBtn>
                       </div>
                     </div>
                   )}

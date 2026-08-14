@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { ReactNode, HTMLAttributes, ComponentType } from "react";
+import type { ReactNode, ButtonHTMLAttributes, ComponentType } from "react";
 
 /* Wireframe primitives — grayscale, dashed, monospace annotations */
 
@@ -53,7 +53,7 @@ export function WireBtn({
   to?: string;
   params?: Record<string, string>;
   className?: string;
-} & Omit<HTMLAttributes<HTMLButtonElement>, "children">) {
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">) {
   const styles =
     variant === "primary"
       ? "bg-[var(--color-primary)] text-[var(--color-white)] border-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] hover:border-[var(--color-primary-hover)] hover:opacity-100"
