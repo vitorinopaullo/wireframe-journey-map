@@ -76,9 +76,9 @@
 /*
  * Trelink brand color tokens.
  *
- * An OKLCH purple scale (50-950) anchored so purple-800 == #3D138D exactly,
- * plus a short low-chroma pink wash scale (50-300) anchored at #FDC8C4.
- * Semantic aliases below map specific roles onto specific steps:
+ * Exact scale from DESIGN_SYSTEM.md section 3.2 — a purple scale (50-950,
+ * #3D138D at 800) plus a short low-chroma pink wash scale (50-300, from
+ * #FDC8C4). Semantic aliases below map specific roles onto specific steps:
  *   - primary (purple-800): filled buttons/CTAs only.
  *   - interactive (purple-600): text links and other interactive text on
  *     white — deliberately NOT primary/800, which is too dark to read as
@@ -89,38 +89,41 @@
  * scale below (see wire.tsx for the wireframe primitives).
  */
 :root {
-  --purple-50: oklch(0.98 0.008 288.8);
-  --purple-100: oklch(0.955 0.02 288.8);
-  --purple-200: oklch(0.9 0.045 288.8);
-  --purple-300: oklch(0.82 0.09 288.8);
-  --purple-400: oklch(0.7 0.15 288.8);
-  --purple-500: oklch(0.6 0.195 288.8);
-  --purple-600: oklch(0.54 0.21 288.8);
-  --purple-700: oklch(0.44 0.2 288.8);
-  --purple-800: oklch(0.345 0.178 288.8); /* = #3D138D */
-  --purple-900: oklch(0.26 0.14 288.8);
-  --purple-950: oklch(0.18 0.09 288.8);
+  --purple-50: #F3F2FD;
+  --purple-100: #E5E3FD;
+  --purple-200: #D1CCFB;
+  --purple-300: #BAB0FF;
+  --purple-400: #A191FA;
+  --purple-500: #896CF8;
+  --purple-600: #714CDE; /* text links / interactive text on white — AA safe */
+  --purple-700: #5731B6;
+  --purple-800: #3D138D; /* BRAND — filled CTA bg + white text */
+  --purple-900: #2E096D;
+  --purple-950: #1A0344;
 
-  --pink-50: oklch(0.975 0.012 23.4);
-  --pink-100: oklch(0.945 0.028 23.4);
-  --pink-200: oklch(0.91 0.045 23.4);
-  --pink-300: oklch(0.878 0.061 23.4); /* = #FDC8C4 */
+  --pink-50: #FFF6F5;
+  --pink-100: #FEEBE9;
+  --pink-200: #FDDCD9;
+  --pink-300: #FDC8C4;
 
   --black: #000000;
   --white: #ffffff;
+
+  /* Neutrals — warm/purple-tinted, not default Tailwind slate/gray. */
+  --canvas: #FBFAFC;
+  --surface: #FFFFFF;
+  --border-hairline: #ECEAF1;
+  --text: #1D1A24;
+  --text-muted: #6B6675;
 
   /* Semantic aliases onto the scale above. */
   --primary-hover: var(--purple-900);
   --interactive: var(--purple-600);
   --focus-ring: var(--purple-500);
   --accent-wash: var(--pink-100);
-  --surface: var(--white);
-  --canvas: oklch(0.986 0.003 300);
-  --text: oklch(0.226 0.02 300);
-  --text-muted: oklch(0.52 0.024 300);
-  --success: oklch(0.68 0.15 145);
-  --warning: oklch(0.7 0.15 75);
-  --danger: oklch(0.65 0.19 25);
+  --success: oklch(0.70 0.15 140);
+  --warning: oklch(0.70 0.15 90);
+  --danger: oklch(0.63 0.20 25);
 }
 
 /*
@@ -171,6 +174,7 @@
   --color-accent-wash: var(--accent-wash);
   --color-surface: var(--surface);
   --color-canvas: var(--canvas);
+  --color-border-hairline: var(--border-hairline);
   --color-text: var(--text);
   --color-text-muted: var(--text-muted);
   --color-success: var(--success);
@@ -234,16 +238,16 @@
   --popover-foreground: var(--text);
   --primary: var(--purple-800);
   --primary-foreground: var(--white);
-  --secondary: oklch(0.941 0.01 300);
+  --secondary: var(--border-hairline);
   --secondary-foreground: var(--text);
-  --muted: oklch(0.941 0.01 300);
+  --muted: var(--border-hairline);
   --muted-foreground: var(--text-muted);
-  --accent: oklch(0.941 0.01 300);
+  --accent: var(--border-hairline);
   --accent-foreground: var(--text);
   --destructive: var(--danger);
   --destructive-foreground: var(--white);
-  --border: oklch(0.941 0.01 300);
-  --input: oklch(0.941 0.01 300);
+  --border: var(--border-hairline);
+  --input: var(--border-hairline);
   --ring: var(--focus-ring);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
