@@ -654,7 +654,7 @@ function SellerAnnonsDetail() {
                     </span>
                   </div>
                   <div className="mt-2 font-medium">{item.titel}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">
+                  <div className="mt-1 text-sm tabular-nums text-muted-foreground">
                     {item.pris ?? "Pris enligt överenskommelse"}
                   </div>
                   <div className="mt-3">
@@ -788,7 +788,7 @@ function Field({ k, v }: { k: string; v?: string }) {
   return (
     <div className="border-b border-dashed border-muted-foreground/30 pb-2">
       <Annotation>{k}</Annotation>
-      <div className="mt-1">{v || "—"}</div>
+      <div className="mt-1 tabular-nums">{v || "—"}</div>
     </div>
   );
 }

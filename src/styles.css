@@ -6,6 +6,90 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
+ * Trelink type scale.
+ *
+ * Registered under Tailwind's --text-* namespace, so these values drive
+ * the existing text-xs..text-6xl utilities directly (no new utility names).
+ * Display sizes (30px+) carry a tight negative letter-spacing — intended
+ * for headings set in the serif display font (see --font-heading below),
+ * not for body copy.
+ */
+@theme {
+  --text-xs: 12px;
+  --text-xs--line-height: 1.5;
+  --text-sm: 14px;
+  --text-sm--line-height: 1.5;
+  --text-base: 16px;
+  --text-base--line-height: 1.5;
+  --text-xl: 20px;
+  --text-xl--line-height: 1.4;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 1.3;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 1.2;
+  --text-3xl--letter-spacing: -0.02em;
+  --text-4xl: 36px;
+  --text-4xl--line-height: 1.15;
+  --text-4xl--letter-spacing: -0.02em;
+  --text-5xl: 48px;
+  --text-5xl--line-height: 1.1;
+  --text-5xl--letter-spacing: -0.02em;
+  --text-6xl: 60px;
+  --text-6xl--line-height: 1.05;
+  --text-6xl--letter-spacing: -0.02em;
+}
+
+/*
+ * Trelink brand color tokens.
+ *
+ * An OKLCH purple scale (50-950) anchored so purple-800 == #3D138D exactly,
+ * plus a short low-chroma pink wash scale (50-300) anchored at #FDC8C4.
+ * Semantic aliases below map specific roles onto specific steps:
+ *   - primary (purple-800): filled buttons/CTAs only.
+ *   - interactive (purple-600): text links and other interactive text on
+ *     white — deliberately NOT primary/800, which is too dark to read as
+ *     a normal inline link at body sizes.
+ *   - accent-wash (pink-100): decorative backgrounds/badges/illustration
+ *     fills only — pink is never used for buttons or status.
+ * Everything is used sparingly; most of the app stays on the neutral
+ * scale below (see wire.tsx for the wireframe primitives).
+ */
+:root {
+  --purple-50: oklch(0.98 0.008 288.8);
+  --purple-100: oklch(0.955 0.02 288.8);
+  --purple-200: oklch(0.9 0.045 288.8);
+  --purple-300: oklch(0.82 0.09 288.8);
+  --purple-400: oklch(0.7 0.15 288.8);
+  --purple-500: oklch(0.6 0.195 288.8);
+  --purple-600: oklch(0.54 0.21 288.8);
+  --purple-700: oklch(0.44 0.2 288.8);
+  --purple-800: oklch(0.345 0.178 288.8); /* = #3D138D */
+  --purple-900: oklch(0.26 0.14 288.8);
+  --purple-950: oklch(0.18 0.09 288.8);
+
+  --pink-50: oklch(0.975 0.012 23.4);
+  --pink-100: oklch(0.945 0.028 23.4);
+  --pink-200: oklch(0.91 0.045 23.4);
+  --pink-300: oklch(0.878 0.061 23.4); /* = #FDC8C4 */
+
+  --black: #000000;
+  --white: #ffffff;
+
+  /* Semantic aliases onto the scale above. */
+  --primary-hover: var(--purple-900);
+  --interactive: var(--purple-600);
+  --focus-ring: var(--purple-500);
+  --accent-wash: var(--pink-100);
+  --surface: var(--white);
+  --canvas: oklch(0.986 0.003 300);
+  --text: oklch(0.226 0.02 300);
+  --text-muted: oklch(0.52 0.024 300);
+  --success: oklch(0.68 0.15 145);
+  --warning: oklch(0.7 0.15 75);
+  --danger: oklch(0.65 0.19 25);
+}
+
+/*
  * Design system definition.
  *
  * The @theme inline block maps CSS custom properties to Tailwind utility
@@ -20,15 +104,16 @@
  *
  * Typography tokens (--heading, --body-text) are the one deliberate
  * exception to the oklch rule: they carry exact brand hex values from the
- * design spec (Syne / Hanken Grotesk), so keep them as hex for a 1:1 match
- * when handing off to the tech team.
+ * design spec, so keep them as hex for a 1:1 match when handing off to
+ * the tech team.
  */
 
 @theme inline {
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", monospace;
-  --font-heading: "Syne", sans-serif;
-  --font-body: "Hanken Grotesk", sans-serif;
+  /* Display serif for h1/h2 and hero numbers only — see @layer base below. */
+  --font-heading: "Instrument Serif", serif;
+  --font-body: "Inter", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -46,6 +131,34 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-interactive: var(--interactive);
+  --color-focus-ring: var(--focus-ring);
+  --color-accent-wash: var(--accent-wash);
+  --color-surface: var(--surface);
+  --color-canvas: var(--canvas);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-black: var(--black);
+  --color-white: var(--white);
+  --color-purple-50: var(--purple-50);
+  --color-purple-100: var(--purple-100);
+  --color-purple-200: var(--purple-200);
+  --color-purple-300: var(--purple-300);
+  --color-purple-400: var(--purple-400);
+  --color-purple-500: var(--purple-500);
+  --color-purple-600: var(--purple-600);
+  --color-purple-700: var(--purple-700);
+  --color-purple-800: var(--purple-800);
+  --color-purple-900: var(--purple-900);
+  --color-purple-950: var(--purple-950);
+  --color-pink-50: var(--pink-50);
+  --color-pink-100: var(--pink-100);
+  --color-pink-200: var(--pink-200);
+  --color-pink-300: var(--pink-300);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -75,27 +188,29 @@
 
 :root {
   --radius: 0.625rem;
-  --heading: #1A161F;
-  --body-text: #494552;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --heading: #1D1A24;
+  --body-text: #6B6675;
+  /* Neutral scale is warm/purple-tinted (hue ~300) rather than cool gray,
+     to match the brand palette above — see --purple-* for the accent scale. */
+  --background: var(--canvas);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --popover: var(--surface);
+  --popover-foreground: var(--text);
+  --primary: var(--purple-800);
+  --primary-foreground: var(--white);
+  --secondary: oklch(0.941 0.01 300);
+  --secondary-foreground: var(--text);
+  --muted: oklch(0.941 0.01 300);
+  --muted-foreground: var(--text-muted);
+  --accent: oklch(0.941 0.01 300);
+  --accent-foreground: var(--text);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--white);
+  --border: oklch(0.941 0.01 300);
+  --input: oklch(0.941 0.01 300);
+  --ring: var(--focus-ring);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -171,9 +286,29 @@
     color: var(--color-body-text);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  /* Display serif is reserved for h1/h2 and hero numbers — h3-h6 stay on
+     the body sans so the serif doesn't take over every heading level. */
+  h1, h2 {
     font-family: var(--font-heading);
     font-weight: 500 !important;
     color: var(--color-heading) !important;
   }
+
+  h3, h4, h5, h6 {
+    font-family: var(--font-body);
+    font-weight: 500 !important;
+    color: var(--color-heading) !important;
+  }
+}
+
+/*
+ * Applied to price, valuation, area (kvm) and inventory figures across
+ * seller/admin/buyer flows so digits keep a fixed width — needed for
+ * columns of numbers to align, and for a price to not "wiggle" as its
+ * digits change. Tailwind ships this utility already; declared explicitly
+ * here so it's a documented part of the type system rather than an
+ * implicit default.
+ */
+@utility tabular-nums {
+  font-variant-numeric: tabular-nums;
 }

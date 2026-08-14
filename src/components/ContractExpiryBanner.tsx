@@ -16,7 +16,7 @@ export function ContractExpiryBanner({ daysLive, objectLabel = "Inkråm · Café
   const isUrgent = daysLive >= 88;
   const isStrong = daysLive >= 80;
 
-  const borderClass = isStrong ? "border-[#0F0F0F]" : "border-muted-foreground/50";
+  const borderClass = isStrong ? "border-[var(--color-primary)]" : "border-muted-foreground/50";
   const borderStyle = { borderWidth: "1.5px", borderRadius: "3px" };
 
   return (
@@ -27,11 +27,11 @@ export function ContractExpiryBanner({ daysLive, objectLabel = "Inkråm · Café
       <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <h3 className="text-[14px] font-bold text-[#0F0F0F]">
+          <h3 className="text-[14px] font-bold text-[var(--color-primary)]">
             Uppdragsavtalet löper ut om {daysLeft} dagar
           </h3>
           {isUrgent && (
-            <span className="border border-[#0F0F0F] bg-[#0F0F0F] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-white">
+            <span className="border border-[var(--color-primary)] bg-[var(--color-primary)] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-white">
               Brådskande
             </span>
           )}
@@ -44,13 +44,13 @@ export function ContractExpiryBanner({ daysLive, objectLabel = "Inkråm · Café
         <div className="mt-3 flex items-center gap-4">
           <button
             onClick={() => toast("Ett meddelande har skickats till Trelink")}
-            className="bg-[#0F0F0F] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
+            className="bg-[var(--color-primary)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
           >
             Kontakta Trelink
           </button>
           <button
             onClick={() => toast("Dokumentation kommer snart")}
-            className="text-xs text-[#0F0F0F] underline underline-offset-2 hover:opacity-70"
+            className="text-xs text-[var(--color-interactive)] underline underline-offset-2 hover:opacity-70"
           >
             Läs mer om avtalstiden
           </button>
@@ -85,13 +85,13 @@ export function ContractExpiryCountdown({ daysLive, signedAt }: { daysLive: numb
         Avtalstid
       </div>
       <div className="h-1 w-full bg-muted">
-        <div className="h-1 bg-[#0F0F0F]" style={{ width: `${pct}%` }} />
+        <div className="h-1 bg-[var(--color-primary)]" style={{ width: `${pct}%` }} />
       </div>
       <div className="mt-2 text-xs text-muted-foreground">
         {used} av {total} dagar använda · Löper ut {expiryStr}
       </div>
       {warn && (
-        <div className="mt-2 text-xs font-bold text-[#0F0F0F]">
+        <div className="mt-2 text-xs font-bold text-[var(--color-primary)]">
           Kontakta Trelink för förlängning
         </div>
       )}

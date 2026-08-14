@@ -56,7 +56,7 @@ export function WireBtn({
 } & Omit<HTMLAttributes<HTMLButtonElement>, "children">) {
   const styles =
     variant === "primary"
-      ? "bg-foreground text-background border-foreground"
+      ? "bg-[var(--color-primary)] text-[var(--color-white)] border-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] hover:border-[var(--color-primary-hover)] hover:opacity-100"
       : variant === "secondary"
       ? "bg-background text-foreground border-foreground/60"
       : "bg-transparent text-foreground border-dashed border-muted-foreground/50";
@@ -121,7 +121,7 @@ export function PageHeader({
             {eyebrow}
           </div>
         )}
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">{title}</h1>
+        <h1 className="text-3xl font-semibold text-foreground">{title}</h1>
         {subtitle && <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{subtitle}</p>}
       </div>
       {right}
@@ -139,7 +139,9 @@ export function WireTag({
   active?: boolean;
 }) {
   const cls = `inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider transition ${
-    active ? "border-foreground bg-foreground text-background" : "border-foreground/40"
+    active
+      ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
+      : "border-foreground/40"
   } ${onClick ? "cursor-pointer hover:border-foreground" : ""}`;
 
   if (onClick) {

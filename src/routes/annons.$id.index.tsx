@@ -74,7 +74,7 @@ function StickyCTA({
         <div className="flex items-center gap-3">
           <WireTag>{listing.kategori}</WireTag>
           <span className="text-sm font-medium">{listing.rubrik}</span>
-          <span className="font-mono text-sm">{listing.pris.toLocaleString("sv-SE")} kr</span>
+          <span className="font-mono text-sm tabular-nums">{listing.pris.toLocaleString("sv-SE")} kr</span>
         </div>
         <div className="flex gap-2">
           <WireBtn variant="ghost" onClick={onSave}>
@@ -221,7 +221,7 @@ function ListingDetail() {
               {nyckeltal.map((n) => (
                 <div key={n.label}>
                   <Annotation>{n.label}</Annotation>
-                  <div className="mt-1 font-mono text-lg">{n.value}</div>
+                  <div className="mt-1 font-mono text-lg tabular-nums">{n.value}</div>
                 </div>
               ))}
             </div>
@@ -264,12 +264,12 @@ function ListingDetail() {
         {/* ------------- RIGHT (sticky) ------------- */}
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
           <WireBox label="Pris">
-            <div className="font-mono text-3xl">{listing.pris.toLocaleString("sv-SE")} kr</div>
+            <div className="font-heading text-3xl tabular-nums">{listing.pris.toLocaleString("sv-SE")} kr</div>
             <p className="mt-1 text-xs text-muted-foreground">Inkråm + inventarier</p>
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
               <div>
                 <Annotation>Handpenning</Annotation>
-                <p className="mt-1 font-mono">~ 195 000 kr</p>
+                <p className="mt-1 font-mono tabular-nums">~ 195 000 kr</p>
               </div>
               <div>
                 <Annotation>Trelinks avgift</Annotation>
@@ -337,7 +337,7 @@ function ListingDetail() {
               </div>
               <WireTag>{l.kat}</WireTag>
               <h3 className="mt-2 font-medium group-hover:underline">{l.titel}</h3>
-              <p className="mt-2 font-mono text-sm">{l.pris} kr</p>
+              <p className="mt-2 font-mono text-sm tabular-nums">{l.pris} kr</p>
             </Link>
           ))}
         </div>

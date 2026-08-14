@@ -221,7 +221,7 @@ function Field({
     return (
       <div className="border-b border-dashed border-muted-foreground/30 pb-2">
         <Annotation>{k}</Annotation>
-        <div className={`mt-1 text-sm ${missing ? "text-amber-700 dark:text-amber-500" : ""}`}>
+        <div className={`mt-1 text-sm tabular-nums ${missing ? "text-amber-700 dark:text-amber-500" : ""}`}>
           {missing ? "⚠️ Ej ifyllt" : v}
         </div>
       </div>
@@ -1135,7 +1135,7 @@ function AdminAnnonsDetail() {
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Kvadratmeterpris (kr/kvm/år)
               </span>
-              <div className="flex h-10 items-center border border-dashed border-muted-foreground/40 bg-muted/20 px-3 text-sm text-muted-foreground">
+              <div className="flex h-10 items-center border border-dashed border-muted-foreground/40 bg-muted/20 px-3 text-sm tabular-nums text-muted-foreground">
                 {kvmPris != null ? `${kvmPris.toLocaleString("sv-SE")} kr/kvm/år` : "—"}
               </div>
             </div>

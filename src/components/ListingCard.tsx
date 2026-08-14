@@ -26,7 +26,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border border-foreground/20 bg-background p-1.5">
       <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-0.5 truncate text-xs font-medium">{value}</div>
+      <div className="mt-0.5 truncate text-xs font-medium tabular-nums">{value}</div>
     </div>
   );
 }
@@ -61,7 +61,7 @@ export function ListingCard({ l }: { l: Listing }) {
           </div>
         )}
 
-        <p className="mt-3 font-mono text-sm">{l.pris} kr</p>
+        <p className="mt-3 font-mono text-sm tabular-nums">{l.pris} kr</p>
       </div>
     </Link>
   );

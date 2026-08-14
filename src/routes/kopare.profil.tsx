@@ -144,7 +144,7 @@ function Profile() {
 
           <WireBox label="Finansiering">
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Lånelöfte</span><span className="font-mono">2 500 000 kr</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Lånelöfte</span><span className="font-mono tabular-nums">2 500 000 kr</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Bank</span><span className="font-mono">SEB</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Giltigt t.o.m.</span><span className="font-mono">2026-12-31</span></div>
             </div>
@@ -174,7 +174,7 @@ function Profile() {
                 <tr key={f.nr} className="border-b border-dashed border-muted-foreground/30">
                   <td className="py-3 font-mono text-xs">{f.nr}</td>
                   <td className="py-3">{f.titel}</td>
-                  <td className="py-3 text-right font-mono">{f.belopp.toLocaleString("sv-SE")} kr</td>
+                  <td className="py-3 text-right font-mono tabular-nums">{f.belopp.toLocaleString("sv-SE")} kr</td>
                   <td className="py-3 font-mono text-xs">{f.datum}</td>
                   <td className="py-3"><WireTag>{f.status}</WireTag></td>
                   <td className="py-3 text-right">

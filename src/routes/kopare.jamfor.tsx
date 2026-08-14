@@ -163,12 +163,13 @@ function Compare() {
                     {annonser.map((a) => {
                       const raw = r.get(a);
                       const num = Number(raw);
+                      const isNumeric = !!r.format && !Number.isNaN(num);
                       const isBest = best !== null && !Number.isNaN(num) && num === best && annonser.length > 1;
                       const display = r.format && !Number.isNaN(num) ? r.format(num) : String(raw);
                       return (
-                        <td key={a.id} className="p-3 align-top text-sm">
-                          <div className="flex items-center gap-2">
-                            <span className={isBest ? "font-mono font-semibold" : "font-mono"}>{display}</span>
+                        <td key={a.id} className={`p-3 align-top text-sm ${isNumeric ? "text-right" : ""}`}>
+                          <div className={`flex items-center gap-2 ${isNumeric ? "justify-end" : ""}`}>
+                            <span className={`font-mono ${isNumeric ? "tabular-nums" : ""} ${isBest ? "font-semibold" : ""}`}>{display}</span>
                             {isBest && <WireTag>Bäst</WireTag>}
                           </div>
                         </td>
