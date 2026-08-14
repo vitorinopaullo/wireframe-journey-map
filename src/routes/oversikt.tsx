@@ -64,7 +64,6 @@ function Sitemap() {
   return (
     <PublicLayout>
       <PageHeader
-        eyebrow="Wireframe · navigationskarta"
         title="Sitemap — alla skärmar"
         subtitle="Snabblänkar till alla wireframe-sidor. Strukturen följer Trelink_Sitemap_UserPerspective.pdf."
       />

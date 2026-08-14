@@ -183,7 +183,6 @@ function HomePage() {
   return (
     <PublicLayout>
       <PageHeader
-        eyebrow="Publik yta · ingen inloggning krävs"
         title="Hitta verksamheter att ta över"
         subtitle="Lokaler, inkråm och aktiebolag — granskade av TreLink innan publicering. Bläddra fritt, spara med konto, agera med BankID-verifiering."
       />

@@ -39,7 +39,6 @@ function LokalerPage() {
   return (
     <PublicLayout>
       <PageHeader
-        eyebrow="Publik yta · kollektionsvy"
         title="Lediga lokaler i Södermalm"
         subtitle="Bläddra bland lediga lokaler, inkråm och bolag i området."
       />
