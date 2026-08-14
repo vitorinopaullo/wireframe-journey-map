@@ -18,7 +18,6 @@ type Draft = {
   telefon: string;
   finansiering: "egna" | "lan" | "investerare" | "";
   budgetOk: boolean;
-  ucMedgivande: boolean;
   erfarenhet: "ingen" | "viss" | "stor" | "";
   bransch: string;
   tidsplan: "snarast" | "3-6mn" | "6+mn" | "";
@@ -34,7 +33,6 @@ const TOM: Draft = {
   telefon: "",
   finansiering: "",
   budgetOk: false,
-  ucMedgivande: false,
   erfarenhet: "",
   bransch: "",
   tidsplan: "",
@@ -180,7 +178,6 @@ function InterestWizard() {
 
     if (!draft.finansiering) e[1].push("Välj finansiering");
     if (!draft.budgetOk) e[1].push("Bekräfta budget");
-    if (!draft.ucMedgivande) e[1].push("Medge UC-kontroll");
 
     if (!draft.erfarenhet) e[2].push("Välj erfarenhetsnivå");
     if (!draft.tidsplan) e[2].push("Välj tidsplan");
@@ -382,21 +379,6 @@ function InterestWizard() {
                   <span>Jag bekräftar att jag kan finansiera köpet inkl. handpenning.</span>
                 </label>
               </div>
-
-              <label className="mt-4 flex items-start gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={draft.ucMedgivande}
-                  onChange={(e) => set("ucMedgivande", e.target.checked)}
-                  className="mt-1"
-                />
-                <span>
-                  Jag medger att TreLink tar en UC-kontroll på mig som en del av granskningen.
-                  <span className="block text-xs text-muted-foreground">
-                    Krävs innan din profil visas för säljaren. Kostnadsfritt för dig.
-                  </span>
-                </span>
-              </label>
             </WireBox>
           )}
 
@@ -451,7 +433,7 @@ function InterestWizard() {
           {/* STEG 4 */}
           {step === 3 && (
             <WireBox label="Meddelande till säljaren">
-              <Annotation>Varför just du? (säljaren läser detta efter UC)</Annotation>
+              <Annotation>Varför just du? (säljaren läser detta efter granskning)</Annotation>
               <textarea
                 value={draft.meddelande}
                 onChange={(e) => set("meddelande", e.target.value)}
@@ -493,7 +475,6 @@ function InterestWizard() {
                   }
                 />
                 <Row k="Budget bekräftad" v={draft.budgetOk ? "Ja" : ""} />
-                <Row k="UC-medgivande" v={draft.ucMedgivande ? "Ja" : ""} />
                 <Row
                   k="Erfarenhet"
                   v={
@@ -591,7 +572,7 @@ function InterestWizard() {
           <WireBox label="Vad TreLink ser">
             <ul className="space-y-2 text-xs">
               {[
-                ["Identitet & UC", draft.bankid === "verifierad" && draft.ucMedgivande],
+                ["Identitet", draft.bankid === "verifierad"],
                 ["Finansieringsplan", !!draft.finansiering && draft.budgetOk],
                 ["Erfarenhet & tidsplan", !!draft.erfarenhet && !!draft.tidsplan],
                 ["Personligt meddelande", draft.meddelande.length >= 40],
@@ -607,7 +588,6 @@ function InterestWizard() {
           <WireBox label="Integritet" variant="ghost">
             <ul className="space-y-1 text-xs text-muted-foreground">
               <li>· Säljaren ser aldrig din e-post eller telefon innan signering.</li>
-              <li>· UC-kontrollen syns bara för TreLink.</li>
               <li>· Du kan dra tillbaka intresseanmälan när som helst.</li>
             </ul>
           </WireBox>

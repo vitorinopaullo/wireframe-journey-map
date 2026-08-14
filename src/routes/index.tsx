@@ -197,7 +197,7 @@ function HomePage() {
           </div>
           <div>
             <Annotation>Affär</Annotation>
-            <p className="mt-1 text-sm">UC-kontroll + signering. TreLink matchar parterna.</p>
+            <p className="mt-1 text-sm">TreLink matchar parterna och signering sker digitalt.</p>
           </div>
         </div>
       </WireBox>

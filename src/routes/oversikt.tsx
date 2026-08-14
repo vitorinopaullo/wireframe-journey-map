@@ -93,7 +93,7 @@ function Sitemap() {
           <div><WireTag>3</WireTag><p className="mt-2">Affärsstatus syns för båda parter — full transparens.</p></div>
         </div>
         <Annotation>
-          <span className="mt-4 block">(?) UC-placering, klientmedelskonto och hyresvärdsgodkännandets exakta steg = öppna frågor till TreLink.</span>
+          <span className="mt-4 block">(?) Klientmedelskonto och hyresvärdsgodkännandets exakta steg = öppna frågor till TreLink.</span>
         </Annotation>
       </WireBox>
     </PublicLayout>

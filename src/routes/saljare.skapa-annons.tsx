@@ -1386,7 +1386,6 @@ function UppdragsavtalPreviewModal({
             <ul className="mt-2 space-y-2 text-sm">
               <li>· TreLink skriver annonstexten och sätter priset — Uppdragsgivaren redigerar inte publicerat innehåll.</li>
               <li>· Köpare är anonyma under processen (K-koder). Ingen direktkontakt sker mellan köpare och säljare.</li>
-              <li>· UC-kontroll på köparen genomförs först efter signerat köpeavtal och inbetald handpenning.</li>
               <li>· TreLink granskar inkommet underlag inom 24 timmar på vardagar.</li>
             </ul>
           </div>

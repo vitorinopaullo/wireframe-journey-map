@@ -10,7 +10,7 @@ export const Route = createFileRoute("/kopare/affarer")({
 /* ---------- typer ---------- */
 type Steg =
   | "intresse-inskickat"
-  | "uc-granskning"
+  | "granskning"
   | "matchad"
   | "hyresvard"
   | "handpenning"
@@ -36,7 +36,7 @@ type Affar = {
 
 const STEG_ORDNING: Steg[] = [
   "intresse-inskickat",
-  "uc-granskning",
+  "granskning",
   "matchad",
   "hyresvard",
   "handpenning",
@@ -46,7 +46,7 @@ const STEG_ORDNING: Steg[] = [
 ];
 const STEG_LABEL: Record<Steg, string> = {
   "intresse-inskickat": "Intresse inskickat",
-  "uc-granskning": "UC-granskning",
+  "granskning": "Granskning",
   matchad: "Matchad",
   hyresvard: "Hyresvärd",
   handpenning: "Handpenning",
@@ -99,9 +99,9 @@ const affarer: Affar[] = [
     ort: "Uppsala",
     kat: "Inkråm",
     pris: 420_000,
-    steg: "uc-granskning",
+    steg: "granskning",
     vantar: "george",
-    nastaSteg: "TreLink kör UC och matchar dig med säljaren",
+    nastaSteg: "TreLink granskar och matchar dig med säljaren",
     uppdaterad: "för 5 timmar sedan",
   },
 ];

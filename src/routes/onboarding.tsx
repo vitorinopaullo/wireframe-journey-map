@@ -142,7 +142,7 @@ function Step1({
           bullets={[
             "Spara favoriter och jämför objekt",
             "Bevakningar på nya annonser",
-            "BankID + UC hanteras vid intresse",
+            "BankID-verifiering vid intresseanmälan",
           ]}
           onPick={() => onPick("kopare")}
         />

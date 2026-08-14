@@ -27,7 +27,7 @@ const HANDPENNING = Math.round(PRIS * 0.1);
 /* ---------- mock-data ---------- */
 const baseTimeline: Steg[] = [
   { nyckel: "intresse", label: "Intresseanmälan mottagen", state: "done", note: "TreLink granskade & godkände 12 jun" },
-  { nyckel: "uc", label: "UC-kontroll & matchning", state: "done", note: "Godkänd 13 jun · säljaren har valt dig" },
+  { nyckel: "matchning", label: "Matchning", state: "done", note: "Godkänd 13 jun · säljaren har valt dig" },
   { nyckel: "hyresvard", label: "Hyresvärdens godkännande", state: "done", note: "Anonym profil skickad 13 jun · godkänd 18 jun" },
   { nyckel: "handpenning", label: "Handpenning till klientmedel", state: "done", note: "Inkommit 19 jun · 195 000 kr" },
   { nyckel: "signering", label: "Signering (BankID · Signicat)", state: "active", note: "Båda parter signerar — kontaktuppgifter avslöjas", vantar: "dig" },
@@ -127,7 +127,7 @@ function SignModal({
                 §6. Klientmedel hos Trelink, frigörs vid tillträde. <br />
                 §7. Trelinks förmedlingsavgift dras vid frigörande. <br />
                 §8. Tvist … allmän domstol, svensk lag. <br />
-                — Bilagor: A. Inventarier B. Hyreskontrakt C. UC-rapport (endast TreLink)
+                — Bilagor: A. Inventarier B. Hyreskontrakt
               </div>
 
               <label className="mt-4 flex items-start gap-2 text-sm">
@@ -421,7 +421,6 @@ function DealDetail() {
                 ["Köpeavtal (utkast)", "I Signicat"],
                 ["Hyreskontrakt", "Klart"],
                 ["Inventarielista", "Klart"],
-                ["UC-rapport (köpare)", "Endast TreLink"],
               ].map(([n, s]) => (
                 <li key={n} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 py-1.5">
                   <span>▤ {n}</span>

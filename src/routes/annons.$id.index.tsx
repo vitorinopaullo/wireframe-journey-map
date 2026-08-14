@@ -282,7 +282,7 @@ function ListingDetail() {
             <ol className="mb-4 space-y-2 text-xs">
               {[
                 ["1", "Anmäl intresse (gratis, BankID)"],
-                ["2", "TreLink kör UC + matchar"],
+                ["2", "TreLink matchar dig med säljaren"],
                 ["3", "Du får full info & hyresvärd kontrolleras"],
                 ["4", "Handpenning till klientmedel"],
                 ["5", "Signera digitalt (Signicat)"],

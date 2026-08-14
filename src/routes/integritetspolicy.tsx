@@ -17,7 +17,7 @@ const sections = [
   { title: "Ändamål", body: "Verifiering via BankID, granskning av annonser, matchning, avtalshantering, fakturering och lagstadgade skyldigheter." },
   { title: "Rättslig grund", body: "Avtal, rättslig förpliktelse (bokföring, penningtvättslagen) och berättigat intresse." },
   { title: "Lagringstid", body: "Kontodata: så länge kontot är aktivt. Affärsdokument: 7 år enligt god mäklarsed. Bokföringsunderlag: 7 år enligt bokföringslagen." },
-  { title: "Mottagare", body: "Signicat (signering), UC (kreditupplysning), Trelinks anlitade underleverantörer, samt myndigheter vid lagkrav." },
+  { title: "Mottagare", body: "Signicat (signering), Trelinks anlitade underleverantörer, samt myndigheter vid lagkrav." },
   { title: "Dina rättigheter", body: "Tillgång, rättelse, radering (i tillämpliga fall), begränsning, dataportabilitet och att klaga till IMY." },
 ];
 

@@ -18,7 +18,7 @@ A clickable wireframe prototype for Trelink — a Swedish marketplace for busine
    * Fees: 29 900 kr (Överlåtelse), 39 900 kr (Inkråm), 79 900 kr (Aktieöverlåtelse). Premium add-on: 2 500 kr.
    * TreLink writes listing title/text and sets the price — sellers never edit published content.
    * Direct buyer–seller contact is fully blocked. Buyers appear only as anonymous codes (K-xxx).
-   * UC credit check on the BUYER happens only after signed purchase agreement and paid deposit. Sellers never see the buyer's credit process.
+   * UC (Upplysningscentralen) credit checks are NOT part of the product — do not reintroduce UC/kreditupplysning references anywhere.
    * Review SLA: 24h on weekdays. Document retention: 7 years (Swedish brokerage practice).
 * Keep changes minimal and scoped. Never refactor broadly without being asked.
 

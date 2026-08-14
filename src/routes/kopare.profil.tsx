@@ -13,7 +13,6 @@ const verifieringar = [
   { label: "BankID-identitet", state: "done" as const, note: "Anna Andersson · verifierad 12 jun 2026" },
   { label: "E-post bekräftad", state: "done" as const, note: "anna@exempel.se" },
   { label: "Mobil bekräftad", state: "done" as const, note: "+46 70 123 45 67" },
-  { label: "UC-kreditkontroll", state: "active" as const, note: "Körs av TreLink vid aktiv affär — du behöver inte göra något" },
   { label: "Företagsuppgifter (frivilligt)", state: "pending" as const, note: "Lägg till org.nr för att snabba upp framtida affärer" },
 ];
 
@@ -110,7 +109,7 @@ function Profile() {
                   <p className="mt-0.5 text-sm text-muted-foreground">{v.note}</p>
                 </div>
                 <WireTag>
-                  {v.state === "done" ? "Klar" : v.state === "active" ? "Pågår" : "Frivilligt"}
+                  {v.state === "done" ? "Klar" : "Frivilligt"}
                 </WireTag>
               </WireBox>
             ))}
@@ -128,20 +127,6 @@ function Profile() {
 
       {tab === "ekonomi" && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <WireBox label="UC-kreditkontroll" variant="dashed">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <Annotation>Status</Annotation>
-                <p className="mt-1 text-sm">Senaste UC: 13 jun 2026 · <span className="font-medium">Godkänd</span></p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  UC körs av TreLink vid varje aktiv affär. Du ser aldrig själva rapporten — endast
-                  status. Säljare ser bara "godkänd / ej godkänd".
-                </p>
-              </div>
-              <WireTag>Adminägd</WireTag>
-            </div>
-          </WireBox>
-
           <WireBox label="Finansiering">
             <div className="space-y-3 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Lånelöfte</span><span className="font-mono tabular-nums">2 500 000 kr</span></div>

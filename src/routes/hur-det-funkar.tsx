@@ -24,7 +24,7 @@ const steps = [
   },
   {
     actor: "TreLink",
-    title: "UC-kontroll & matchning",
+    title: "Matchning",
     body: "TreLink matchar parterna. Vid lokal: anonym profil till hyresvärd för godkännande.",
   },
   {
@@ -67,7 +67,7 @@ function HowItWorks() {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div>
             <Annotation>Lokal</Annotation>
-            <p className="mt-1 text-sm">Hyresvärden måste godkänna köparen — anonym profil skickas (ekonomi + UC + verksamhet, inga personuppgifter).</p>
+            <p className="mt-1 text-sm">Hyresvärden måste godkänna köparen — anonym profil skickas (ekonomi + verksamhet, inga personuppgifter).</p>
           </div>
           <div>
             <Annotation>Inkråm</Annotation>
