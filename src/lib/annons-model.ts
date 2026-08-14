@@ -2,6 +2,8 @@
 // säljarflödet och admin-vyerna alltid utgår från exakt samma källa för
 // avgiftskategorier, dokumentkrav, verksamhetstyper och fältgruppernas struktur.
 
+import { placeholderImage } from "@/lib/placeholder-image";
+
 export type CatId = "overlatelse" | "inkram" | "aktie";
 
 export const cats: {
@@ -187,4 +189,58 @@ export type Draft = {
     Servering: ServeringFalt;
     Frisor: FrisorFalt;
   };
+};
+
+// Delad exempel-annons för den publika sök-/detaljsidan (annons.$id.index.tsx
+// och startsidans annonskort) — EN källa för titel/adress/pris/yta osv, så att
+// kortet och detaljsidan aldrig kan visa olika uppgifter för samma annons.
+export type ExempelAnnons = {
+  id: string;
+  cat: CatId;
+  typ: string;
+  titel: string;
+  underrubrik: string;
+  ort: string;
+  adress: string;
+  yta: number;
+  hyra: number;
+  hasFTax: boolean;
+  pris: number;
+  lonsamt: boolean;
+  beskrivning: string[];
+  bilder: string[];
+  planskiss: string;
+};
+
+export const exempelAnnons: ExempelAnnons = {
+  id: "1",
+  cat: "overlatelse",
+  typ: "Restaurang",
+  titel: "Restauranglokal · Södermalm",
+  underrubrik:
+    "Fullt utrustad restauranglokal med uteservering. Lång hyresperiod kvar, fungerande ventilation, A-läge.",
+  ort: "Stockholm · Södermalm",
+  adress: "Folkungagatan 22",
+  yta: 180,
+  hyra: 63_000,
+  hasFTax: true,
+  pris: 1_950_000,
+  lonsamt: true,
+  beskrivning: [
+    "Välskött restauranglokal i ett av Södermalms mest eftertraktade lägen, med högt gångflöde dagtid och kvällstid och gångavstånd till både tunnelbana och buss. Lokalen är fullt utrustad och redo för direkt drift — ingen ombyggnation krävs innan tillträde.",
+    "Köket håller professionell standard med kommersiell ventilation, kylrum och diskutrymme dimensionerat för á la carte-verksamhet. Serveringsytan rymmer ca 45 sittplatser inomhus samt ytterligare 20 platser på den uppvärmda uteserveringen under sommarhalvåret.",
+    "Hyresavtalet löper med goda villkor och lång återstående löptid, vilket ger en ny ägare stabilitet att bygga vidare på ett redan etablerat kundunderlag. Inventarier, inredning och befintliga leverantörsavtal ingår enligt bifogad inventarielista.",
+    "Ägaren har drivit verksamheten i över tio år och säljer i samband med pensionering. Driftpersonal är positiv till att stanna kvar vid ägarbyte, vilket underlättar en smidig övergång.",
+  ],
+  bilder: [
+    placeholderImage("Bild 1", "Fasad & entré"),
+    placeholderImage("Bild 2", "Sittplatser"),
+    placeholderImage("Bild 3", "Bardisk"),
+    placeholderImage("Bild 4", "Kök"),
+    placeholderImage("Bild 5", "Uteservering"),
+    placeholderImage("Bild 6", "Förråd"),
+    placeholderImage("Bild 7", "Toaletter"),
+    placeholderImage("Bild 8", "Kvällsbelysning"),
+  ],
+  planskiss: placeholderImage("Planlösning", "180 m² · skalenlig ritning"),
 };

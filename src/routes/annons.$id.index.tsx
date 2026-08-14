@@ -1,53 +1,34 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Star, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, X, Expand } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
-import { WireBox, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
+import { WireBox, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
 import { nyckeltalFor } from "@/lib/nyckeltal";
+import { exempelAnnons } from "@/lib/annons-model";
 
 export const Route = createFileRoute("/annons/$id/")({
   component: ListingDetail,
 });
 
-/* ---------- mock data ---------- */
-const ANTAL_BILDER = 4;
-
+/* ---------- mock data ----------
+ * Delas med annonskortet på startsidan via exempelAnnons (annons-model.ts) —
+ * titel/adress/pris/yta osv. kan därför aldrig divergera mellan kort och
+ * detaljsida. FAQ är unikt för detaljsidan och hålls lokalt här.
+ */
 const listing = {
-  id: "1",
+  ...exempelAnnons,
   kategori: "Lokal",
-  cat: "overlatelse" as const,
-  rubrik: "Restauranglokal · 180 m² · Hornstull",
-  underrubrik:
-    "Fullt utrustad restauranglokal med uteservering. Lång hyresperiod kvar, fungerande ventilation, A-läge.",
-  adress: "Hornsgatan 45",
-  typ: "Restaurang",
-  yta: 180,
-  hyra: 62_000,
-  // F-Skatt är ett fristående fält satt av säljaren — oberoende av kategori/typ.
-  hasFTax: true,
-  ort: "Stockholm · Södermalm",
-  pris: 1_950_000,
-  publicerad: "28 maj 2026",
-  uppdaterad: "12 jun 2026",
-  visningar: 412,
-  intressenter: 7,
-  omsattning: "8,4 Mkr",
-  lonsamt: true,
-  dokument: [
-    { namn: "Hyreskontrakt.pdf", status: "godkänt" },
-    { namn: "Resultaträkning 2024.pdf", status: "godkänt" },
-    { namn: "Resultaträkning 2023.pdf", status: "godkänt" },
-    { namn: "Inventarielista.pdf", status: "godkänt" },
-    { namn: "Personalöversikt.pdf", status: "godkänt" },
-  ],
   faq: [
     ["Varför säljs verksamheten?", "Ägaren ska gå i pension. Driftpersonal stannar gärna."],
     ["Får jag ta över hyreskontraktet?", "Ja, med hyresvärdens godkännande. TreLink driver dialogen."],
     ["Ingår inventarier?", "Ja, allt i inventarielistan. Råvarulager räknas separat vid tillträde."],
     ["När kan tillträde ske?", "Tidigast 6 veckor efter signering — beror på hyresvärd."],
-  ],
+  ] as [string, string][],
 };
+
+const ANTAL_BILDER = listing.bilder.length;
+const HANDPENNING = Math.round(listing.pris * 0.1);
 
 const liknande = [
   { id: "4", titel: "Butik · Vasastan", pris: "1 200 000", kat: "Lokal" },
@@ -73,7 +54,7 @@ function StickyCTA({
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
         <div className="flex items-center gap-3">
           <WireTag>{listing.kategori}</WireTag>
-          <span className="text-sm font-medium">{listing.rubrik}</span>
+          <span className="text-sm font-medium">{listing.titel}</span>
           <span className="font-mono text-sm tabular-nums">{listing.pris.toLocaleString("sv-SE")} kr</span>
         </div>
         <div className="flex gap-2">
@@ -92,6 +73,7 @@ function ListingDetail() {
   const [saved, setSaved] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [bild, setBild] = useState(0);
+  const [lightbox, setLightbox] = useState<{ src: string; caption?: string } | null>(null);
   const isAuthed = useIsAuthed();
   const navigate = useNavigate();
 
@@ -105,7 +87,6 @@ function ListingDetail() {
     yta: listing.yta,
     hyra: listing.hyra,
     hasFTax: listing.hasFTax,
-    omsattning: listing.omsattning,
     lonsamt: listing.lonsamt,
   });
 
@@ -137,12 +118,19 @@ function ListingDetail() {
         <span>Annons #{id}</span>
       </div>
 
-      {/* Objektkort — bildkarusell, rubrik och nyckeltal */}
+      {/* Objektkort — bildgalleri, rubrik och nyckeltal */}
       <div className="mb-8 space-y-4">
-        <div className="relative h-64 border border-foreground/30 bg-muted/30 md:h-96">
-          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-            [ Bild {bild + 1} av {ANTAL_BILDER} ]
-          </div>
+        <div className="relative h-64 overflow-hidden rounded-card border border-foreground/15 bg-muted/30 md:h-96">
+          <button
+            type="button"
+            onClick={() => setLightbox({ src: listing.bilder[bild], caption: `Bild ${bild + 1} av ${ANTAL_BILDER}` })}
+            className="group h-full w-full cursor-zoom-in"
+          >
+            <img src={listing.bilder[bild]} alt={`${listing.titel} — bild ${bild + 1}`} className="h-full w-full object-cover" />
+            <span className="absolute bottom-3 right-3 flex items-center gap-1 rounded-pill bg-foreground/70 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-background opacity-0 transition group-hover:opacity-100">
+              <Expand className="h-3 w-3" /> Förstora
+            </span>
+          </button>
           <div className="absolute right-3 top-3">
             <WireTag>{listing.ort.split(" · ")[0]}</WireTag>
           </div>
@@ -150,7 +138,7 @@ function ListingDetail() {
             type="button"
             onClick={visaForegaende}
             aria-label="Föregående bild"
-            className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center border border-foreground/40 bg-background transition hover:border-foreground"
+            className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/40 bg-background transition hover:border-foreground"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -158,61 +146,48 @@ function ListingDetail() {
             type="button"
             onClick={visaNasta}
             aria-label="Nästa bild"
-            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center border border-foreground/40 bg-background transition hover:border-foreground"
+            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/40 bg-background transition hover:border-foreground"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
 
+        {/* Miniatyrrad */}
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {listing.bilder.map((src, i) => (
+            <button
+              key={src}
+              type="button"
+              onClick={() => setBild(i)}
+              className={`h-14 w-20 shrink-0 overflow-hidden rounded-button border transition ${
+                i === bild ? "border-[var(--color-interactive)]" : "border-foreground/15 hover:border-foreground/40"
+              }`}
+            >
+              <img src={src} alt={`Miniatyr ${i + 1}`} className="h-full w-full object-cover" />
+            </button>
+          ))}
+        </div>
+
         <div>
           <Annotation>{listing.typ} · {listing.ort}</Annotation>
           <h1 className="mt-1 text-2xl md:text-3xl">
-            {listing.adress} · {listing.yta} m²
+            {listing.titel}
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{listing.underrubrik}</p>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <WireTag><CheckCircle2 className="inline-block h-3 w-3 mr-1 align-middle" />Granskad av TreLink</WireTag>
-          <WireTag>Premium</WireTag>
-          <WireTag>{listing.intressenter} intressenter</WireTag>
-          {listing.hasFTax && <WireTag>F-skatt</WireTag>}
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* ------------- LEFT ------------- */}
         <div className="space-y-6 lg:col-span-2">
-          {/* Trust-rad */}
-          <WireBox label="Vad TreLink har verifierat" variant="dashed">
-            <ul className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
-              {[
-                "Säljarens identitet (BankID)",
-                "Org.nr & ägarstruktur",
-                "Hyreskontrakt giltigt",
-                "Resultat- och balansräkning (2 år)",
-                "Inventarielista mot bokföring",
-                "Ingen pågående tvist/skuld",
-              ].map((t) => (
-                <li key={t} className="flex items-center gap-2">
-                  <StatusDot state="done" />
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-            <Annotation>
-              <span className="mt-3 block">
-                TreLink står som mellanhand. Inga uppgifter byts mellan parter förrän handpenning är inne.
-              </span>
-            </Annotation>
-          </WireBox>
 
           {/* Beskrivning */}
           <WireBox label="Beskrivning">
-            <p className="text-sm text-muted-foreground">
-              [Säljarens beskrivning av verksamheten / lokalen. Granskad av TreLink innan publicering.
-              Inkluderar bakgrund, inventarier, omsättning, personal, hyresvillkor.]
-            </p>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              {listing.beskrivning.map((stycke, i) => (
+                <p key={i}>{stycke}</p>
+              ))}
+            </div>
           </WireBox>
 
           {/* Nyckeltal */}
@@ -227,22 +202,28 @@ function ListingDetail() {
             </div>
           </WireBox>
 
-          {/* Dokument */}
-          <WireBox label="Dokument — granskade av TreLink" variant="dashed">
-            <ul className="space-y-2 text-sm">
-              {listing.dokument.map((d) => (
-                <li
-                  key={d.namn}
-                  className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 py-2"
-                >
-                  <span>▤ {d.namn}</span>
-                  <div className="flex items-center gap-2">
-                    <WireTag>Godkänt</WireTag>
-                    <span className="text-xs text-muted-foreground">Förhandsvisa efter intresseanmälan</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+          {/* Planlösning */}
+          <WireBox label="Planlösning">
+            <button
+              type="button"
+              onClick={() => setLightbox({ src: listing.planskiss, caption: "Planlösning" })}
+              className="group block h-48 w-full cursor-zoom-in overflow-hidden rounded-button border border-foreground/15"
+            >
+              <img src={listing.planskiss} alt="Planlösning" className="h-full w-full object-contain" />
+            </button>
+          </WireBox>
+
+          {/* Karta */}
+          <WireBox label="Karta">
+            <div className="h-64 overflow-hidden rounded-button border border-foreground/15">
+              <iframe
+                title="Karta"
+                src={`https://www.google.com/maps?q=${encodeURIComponent(`${listing.adress}, ${listing.ort}`)}&output=embed`}
+                className="h-full w-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
           </WireBox>
 
           {/* FAQ */}
@@ -269,7 +250,7 @@ function ListingDetail() {
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
               <div>
                 <Annotation>Handpenning</Annotation>
-                <p className="mt-1 font-mono tabular-nums">~ 195 000 kr</p>
+                <p className="mt-1 font-mono tabular-nums">~ {HANDPENNING.toLocaleString("sv-SE")} kr</p>
               </div>
               <div>
                 <Annotation>Trelinks avgift</Annotation>
@@ -303,20 +284,6 @@ function ListingDetail() {
                 Bevaka liknande
               </WireBtn>
             </div>
-            <Annotation>
-              <span className="mt-3 block">
-                Inga kontaktuppgifter byts. TreLink når dig på mejl inom 24 h.
-              </span>
-            </Annotation>
-          </WireBox>
-
-          <WireBox label="Statistik" variant="ghost">
-            <ul className="space-y-1 text-xs">
-              <li className="flex justify-between"><span>Publicerad</span><span>{listing.publicerad}</span></li>
-              <li className="flex justify-between"><span>Uppdaterad</span><span>{listing.uppdaterad}</span></li>
-              <li className="flex justify-between"><span>Visningar</span><span>{listing.visningar}</span></li>
-              <li className="flex justify-between"><span>Intresseanmälningar</span><span>{listing.intressenter}</span></li>
-            </ul>
           </WireBox>
         </aside>
       </div>
@@ -345,6 +312,33 @@ function ListingDetail() {
 
       <StickyCTA scrolled={scrolled} saved={saved} onSave={handleSave} onInterest={handleInterest} />
       <div className="h-20" />
+
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/80 p-4"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            aria-label="Stäng"
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border border-background/40 text-background hover:border-background"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <img
+            src={lightbox.src}
+            alt={lightbox.caption ?? ""}
+            className="max-h-[85vh] max-w-full rounded-card object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+          {lightbox.caption && (
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-pill bg-background/90 px-3 py-1 text-xs text-foreground">
+              {lightbox.caption}
+            </div>
+          )}
+        </div>
+      )}
     </PublicLayout>
   );
 }

@@ -5,6 +5,7 @@ import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, Annotation, PageHeader } from "@/components/wire";
 import { SearchBox } from "@/components/SearchFilters";
 import { ListingCard, type Listing } from "@/components/ListingCard";
+import { exempelAnnons } from "@/lib/annons-model";
 import {
   Carousel,
   CarouselContent,
@@ -32,8 +33,23 @@ export const Route = createFileRoute("/")({
   }),
 });
 
+// Annons "1" delas med detaljsidan (annons.$id.index.tsx) via exempelAnnons i
+// annons-model.ts — så att kort och detaljsida aldrig kan visa olika uppgifter.
 const dummyListings: Listing[] = [
-  { id: "1", kat: "Lokal", cat: "overlatelse", titel: "Restauranglokal · Södermalm", pris: "1 950 000", stad: "Stockholm", typ: "Restaurang", adress: "Folkungagatan 22", yta: 180, hyra: 63_000, hasFTax: true, omsattning: "3,4 Mkr", lonsamt: true },
+  {
+    id: exempelAnnons.id,
+    kat: "Lokal",
+    cat: exempelAnnons.cat,
+    titel: exempelAnnons.titel,
+    pris: exempelAnnons.pris.toLocaleString("sv-SE"),
+    stad: exempelAnnons.ort.split(" · ")[0],
+    typ: exempelAnnons.typ,
+    adress: exempelAnnons.adress,
+    yta: exempelAnnons.yta,
+    hyra: exempelAnnons.hyra,
+    hasFTax: exempelAnnons.hasFTax,
+    lonsamt: exempelAnnons.lonsamt,
+  },
   { id: "2", kat: "Lokal", cat: "overlatelse", titel: "Café & bageri · Göteborg", pris: "850 000", stad: "Göteborg", typ: "Café", adress: "Kyrkogatan 14", yta: 60, hyra: 22_000, hasFTax: true, omsattning: "1,9 Mkr", lonsamt: true },
   { id: "3", kat: "Lokal", cat: "overlatelse", titel: "Kontorslokal · Malmö", pris: "2 400 000", stad: "Malmö", typ: "Kontor", adress: "Stora Nygatan 12", yta: 210, hyra: 68_000, hasFTax: true },
   { id: "4", kat: "Lokal", cat: "overlatelse", titel: "Butik · Vasastan", pris: "1 200 000", stad: "Stockholm", typ: "Butik", adress: "Odengatan 30", yta: 95, hyra: 33_250 },
