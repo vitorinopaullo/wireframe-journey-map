@@ -734,7 +734,7 @@ function SellerAnnonsDetail() {
                 value={newLandlordEmail}
                 onChange={(e) => setNewLandlordEmail(e.target.value)}
                 placeholder={item.draft?.hyresvardEmail || "info@fastighetsbolaget.se"}
-                className="block h-10 w-full border border-dashed border-muted-foreground/50 bg-muted/20 px-3 text-sm focus:border-foreground focus:outline-none"
+                className="block h-11 w-full rounded-button border border-foreground/15 bg-muted/20 px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <div className="flex justify-end gap-2">

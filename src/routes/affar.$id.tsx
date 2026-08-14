@@ -135,7 +135,7 @@ function SignModal({
                   type="checkbox"
                   checked={accepted}
                   onChange={(e) => setAccepted(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 accent-foreground"
+                  className="mt-0.5 h-4 w-4 accent-[var(--color-primary)]"
                 />
                 <span>
                   Jag har läst avtalet och bilagor, och godkänner villkoren.
@@ -388,7 +388,7 @@ function DealDetail() {
               <textarea
                 rows={3}
                 placeholder="Skriv ett meddelande till TreLink…"
-                className="w-full border border-dashed border-muted-foreground/50 bg-background p-3 text-sm focus:border-foreground focus:outline-none"
+                className="w-full border border-foreground/15 bg-background p-3 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
               <div className="flex justify-end">
                 <WireBtn variant="secondary">Skicka</WireBtn>

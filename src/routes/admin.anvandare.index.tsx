@@ -139,23 +139,23 @@ function AdminAnvandare() {
             <div className="overflow-x-auto border border-foreground/30 bg-background">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-foreground/30 bg-muted/30">
-                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <tr className="sticky top-0 border-b border-foreground/30 bg-muted/30">
+                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                       Namn
                     </th>
-                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                       Roll
                     </th>
-                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                       Bolag
                     </th>
-                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                       Org.nr
                     </th>
-                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                       Status
                     </th>
-                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                       Registrerad
                     </th>
                   </tr>

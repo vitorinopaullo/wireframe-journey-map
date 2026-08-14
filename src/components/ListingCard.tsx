@@ -38,9 +38,9 @@ export function ListingCard({ l }: { l: Listing }) {
     <Link
       to="/annons/$id"
       params={{ id: l.id }}
-      className="group flex h-full flex-col border border-foreground/30 bg-background hover:border-foreground transition"
+      className="group flex h-full flex-col overflow-hidden rounded-card bg-background shadow-md transition-shadow duration-150 ease-standard hover:shadow-lg"
     >
-      <div className="flex h-48 items-center justify-center border-b border-dashed border-muted-foreground/40 bg-muted/30 text-xs text-muted-foreground">
+      <div className="flex h-48 items-center justify-center bg-muted/30 text-xs text-muted-foreground">
         [ Bild · {l.kat} ]
       </div>
 

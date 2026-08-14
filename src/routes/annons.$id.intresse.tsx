@@ -114,7 +114,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-10 w-full border border-dashed border-muted-foreground/50 bg-background px-3 text-sm focus:border-foreground focus:outline-none"
+        className="h-10 w-full border border-foreground/15 bg-background px-3 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
       />
       {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
     </label>
@@ -457,7 +457,7 @@ function InterestWizard() {
                 onChange={(e) => set("meddelande", e.target.value)}
                 rows={8}
                 placeholder="Berätta kort om dig, varför verksamheten passar dig och dina planer framåt. (min 40 tecken)"
-                className="mt-2 w-full border border-dashed border-muted-foreground/50 bg-background p-3 text-sm focus:border-foreground focus:outline-none"
+                className="mt-2 w-full border border-foreground/15 bg-background p-3 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
               <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
                 <span>{draft.meddelande.length} tecken</span>

@@ -120,7 +120,7 @@ function Compare() {
           <table className="w-full min-w-[700px] border-collapse">
             <thead>
               <tr>
-                <th className="w-48 border-b border-foreground/30 p-3 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                <th className="w-48 border-b border-foreground/30 p-3 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                   Egenskap
                 </th>
                 {annonser.map((a) => (
@@ -156,7 +156,7 @@ function Compare() {
               {rows.map((r, i) => {
                 const best = bestPerRow[i];
                 return (
-                  <tr key={r.label} className="border-b border-dashed border-muted-foreground/30">
+                  <tr key={r.label} className="border-b border-dashed border-muted-foreground/30 transition-colors duration-150 hover:bg-muted/20">
                     <td className="p-3 align-top font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                       {r.label}
                     </td>

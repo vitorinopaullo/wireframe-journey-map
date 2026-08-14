@@ -88,9 +88,9 @@ export function AdminLayout({ children }: { children?: ReactNode }) {
                 <Link
                   key={n.to}
                   to={n.to}
-                  className={`flex items-center justify-between gap-2 border-l-2 px-3 py-2 text-sm ${
+                  className={`flex items-center justify-between gap-2 border-l-2 px-3 py-2 text-sm transition-colors duration-150 ${
                     active
-                      ? "border-foreground bg-muted/40 font-medium"
+                      ? "border-[var(--color-primary)] bg-muted/40 font-medium text-[var(--color-interactive)]"
                       : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >

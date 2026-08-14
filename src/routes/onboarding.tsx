@@ -198,10 +198,10 @@ function RoleCard({
   return (
     <button
       onClick={onPick}
-      className={`text-left border p-6 transition ${
+      className={`rounded-card text-left border p-6 shadow-sm transition-shadow duration-150 ease-standard active:scale-[0.99] ${
         active
-          ? "border-foreground bg-foreground text-background"
-          : "border-foreground/30 hover:border-foreground"
+          ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
+          : "border-foreground/15 hover:shadow-md"
       }`}
     >
       <div className="flex items-center justify-between">
@@ -477,7 +477,7 @@ function InputField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+          className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
         />
       )}
       {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}

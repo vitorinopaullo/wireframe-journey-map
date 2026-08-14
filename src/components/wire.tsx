@@ -19,9 +19,9 @@ export function WireBox({
       ? "border border-dashed border-muted-foreground/40"
       : variant === "ghost"
       ? "border border-muted-foreground/20 bg-muted/30"
-      : "border border-foreground/30";
+      : "border border-foreground/15";
   return (
-    <div className={`relative ${border} bg-background p-4 ${className}`}>
+    <div className={`relative rounded-card ${border} bg-background p-4 ${className}`}>
       {label && (
         <div className="absolute -top-2 left-3 bg-background px-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           {label}
@@ -49,7 +49,7 @@ export function WireBtn({
   ...rest
 }: {
   children: ReactNode;
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "tertiary" | "ghost";
   to?: string;
   params?: Record<string, string>;
   className?: string;
@@ -58,9 +58,11 @@ export function WireBtn({
     variant === "primary"
       ? "bg-[var(--color-primary)] text-[var(--color-white)] border-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] hover:border-[var(--color-primary-hover)] hover:opacity-100"
       : variant === "secondary"
-      ? "bg-background text-foreground border-foreground/60"
+      ? "bg-background text-foreground border-foreground/15"
+      : variant === "tertiary"
+      ? "border-transparent bg-transparent px-0 text-[var(--color-interactive)] underline-offset-4 hover:underline hover:opacity-100"
       : "bg-transparent text-foreground border-dashed border-muted-foreground/50";
-  const cls = `inline-flex items-center justify-center border px-4 py-2 text-sm font-medium hover:opacity-80 transition ${styles} ${className}`;
+  const cls = `inline-flex items-center justify-center rounded-button border px-4 py-2.5 text-sm font-medium transition-[background-color,border-color,box-shadow,opacity,transform] ease-standard duration-150 hover:opacity-80 active:scale-[0.97] ${styles} ${className}`;
   if (to) {
     const LinkAny = Link as unknown as ComponentType<Record<string, unknown>>;
     return <LinkAny to={to} params={params} className={cls}>{children}</LinkAny>;
@@ -84,7 +86,7 @@ export function WireField({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
-      <div className="flex h-10 items-center border border-dashed border-muted-foreground/50 bg-muted/20 px-3 text-sm text-muted-foreground">
+      <div className="flex h-11 items-center rounded-button border border-muted-foreground/25 bg-muted/20 px-3 text-sm text-muted-foreground">
         {type === "select" ? `▾ ${placeholder ?? ""}` : placeholder ?? `[ ${label} ]`}
       </div>
       {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
@@ -138,7 +140,7 @@ export function WireTag({
   onClick?: () => void;
   active?: boolean;
 }) {
-  const cls = `inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider transition ${
+  const cls = `inline-flex items-center rounded-pill border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider transition-colors duration-150 ${
     active
       ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
       : "border-foreground/40"

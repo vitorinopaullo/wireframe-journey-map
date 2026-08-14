@@ -54,18 +54,18 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
             <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
               Läge
             </span>
-            <div className="flex border border-foreground/40">
+            <div className="flex rounded-pill border border-foreground/15 p-0.5">
               <Link
                 to="/dashboard"
                 search={{ mode: "kopare" }}
-                className={`px-3 py-1 text-xs ${mode === "kopare" ? "bg-foreground text-background" : "text-foreground"}`}
+                className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${mode === "kopare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
               >
                 Köpare
               </Link>
               <Link
                 to="/dashboard"
                 search={{ mode: "saljare" }}
-                className={`px-3 py-1 text-xs ${mode === "saljare" ? "bg-foreground text-background" : "text-foreground"}`}
+                className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${mode === "saljare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
               >
                 Säljare
               </Link>
@@ -89,9 +89,9 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
                   key={n.to}
                   to={n.to}
                   search={n.to === "/dashboard" ? { mode } : undefined}
-                  className={`border-l-2 px-3 py-2 text-sm ${
+                  className={`border-l-2 px-3 py-2 text-sm transition-colors duration-150 ${
                     active
-                      ? "border-foreground bg-muted/40 font-medium"
+                      ? "border-[var(--color-primary)] bg-muted/40 font-medium text-[var(--color-interactive)]"
                       : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >

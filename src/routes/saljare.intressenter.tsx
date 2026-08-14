@@ -43,16 +43,16 @@ function Interest() {
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-foreground/30 text-left text-muted-foreground">
-                <th className="py-2 font-mono text-[10px] uppercase tracking-wider">Datum</th>
-                <th className="font-mono text-[10px] uppercase tracking-wider">Annons</th>
-                <th className="font-mono text-[10px] uppercase tracking-wider">Köpare</th>
-                <th className="font-mono text-[10px] uppercase tracking-wider">Status</th>
+              <tr className="sticky top-0 border-b border-foreground/30 bg-background text-left text-muted-foreground">
+                <th className="py-2 font-mono text-[10px] uppercase tracking-[0.02em]">Datum</th>
+                <th className="font-mono text-[10px] uppercase tracking-[0.02em]">Annons</th>
+                <th className="font-mono text-[10px] uppercase tracking-[0.02em]">Köpare</th>
+                <th className="font-mono text-[10px] uppercase tracking-[0.02em]">Status</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r, i) => (
-                <tr key={i} className="border-b border-dashed border-muted-foreground/30">
+                <tr key={i} className="border-b border-dashed border-muted-foreground/30 transition-colors duration-150 hover:bg-muted/20">
                   <td className="py-3">{r.date}</td>
                   <td>{r.annons}</td>
                   <td className="font-mono">{r.code}</td>

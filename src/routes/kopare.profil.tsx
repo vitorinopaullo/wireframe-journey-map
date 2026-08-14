@@ -54,9 +54,9 @@ function Profile() {
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`border-b-2 px-3 py-2 font-mono text-[11px] uppercase tracking-wider transition ${
+            className={`border-b-2 px-3 py-2 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 ${
               tab === t.id
-                ? "border-foreground text-foreground"
+                ? "border-[var(--color-primary)] text-[var(--color-interactive)]"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -159,7 +159,7 @@ function Profile() {
       {tab === "fakturor" && (
         <WireBox label="Fakturahistorik">
           <table className="w-full text-sm">
-            <thead className="border-b border-foreground/20 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            <thead className="sticky top-0 border-b border-foreground/20 bg-background font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
               <tr>
                 <th className="py-2 text-left">Nr</th>
                 <th className="py-2 text-left">Beskrivning</th>
@@ -171,7 +171,7 @@ function Profile() {
             </thead>
             <tbody>
               {fakturor.map((f) => (
-                <tr key={f.nr} className="border-b border-dashed border-muted-foreground/30">
+                <tr key={f.nr} className="border-b border-dashed border-muted-foreground/30 transition-colors duration-150 hover:bg-muted/20">
                   <td className="py-3 font-mono text-xs">{f.nr}</td>
                   <td className="py-3">{f.titel}</td>
                   <td className="py-3 text-right font-mono tabular-nums">{f.belopp.toLocaleString("sv-SE")} kr</td>
@@ -206,7 +206,7 @@ function Profile() {
               ].map(([label, on]) => (
                 <li key={String(label)} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 pb-2">
                   <span>{label as string}</span>
-                  <input type="checkbox" defaultChecked={Boolean(on)} className="h-4 w-4 accent-foreground" />
+                  <input type="checkbox" defaultChecked={Boolean(on)} className="h-4 w-4 accent-[var(--color-primary)]" />
                 </li>
               ))}
             </ul>
@@ -216,7 +216,7 @@ function Profile() {
               {[["E-post", true], ["SMS", true], ["Push (app)", false]].map(([label, on]) => (
                 <li key={String(label)} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 pb-2">
                   <span>{label as string}</span>
-                  <input type="checkbox" defaultChecked={Boolean(on)} className="h-4 w-4 accent-foreground" />
+                  <input type="checkbox" defaultChecked={Boolean(on)} className="h-4 w-4 accent-[var(--color-primary)]" />
                 </li>
               ))}
             </ul>

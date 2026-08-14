@@ -40,6 +40,40 @@
 }
 
 /*
+ * Trelink spacing, radius, shadow and motion tokens.
+ *
+ * Spacing: no new tokens needed — Tailwind's default spacing scale
+ * (1=4px, 2=8px, 3=12px, 4=16px, 6=24px, 8=32px, 12=48px, 16=64px,
+ * 24=96px) already IS the 4/8/12/16/24/32/48/64/96 scale, so the audit
+ * is about using those utilities consistently rather than defining new
+ * ones — see the component files for arbitrary-value cleanup.
+ *
+ * Radius: three sizes, named by role rather than pixel value so intent
+ * stays obvious at the call site (rounded-button/-card/-pill).
+ *
+ * Shadow: warm-tinted (uses the same neutral hue as --text, not pure
+ * black), layered (a tight contact shadow + a softer ambient one) —
+ * registered directly under Tailwind's shadow-sm/md/lg names so the
+ * standard utilities pick them up with no new class names to learn.
+ *
+ * Motion: --ease-standard is included for documentation, but note
+ * Tailwind's built-in `ease-in-out` utility is already exactly
+ * cubic-bezier(0.4, 0, 0.2, 1) — prefer that utility directly.
+ * prefers-reduced-motion is respected globally below (@layer base).
+ */
+@theme {
+  --radius-button: 8px;
+  --radius-card: 14px;
+  --radius-pill: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(29, 26, 36, 0.04);
+  --shadow-md: 0 1px 2px rgba(29, 26, 36, 0.04), 0 4px 12px rgba(29, 26, 36, 0.06);
+  --shadow-lg: 0 2px 4px rgba(29, 26, 36, 0.05), 0 12px 32px rgba(29, 26, 36, 0.12);
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/*
  * Trelink brand color tokens.
  *
  * An OKLCH purple scale (50-950) anchored so purple-800 == #3D138D exactly,
@@ -298,6 +332,15 @@
     font-family: var(--font-body);
     font-weight: 500 !important;
     color: var(--color-heading) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

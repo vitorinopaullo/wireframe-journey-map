@@ -174,9 +174,9 @@ function AdminAnnonser() {
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
-              className={`border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider ${
+              className={`rounded-pill border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 ${
                 active
-                  ? "border-foreground bg-foreground text-background"
+                  ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
                   : "border-foreground/40 text-muted-foreground hover:border-foreground hover:text-foreground"
               }`}
             >

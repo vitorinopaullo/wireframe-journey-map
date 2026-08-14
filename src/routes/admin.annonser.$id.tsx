@@ -327,7 +327,7 @@ function TagsField({
             }
           }}
           placeholder="Egen tagg…"
-          className="h-7 flex-1 border border-dashed border-muted-foreground/50 bg-background px-2 text-xs focus:border-foreground focus:outline-none"
+          className="h-7 flex-1 border border-foreground/15 bg-background px-2 text-xs focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
         />
         <button
           type="button"
@@ -1060,7 +1060,7 @@ function AdminAnnonsDetail() {
                 value={prisInput}
                 onChange={(e) => setPrisInput(e.target.value)}
                 placeholder="1 200 000"
-                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
               <span className="mt-1 block text-[11px] text-muted-foreground">
                 TreLink sätter priset baserat på underlaget — detta blir det pris köpare ser.
@@ -1075,7 +1075,7 @@ function AdminAnnonsDetail() {
                 value={draft.yta || ""}
                 onChange={(e) => setDraftField("yta", e.target.value)}
                 placeholder="180"
-                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <label className="block">
@@ -1087,7 +1087,7 @@ function AdminAnnonsDetail() {
                 value={draft.hyra || ""}
                 onChange={(e) => setDraftField("hyra", e.target.value)}
                 placeholder="45 000"
-                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <label className="block">
@@ -1099,7 +1099,7 @@ function AdminAnnonsDetail() {
                 value={draft.fastighetsskatt || ""}
                 onChange={(e) => setDraftField("fastighetsskatt", e.target.value)}
                 placeholder="12 000"
-                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <label className="block">
@@ -1111,7 +1111,7 @@ function AdminAnnonsDetail() {
                 value={draft.fastighetsbeteckning || ""}
                 onChange={(e) => setDraftField("fastighetsbeteckning", e.target.value)}
                 placeholder="Innerstaden 12:34"
-                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             {visaOmsattning && (
@@ -1124,7 +1124,7 @@ function AdminAnnonsDetail() {
                   value={draft.omsattning || ""}
                   onChange={(e) => setDraftField("omsattning", e.target.value)}
                   placeholder="1,9 Mkr"
-                  className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+                  className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
                 />
               </label>
             )}
@@ -1290,7 +1290,7 @@ function AdminAnnonsDetail() {
                 value={utkastRubrik}
                 onChange={(e) => setUtkastRubrik(e.target.value)}
                 placeholder="T.ex. Välskött café i centrala Stockholm"
-                className="h-10 w-full border border-foreground/40 bg-background px-3 text-sm"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <label className="block">

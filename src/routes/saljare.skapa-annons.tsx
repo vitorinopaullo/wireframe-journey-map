@@ -918,10 +918,10 @@ function CreateListing() {
                       value={email}
                       onChange={(e) => set("hyresvardEmail", e.target.value)}
                       placeholder="info@fastighetsbolaget.se"
-                      className={`block h-10 w-full border border-dashed bg-muted/20 px-3 text-sm focus:outline-none ${
+                      className={`block h-11 w-full rounded-button border bg-muted/20 px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
                         showError
-                          ? "border-red-600 focus:border-red-700"
-                          : "border-muted-foreground/50 focus:border-foreground"
+                          ? "border-[var(--color-danger)] focus:border-[var(--color-danger)] focus:ring-[var(--color-danger)]/30"
+                          : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
                       }`}
                     />
                     {showError && (
@@ -1492,7 +1492,7 @@ function TagMultiSelect({
               }
             }}
             placeholder="Egen tagg (ett par ord)…"
-            className="h-8 flex-1 border border-dashed border-muted-foreground/50 bg-background px-2 text-sm focus:border-foreground focus:outline-none"
+            className="h-8 flex-1 border border-foreground/15 bg-background px-2 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
           />
           <button
             type="button"
@@ -2284,7 +2284,7 @@ function WireFieldEditable({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="block h-10 w-full border border-dashed border-muted-foreground/50 bg-muted/20 px-3 text-sm focus:border-foreground focus:outline-none"
+        className="block h-11 w-full rounded-button border border-foreground/15 bg-muted/20 px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
       />
       {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
     </label>
@@ -2317,7 +2317,7 @@ function WireArea({
         placeholder={placeholder}
         rows={3}
         maxLength={maxLength}
-        className="block w-full border border-dashed border-muted-foreground/50 bg-muted/20 p-3 text-sm focus:border-foreground focus:outline-none"
+        className="block w-full rounded-button border border-foreground/15 bg-muted/20 p-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
       />
       {maxLength ? (
         <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">
