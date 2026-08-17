@@ -528,6 +528,10 @@ function CreateListing() {
   const [bolagOrt, setBolagOrt] = useState("");
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
+
+  useEffect(() => {
     try {
       const userId = getSession()?.userId;
       const raw = userId ? localStorage.getItem(`${ONBOARDING_SALJARE_KEY}:${userId}`) : null;
