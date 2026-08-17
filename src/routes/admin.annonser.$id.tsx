@@ -34,9 +34,10 @@ type OnboardingSaljareData = {
   firmatecknare: { roll: string; fornamn: string; efternamn: string; mail: string; mobil: string } | null;
 };
 
-function readOnboardingSaljare(): OnboardingSaljareData | null {
+function readOnboardingSaljare(userId?: string): OnboardingSaljareData | null {
+  if (!userId) return null;
   try {
-    const raw = localStorage.getItem(ONBOARDING_SALJARE_KEY);
+    const raw = localStorage.getItem(`${ONBOARDING_SALJARE_KEY}:${userId}`);
     return raw ? (JSON.parse(raw) as OnboardingSaljareData) : null;
   } catch {
     return null;
@@ -600,7 +601,7 @@ function AdminAnnonsDetail() {
   const refresh = () => setTick((t) => t + 1);
 
   const draft = item?.draft ?? {};
-  const onboarding = readOnboardingSaljare();
+  const onboarding = readOnboardingSaljare(item?.agarUserId);
   const sellerAccount = item?.sellerPersonnr
     ? readAdminAccounts().find((a) => a.bankid.personnr === item.sellerPersonnr)
     : undefined;
@@ -736,9 +737,10 @@ function AdminAnnonsDetail() {
   const saveOnboardingField =
     (editKey: string, apply: (data: OnboardingSaljareData, value: string) => OnboardingSaljareData) =>
     (value: string) => {
-      const current = readOnboardingSaljare();
-      if (!current) return;
-      localStorage.setItem(ONBOARDING_SALJARE_KEY, JSON.stringify(apply(current, value)));
+      const userId = item?.agarUserId;
+      const current = readOnboardingSaljare(userId);
+      if (!current || !userId) return;
+      localStorage.setItem(`${ONBOARDING_SALJARE_KEY}:${userId}`, JSON.stringify(apply(current, value)));
       patchAnnons(id, (it) => ({ ...it, trelinkEdits: { ...it.trelinkEdits, [editKey]: true } }));
       refresh();
     };

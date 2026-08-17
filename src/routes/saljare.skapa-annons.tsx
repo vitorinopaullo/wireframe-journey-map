@@ -529,7 +529,8 @@ function CreateListing() {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(ONBOARDING_SALJARE_KEY);
+      const userId = getSession()?.userId;
+      const raw = userId ? localStorage.getItem(`${ONBOARDING_SALJARE_KEY}:${userId}`) : null;
       if (raw) setBolagOrt(JSON.parse(raw).bolagsuppgifter?.ort || "");
     } catch {
       /* noop */
@@ -1124,6 +1125,7 @@ function CreateListing() {
                     premium: draft.premium,
                     skickadAt: now.toISOString(),
                     sellerPersonnr: getSession()?.bankid.personnr,
+                    agarUserId: getSession()?.userId,
                     draft,
                   };
                   if (editId) {
@@ -1246,7 +1248,8 @@ function KontoSammanfattning() {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(ONBOARDING_SALJARE_KEY);
+      const userId = getSession()?.userId;
+      const raw = userId ? localStorage.getItem(`${ONBOARDING_SALJARE_KEY}:${userId}`) : null;
       if (raw) setData(JSON.parse(raw));
     } catch {
       /* noop */
@@ -1312,7 +1315,8 @@ function UppdragsavtalPreviewModal({
   useEffect(() => {
     if (!open) return;
     try {
-      const raw = localStorage.getItem(ONBOARDING_SALJARE_KEY);
+      const userId = getSession()?.userId;
+      const raw = userId ? localStorage.getItem(`${ONBOARDING_SALJARE_KEY}:${userId}`) : null;
       if (raw) {
         const data = JSON.parse(raw) as OnboardingSaljareData;
         setBolagsnamn(data.bolagsuppgifter?.bolag || "[Bolagsnamn]");

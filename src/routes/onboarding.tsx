@@ -110,10 +110,11 @@ function Onboarding() {
         />
       )}
 
-      {step === 2 && role && bankid && (
+      {step === 2 && role && bankid && session && (
         <Step2
           role={role}
           bankid={bankid}
+          userId={session.userId}
           onBack={() => setStep(1)}
           onFinish={handleFinish}
         />
@@ -230,11 +231,13 @@ function RoleCard({
 function Step2({
   role,
   bankid,
+  userId,
   onBack,
   onFinish,
 }: {
   role: "kopare" | "saljare";
   bankid: { fornamn: string; efternamn: string; personnr: string };
+  userId: string;
   onBack: () => void;
   onFinish: (profil: Record<string, string>) => void;
 }) {
@@ -261,7 +264,7 @@ function Step2({
 
     if (role === "saljare") {
       localStorage.setItem(
-        ONBOARDING_SALJARE_KEY,
+        `${ONBOARDING_SALJARE_KEY}:${userId}`,
         JSON.stringify({
           bolagsuppgifter: { bolag, orgnr, ort, adress, presentation },
           saljaruppgifter: {

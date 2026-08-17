@@ -17,6 +17,7 @@ import {
   type WorkflowData,
 } from "@/lib/annons-workflow";
 import { cats } from "@/lib/annons-model";
+import { getSession } from "@/lib/mock-auth";
 
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
@@ -86,7 +87,8 @@ function SellerAnnonsDetail() {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(ONBOARDING_SALJARE_KEY);
+      const userId = getSession()?.userId;
+      const raw = userId ? localStorage.getItem(`${ONBOARDING_SALJARE_KEY}:${userId}`) : null;
       if (raw) setOnboarding(JSON.parse(raw));
     } catch {
       /* noop */
