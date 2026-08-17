@@ -2,6 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { unlockSite } from "@/lib/gate.functions";
+import { WireBtn } from "@/components/wire";
 
 export const Route = createFileRoute("/unlock")({
   head: () => ({
@@ -64,13 +65,14 @@ function Unlock() {
         {error && (
           <p className="text-xs text-destructive">Fel lösenord. Försök igen.</p>
         )}
-        <button
+        <WireBtn
+          variant="primary"
           type="submit"
           disabled={pending}
-          className="w-full border-2 border-foreground bg-foreground px-3 py-2 text-sm uppercase tracking-widest text-background hover:opacity-90 disabled:opacity-50"
+          className="w-full uppercase tracking-widest disabled:opacity-50"
         >
           {pending ? "Låser upp…" : "Lås upp"}
-        </button>
+        </WireBtn>
       </form>
     </div>
   );

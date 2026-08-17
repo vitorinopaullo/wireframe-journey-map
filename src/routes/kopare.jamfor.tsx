@@ -140,12 +140,9 @@ function Compare() {
                         <WireBtn variant="secondary" to="/annons/$id/intresse" params={{ id: a.id }}>
                           Anmäl intresse
                         </WireBtn>
-                        <button
-                          onClick={() => removeOne(a.id)}
-                          className="border border-dashed border-muted-foreground/50 px-2 py-1.5 text-xs hover:border-foreground"
-                        >
+                        <WireBtn variant="tertiary" className="text-xs" onClick={() => removeOne(a.id)}>
                           Ta bort
-                        </button>
+                        </WireBtn>
                       </div>
                     </div>
                   </th>
