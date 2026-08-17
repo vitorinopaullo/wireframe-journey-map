@@ -256,10 +256,22 @@ function Step2({
   const [ftMail, setFtMail] = useState("");
   const [ftMobil, setFtMobil] = useState("");
 
-  const kanFortsatta = telefon.trim() && epost.trim();
+  const [adressTouched, setAdressTouched] = useState(false);
+  const [orgnrTouched, setOrgnrTouched] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  const ORGNR_REGEX = /^\d{6}-\d{4}$/;
+  const adressSaknas = role === "saljare" && adress.trim() === "";
+  const orgnrFelFormat = orgnr.trim() !== "" && !ORGNR_REGEX.test(orgnr.trim());
+  const adressError = (adressTouched || submitAttempted) && adressSaknas ? "Adress krävs." : undefined;
+  const orgnrError =
+    (orgnrTouched || submitAttempted) && orgnrFelFormat ? "Ogiltigt format. Ange som XXXXXX-XXXX." : undefined;
+
+  const kanFortsatta = telefon.trim() && epost.trim() && !adressSaknas && !orgnrFelFormat;
 
 
   function submit() {
+    setSubmitAttempted(true);
     if (!kanFortsatta) return;
 
     if (role === "saljare") {
@@ -343,14 +355,22 @@ function Step2({
               <WireBox label="Bolagsuppgifter">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <InputField label="Bolag" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
-                  <InputField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
+                  <InputField
+                    label="Org.nr"
+                    value={orgnr}
+                    onChange={setOrgnr}
+                    onBlur={() => setOrgnrTouched(true)}
+                    placeholder="556677-8899"
+                    error={orgnrError}
+                  />
                   <InputField label="Ort" value={ort} onChange={setOrt} placeholder="Stockholm" />
                   <InputField
-                    label="Adress"
+                    label="Adress *"
                     value={adress}
                     onChange={setAdress}
+                    onBlur={() => setAdressTouched(true)}
                     placeholder="Storgatan 1, 113 27"
-                    hint="Frivilligt — används vid fakturering om affär genomförs"
+                    error={adressError}
                   />
                   <div className="md:col-span-2">
                     <InputField
@@ -437,7 +457,7 @@ function Step2({
       <NavBar
         secondary={<WireBtn variant="ghost" onClick={onBack}>← Tillbaka</WireBtn>}
         primary={
-          <WireBtn variant={kanFortsatta ? "primary" : "ghost"} onClick={kanFortsatta ? submit : undefined}>
+          <WireBtn variant={kanFortsatta ? "primary" : "ghost"} onClick={submit}>
             Spara & skicka till TreLink →
           </WireBtn>
         }
@@ -450,17 +470,21 @@ function InputField({
   label,
   value,
   onChange,
+  onBlur,
   placeholder,
   type = "text",
   hint,
+  error,
   multiline,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   type?: string;
   hint?: string;
+  error?: string;
   multiline?: boolean;
 }) {
   return (
@@ -470,6 +494,7 @@ function InputField({
         <textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
           placeholder={placeholder}
           rows={3}
           className="w-full border border-foreground/40 bg-background px-3 py-2 text-sm"
@@ -479,11 +504,20 @@ function InputField({
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
           placeholder={placeholder}
-          className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+          className={`h-11 w-full rounded-button border bg-background px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
+            error
+              ? "border-destructive focus:border-destructive focus:ring-destructive/40"
+              : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
+          }`}
         />
       )}
-      {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
+      {error ? (
+        <span className="mt-1 block font-mono text-[10px] text-destructive">{error}</span>
+      ) : (
+        hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>
+      )}
     </label>
   );
 }
