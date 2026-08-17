@@ -463,14 +463,15 @@ function SellerAnnonsDetail() {
                     {kompletteringFiles.map((f, i) => (
                       <li key={i} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 py-1">
                         <span><Paperclip className="inline-block h-3.5 w-3.5 mr-1 align-middle" />{f}</span>
-                        <button
+                        <WireBtn
+                          variant="tertiary"
+                          className="text-xs"
                           onClick={() =>
                             setKompletteringFiles((prev) => prev.filter((_, j) => j !== i))
                           }
-                          className="text-xs text-muted-foreground hover:text-foreground"
                         >
                           Ta bort
-                        </button>
+                        </WireBtn>
                       </li>
                     ))}
                   </ul>
@@ -617,12 +618,13 @@ function SellerAnnonsDetail() {
                     Informationsmejl skickades till denna adress när uppdragsavtalet signerades.
                   </div>
                 </div>
-                <button
+                <WireBtn
+                  variant="tertiary"
+                  className="mt-2 text-xs underline"
                   onClick={() => setShowLandlordUpdate(true)}
-                  className="mt-2 text-xs text-muted-foreground underline hover:text-foreground"
                 >
                   Uppdatera hyresvärdens e-post
-                </button>
+                </WireBtn>
 
               </WireBox>
             </>

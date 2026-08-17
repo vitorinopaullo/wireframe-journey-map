@@ -798,13 +798,13 @@ function CreateListing() {
               );
             })}
           </div>
-          <button
-            type="button"
+          <WireBtn
+            variant="tertiary"
+            className="mt-3 font-mono text-[11px] uppercase tracking-wider underline decoration-dashed"
             onClick={() => setUppdragsavtalOpen(true)}
-            className="mt-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground underline decoration-dashed hover:text-foreground"
           >
             Se hur ett uppdragsavtal kan se ut →
-          </button>
+          </WireBtn>
           <div className="mt-4 border-t border-dashed border-muted-foreground/30 pt-4">
             <Annotation>Vad TreLink gör för dig</Annotation>
             <p className="mt-1 text-sm">{activeCat.trelink}</p>
@@ -1348,12 +1348,13 @@ function UppdragsavtalPreviewModal({
           <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
             Förhandsvisning · Uppdragsavtal
           </div>
-          <button
+          <WireBtn
+            variant="tertiary"
+            className="font-mono text-xs uppercase tracking-wider"
             onClick={onClose}
-            className="font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground"
           >
             Stäng <X className="inline-block h-3.5 w-3.5 ml-0.5 align-middle" />
-          </button>
+          </WireBtn>
         </div>
 
         <div className="border-l-2 border-amber-500/70 bg-amber-50/60 px-4 py-3 dark:bg-amber-500/5">
