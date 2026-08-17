@@ -50,7 +50,6 @@ export type DocSpec = { name: string; krav: string; required: boolean };
 
 export const docsByCat: Record<CatId, DocSpec[]> = {
   overlatelse: [
-    { name: "Överlåtelseavtal", krav: "PDF · signerat av båda parter (mall finns hos TreLink)", required: true },
     { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
     { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
     { name: "Bilder på lokalen", krav: "JPG/PNG · minst 8 st · dagsljus", required: true },
@@ -64,7 +63,6 @@ export const docsByCat: Record<CatId, DocSpec[]> = {
     { name: "Årsredovisning", krav: "PDF · signerad", required: false },
   ],
   aktie: [
-    { name: "Köpeavtal / aktieöverlåtelseavtal", krav: "PDF · mall finns hos TreLink", required: true },
     { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
     { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
     { name: "Rörelseresultat", krav: "PDF från bokföring", required: true },
