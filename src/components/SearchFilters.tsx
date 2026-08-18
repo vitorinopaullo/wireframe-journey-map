@@ -1,23 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { WireBox, WireBtn } from "@/components/wire";
+import { VERKSAMHETSTYP_TAGGAR } from "@/lib/annons-model";
 
 const OMRADE_OPTIONS = ["Södermalm", "Östermalm", "Vasastan", "Kungsholmen", "Göteborg", "Malmö"];
-
-const VERKSAMHETSTYP_OPTIONS = [
-  "Butik",
-  "Kontor",
-  "Lager",
-  "Restaurang",
-  "Café",
-  "Bageri",
-  "Bistro",
-  "Pub",
-  "Vinbar",
-  "Frisör",
-  "Nagelsalong",
-  "Massage",
-  "Estetisk",
-];
 
 const PRISINTERVALL_OPTIONS = [
   "0 – 500 000 kr",
@@ -97,7 +82,7 @@ export function SearchBox() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Dropdown
           label="Verksamhetstyp"
-          options={VERKSAMHETSTYP_OPTIONS}
+          options={VERKSAMHETSTYP_TAGGAR}
           placeholder="Butik / Kontor / Restaurang…"
         />
 

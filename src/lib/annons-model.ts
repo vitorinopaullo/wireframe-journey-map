@@ -79,8 +79,24 @@ export const docsByCat: Record<CatId, DocSpec[]> = {
   ],
 };
 
-// Samma kategorier som TYP-fältet på annonskorten (@/components/ListingCard).
-export const VERKSAMHETSTYP_TAGGAR = ["Butik", "Kontor", "Lager", "Mat och dryck", "Skönhetssalong"];
+// Samma 13 undertyper som sökfiltret (@/components/SearchFilters) och
+// nyckeltalslogiken (@/lib/nyckeltal) — en källa som båda importerar från,
+// så att listorna inte kan glida isär.
+export const VERKSAMHETSTYP_TAGGAR = [
+  "Butik",
+  "Kontor",
+  "Lager",
+  "Restaurang",
+  "Café",
+  "Bageri",
+  "Bistro",
+  "Pub",
+  "Vinbar",
+  "Frisör",
+  "Nagelsalong",
+  "Massage",
+  "Estetisk",
+];
 
 export type KontorFalt = {
   lage: string;
@@ -143,8 +159,8 @@ export const FALTGRUPP_TYPER: Record<string, string[]> = {
   Kontor: ["Kontor"],
   Butik: ["Butik"],
   Lager: ["Lager"],
-  Servering: ["Mat och dryck"],
-  Frisor: ["Skönhetssalong"],
+  Servering: ["Restaurang", "Café", "Bageri", "Bistro", "Pub", "Vinbar"],
+  Frisor: ["Frisör", "Nagelsalong", "Massage", "Estetisk"],
 };
 
 export type Draft = {
