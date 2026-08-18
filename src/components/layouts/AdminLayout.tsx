@@ -59,9 +59,11 @@ export function AdminLayout({ children }: { children?: ReactNode }) {
   const location = useLocation();
   const granskningCount = useGranskningCount();
   const anvandareNotisCount = useNotisCount("anvandare");
+  const affarerNotisCount = useNotisCount("affarer");
   const navCounts: Record<string, number> = {
     "/admin/annonser": granskningCount,
     "/admin/anvandare": anvandareNotisCount,
+    "/admin/affarer": affarerNotisCount,
   };
   return (
     <div className="min-h-screen bg-background text-foreground">

@@ -630,7 +630,8 @@ function AdminAnnonsDetail() {
 
   const ytaNum = Number(draft.yta);
   const hyraNum = Number(draft.hyra);
-  const kvmPris = ytaNum > 0 && hyraNum > 0 ? Math.round((hyraNum * 12) / ytaNum) : null;
+  const fastighetsskattNum = Number(draft.fastighetsskatt) || 0;
+  const kvmPris = ytaNum > 0 && hyraNum > 0 ? Math.round((hyraNum * 12 + fastighetsskattNum) / ytaNum) : null;
 
   const stats = useMemo(() => {
     const obligatoriska = specs.filter((s) => s.required);
@@ -733,6 +734,41 @@ function AdminAnnonsDetail() {
     }));
     refresh();
   };
+
+  const verksamhetstypfaltBlock =
+    valdaGrupper.length === 0 ? (
+      <WireBox label="Verksamhetstypfält" variant="dashed">
+        <div className="text-sm text-amber-700 dark:text-amber-500">⚠️ Ingen verksamhetstyp vald ännu — fält kan inte visas.</div>
+      </WireBox>
+    ) : (
+      valdaGrupper.map((grupp) => (
+        <WireBox key={grupp} label={`Verksamhetstypfält · ${GRUPP_NAMN[grupp]}`}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {GRUPP_FALT[grupp].map((f) => {
+              const value = draft.typFalt?.[grupp]?.[f.key];
+              const editKey = `typFalt.${grupp}.${f.key}`;
+              return f.isTags ? (
+                <TagsField
+                  key={f.key}
+                  k={f.label}
+                  v={value}
+                  edited={!!item.trelinkEdits?.[editKey]}
+                  onSave={saveTypFaltField(grupp, f.key)}
+                />
+              ) : (
+                <Field
+                  key={f.key}
+                  k={f.label}
+                  v={value}
+                  edited={!!item.trelinkEdits?.[editKey]}
+                  onSave={saveTypFaltField(grupp, f.key)}
+                />
+              );
+            })}
+          </div>
+        </WireBox>
+      ))
+    );
 
   const saveOnboardingField =
     (editKey: string, apply: (data: OnboardingSaljareData, value: string) => OnboardingSaljareData) =>
@@ -1335,6 +1371,8 @@ function AdminAnnonsDetail() {
         </WireBox>
       )}
 
+      {skrivFasen && verksamhetstypfaltBlock}
+
       {st === "publicerad" && (
         <WireBox label="🎉 Annonsen är publicerad" className="mb-6" variant="dashed">
           <p className="text-sm text-muted-foreground">Klart — inget mer krävs. Annonsen är live på trelink.se.</p>
@@ -1518,7 +1556,6 @@ function AdminAnnonsDetail() {
             />
             {skrivFasen && (
               <>
-                <Field k="Yta" v={draft.yta ? `${draft.yta} m²` : undefined} />
                 <Field k="Hyra" v={draft.hyra ? `${draft.hyra} kr/mån` : undefined} />
                 <Field k="Fastighetsskatt" v={draft.fastighetsskatt ? `${draft.fastighetsskatt} kr/år` : undefined} />
                 <Field k="Fastighetsbeteckning" v={draft.fastighetsbeteckning} />
@@ -1528,39 +1565,7 @@ function AdminAnnonsDetail() {
           </div>
         </WireBox>
 
-        {valdaGrupper.length === 0 ? (
-          <WireBox label="Verksamhetstypfält" variant="dashed">
-            <div className="text-sm text-amber-700 dark:text-amber-500">⚠️ Ingen verksamhetstyp vald ännu — fält kan inte visas.</div>
-          </WireBox>
-        ) : (
-          valdaGrupper.map((grupp) => (
-            <WireBox key={grupp} label={`Verksamhetstypfält · ${GRUPP_NAMN[grupp]}`}>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {GRUPP_FALT[grupp].map((f) => {
-                  const value = draft.typFalt?.[grupp]?.[f.key];
-                  const editKey = `typFalt.${grupp}.${f.key}`;
-                  return f.isTags ? (
-                    <TagsField
-                      key={f.key}
-                      k={f.label}
-                      v={value}
-                      edited={!!item.trelinkEdits?.[editKey]}
-                      onSave={saveTypFaltField(grupp, f.key)}
-                    />
-                  ) : (
-                    <Field
-                      key={f.key}
-                      k={f.label}
-                      v={value}
-                      edited={!!item.trelinkEdits?.[editKey]}
-                      onSave={saveTypFaltField(grupp, f.key)}
-                    />
-                  );
-                })}
-              </div>
-            </WireBox>
-          ))
-        )}
+        {!skrivFasen && verksamhetstypfaltBlock}
 
         {!skrivFasen && (
         <>

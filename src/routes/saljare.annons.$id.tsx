@@ -18,6 +18,7 @@ import {
 } from "@/lib/annons-workflow";
 import { cats } from "@/lib/annons-model";
 import { getSession } from "@/lib/mock-auth";
+import { addNotis } from "@/lib/admin-notiser";
 
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
@@ -222,6 +223,11 @@ function SellerAnnonsDetail() {
       nwf = logEntry(nwf, "Säljare", "Uppdragsavtal signerat");
       nwf = logEntry(nwf, "System", "Bekräftelsemejl skickat till dig: Uppdragsavtal signerat");
       nwf = logEntry(nwf, "TreLink", "Informationsmejl skickat till hyresvärden");
+      addNotis(
+        "affarer",
+        `Uppdragsavtal signerat av säljaren — ${it.titel || "Ärende"} (#${id})`,
+        `/admin/annonser/${id}`,
+      );
       return { ...it, workflow: nwf };
     });
     setSignicatOpen(false);
