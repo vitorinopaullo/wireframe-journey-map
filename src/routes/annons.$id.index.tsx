@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Star, ChevronLeft, ChevronRight, X, Expand } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
 import { nyckeltalFor } from "@/lib/nyckeltal";
-import { exempelAnnons } from "@/lib/annons-model";
+import { exempelAnnons, type CatId } from "@/lib/annons-model";
+import { readAnnonser } from "@/lib/annons-workflow";
+import { placeholderImage } from "@/lib/placeholder-image";
 
 export const Route = createFileRoute("/annons/$id/")({
   component: ListingDetail,
@@ -14,21 +16,56 @@ export const Route = createFileRoute("/annons/$id/")({
 /* ---------- mock data ----------
  * Delas med annonskortet på startsidan via exempelAnnons (annons-model.ts) —
  * titel/adress/pris/yta osv. kan därför aldrig divergera mellan kort och
- * detaljsida. FAQ är unikt för detaljsidan och hålls lokalt här.
+ * detaljsida. FAQ är unikt för detaljsidan och hålls lokalt här. Samma FAQ
+ * används oavsett om annonsen är en riktig, publicerad annons eller
+ * exempeldatan — riktiga annonser saknar egen FAQ-data.
  */
-const listing = {
-  ...exempelAnnons,
-  kategori: "Lokal",
-  faq: [
-    ["Varför säljs verksamheten?", "Ägaren ska gå i pension. Driftpersonal stannar gärna."],
-    ["Får jag ta över hyreskontraktet?", "Ja, med hyresvärdens godkännande. TreLink driver dialogen."],
-    ["Ingår inventarier?", "Ja, allt i inventarielistan. Råvarulager räknas separat vid tillträde."],
-    ["När kan tillträde ske?", "Tidigast 6 veckor efter signering — beror på hyresvärd."],
-  ] as [string, string][],
+const FAQ: [string, string][] = [
+  ["Varför säljs verksamheten?", "Ägaren ska gå i pension. Driftpersonal stannar gärna."],
+  ["Får jag ta över hyreskontraktet?", "Ja, med hyresvärdens godkännande. TreLink driver dialogen."],
+  ["Ingår inventarier?", "Ja, allt i inventarielistan. Råvarulager räknas separat vid tillträde."],
+  ["När kan tillträde ske?", "Tidigast 6 veckor efter signering — beror på hyresvärd."],
+];
+
+const KAT_NAMN: Record<CatId, "Lokal" | "Inkråm" | "Bolag"> = {
+  overlatelse: "Lokal",
+  inkram: "Inkråm",
+  aktie: "Bolag",
 };
 
-const ANTAL_BILDER = listing.bilder.length;
-const HANDPENNING = Math.round(listing.pris * 0.1);
+type Listing = typeof exempelAnnons & { kategori: string; faq: [string, string][] };
+
+/** Bygger en publik listing-vy från en riktig, publicerad annons i saljare-annonser. */
+function fromPublishedItem(item: any): Listing {
+  const draft = item.draft ?? {};
+  const cat: CatId = draft.cat ?? "overlatelse";
+  const utkast = item.workflow?.utkast ?? {};
+  const rawPris = utkast.pris || item.pris || "0";
+  const pris = Number(String(rawPris).replace(/\D/g, "")) || 0;
+  const bildLabels: string[] = draft.valdaBilderOrdning?.length ? draft.valdaBilderOrdning : draft.bilder ?? [];
+  const bilder = bildLabels.length ? bildLabels.map((label: string) => placeholderImage(label)) : exempelAnnons.bilder;
+  const verksamhetTyp = String(draft.verksamhet ?? "").split(",")[0]?.trim();
+
+  return {
+    id: item.id,
+    cat,
+    typ: verksamhetTyp || exempelAnnons.typ,
+    titel: utkast.rubrik || item.titel,
+    underrubrik: "",
+    ort: item.ort || "",
+    adress: draft.adress || "",
+    yta: Number(draft.yta) || 0,
+    hyra: Number(draft.hyra) || 0,
+    hasFTax: false,
+    pris,
+    lonsamt: false,
+    beskrivning: (utkast.beskrivning || "").split(/\n+/).map((s: string) => s.trim()).filter(Boolean),
+    bilder,
+    planskiss: exempelAnnons.planskiss,
+    kategori: KAT_NAMN[cat],
+    faq: FAQ,
+  };
+}
 
 const liknande = [
   { id: "4", titel: "Butik · Vasastan", pris: "1 200 000", kat: "Lokal" },
@@ -38,11 +75,13 @@ const liknande = [
 
 /* ---------- helpers ---------- */
 function StickyCTA({
+  listing,
   scrolled,
   saved,
   onSave,
   onInterest,
 }: {
+  listing: Listing;
   scrolled: boolean;
   saved: boolean;
   onSave: () => void;
@@ -74,8 +113,24 @@ function ListingDetail() {
   const [scrolled, setScrolled] = useState(false);
   const [bild, setBild] = useState(0);
   const [lightbox, setLightbox] = useState<{ src: string; caption?: string } | null>(null);
+  const [publishedItem, setPublishedItem] = useState<any | null>(null);
   const isAuthed = useIsAuthed();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const match = readAnnonser().find((i: any) => i.id === id);
+    setPublishedItem(match && match.workflow?.state === "publicerad" ? match : null);
+  }, [id]);
+
+  const listing: Listing = useMemo(
+    () =>
+      publishedItem
+        ? fromPublishedItem(publishedItem)
+        : { ...exempelAnnons, kategori: KAT_NAMN[exempelAnnons.cat], faq: FAQ },
+    [publishedItem],
+  );
+  const ANTAL_BILDER = listing.bilder.length;
+  const HANDPENNING = Math.round(listing.pris * 0.1);
 
   const visaForegaende = () => setBild((b) => (b - 1 + ANTAL_BILDER) % ANTAL_BILDER);
   const visaNasta = () => setBild((b) => (b + 1) % ANTAL_BILDER);
@@ -310,7 +365,7 @@ function ListingDetail() {
         </div>
       </div>
 
-      <StickyCTA scrolled={scrolled} saved={saved} onSave={handleSave} onInterest={handleInterest} />
+      <StickyCTA listing={listing} scrolled={scrolled} saved={saved} onSave={handleSave} onInterest={handleInterest} />
       <div className="h-20" />
 
       {lightbox && (
