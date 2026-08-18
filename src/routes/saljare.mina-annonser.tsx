@@ -26,10 +26,6 @@ function daysSince(iso: string) {
   return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));
 }
 
-const seed: Item[] = [
-  { id: "1", titel: "Restauranglokal · Södermalm", status: "Publicerad", views: 1240, intresse: 14, premium: true },
-];
-
 function MyListings() {
   const [userItems, setUserItems] = useState<Item[]>([]);
 
@@ -40,7 +36,7 @@ function MyListings() {
     } catch {}
   }, []);
 
-  const items = [...userItems, ...seed];
+  const items = userItems;
 
   function remove(id: string) {
     const next = userItems.filter((i) => i.id !== id);
@@ -101,6 +97,11 @@ function MyListings() {
                       <WireBtn to="/saljare/annons/$id" params={{ id: i.id }}>
                         Öppna ärendet →
                       </WireBtn>
+                      {st === "publicerad" && (
+                        <WireBtn variant="secondary" to="/annons/$id" params={{ id: i.id }}>
+                          Visa min annons →
+                        </WireBtn>
+                      )}
                       {editable && (
                         <WireBtn variant="secondary" to={`/saljare/skapa-annons?edit=${i.id}`}>
                           Redigera
