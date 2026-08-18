@@ -44,7 +44,7 @@ export const cats: {
   },
 ];
 
-export type DocState = "saknas" | "uppladdad" | "granskas" | "godkant" | "komplettera";
+export type DocState = "saknas" | "uppladdad" | "granskas" | "godkant" | "komplettera" | "ej-aktuell";
 
 export type DocSpec = { name: string; krav: string; required: boolean };
 

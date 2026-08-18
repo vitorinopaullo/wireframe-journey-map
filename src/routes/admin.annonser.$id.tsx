@@ -807,6 +807,15 @@ function AdminAnnonsDetail() {
     refresh();
   };
 
+  const markDocNotApplicable = (docName: string) => {
+    patchAnnons(id, (it) => ({
+      ...it,
+      draft: { ...it.draft, docs: { ...it.draft?.docs, [docName]: "ej-aktuell" } },
+      workflow: logEntry(it.workflow, "TreLink", `Markerade dokument som ej aktuellt: ${docName}`),
+    }));
+    refresh();
+  };
+
   const requestDocKomplettering = (docName: string) => {
     if (!docKomplText.trim()) return;
     patchAnnons(id, (it) => ({
@@ -1627,6 +1636,11 @@ function AdminAnnonsDetail() {
                       <WireBtn variant="ghost" onClick={() => setActiveDoc(activeDoc === d.name ? null : d.name)}>
                         Begär komplettering
                       </WireBtn>
+                      {!d.required && state !== "ej-aktuell" && (
+                        <WireBtn variant="ghost" onClick={() => markDocNotApplicable(d.name)}>
+                          Ej mottagen (N/A)
+                        </WireBtn>
+                      )}
                     </div>
                   </div>
 
@@ -1763,16 +1777,25 @@ function AdminAnnonsDetail() {
 }
 
 function DocStateBadge({ state }: { state: DocState }) {
-  const map: Record<DocState, { label: string; filled: boolean }> = {
-    "saknas": { label: "⚠️ VÄNTAR PÅ UPPLADDNING", filled: false },
-    "uppladdad": { label: "UPPLADDAD · VÄNTAR GRANSKNING", filled: false },
-    "granskas": { label: "GRANSKAS", filled: false },
-    "godkant": { label: "✓ GODKÄNT", filled: true },
-    "komplettera": { label: "⏳ KOMPLETTERING BEGÄRD", filled: false },
+  const map: Record<DocState, { label: string; tone: "default" | "filled" | "warning" | "neutral" }> = {
+    "saknas": { label: "⚠️ VÄNTAR PÅ UPPLADDNING", tone: "warning" },
+    "uppladdad": { label: "UPPLADDAD · VÄNTAR GRANSKNING", tone: "default" },
+    "granskas": { label: "GRANSKAS", tone: "default" },
+    "godkant": { label: "✓ GODKÄNT", tone: "filled" },
+    "komplettera": { label: "⏳ KOMPLETTERING BEGÄRD", tone: "default" },
+    "ej-aktuell": { label: "N/A · EJ AKTUELLT", tone: "neutral" },
   };
   const m = map[state];
+  const toneCls =
+    m.tone === "filled"
+      ? "border-foreground bg-foreground text-background"
+      : m.tone === "warning"
+      ? "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
+      : m.tone === "neutral"
+      ? "border-muted-foreground/40 bg-muted/40 text-muted-foreground"
+      : "border-foreground/50 text-foreground";
   return (
-    <span className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${m.filled ? "border-foreground bg-foreground text-background" : "border-foreground/50 text-foreground"}`}>
+    <span className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${toneCls}`}>
       {m.label}
     </span>
   );

@@ -2344,6 +2344,7 @@ const docLabels: Record<DocState, string> = {
   granskas: "Granskas av TreLink",
   godkant: "Godkänt",
   komplettera: "Behöver kompletteras",
+  "ej-aktuell": "Ej aktuellt",
 };
 
 function DocStatusTag({ state }: { state: DocState }) {
