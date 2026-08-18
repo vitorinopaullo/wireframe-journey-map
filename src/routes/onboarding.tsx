@@ -397,13 +397,23 @@ function Step2({
                   <Annotation>Firmatecknare</Annotation>
                   <div className="mt-3 flex flex-wrap gap-2">
                     <WireBtn
-                      variant={arFirmatecknare ? "primary" : "secondary"}
+                      variant="secondary"
+                      className={
+                        arFirmatecknare
+                          ? "!border-[var(--color-interactive)] !bg-[var(--color-interactive)]/10 !text-[var(--color-interactive)] hover:!opacity-100"
+                          : ""
+                      }
                       onClick={() => setArFirmatecknare(true)}
                     >
                       Jag är firmatecknare
                     </WireBtn>
                     <WireBtn
-                      variant={!arFirmatecknare ? "primary" : "secondary"}
+                      variant="secondary"
+                      className={
+                        !arFirmatecknare
+                          ? "!border-[var(--color-interactive)] !bg-[var(--color-interactive)]/10 !text-[var(--color-interactive)] hover:!opacity-100"
+                          : ""
+                      }
                       onClick={() => setArFirmatecknare(false)}
                     >
                       Jag är inte firmatecknare
