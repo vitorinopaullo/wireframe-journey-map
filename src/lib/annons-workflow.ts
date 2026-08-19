@@ -34,7 +34,7 @@ export const stateHint: Record<WorkflowState, string> = {
 
 export type TimelineEntry = {
   ts: string; // ISO
-  vem: "Säljare" | "TreLink" | "System";
+  vem: "Säljare/Överlåtare" | "TreLink" | "System";
   text: string;
 };
 
@@ -67,7 +67,7 @@ export function initialWorkflow(now = new Date()): WorkflowData {
     timeline: [
       {
         ts: now.toISOString(),
-        vem: "Säljare",
+        vem: "Säljare/Överlåtare",
         text: "Skickade in underlag för granskning",
       },
       {

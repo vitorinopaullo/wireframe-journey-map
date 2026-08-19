@@ -406,7 +406,7 @@ function DealDetail() {
 
           <WireBox label="Parter">
             <div className="space-y-3 text-sm">
-              <div><Annotation>Säljare</Annotation><p>Anonym tills signering</p></div>
+              <div><Annotation>Säljare/Överlåtare</Annotation><p>Anonym tills signering</p></div>
               <div><Annotation>Köpare</Annotation><p>{as === "kopare" ? "Du" : "Anonym tills signering"}</p></div>
               <div><Annotation>Mäklare</Annotation><p>TreLink · george@trelink.se</p></div>
             </div>

@@ -78,7 +78,7 @@ function Onboarding() {
           <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
             Du registrerar dig som
           </span>
-          <WireTag active>{role === "kopare" ? "Köpare" : "Säljare"}</WireTag>
+          <WireTag active>{role === "kopare" ? "Köpare" : "Säljare/Överlåtare"}</WireTag>
         </div>
       )}
 
@@ -385,7 +385,7 @@ function Step2({
                 </div>
               </WireBox>
 
-              <WireBox label="Säljaruppgifter">
+              <WireBox label="Säljar-/Överlåtaruppgifter">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
                   <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />

@@ -8,7 +8,7 @@ export const Route = createFileRoute("/hur-det-funkar")({
 
 const steps = [
   {
-    actor: "Säljare",
+    actor: "Säljare/Överlåtare",
     title: "Skapa annons — gratis",
     body: "Registrera med BankID. Välj kategori (lokal/inkråm/bolag). Ladda upp underlag. Premium-tillägg 2 500 kr är frivilligt.",
   },

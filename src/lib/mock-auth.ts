@@ -114,7 +114,7 @@ export function upsertAdminAccount(
       const { fornamn, efternamn } = list[idx].bankid;
       addNotis(
         "anvandare",
-        `${fornamn} ${efternamn} valde roll: ${patch.role === "saljare" ? "Säljare" : "Köpare"}`,
+        `${fornamn} ${efternamn} valde roll: ${patch.role === "saljare" ? "Säljare/Överlåtare" : "Köpare"}`,
         `/admin/anvandare/${list[idx].id}`,
       );
     }

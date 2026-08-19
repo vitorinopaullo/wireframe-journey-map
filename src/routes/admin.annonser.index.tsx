@@ -104,7 +104,7 @@ function NextActorTag({ status }: { status: WorkflowState | null }) {
   return (
     <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
       <span className="inline-block h-2 w-2 rounded-full border border-foreground/50 bg-background" />
-      Säljare
+      Säljare/Överlåtare
     </span>
   );
 }

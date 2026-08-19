@@ -220,7 +220,7 @@ function SellerAnnonsDetail() {
         avtalSignedAt: now,
         hyresvardNotifieradAt: now,
       };
-      nwf = logEntry(nwf, "Säljare", "Uppdragsavtal signerat");
+      nwf = logEntry(nwf, "Säljare/Överlåtare", "Uppdragsavtal signerat");
       nwf = logEntry(nwf, "System", "Bekräftelsemejl skickat till dig: Uppdragsavtal signerat");
       nwf = logEntry(nwf, "TreLink", "Informationsmejl skickat till hyresvärden");
       addNotis(
@@ -239,7 +239,7 @@ function SellerAnnonsDetail() {
   const submitKomplettering = () => {
     patchAnnons(id, (it) => {
       let nwf: WorkflowData = { ...it.workflow, state: "granskas" };
-      nwf = logEntry(nwf, "Säljare", "Komplettering inskickad");
+      nwf = logEntry(nwf, "Säljare/Överlåtare", "Komplettering inskickad");
       return { ...it, status: "Granskas", workflow: nwf };
     });
     toast("Kompletteringen har skickats till Trelink");

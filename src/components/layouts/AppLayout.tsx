@@ -67,7 +67,7 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
                 search={{ mode: "saljare" }}
                 className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${mode === "saljare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
               >
-                Säljare
+                Säljare/Överlåtare
               </Link>
             </div>
             <Link to="/logga-in" className="text-xs text-muted-foreground hover:text-foreground">
@@ -79,7 +79,7 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
       <div className="mx-auto flex max-w-7xl gap-8 px-6 py-8">
         <aside className="w-56 shrink-0 border-r border-dashed border-muted-foreground/40 pr-6">
           <div className="mb-3 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-            {mode === "kopare" ? "Köparmeny" : "Säljarmeny"}
+            {mode === "kopare" ? "Köparmeny" : "Säljar-/Överlåtarmeny"}
           </div>
           <nav className="flex flex-col gap-1">
             {nav.map((n) => {

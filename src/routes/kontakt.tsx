@@ -26,7 +26,7 @@ function Kontakt() {
             <WireField label="Namn" placeholder="För- och efternamn" />
             <WireField label="E-post" placeholder="namn@exempel.se" />
             <div className="md:col-span-2">
-              <WireField label="Jag är" placeholder="Säljare / Köpare / Övrigt" type="select" />
+              <WireField label="Jag är" placeholder="Säljare/Överlåtare / Köpare / Övrigt" type="select" />
             </div>
             <div className="md:col-span-2">
               <label className="block">
