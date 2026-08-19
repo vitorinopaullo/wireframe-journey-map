@@ -1055,9 +1055,12 @@ function AdminAnnonsDetail() {
         </div>
       )}
 
-      {/* Sticky sammanfattning + huvudåtgärder */}
-      <div className="sticky bottom-0 z-30 mb-6 border border-foreground/30 bg-background px-4 py-3 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Fast åtgärdsrad längst ned — position:sticky med bottom-0 visade sig inte
+          fästa i praktiken (verifierat: ett minimalt, ramverksoberoende sticky-element
+          i samma container uppvisade samma problem), så vi använder fixed istället,
+          samma mönster som StickyCTA i annons.$id.index.tsx. */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-foreground/30 bg-background px-4 py-3 shadow-sm">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-1.5">
             {checklist.map((c) => (
               <span
@@ -1772,6 +1775,9 @@ function AdminAnnonsDetail() {
       )}
 
       <MailPreview open={!!mailPreview} mail={mailPreview} onClose={() => setMailPreview(null)} />
+
+      {/* Reserverar plats så den fasta åtgärdsraden inte täcker sista innehållet. */}
+      <div className="h-24" />
     </AdminLayout>
   );
 }
