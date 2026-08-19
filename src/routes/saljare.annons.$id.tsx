@@ -421,12 +421,14 @@ function SellerAnnonsDetail() {
               <WireBox label="Meddelande från Trelink">
                 <div className="border-l-2 border-amber-500/70 bg-amber-50/60 px-4 py-3 dark:bg-amber-500/5">
                   <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                    {new Date().toLocaleDateString("sv-SE")} · TRELINK
+                    {(item.workflow?.komplettering?.at
+                      ? new Date(item.workflow.komplettering.at)
+                      : new Date()
+                    ).toLocaleDateString("sv-SE")}{" "}
+                    · TRELINK
                   </div>
                   <p className="mt-2 text-sm leading-relaxed">
-                    Vi behöver ytterligare underlag för att kunna godkänna objektet. Vänligen ladda upp:
-                    senaste hyresavier (minst 3 månader) samt ett uppdaterat resultatdokument för
-                    innevarande år.
+                    {item.workflow?.komplettering?.message || "TreLink har begärt komplettering av underlaget."}
                   </p>
                 </div>
               </WireBox>
