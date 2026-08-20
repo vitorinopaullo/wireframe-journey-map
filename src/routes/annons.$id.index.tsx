@@ -8,6 +8,7 @@ import { nyckeltalFor } from "@/lib/nyckeltal";
 import { exempelAnnons, type CatId } from "@/lib/annons-model";
 import { readAnnonser } from "@/lib/annons-workflow";
 import { placeholderImage } from "@/lib/placeholder-image";
+import { isFavorit, toggleFavorit } from "@/lib/favoriter";
 
 export const Route = createFileRoute("/annons/$id/")({
   component: ListingDetail,
@@ -109,7 +110,7 @@ function StickyCTA({
 
 function ListingDetail() {
   const { id } = Route.useParams();
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(() => isFavorit(id));
   const [scrolled, setScrolled] = useState(false);
   const [bild, setBild] = useState(0);
   const [lightbox, setLightbox] = useState<{ src: string; caption?: string } | null>(null);
@@ -161,7 +162,15 @@ function ListingDetail() {
 
   const handleSave = () => {
     if (!isAuthed) return gotoLogin(`/annons/${id}`);
-    setSaved((v) => !v);
+    const next = toggleFavorit({
+      annonsId: id,
+      titel: listing.titel,
+      pris: listing.pris,
+      ort: listing.ort,
+      kategori: listing.kategori,
+      savedAt: new Date().toISOString(),
+    });
+    setSaved(next.some((f) => f.annonsId === id));
   };
 
 
