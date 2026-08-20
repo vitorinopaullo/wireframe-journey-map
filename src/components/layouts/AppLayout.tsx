@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY } from "@/lib/kopare-workflow";
+import { unreadCountByKategori, STORAGE_KEY as NOTISER_STORAGE_KEY, type AdminNotisKategori } from "@/lib/admin-notiser";
 
 type Mode = "kopare" | "saljare";
 
@@ -21,28 +21,26 @@ const sellerNav = [
   { to: "/saljare/affarer", label: "Mina affärer" },
 ];
 
-function useObehandladeIntressenCount() {
-  const [count, setCount] = useState(
-    () => readBuyerInterests().filter((i) => i.status === "väntar-pdf").length,
-  );
+function useNotisCount(kategori: AdminNotisKategori) {
+  const [n, setN] = useState(() => unreadCountByKategori(kategori));
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
-      if (e.key !== null && e.key !== KOPARE_STORAGE_KEY) return;
-      setCount(readBuyerInterests().filter((i) => i.status === "väntar-pdf").length);
+      if (e.key !== null && e.key !== NOTISER_STORAGE_KEY) return;
+      setN(unreadCountByKategori(kategori));
     }
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
-  }, []);
+  }, [kategori]);
 
-  return count;
+  return n;
 }
 
 export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode }) {
   const nav = mode === "kopare" ? buyerNav : sellerNav;
   const otherMode: Mode = mode === "kopare" ? "saljare" : "kopare";
   const location = useLocation();
-  const obehandladeIntressen = useObehandladeIntressenCount();
+  const obehandladeIntressen = useNotisCount("saljare-intresse");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-foreground/20">

@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
 import { readBuyerInterests, type BuyerInterestStatus } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
+import { markKategoriRead } from "@/lib/admin-notiser";
 
 export const Route = createFileRoute("/saljare/intressenter")({
   component: Interest,
@@ -20,6 +22,10 @@ function formatDatum(ts: string) {
 }
 
 function Interest() {
+  useEffect(() => {
+    markKategoriRead("saljare-intresse");
+  }, []);
+
   const rows = readBuyerInterests()
     .slice()
     .sort((a, b) => (b.skapadAt || "").localeCompare(a.skapadAt || ""))

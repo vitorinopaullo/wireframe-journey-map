@@ -5,6 +5,8 @@ import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation, PageHeader, StatusDot } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
 import { genereraKKod, readBuyerInterests, writeBuyerInterests } from "@/lib/kopare-workflow";
+import { getAnnons } from "@/lib/annons-workflow";
+import { addNotis } from "@/lib/admin-notiser";
 
 export const Route = createFileRoute("/annons/$id/intresse")({
   component: InterestWizard,
@@ -210,6 +212,12 @@ function InterestWizard() {
       skapadAt: new Date().toISOString(),
     };
     writeBuyerInterests([...interests, interest]);
+    const annonsTitel = getAnnons(id)?.titel || `Annons #${id}`;
+    addNotis(
+      "saljare-intresse",
+      `Ny intresseanmälan (${interest.kKod}) på "${annonsTitel}"`,
+      "/saljare/intressenter",
+    );
     nav({ to: "/annons/$id/underlag", params: { id } });
   };
 
