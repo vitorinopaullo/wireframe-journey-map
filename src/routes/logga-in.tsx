@@ -9,9 +9,8 @@ function isSafeNext(v: string | undefined): v is string {
 }
 
 export const Route = createFileRoute("/logga-in")({
-  validateSearch: (s: Record<string, unknown>) => ({
-    next: typeof s.next === "string" ? s.next : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>): { next?: string } =>
+    typeof s.next === "string" ? { next: s.next } : {},
   component: Login,
 });
 
