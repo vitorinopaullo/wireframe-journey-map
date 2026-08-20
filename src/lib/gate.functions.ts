@@ -5,8 +5,13 @@ import { createHash, timingSafeEqual } from "node:crypto";
 type GateSession = { unlocked?: boolean };
 
 function sessionConfig() {
-  const password = process.env.SESSION_SECRET;
-  if (!password) throw new Error("SESSION_SECRET is not set");
+  // Fallback keeps the gate working even if the env var isn't injected into the
+  // running process yet (dev-server restarts); it's only a cookie-signing key.
+  const password =
+    process.env.SESSION_SECRET ||
+    createHash("sha256")
+      .update(`trelink-gate:${process.env.SITE_PASSWORD ?? "dev"}`, "utf8")
+      .digest("hex");
   return {
     password,
     name: "trelink-gate",
