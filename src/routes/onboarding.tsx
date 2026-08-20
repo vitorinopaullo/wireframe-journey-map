@@ -13,7 +13,15 @@ import {
 } from "@/components/wire";
 import { getSession, upsertAdminAccount, updateSession } from "@/lib/mock-auth";
 
+function isSafeNext(v: string | undefined): v is string {
+  return !!v && v.startsWith("/") && !v.startsWith("//");
+}
+
 export const Route = createFileRoute("/onboarding")({
+  validateSearch: (s: Record<string, unknown>): { next?: string; role?: "kopare" | "saljare" } => ({
+    ...(typeof s.next === "string" ? { next: s.next } : {}),
+    ...((s.role === "kopare" || s.role === "saljare") ? { role: s.role } : {}),
+  }),
   component: Onboarding,
 });
 
@@ -24,6 +32,7 @@ type Step = 1 | 2;
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
 function Onboarding() {
+  const { next, role: roleParam } = Route.useSearch();
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>(1);
   const [role, setRole] = useState<Role>(null);
@@ -32,8 +41,16 @@ function Onboarding() {
   useEffect(() => {
     const s = getSession();
     setSessionState(s);
-    if (!s) navigate({ to: "/logga-in" });
-  }, [navigate]);
+    if (!s) {
+      navigate({ to: "/logga-in" });
+      return;
+    }
+    if (roleParam && role === null) {
+      setRole(roleParam);
+      upsertAdminAccount(s.userId, { role: roleParam });
+      setStep(2);
+    }
+  }, [navigate, roleParam, role]);
 
   const bankid = session?.bankid;
 
@@ -52,6 +69,10 @@ function Onboarding() {
     if (!role || !bankid || !session) return;
     updateSession({ role });
     upsertAdminAccount(session.userId, { role, profil });
+    if (isSafeNext(next)) {
+      window.location.href = next;
+      return;
+    }
     navigate({ to: "/dashboard", search: { mode: role } });
   }
 

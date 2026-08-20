@@ -9,13 +9,15 @@ function isSafeNext(v: string | undefined): v is string {
 }
 
 export const Route = createFileRoute("/logga-in")({
-  validateSearch: (s: Record<string, unknown>): { next?: string } =>
-    typeof s.next === "string" ? { next: s.next } : {},
+  validateSearch: (s: Record<string, unknown>): { next?: string; role?: "kopare" | "saljare" } => ({
+    ...(typeof s.next === "string" ? { next: s.next } : {}),
+    ...((s.role === "kopare" || s.role === "saljare") ? { role: s.role } : {}),
+  }),
   component: Login,
 });
 
 function Login() {
-  const { next } = Route.useSearch();
+  const { next, role } = Route.useSearch();
   const navigate = useNavigate();
   const dest = isSafeNext(next) ? next : "/dashboard";
 
@@ -36,7 +38,11 @@ function Login() {
           hint="Legitimera dig i BankID-appen. Har du inte skapat konto tidigare hamnar du direkt i onboarding."
           onDone={() => {
             const s = getSession();
-            if (!s?.role) return navigate({ to: "/onboarding" });
+            if (!s?.role)
+              return navigate({
+                to: "/onboarding",
+                search: { next: isSafeNext(next) ? next : undefined, role },
+              });
             if (isSafeNext(next)) window.location.href = next;
             else navigate({ to: "/dashboard" });
           }}

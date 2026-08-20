@@ -153,7 +153,7 @@ function ListingDetail() {
   }, []);
 
   const gotoLogin = (next: string) =>
-    navigate({ to: "/logga-in", search: { next } });
+    navigate({ to: "/logga-in", search: { next, role: "kopare" } });
 
   const handleInterest = () => {
     if (isAuthed) navigate({ to: "/annons/$id/intresse", params: { id } });
