@@ -45,6 +45,24 @@ function BuyerCaseDetail() {
         )}
       </WireBox>
 
+      {interest.status === "vill-ga-vidare" && (
+        <WireBox label="Vad händer nu?" className="mb-6">
+          <ol className="text-sm space-y-1 pl-4 list-decimal">
+            <li>TreLink bedömer ditt intresse tillsammans med säljaren</li>
+            <li>Matchningen bekräftas — du får besked via TreLink</li>
+            <li>Hyresvärden kontaktas</li>
+            <li>Handpenning</li>
+            <li>Signering (Signicat + BankID)</li>
+            <li>Tillträde</li>
+          </ol>
+          <Annotation>
+            <span className="mt-2 block">
+              Ärendehistoriken nedan uppdateras varje gång något händer i processen.
+            </span>
+          </Annotation>
+        </WireBox>
+      )}
+
       <WireBox label="Ärendehistorik · synlig för dig & TreLink">
         <ul className="mt-1 space-y-3">
           {(interest.timeline ?? []).map((l, i) => (

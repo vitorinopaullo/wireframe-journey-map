@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, Annotation, PageHeader } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
@@ -100,7 +101,8 @@ function UnderlagsGranskning() {
 
         {interest.status === "vill-ga-vidare" && (
           <WireBox label="Intresse registrerat" variant="dashed">
-            <p className="text-sm">
+            <p className="flex items-center gap-2 text-sm">
+              <CheckCircle2 className="h-5 w-5 shrink-0" />
               Din K-kod <span className="font-mono font-medium">{interest.kKod}</span> är
               registrerad. TreLink kontaktar dig när nästa steg är klart.
             </p>
