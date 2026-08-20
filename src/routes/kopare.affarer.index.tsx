@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, StatusDot, Annotation } from "@/components/wire";
+import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY, type BuyerInterest } from "@/lib/kopare-workflow";
+import { getAnnons } from "@/lib/annons-workflow";
 
 export const Route = createFileRoute("/kopare/affarer/")({
   component: BuyerDeals,
@@ -22,14 +24,15 @@ type Vantar = "dig" | "george" | "saljare" | "hyresvard" | "ingen";
 
 type Affar = {
   id: string;
+  annonsId: string;
   titel: string;
   ort: string;
   kat: string;
-  pris: number;
+  pris: string;
   steg: Steg;
   vantar: Vantar;
   nastaSteg: string;
-  cta?: { label: string; to?: string };
+  cta?: { label: string };
   sla?: { timmarKvar: number; etikett: string };
   uppdaterad: string;
 };
@@ -55,71 +58,69 @@ const STEG_LABEL: Record<Steg, string> = {
   klar: "Klar",
 };
 
-const affarer: Affar[] = [
-  {
-    id: "A-2041",
-    titel: "Restauranglokal · Hornstull",
-    ort: "Stockholm",
-    kat: "Lokal",
-    pris: 1_950_000,
-    steg: "handpenning",
-    vantar: "dig",
-    nastaSteg: "Betala handpenning (195 000 kr) till klientmedel",
-    cta: { label: "Betala handpenning →", to: "/affar/$id" },
-    sla: { timmarKvar: 36, etikett: "Förfaller om 36 h" },
-    uppdaterad: "för 2 h sedan",
-  },
-  {
-    id: "A-2039",
-    titel: "Café & bageri — inkråm",
-    ort: "Göteborg",
-    kat: "Inkråm",
-    pris: 850_000,
-    steg: "signering",
-    vantar: "dig",
-    nastaSteg: "Signera köpeavtal med BankID",
-    cta: { label: "Signera nu →", to: "/affar/$id" },
-    sla: { timmarKvar: 96, etikett: "Signera inom 4 dagar" },
-    uppdaterad: "igår",
-  },
-  {
-    id: "A-2055",
-    titel: "Butik · Vasastan",
-    ort: "Stockholm",
-    kat: "Lokal",
-    pris: 1_200_000,
-    steg: "hyresvard",
-    vantar: "hyresvard",
-    nastaSteg: "TreLink inväntar svar från hyresvärden",
-    uppdaterad: "för 3 dagar sedan",
-  },
-  {
-    id: "A-2058",
-    titel: "Frisörsalong",
-    ort: "Uppsala",
-    kat: "Inkråm",
-    pris: 420_000,
-    steg: "granskning",
-    vantar: "george",
-    nastaSteg: "TreLink granskar och matchar dig med säljaren",
-    uppdaterad: "för 5 timmar sedan",
-  },
-];
+function annonsInfo(annonsId: string) {
+  const annons = getAnnons(annonsId);
+  return {
+    titel: annons?.titel ?? `Annons #${annonsId}`,
+    pris: annons?.pris ?? "Pris ej tillgängligt",
+    ort: annons?.ort ?? "—",
+    kat: annons?.kat ?? "—",
+  };
+}
 
-const avslutade = [
-  {
-    id: "A-1998",
-    titel: "Pizzeria · Solna",
-    pris: 720_000,
-    resultat: "Avslutad — tillträdde 14 mars 2026",
-  },
-  {
-    id: "A-1955",
-    titel: "Klädbutik · Malmö",
-    pris: 950_000,
-    resultat: "Avbruten — hyresvärd nekade",
-  },
-];
+function senasteUppdatering(interest: BuyerInterest): string {
+  const ts = interest.timeline?.[0]?.ts ?? interest.skapadAt;
+  return new Date(ts).toLocaleString("sv-SE");
+}
+
+function buildAffarer(interests: BuyerInterest[]): Affar[] {
+  return interests
+    .filter((i) => i.status === "väntar-pdf" || i.status === "vill-ga-vidare")
+    .map((i) => {
+      const info = annonsInfo(i.annonsId);
+      if (i.status === "väntar-pdf") {
+        return {
+          id: i.id,
+          annonsId: i.annonsId,
+          titel: info.titel,
+          ort: info.ort,
+          kat: info.kat,
+          pris: info.pris,
+          steg: "intresse-inskickat" as Steg,
+          vantar: "dig" as Vantar,
+          nastaSteg: "Öppna underlaget och ta ställning.",
+          cta: { label: "Öppna underlaget →" },
+          uppdaterad: senasteUppdatering(i),
+        };
+      }
+      return {
+        id: i.id,
+        annonsId: i.annonsId,
+        titel: info.titel,
+        ort: info.ort,
+        kat: info.kat,
+        pris: info.pris,
+        steg: "granskning" as Steg,
+        vantar: "george" as Vantar,
+        nastaSteg: "TreLink granskar och matchar dig med säljaren.",
+        uppdaterad: senasteUppdatering(i),
+      };
+    });
+}
+
+function buildAvslutade(interests: BuyerInterest[]) {
+  return interests
+    .filter((i) => i.status === "avböjt")
+    .map((i) => {
+      const info = annonsInfo(i.annonsId);
+      return {
+        id: i.id,
+        titel: info.titel,
+        pris: info.pris,
+        resultat: "Avböjt av dig",
+      };
+    });
+}
 
 /* ---------- små komponenter ---------- */
 function Progress({ steg }: { steg: Steg }) {
@@ -179,7 +180,7 @@ function AffarsKort({ a }: { a: Affar }) {
           </div>
           <h3 className="font-semibold">{a.titel}</h3>
           <Annotation>
-            {a.pris.toLocaleString("sv-SE")} kr · uppdaterad {a.uppdaterad}
+            {a.pris} · uppdaterad {a.uppdaterad}
           </Annotation>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -197,11 +198,11 @@ function AffarsKort({ a }: { a: Affar }) {
         </div>
         <div className="flex gap-2">
           {a.cta && dinTur && (
-            <WireBtn to={a.cta.to ?? "/affar/$id"} params={{ id: a.id }}>
+            <WireBtn to="/annons/$id/underlag" params={{ id: a.annonsId }}>
               {a.cta.label}
             </WireBtn>
           )}
-          <WireBtn variant="secondary" to="/affar/$id" params={{ id: a.id }}>
+          <WireBtn variant="secondary" to="/kopare/affarer/$id" params={{ id: a.id }}>
             Öppna affär →
           </WireBtn>
         </div>
@@ -213,13 +214,25 @@ function AffarsKort({ a }: { a: Affar }) {
 /* ---------- sida ---------- */
 function BuyerDeals() {
   const [flik, setFlik] = useState<"dig" | "andra" | "klar">("dig");
+  const [interests, setInterests] = useState<BuyerInterest[]>(() => readBuyerInterests());
+
+  useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key === KOPARE_STORAGE_KEY) setInterests(readBuyerInterests());
+    }
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  const affarer = useMemo(() => buildAffarer(interests), [interests]);
+  const avslutade = useMemo(() => buildAvslutade(interests), [interests]);
 
   const grupper = useMemo(
     () => ({
       dig: affarer.filter((a) => a.vantar === "dig"),
       andra: affarer.filter((a) => a.vantar !== "dig"),
     }),
-    []
+    [affarer]
   );
 
   return (
@@ -308,11 +321,11 @@ function BuyerDeals() {
               <div>
                 <h3 className="font-medium">{a.titel}</h3>
                 <Annotation>
-                  #{a.id} · {a.pris.toLocaleString("sv-SE")} kr · {a.resultat}
+                  #{a.id} · {a.pris} · {a.resultat}
                 </Annotation>
               </div>
               <Link
-                to="/affar/$id"
+                to="/kopare/affarer/$id"
                 params={{ id: a.id }}
                 className="text-xs text-muted-foreground hover:underline"
               >
