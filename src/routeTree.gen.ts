@@ -55,6 +55,8 @@ import { Route as AdminAnvandareIdRouteImport } from './routes/admin.anvandare.$
 import { Route as AnnonsIdIndexRouteImport } from './routes/annons.$id.index'
 import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
 import { Route as AnnonsIdUnderlagRouteImport } from './routes/annons.$id.underlag'
+import { Route as KopareAffarerIndexRouteImport } from './routes/kopare.affarer.index'
+import { Route as KopareAffarerIdRouteImport } from './routes/kopare.affarer.$id'
 import { Route as SaljareAnnonsIdRouteImport } from './routes/saljare.annons.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -290,6 +292,16 @@ const AnnonsIdUnderlagRoute = AnnonsIdUnderlagRouteImport.update({
   path: '/underlag',
   getParentRoute: () => AnnonsIdRoute,
 } as any)
+const KopareAffarerIndexRoute = KopareAffarerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => KopareAffarerRoute,
+} as any)
+const KopareAffarerIdRoute = KopareAffarerIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => KopareAffarerRoute,
+} as any)
 const SaljareAnnonsIdRoute = SaljareAnnonsIdRouteImport.update({
   id: '/saljare/annons/$id',
   path: '/saljare/annons/$id',
@@ -323,7 +335,7 @@ export interface FileRoutesByFullPath {
   '/admin/kopare': typeof AdminKopareRoute
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
-  '/kopare/affarer': typeof KopareAffarerRoute
+  '/kopare/affarer': typeof KopareAffarerRouteWithChildren
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/jamfor': typeof KopareJamforRoute
@@ -340,10 +352,12 @@ export interface FileRoutesByFullPath {
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
+  '/kopare/affarer/$id': typeof KopareAffarerIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/admin/annonser/': typeof AdminAnnonserIndexRoute
   '/admin/anvandare/': typeof AdminAnvandareIndexRoute
   '/annons/$id/': typeof AnnonsIdIndexRoute
+  '/kopare/affarer/': typeof KopareAffarerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -369,7 +383,6 @@ export interface FileRoutesByTo {
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
   '/affar/$id': typeof AffarIdRoute
-  '/kopare/affarer': typeof KopareAffarerRoute
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/jamfor': typeof KopareJamforRoute
@@ -386,10 +399,12 @@ export interface FileRoutesByTo {
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
+  '/kopare/affarer/$id': typeof KopareAffarerIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/admin/annonser': typeof AdminAnnonserIndexRoute
   '/admin/anvandare': typeof AdminAnvandareIndexRoute
   '/annons/$id': typeof AnnonsIdIndexRoute
+  '/kopare/affarer': typeof KopareAffarerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -419,7 +434,7 @@ export interface FileRoutesById {
   '/admin/kopare': typeof AdminKopareRoute
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
-  '/kopare/affarer': typeof KopareAffarerRoute
+  '/kopare/affarer': typeof KopareAffarerRouteWithChildren
   '/kopare/bevakningar': typeof KopareBevakningarRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/jamfor': typeof KopareJamforRoute
@@ -436,10 +451,12 @@ export interface FileRoutesById {
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
+  '/kopare/affarer/$id': typeof KopareAffarerIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
   '/admin/annonser/': typeof AdminAnnonserIndexRoute
   '/admin/anvandare/': typeof AdminAnvandareIndexRoute
   '/annons/$id/': typeof AnnonsIdIndexRoute
+  '/kopare/affarer/': typeof KopareAffarerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -487,10 +504,12 @@ export interface FileRouteTypes {
     | '/admin/anvandare/$id'
     | '/annons/$id/intresse'
     | '/annons/$id/underlag'
+    | '/kopare/affarer/$id'
     | '/saljare/annons/$id'
     | '/admin/annonser/'
     | '/admin/anvandare/'
     | '/annons/$id/'
+    | '/kopare/affarer/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -516,7 +535,6 @@ export interface FileRouteTypes {
     | '/admin/installningar'
     | '/admin/kopare'
     | '/affar/$id'
-    | '/kopare/affarer'
     | '/kopare/bevakningar'
     | '/kopare/favoriter'
     | '/kopare/jamfor'
@@ -533,10 +551,12 @@ export interface FileRouteTypes {
     | '/admin/anvandare/$id'
     | '/annons/$id/intresse'
     | '/annons/$id/underlag'
+    | '/kopare/affarer/$id'
     | '/saljare/annons/$id'
     | '/admin/annonser'
     | '/admin/anvandare'
     | '/annons/$id'
+    | '/kopare/affarer'
   id:
     | '__root__'
     | '/'
@@ -582,10 +602,12 @@ export interface FileRouteTypes {
     | '/admin/anvandare/$id'
     | '/annons/$id/intresse'
     | '/annons/$id/underlag'
+    | '/kopare/affarer/$id'
     | '/saljare/annons/$id'
     | '/admin/annonser/'
     | '/admin/anvandare/'
     | '/annons/$id/'
+    | '/kopare/affarer/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -615,7 +637,7 @@ export interface RootRouteChildren {
   AdminKopareRoute: typeof AdminKopareRoute
   AffarIdRoute: typeof AffarIdRoute
   AnnonsIdRoute: typeof AnnonsIdRouteWithChildren
-  KopareAffarerRoute: typeof KopareAffarerRoute
+  KopareAffarerRoute: typeof KopareAffarerRouteWithChildren
   KopareBevakningarRoute: typeof KopareBevakningarRoute
   KopareFavoriterRoute: typeof KopareFavoriterRoute
   KopareJamforRoute: typeof KopareJamforRoute
@@ -955,6 +977,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnnonsIdUnderlagRouteImport
       parentRoute: typeof AnnonsIdRoute
     }
+    '/kopare/affarer/': {
+      id: '/kopare/affarer/'
+      path: '/'
+      fullPath: '/kopare/affarer/'
+      preLoaderRoute: typeof KopareAffarerIndexRouteImport
+      parentRoute: typeof KopareAffarerRoute
+    }
+    '/kopare/affarer/$id': {
+      id: '/kopare/affarer/$id'
+      path: '/$id'
+      fullPath: '/kopare/affarer/$id'
+      preLoaderRoute: typeof KopareAffarerIdRouteImport
+      parentRoute: typeof KopareAffarerRoute
+    }
     '/saljare/annons/$id': {
       id: '/saljare/annons/$id'
       path: '/saljare/annons/$id'
@@ -1009,6 +1045,20 @@ const AnnonsIdRouteWithChildren = AnnonsIdRoute._addFileChildren(
   AnnonsIdRouteChildren,
 )
 
+interface KopareAffarerRouteChildren {
+  KopareAffarerIdRoute: typeof KopareAffarerIdRoute
+  KopareAffarerIndexRoute: typeof KopareAffarerIndexRoute
+}
+
+const KopareAffarerRouteChildren: KopareAffarerRouteChildren = {
+  KopareAffarerIdRoute: KopareAffarerIdRoute,
+  KopareAffarerIndexRoute: KopareAffarerIndexRoute,
+}
+
+const KopareAffarerRouteWithChildren = KopareAffarerRoute._addFileChildren(
+  KopareAffarerRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
@@ -1037,7 +1087,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminKopareRoute: AdminKopareRoute,
   AffarIdRoute: AffarIdRoute,
   AnnonsIdRoute: AnnonsIdRouteWithChildren,
-  KopareAffarerRoute: KopareAffarerRoute,
+  KopareAffarerRoute: KopareAffarerRouteWithChildren,
   KopareBevakningarRoute: KopareBevakningarRoute,
   KopareFavoriterRoute: KopareFavoriterRoute,
   KopareJamforRoute: KopareJamforRoute,

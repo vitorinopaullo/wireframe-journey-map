@@ -210,6 +210,7 @@ function InterestWizard() {
       kKod: genereraKKod(),
       status: "väntar-pdf" as const,
       skapadAt: new Date().toISOString(),
+      timeline: [{ ts: new Date().toISOString(), vem: "Köpare" as const, text: "Skickade intresseanmälan" }],
     };
     writeBuyerInterests([...interests, interest]);
     const annonsTitel = getAnnons(id)?.titel || `Annons #${id}`;

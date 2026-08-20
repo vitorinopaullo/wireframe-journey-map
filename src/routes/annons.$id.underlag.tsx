@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, Annotation, PageHeader } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
-import { readBuyerInterests, patchBuyerInterest, type BuyerInterest } from "@/lib/kopare-workflow";
+import { readBuyerInterests, patchBuyerInterest, logBuyerEntry, type BuyerInterest } from "@/lib/kopare-workflow";
 
 export const Route = createFileRoute("/annons/$id/underlag")({
   component: UnderlagsGranskning,
@@ -40,12 +40,13 @@ function UnderlagsGranskning() {
   }
 
   const besluta = (status: "vill-ga-vidare" | "avböjt") => {
-    patchBuyerInterest(interest.id, (item) => ({
-      ...item,
-      status,
-      beslutAt: new Date().toISOString(),
-    }));
-    setInterest((prev) => (prev ? { ...prev, status, beslutAt: new Date().toISOString() } : prev));
+    const beslutText = status === "vill-ga-vidare" ? "Vill gå vidare och lägga bud" : "Avböjde köpet";
+    patchBuyerInterest(interest.id, (item) =>
+      logBuyerEntry({ ...item, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText),
+    );
+    setInterest((prev) =>
+      prev ? logBuyerEntry({ ...prev, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText) : prev,
+    );
   };
 
   return (
@@ -72,6 +73,12 @@ function UnderlagsGranskning() {
             onClick={() => {
               window.open("about:blank", "_blank");
               setPdfOppnad(true);
+              patchBuyerInterest(interest.id, (item) =>
+                logBuyerEntry(item, "Köpare", "Öppnade informationsmemorandumet"),
+              );
+              setInterest((prev) =>
+                prev ? logBuyerEntry(prev, "Köpare", "Öppnade informationsmemorandumet") : prev,
+              );
             }}
           >
             Öppna PDF →
@@ -97,6 +104,9 @@ function UnderlagsGranskning() {
               Din K-kod <span className="font-mono font-medium">{interest.kKod}</span> är
               registrerad. TreLink kontaktar dig när nästa steg är klart.
             </p>
+            <WireBtn variant="secondary" to="/kopare/affarer/$id" params={{ id: interest.id }} className="mt-4">
+              Följ ärendet →
+            </WireBtn>
           </WireBox>
         )}
 
@@ -105,6 +115,9 @@ function UnderlagsGranskning() {
             <p className="text-sm text-muted-foreground">
               Ditt intresse för denna annons har avslutats. Tack för att du tittade!
             </p>
+            <WireBtn variant="secondary" to="/kopare/affarer/$id" params={{ id: interest.id }} className="mt-4">
+              Följ ärendet →
+            </WireBtn>
           </WireBox>
         )}
 

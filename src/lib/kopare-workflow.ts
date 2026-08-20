@@ -3,6 +3,8 @@
 
 export type BuyerInterestStatus = "väntar-pdf" | "vill-ga-vidare" | "avböjt";
 
+export type BuyerTimelineEntry = { ts: string; vem: "Köpare" | "TreLink" | "System"; text: string };
+
 export type BuyerInterest = {
   id: string;
   annonsId: string;
@@ -10,6 +12,19 @@ export type BuyerInterest = {
   status: BuyerInterestStatus;
   skapadAt: string;
   beslutAt?: string;
+  timeline?: BuyerTimelineEntry[];
+};
+
+export const statusLabel: Record<BuyerInterestStatus, string> = {
+  "väntar-pdf": "Väntar på ditt beslut",
+  "vill-ga-vidare": "Du vill gå vidare",
+  "avböjt": "Avböjt",
+};
+
+export const statusHint: Record<BuyerInterestStatus, string> = {
+  "väntar-pdf": "Öppna underlaget och ta ställning.",
+  "vill-ga-vidare": "TreLink kontaktar dig när nästa steg är klart.",
+  "avböjt": "Du valde att inte gå vidare med detta objekt.",
 };
 
 export const STORAGE_KEY = "kopare-intressen";
@@ -37,6 +52,20 @@ export function patchBuyerInterest(id: string, patch: (item: BuyerInterest) => B
 
 export function getBuyerInterest(id: string): BuyerInterest | undefined {
   return readBuyerInterests().find((i) => i.id === id);
+}
+
+export function logBuyerEntry(
+  interest: BuyerInterest,
+  vem: BuyerTimelineEntry["vem"],
+  text: string,
+): BuyerInterest {
+  return {
+    ...interest,
+    timeline: [
+      { ts: new Date().toISOString(), vem, text },
+      ...(interest.timeline ?? []),
+    ],
+  };
 }
 
 /** "K-" + 4 slumpsiffror, unik mot befintliga poster. */
