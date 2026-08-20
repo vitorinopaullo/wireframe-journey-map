@@ -101,7 +101,7 @@ function StickyCTA({
           <WireBtn variant="ghost" onClick={onSave}>
             {saved ? <><Star className="h-4 w-4 mr-1 fill-current" />Sparad</> : <><Star className="h-4 w-4 mr-1" />Spara</>}
           </WireBtn>
-          <WireBtn onClick={onInterest}>Anmäl intresse →</WireBtn>
+          <WireBtn onClick={onInterest}>Se dokument →</WireBtn>
         </div>
       </div>
     </div>
@@ -326,7 +326,7 @@ function ListingDetail() {
           <WireBox label="Nästa steg">
             <ol className="mb-4 space-y-2 text-xs">
               {[
-                ["1", "Anmäl intresse (gratis, BankID)"],
+                ["1", "Se dokument (gratis, BankID)"],
                 ["2", "TreLink matchar dig med säljaren"],
                 ["3", "Du får full info & hyresvärd kontrolleras"],
                 ["4", "Handpenning till klientmedel"],
@@ -340,7 +340,7 @@ function ListingDetail() {
               ))}
             </ol>
             <div className="flex flex-col gap-2">
-              <WireBtn onClick={handleInterest}>Anmäl intresse →</WireBtn>
+              <WireBtn onClick={handleInterest}>Se dokument →</WireBtn>
               <WireBtn variant="secondary" onClick={handleSave}>
                 {saved ? <><Star className="h-4 w-4 mr-1 fill-current" />Sparad i favoriter</> : <><Star className="h-4 w-4 mr-1" />Spara som favorit</>}
               </WireBtn>
