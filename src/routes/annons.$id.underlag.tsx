@@ -5,6 +5,8 @@ import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, Annotation, PageHeader } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
 import { readBuyerInterests, patchBuyerInterest, logBuyerEntry, type BuyerInterest } from "@/lib/kopare-workflow";
+import { getAnnons } from "@/lib/annons-workflow";
+import { addNotis } from "@/lib/admin-notiser";
 
 export const Route = createFileRoute("/annons/$id/underlag")({
   component: UnderlagsGranskning,
@@ -48,6 +50,14 @@ function UnderlagsGranskning() {
     setInterest((prev) =>
       prev ? logBuyerEntry({ ...prev, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText) : prev,
     );
+    if (status === "vill-ga-vidare") {
+      const annonsTitel = getAnnons(interest.annonsId)?.titel || `Annons #${interest.annonsId}`;
+      addNotis(
+        "kopare",
+        `${interest.kKod} vill gå vidare på "${annonsTitel}" — redo för matchning`,
+        "/admin/kopare",
+      );
+    }
   };
 
   return (
@@ -74,11 +84,12 @@ function UnderlagsGranskning() {
             onClick={() => {
               window.open("about:blank", "_blank");
               setPdfOppnad(true);
+              const pdfOppnadAt = new Date().toISOString();
               patchBuyerInterest(interest.id, (item) =>
-                logBuyerEntry(item, "Köpare", "Öppnade informationsmemorandumet"),
+                logBuyerEntry({ ...item, pdfOppnadAt }, "Köpare", "Öppnade informationsmemorandumet"),
               );
               setInterest((prev) =>
-                prev ? logBuyerEntry(prev, "Köpare", "Öppnade informationsmemorandumet") : prev,
+                prev ? logBuyerEntry({ ...prev, pdfOppnadAt }, "Köpare", "Öppnade informationsmemorandumet") : prev,
               );
             }}
           >

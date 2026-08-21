@@ -40,6 +40,7 @@ function InterestRedirect() {
         `Ny intresseanmälan (${interest.kKod}) på "${annonsTitel}"`,
         "/saljare/intressenter",
       );
+      addNotis("kopare", `Nytt lead (${interest.kKod}) på "${annonsTitel}"`, "/admin/kopare");
     }
 
     nav({ to: "/annons/$id/underlag", params: { id }, replace: true });

@@ -13,6 +13,8 @@ export type BuyerInterest = {
   skapadAt: string;
   beslutAt?: string;
   timeline?: BuyerTimelineEntry[];
+  pdfOppnadAt?: string;
+  remarketingTag?: boolean;
 };
 
 export const statusLabel: Record<BuyerInterestStatus, string> = {
