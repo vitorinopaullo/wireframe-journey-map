@@ -668,7 +668,7 @@ function AdminAnnonsDetail() {
         onboarding.firmatecknare.mobil
       ));
   const grundOk = !!(draft.adress && draft.verksamhet);
-  const ytaOk = !!(item?.workflow?.utkast?.yta);
+  const ytaOk = !!draft.yta;
   const typFaltOk =
     valdaGrupper.length > 0 &&
     valdaGrupper.every((g) =>
@@ -1576,6 +1576,7 @@ function AdminAnnonsDetail() {
             />
             {skrivFasen && (
               <>
+                <Field k="Yta" v={draft.yta ? `${draft.yta} kvm` : undefined} />
                 <Field k="Hyra" v={draft.hyra ? `${draft.hyra} kr/mån` : undefined} />
                 <Field k="Fastighetsskatt" v={draft.fastighetsskatt ? `${draft.fastighetsskatt} kr/år` : undefined} />
                 <Field k="Fastighetsbeteckning" v={draft.fastighetsbeteckning} />
