@@ -750,15 +750,19 @@ function CreateListing() {
             <button
               key={label}
               onClick={() => setStep(i)}
-              className={`border p-3 text-left transition ${
+              className={`rounded-card border p-3 text-left transition-colors duration-150 ease-standard ${
                 isActive
-                  ? "border-foreground bg-muted/40"
+                  ? "border-[var(--color-primary)] bg-[var(--color-purple-100)]"
                   : isDone
-                  ? "border-foreground/40"
-                  : "border-dashed border-muted-foreground/30"
+                  ? "border-foreground/25 bg-background"
+                  : "border-foreground/15 bg-background"
               }`}
             >
-              <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              <div
+                className={`font-mono text-[10px] uppercase tracking-wider ${
+                  isActive ? "text-[var(--color-primary)]" : "text-muted-foreground"
+                }`}
+              >
                 {String(i + 1).padStart(2, "0")} {isDone ? <Check className="inline-block h-3 w-3 align-middle" /> : null}
               </div>
               <div className="text-sm font-medium">{label}</div>
@@ -785,8 +789,10 @@ function CreateListing() {
                 <button
                   key={c.id}
                   onClick={() => set("cat", c.id)}
-                  className={`border p-4 text-left transition ${
-                    selected ? "border-foreground bg-muted/40" : "border-dashed border-muted-foreground/40"
+                  className={`rounded-card border p-4 text-left shadow-sm transition-colors duration-150 ease-standard ${
+                    selected
+                      ? "border-[var(--color-primary)] bg-[var(--color-purple-100)]"
+                      : "border-foreground/15 bg-background hover:shadow-md"
                   }`}
                 >
                   <div className="mb-2 flex items-center justify-between">
@@ -794,7 +800,7 @@ function CreateListing() {
                     {selected && <WireTag>Vald</WireTag>}
                   </div>
                   <p className="mb-3 text-xs">{c.one}</p>
-                  <div className="space-y-1 border-t border-dashed border-muted-foreground/30 pt-2">
+                  <div className="space-y-1 border-t border-foreground/10 pt-2">
                     <Annotation>Avgift: {c.avgift}</Annotation>
                     <Annotation>Tid: {c.tid}</Annotation>
                   </div>
@@ -805,16 +811,16 @@ function CreateListing() {
           </div>
           <WireBtn
             variant="tertiary"
-            className="mt-3 font-mono text-[11px] uppercase tracking-wider underline decoration-dashed"
+            className="mt-3 font-mono text-[11px] uppercase tracking-wider underline"
             onClick={() => setUppdragsavtalOpen(true)}
           >
             Se hur ett uppdragsavtal kan se ut →
           </WireBtn>
-          <div className="mt-4 border-t border-dashed border-muted-foreground/30 pt-4">
+          <div className="mt-4 border-t border-foreground/10 pt-4">
             <Annotation>Vad TreLink gör för dig</Annotation>
             <p className="mt-1 text-sm">{activeCat.trelink}</p>
           </div>
-          <div className="mt-4 border-t border-dashed border-muted-foreground/30 pt-4">
+          <div className="mt-4 border-t border-foreground/10 pt-4">
             <Annotation>Dokument som krävs för {activeCat.name}</Annotation>
             <ul className="mt-2 grid grid-cols-1 gap-1 text-xs md:grid-cols-2">
               {docsByCat[draft.cat].map((d) => (
@@ -871,7 +877,7 @@ function CreateListing() {
             </div>
 
             {grupperAttVisa.map((grupp) => (
-              <div key={grupp} className="mt-6 border-t border-dashed border-muted-foreground/30 pt-4">
+              <div key={grupp} className="mt-6 border-t border-foreground/10 pt-4">
                 {TYP_FALTGRUPPER[grupp]()}
               </div>
             ))}
@@ -967,7 +973,7 @@ function CreateListing() {
               return (
                 <div
                   key={d.name}
-                  className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between"
+                  className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between"
                 >
                   <div className="flex items-start gap-3">
                     <DocStatusDot state={s} />
@@ -995,7 +1001,7 @@ function CreateListing() {
               );
             })}
           </div>
-          <div className="mt-4 border-t border-dashed border-muted-foreground/30 pt-4">
+          <div className="mt-4 border-t border-foreground/10 pt-4">
             <Annotation>Så fungerar granskningen</Annotation>
             <p className="mt-1 text-sm">
               När du skickar in granskar TreLink varje dokument inom <strong>24h på vardagar</strong>.
@@ -1039,7 +1045,7 @@ function CreateListing() {
             </ul>
           </WireBox>
 
-          <WireBox label="Premium (frivilligt)" variant="dashed" className="mb-6">
+          <WireBox label="Premium (frivilligt)" className="mb-6">
             <label className="flex items-start gap-3">
               <input
                 type="checkbox"
@@ -1064,7 +1070,7 @@ function CreateListing() {
               </p>
             </WireBox>
           ) : (
-            <WireBox className="mb-6" variant="dashed">
+            <WireBox className="mb-6">
               <Annotation>Innan du kan skicka in</Annotation>
               <ul className="mt-2 list-inside list-disc text-sm">
                 {[...validation[1], ...validation[2], ...validation[3]].map((e) => (
@@ -1078,7 +1084,7 @@ function CreateListing() {
 
       {/* Validation hints under content */}
       {step < 3 && validation[step].length > 0 && (
-        <WireBox className="mb-6" variant="dashed">
+        <WireBox className="mb-6">
           <Annotation>Komplettera innan nästa steg</Annotation>
           <ul className="mt-2 list-inside list-disc text-sm">
             {validation[step].map((e) => (
@@ -1185,7 +1191,7 @@ function BildGalleri({
   onUpload: () => void;
 }) {
   return (
-    <div className="border border-dashed border-muted-foreground/40 p-3">
+    <div className="rounded-card border border-foreground/15 bg-background p-3">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="text-sm font-medium">
@@ -1209,7 +1215,7 @@ function BildGalleri({
           return (
             <div
               key={i}
-              className="flex h-24 flex-col items-center justify-center gap-1 border border-dashed border-muted-foreground/40 bg-muted/30 text-center text-[10px] text-muted-foreground"
+              className="flex h-24 flex-col items-center justify-center gap-1 rounded-card border border-foreground/15 bg-muted/20 text-center text-[10px] text-muted-foreground"
             >
               {uppladdad ? (
                 <span>✓ {bilder[i]}</span>
@@ -1234,7 +1240,7 @@ function BildGalleri({
 
 function Row({ k, v }: { k: string; v: string }) {
   return (
-    <div className="border-b border-dashed border-muted-foreground/30 pb-2">
+    <div className="border-b border-foreground/10 pb-2">
       <Annotation>{k}</Annotation>
       <div className="mt-1 text-sm">{v}</div>
     </div>
@@ -1273,7 +1279,7 @@ function KontoSammanfattning() {
         <Row k="Adress" v={bolagsuppgifter.adress || "—"} />
       </dl>
 
-      <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
+      <div className="mt-6 border-t border-foreground/10 pt-6">
         <div className={firmatecknare ? "grid grid-cols-1 gap-6 md:grid-cols-2" : ""}>
           <div>
             <WireTag>Kontaktperson</WireTag>
@@ -1377,7 +1383,7 @@ function UppdragsavtalPreviewModal({
             <Annotation>Exempeldokument · faktiskt avtal upprättas digitalt av TreLink</Annotation>
           </div>
 
-          <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <div className="border-t border-foreground/10 pt-4">
             <Annotation>Parter</Annotation>
             <p className="mt-1 text-sm">
               TreLink AB (nedan "TreLink") och {bolagsnamn} (nedan "Uppdragsgivaren"), avseende
@@ -1385,12 +1391,12 @@ function UppdragsavtalPreviewModal({
             </p>
           </div>
 
-          <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <div className="border-t border-foreground/10 pt-4">
             <Annotation>Avgift</Annotation>
             <p className="mt-1 text-sm">{avgift}. Avgiften utgår endast vid genomförd affär.</p>
           </div>
 
-          <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <div className="border-t border-foreground/10 pt-4">
             <Annotation>Villkor i korthet</Annotation>
             <ul className="mt-2 space-y-2 text-sm">
               <li>· TreLink skriver annonstexten och sätter priset — Uppdragsgivaren redigerar inte publicerat innehåll.</li>
@@ -1420,7 +1426,7 @@ function VerksamhetstypSelect({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         Verksamhetstyp *
       </span>
-      <div className="flex flex-wrap gap-2 border border-dashed border-muted-foreground/50 bg-muted/20 p-3">
+      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-background p-3">
         {VERKSAMHETSTYP_TAGGAR.map((tag) => (
           <WireTag key={tag} active={value === tag} onClick={() => select(tag)}>
             {tag}
@@ -1469,7 +1475,7 @@ function TagMultiSelect({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
-      <div className="border border-dashed border-muted-foreground/50 bg-muted/20 p-3">
+      <div className="rounded-card border border-foreground/15 bg-background p-3">
         {selected.length > 0 && (
           <div className="mb-3 flex flex-wrap gap-2">
             {selected.map((tag) => (
@@ -1506,7 +1512,7 @@ function TagMultiSelect({
             type="button"
             onClick={submitCustom}
             aria-label="Lägg till egen tagg"
-            className="flex h-8 w-8 shrink-0 items-center justify-center border border-dashed border-muted-foreground/50 font-mono text-sm hover:border-foreground"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-button border border-foreground/15 text-sm hover:border-foreground"
           >
             +
           </button>
@@ -1569,7 +1575,7 @@ function TagToggleGroup({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
-      <div className="flex flex-wrap gap-2 border border-dashed border-muted-foreground/50 bg-muted/20 p-3">
+      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-background p-3">
         {options.map((tag) => (
           <WireTag key={tag} active={selected.includes(tag)} onClick={() => toggle(tag)}>
             {tag}
@@ -1596,7 +1602,7 @@ function SingleTagSelect({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
-      <div className="flex flex-wrap gap-2 border border-dashed border-muted-foreground/50 bg-muted/20 p-3">
+      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-background p-3">
         {options.map((tag) => (
           <WireTag key={tag} active={value === tag} onClick={() => onChange(value === tag ? "" : tag)}>
             {tag}
@@ -1637,7 +1643,7 @@ function KontorFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1649,7 +1655,7 @@ function KontorFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1661,7 +1667,7 @@ function KontorFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1673,7 +1679,7 @@ function KontorFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Teknisk info</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1685,7 +1691,7 @@ function KontorFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <WireArea
             label="Övrig info"
             value={falt.beskrivning}
@@ -1695,8 +1701,8 @@ function KontorFaltgrupp({
           />
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between">
+        <div className="border-t border-foreground/10 pt-4">
+          <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-start gap-3">
               <DocStatusDot state={ritningStatus} />
               <div>
@@ -1753,7 +1759,7 @@ function ButikFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1765,7 +1771,7 @@ function ButikFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1777,7 +1783,7 @@ function ButikFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1789,7 +1795,7 @@ function ButikFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Teknisk info</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1801,7 +1807,7 @@ function ButikFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <WireArea
             label="Övrig info"
             value={falt.beskrivning}
@@ -1811,8 +1817,8 @@ function ButikFaltgrupp({
           />
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between">
+        <div className="border-t border-foreground/10 pt-4">
+          <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-start gap-3">
               <DocStatusDot state={ritningStatus} />
               <div>
@@ -1869,7 +1875,7 @@ function LagerFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1881,7 +1887,7 @@ function LagerFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1893,7 +1899,7 @@ function LagerFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1905,7 +1911,7 @@ function LagerFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Teknisk info</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -1917,7 +1923,7 @@ function LagerFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <WireArea
             label="Övrig info"
             value={falt.beskrivning}
@@ -1927,8 +1933,8 @@ function LagerFaltgrupp({
           />
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between">
+        <div className="border-t border-foreground/10 pt-4">
+          <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-start gap-3">
               <DocStatusDot state={ritningStatus} />
               <div>
@@ -1968,7 +1974,7 @@ function DocUploadRad({
 }) {
   const status = docStatus(namn);
   return (
-    <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between">
       <div className="flex items-start gap-3">
         <DocStatusDot state={status} />
         <div>
@@ -2019,7 +2025,7 @@ function ServeringFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2031,7 +2037,7 @@ function ServeringFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Interiör och skick</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2043,7 +2049,7 @@ function ServeringFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2055,7 +2061,7 @@ function ServeringFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2067,7 +2073,7 @@ function ServeringFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Köksteknik</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2079,7 +2085,7 @@ function ServeringFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Utvecklingsmöjlighet</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2091,7 +2097,7 @@ function ServeringFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Anledning till försäljning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2103,7 +2109,7 @@ function ServeringFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Myndighetskrav</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2121,7 +2127,7 @@ function ServeringFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <WireArea
             label="Övrig info"
             value={falt.ovrigInfo}
@@ -2131,7 +2137,7 @@ function ServeringFaltgrupp({
           />
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Dokument</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             {SERVERING_UPPLADDNINGAR.map((doc) => (
@@ -2174,7 +2180,7 @@ function FrisorFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2186,7 +2192,7 @@ function FrisorFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2198,7 +2204,7 @@ function FrisorFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2210,7 +2216,7 @@ function FrisorFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2222,7 +2228,7 @@ function FrisorFaltgrupp({
           </div>
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <WireFieldEditable
             label="Antal stolar"
             value={falt.antalStolar}
@@ -2231,7 +2237,7 @@ function FrisorFaltgrupp({
           />
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+        <div className="border-t border-foreground/10 pt-4">
           <WireArea
             label="Övrig info"
             value={falt.beskrivning}
@@ -2241,8 +2247,8 @@ function FrisorFaltgrupp({
           />
         </div>
 
-        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-          <div className="flex flex-col gap-3 border border-dashed border-muted-foreground/40 p-3 md:flex-row md:items-center md:justify-between">
+        <div className="border-t border-foreground/10 pt-4">
+          <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-start gap-3">
               <DocStatusDot state={ritningStatus} />
               <div>
@@ -2361,6 +2367,6 @@ function DocStatusDot({ state }: { state: DocState }) {
       ? "bg-foreground/40"
       : state === "komplettera"
       ? "bg-background border border-foreground"
-      : "bg-background border border-dashed border-muted-foreground/60";
+      : "bg-background border border-foreground/30";
   return <span className={`inline-block h-3 w-3 shrink-0 rounded-full ${cls}`} />;
 }
