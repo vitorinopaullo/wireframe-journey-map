@@ -287,6 +287,11 @@ function Step2({
   const [orgnrTouched, setOrgnrTouched] = useState(false);
   const [ortTouched, setOrtTouched] = useState(false);
   const [adressTouched, setAdressTouched] = useState(false);
+  const [epostTouched, setEpostTouched] = useState(false);
+  const [ftRollTouched, setFtRollTouched] = useState(false);
+  const [ftFornamnTouched, setFtFornamnTouched] = useState(false);
+  const [ftEfternamnTouched, setFtEfternamnTouched] = useState(false);
+  const [ftMailTouched, setFtMailTouched] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const ORGNR_REGEX = /^\d{6}-\d{4}$/;
@@ -305,9 +310,30 @@ function Step2({
     : undefined;
   const ortError = (ortTouched || submitAttempted) && ortSaknas ? "Ort krävs." : undefined;
   const adressError = (adressTouched || submitAttempted) && adressSaknas ? "Adress krävs." : undefined;
+  const epostSaknas = epost.trim() === "";
+  const epostError = (epostTouched || submitAttempted) && epostSaknas ? "E-post krävs." : undefined;
+
+  const ftRollSaknas = role === "saljare" && !arFirmatecknare && ftRoll.trim() === "";
+  const ftFornamnSaknas = role === "saljare" && !arFirmatecknare && ftFornamn.trim() === "";
+  const ftEfternamnSaknas = role === "saljare" && !arFirmatecknare && ftEfternamn.trim() === "";
+  const ftMailSaknas = role === "saljare" && !arFirmatecknare && ftMail.trim() === "";
+  const ftRollError = (ftRollTouched || submitAttempted) && ftRollSaknas ? "Roll krävs." : undefined;
+  const ftFornamnError = (ftFornamnTouched || submitAttempted) && ftFornamnSaknas ? "Förnamn krävs." : undefined;
+  const ftEfternamnError = (ftEfternamnTouched || submitAttempted) && ftEfternamnSaknas ? "Efternamn krävs." : undefined;
+  const ftMailError = (ftMailTouched || submitAttempted) && ftMailSaknas ? "Mail krävs." : undefined;
 
   const kanFortsatta =
-    telefon.trim() && epost.trim() && !bolagSaknas && !orgnrSaknas && !ortSaknas && !adressSaknas && !orgnrFelFormat;
+    telefon.trim() &&
+    !epostSaknas &&
+    !bolagSaknas &&
+    !orgnrSaknas &&
+    !ortSaknas &&
+    !adressSaknas &&
+    !orgnrFelFormat &&
+    !ftRollSaknas &&
+    !ftFornamnSaknas &&
+    !ftEfternamnSaknas &&
+    !ftMailSaknas;
 
 
   function submit() {
@@ -390,7 +416,7 @@ function Step2({
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
                   <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
-                  <InputField label="Telefon *" value={telefon} onChange={setTelefon} placeholder="+46 70 123 45 67" />
+                  <InputField label="Telefon *" value={telefon} onChange={setTelefon} placeholder="076 12 34 56" />
                   <InputField label="E-post *" value={epost} onChange={setEpost} placeholder="namn@exempel.se" type="email" />
                 </div>
               </WireBox>
@@ -448,35 +474,41 @@ function Step2({
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
                   <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
-                  <InputField label="Mobil nr *" value={telefon} onChange={setTelefon} placeholder="+46 70 123 45 67" />
-                  <InputField label="E-post *" value={epost} onChange={setEpost} placeholder="namn@exempel.se" type="email" />
+                  <InputField label="Mobil nr *" value={telefon} onChange={setTelefon} placeholder="076 12 34 56" />
+                  <InputField
+                    label="E-post *"
+                    value={epost}
+                    onChange={setEpost}
+                    onBlur={() => setEpostTouched(true)}
+                    placeholder="namn@exempel.se"
+                    type="email"
+                    error={epostError}
+                  />
                 </div>
 
                 <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
                   <Annotation>Firmatecknare</Annotation>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <WireBtn
-                      variant="secondary"
-                      className={
-                        arFirmatecknare
-                          ? "!border-[var(--color-interactive)] !bg-[var(--color-interactive)]/10 !text-[var(--color-interactive)] hover:!opacity-100"
-                          : ""
-                      }
-                      onClick={() => setArFirmatecknare(true)}
-                    >
+                  <div className="mt-3 flex flex-wrap gap-4">
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="radio"
+                        name="firmatecknare"
+                        checked={arFirmatecknare}
+                        onChange={() => setArFirmatecknare(true)}
+                        className="h-4 w-4 accent-[var(--color-interactive)]"
+                      />
                       Jag är firmatecknare
-                    </WireBtn>
-                    <WireBtn
-                      variant="secondary"
-                      className={
-                        !arFirmatecknare
-                          ? "!border-[var(--color-interactive)] !bg-[var(--color-interactive)]/10 !text-[var(--color-interactive)] hover:!opacity-100"
-                          : ""
-                      }
-                      onClick={() => setArFirmatecknare(false)}
-                    >
+                    </label>
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="radio"
+                        name="firmatecknare"
+                        checked={!arFirmatecknare}
+                        onChange={() => setArFirmatecknare(false)}
+                        className="h-4 w-4 accent-[var(--color-interactive)]"
+                      />
                       Jag är inte firmatecknare
-                    </WireBtn>
+                    </label>
                   </div>
                 </div>
               </WireBox>
@@ -484,11 +516,40 @@ function Step2({
               {!arFirmatecknare && (
                 <WireBox label="Firmatecknarens uppgifter" variant="dashed">
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <InputField label="Roll" value={ftRoll} onChange={setFtRoll} placeholder="VD / Styrelseordförande" />
-                    <InputField label="Förnamn" value={ftFornamn} onChange={setFtFornamn} placeholder="Förnamn" />
-                    <InputField label="Efternamn" value={ftEfternamn} onChange={setFtEfternamn} placeholder="Efternamn" />
-                    <InputField label="Mail" value={ftMail} onChange={setFtMail} placeholder="namn@exempel.se" type="email" />
-                    <InputField label="Mobil" value={ftMobil} onChange={setFtMobil} placeholder="+46 70 123 45 67" />
+                    <InputField
+                      label="Roll *"
+                      value={ftRoll}
+                      onChange={setFtRoll}
+                      onBlur={() => setFtRollTouched(true)}
+                      placeholder="VD / Styrelseordförande"
+                      error={ftRollError}
+                    />
+                    <InputField
+                      label="Förnamn *"
+                      value={ftFornamn}
+                      onChange={setFtFornamn}
+                      onBlur={() => setFtFornamnTouched(true)}
+                      placeholder="Förnamn"
+                      error={ftFornamnError}
+                    />
+                    <InputField
+                      label="Efternamn *"
+                      value={ftEfternamn}
+                      onChange={setFtEfternamn}
+                      onBlur={() => setFtEfternamnTouched(true)}
+                      placeholder="Efternamn"
+                      error={ftEfternamnError}
+                    />
+                    <InputField
+                      label="Mail *"
+                      value={ftMail}
+                      onChange={setFtMail}
+                      onBlur={() => setFtMailTouched(true)}
+                      placeholder="namn@exempel.se"
+                      type="email"
+                      error={ftMailError}
+                    />
+                    <InputField label="Mobil" value={ftMobil} onChange={setFtMobil} placeholder="076 12 34 56" />
                   </div>
                 </WireBox>
               )}
@@ -599,7 +660,7 @@ function ReadonlyField({ label, value, hint }: { label: string; value: string; h
   return (
     <label className="block">
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
-      <div className="flex h-10 items-center border border-dashed border-muted-foreground/50 bg-muted/20 px-3 text-sm">
+      <div className="flex h-11 items-center rounded-button border border-foreground/15 bg-background px-3 text-sm">
         {value}
       </div>
       {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
