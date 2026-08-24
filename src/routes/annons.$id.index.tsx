@@ -57,7 +57,7 @@ function fromPublishedItem(item: any): Listing {
     adress: draft.adress || "",
     yta: Number(draft.yta) || 0,
     hyra: Number(draft.hyra) || 0,
-    hasFTax: false,
+    fSkattManad: Number(draft.fSkattManad) || undefined,
     pris,
     lonsamt: false,
     beskrivning: (utkast.beskrivning || "").split(/\n+/).map((s: string) => s.trim()).filter(Boolean),
@@ -142,7 +142,7 @@ function ListingDetail() {
     adress: listing.adress,
     yta: listing.yta,
     hyra: listing.hyra,
-    hasFTax: listing.hasFTax,
+    fSkattManad: listing.fSkattManad,
     lonsamt: listing.lonsamt,
   });
 

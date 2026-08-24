@@ -170,6 +170,7 @@ export type Draft = {
   hyra: string;
   fastighetsskatt: string;
   fastighetsbeteckning: string;
+  fSkattManad: string;
   verksamhet: string;
   orgnr: string;
   // Hyresvärd & BRF
@@ -216,7 +217,7 @@ export type ExempelAnnons = {
   adress: string;
   yta: number;
   hyra: number;
-  hasFTax: boolean;
+  fSkattManad?: number;
   pris: number;
   lonsamt: boolean;
   beskrivning: string[];
@@ -235,7 +236,7 @@ export const exempelAnnons: ExempelAnnons = {
   adress: "Folkungagatan 22",
   yta: 180,
   hyra: 63_000,
-  hasFTax: true,
+  fSkattManad: 1_200,
   pris: 1_950_000,
   lonsamt: true,
   beskrivning: [

@@ -10,8 +10,8 @@ export type Listing = {
   titel: string;
   pris: string;
   stad: string;
-  // F-Skatt är ett fristående fält satt av säljaren — oberoende av kategori/typ.
-  hasFTax?: boolean;
+  // F-skatt (kr/mån) sätts av TreLink vid granskning — oberoende av kategori/typ.
+  fSkattManad?: number;
   typ?: string;
   adress?: string;
   yta?: number;

@@ -1157,6 +1157,18 @@ function AdminAnnonsDetail() {
                 className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                F-skatt (kr/mån)
+              </span>
+              <input
+                type="text"
+                value={draft.fSkattManad || ""}
+                onChange={(e) => setDraftField("fSkattManad", e.target.value)}
+                placeholder="1 200"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+              />
+            </label>
             {visaOmsattning && (
               <label className="block">
                 <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -1567,6 +1579,7 @@ function AdminAnnonsDetail() {
                 <Field k="Hyra" v={draft.hyra ? `${draft.hyra} kr/mån` : undefined} />
                 <Field k="Fastighetsskatt" v={draft.fastighetsskatt ? `${draft.fastighetsskatt} kr/år` : undefined} />
                 <Field k="Fastighetsbeteckning" v={draft.fastighetsbeteckning} />
+                <Field k="F-skatt" v={draft.fSkattManad ? `${draft.fSkattManad} kr/mån` : undefined} />
                 <Field k="Kvadratmeterpris" v={kvmPris != null ? `${kvmPris.toLocaleString("sv-SE")} kr/kvm/år` : undefined} />
               </>
             )}

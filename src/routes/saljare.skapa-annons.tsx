@@ -473,6 +473,7 @@ const empty: Draft = {
   hyra: "",
   fastighetsskatt: "",
   fastighetsbeteckning: "",
+  fSkattManad: "",
   verksamhet: "",
   orgnr: "",
   hyresvardNamn: "",

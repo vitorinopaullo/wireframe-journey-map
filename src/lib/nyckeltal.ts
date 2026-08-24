@@ -15,7 +15,7 @@ export type NyckeltalKalla = {
   adress?: string;
   yta?: number;
   hyra?: number;
-  hasFTax?: boolean;
+  fSkattManad?: number;
   omsattning?: string;
   antalAnstallda?: number;
   lonsamt?: boolean;
@@ -23,7 +23,7 @@ export type NyckeltalKalla = {
 
 export function nyckeltalFor(l: NyckeltalKalla): { label: string; value: string }[] {
   if (l.typ == null || l.yta == null) return [];
-  const fskatt = l.hasFTax ? "Ja" : "Nej";
+  const fskatt = l.fSkattManad ? `${l.fSkattManad.toLocaleString("sv-SE")} kr/mån` : "—";
   const hyraValue = l.hyra != null ? `${l.hyra.toLocaleString("sv-SE")} kr/mån` : "—";
   const visaOmsattning = l.cat === "aktie" || l.cat === "inkram";
 
