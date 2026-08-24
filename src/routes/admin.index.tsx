@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, Annotation } from "@/components/wire";
 import { readAnnonser, STORAGE_KEY, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import { readAdminAccounts, ADMIN_ACCOUNTS_STORAGE_KEY } from "@/lib/mock-auth";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminOversikt,
@@ -53,13 +54,21 @@ function queueForStatus(status: WorkflowState | null): QueueId | null {
   return QUEUES.find((q) => q.states.includes(status))?.id ?? null;
 }
 
+const VECKA_MS = 7 * 24 * 60 * 60 * 1000;
+
+function countNyaAnvandare() {
+  const since = Date.now() - VECKA_MS;
+  return readAdminAccounts().filter((a) => a.createdAt >= since).length;
+}
+
 function AdminOversikt() {
   const [rows, setRows] = useState<Row[]>(() => toRows(readAnnonser()));
+  const [nyaAnvandare, setNyaAnvandare] = useState(countNyaAnvandare);
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
-      if (e.key !== STORAGE_KEY) return;
-      setRows(toRows(readAnnonser()));
+      if (e.key === STORAGE_KEY) setRows(toRows(readAnnonser()));
+      if (e.key === ADMIN_ACCOUNTS_STORAGE_KEY) setNyaAnvandare(countNyaAnvandare());
     }
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
@@ -85,6 +94,15 @@ function AdminOversikt() {
             </WireBox>
           );
         })}
+        <Link to="/admin/anvandare" className="block">
+          <WireBox variant="dashed" className="h-full text-center transition-colors hover:border-foreground">
+            <div className="text-2xl font-semibold">{nyaAnvandare}</div>
+            <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              Nya användare senaste veckan
+            </div>
+            <div className="mt-1 text-xs text-[var(--color-interactive)]">Till Användare →</div>
+          </WireBox>
+        </Link>
       </div>
 
       <Annotation>Väntar på TreLink · äldsta ärendet överst</Annotation>
