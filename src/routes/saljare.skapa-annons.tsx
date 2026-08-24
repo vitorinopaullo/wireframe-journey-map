@@ -805,6 +805,19 @@ function CreateListing() {
                     <Annotation>Tid: {c.tid}</Annotation>
                   </div>
                   <p className="mt-3 text-[11px] text-muted-foreground">{c.who}</p>
+                  {selected && (
+                    <div className="mt-3 border-t border-foreground/10 pt-3">
+                      <Annotation>Dokument som krävs</Annotation>
+                      <ul className="mt-2 space-y-1 text-xs">
+                        {docsByCat[c.id].map((d) => (
+                          <li key={d.name}>
+                            {d.required ? "•" : "○"} {d.name}
+                            {d.required ? <span className="text-muted-foreground"> *</span> : <span className="text-muted-foreground"> (frivilligt)</span>}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </button>
               );
             })}
@@ -829,17 +842,6 @@ function CreateListing() {
           <div className="mt-4 border-t border-foreground/10 pt-4">
             <Annotation>Vad TreLink gör för dig</Annotation>
             <p className="mt-1 text-sm">{activeCat.trelink}</p>
-          </div>
-          <div className="mt-4 border-t border-foreground/10 pt-4">
-            <Annotation>Dokument som krävs för {activeCat.name}</Annotation>
-            <ul className="mt-2 grid grid-cols-1 gap-1 text-xs md:grid-cols-2">
-              {docsByCat[draft.cat].map((d) => (
-                <li key={d.name}>
-                  {d.required ? "•" : "○"} {d.name}
-                  {d.required ? <span className="text-muted-foreground"> *</span> : <span className="text-muted-foreground"> (frivilligt)</span>}
-                </li>
-              ))}
-            </ul>
           </div>
         </WireBox>
       )}
