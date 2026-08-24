@@ -31,6 +31,12 @@ type Step = 1 | 2;
 // Läses av Grunduppgifter-sidan i ett senare steg.
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
+/** Infogar bindestrecket efter 6 siffror medan användaren skriver: 555555-5555. */
+function formatOrgnr(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 10);
+  return digits.length <= 6 ? digits : `${digits.slice(0, 6)}-${digits.slice(6)}`;
+}
+
 function Onboarding() {
   const { next, role: roleParam } = Route.useSearch();
   const navigate = useNavigate();
@@ -277,18 +283,31 @@ function Step2({
   const [ftMail, setFtMail] = useState("");
   const [ftMobil, setFtMobil] = useState("");
 
-  const [adressTouched, setAdressTouched] = useState(false);
+  const [bolagTouched, setBolagTouched] = useState(false);
   const [orgnrTouched, setOrgnrTouched] = useState(false);
+  const [ortTouched, setOrtTouched] = useState(false);
+  const [adressTouched, setAdressTouched] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const ORGNR_REGEX = /^\d{6}-\d{4}$/;
+  const bolagSaknas = role === "saljare" && bolag.trim() === "";
+  const orgnrSaknas = role === "saljare" && orgnr.trim() === "";
+  const ortSaknas = role === "saljare" && ort.trim() === "";
   const adressSaknas = role === "saljare" && adress.trim() === "";
   const orgnrFelFormat = orgnr.trim() !== "" && !ORGNR_REGEX.test(orgnr.trim());
+  const bolagError = (bolagTouched || submitAttempted) && bolagSaknas ? "Bolag krävs." : undefined;
+  const orgnrError = (orgnrTouched || submitAttempted)
+    ? orgnrSaknas
+      ? "Org.nr krävs."
+      : orgnrFelFormat
+      ? "Ogiltigt format. Ange som XXXXXX-XXXX."
+      : undefined
+    : undefined;
+  const ortError = (ortTouched || submitAttempted) && ortSaknas ? "Ort krävs." : undefined;
   const adressError = (adressTouched || submitAttempted) && adressSaknas ? "Adress krävs." : undefined;
-  const orgnrError =
-    (orgnrTouched || submitAttempted) && orgnrFelFormat ? "Ogiltigt format. Ange som XXXXXX-XXXX." : undefined;
 
-  const kanFortsatta = telefon.trim() && epost.trim() && !adressSaknas && !orgnrFelFormat;
+  const kanFortsatta =
+    telefon.trim() && epost.trim() && !bolagSaknas && !orgnrSaknas && !ortSaknas && !adressSaknas && !orgnrFelFormat;
 
 
   function submit() {
@@ -348,7 +367,12 @@ function Step2({
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <InputField label="Bolag" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
-                  <InputField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
+                  <InputField
+                    label="Org.nr"
+                    value={orgnr}
+                    onChange={(v) => setOrgnr(formatOrgnr(v))}
+                    placeholder="556677-8899"
+                  />
                   <div className="md:col-span-2">
                     <InputField
                       label="Företagspresentation"
@@ -375,16 +399,30 @@ function Step2({
             <>
               <WireBox label="Bolagsuppgifter">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <InputField label="Bolag" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
                   <InputField
-                    label="Org.nr"
+                    label="Bolag *"
+                    value={bolag}
+                    onChange={setBolag}
+                    onBlur={() => setBolagTouched(true)}
+                    placeholder="Anna Restauranger AB"
+                    error={bolagError}
+                  />
+                  <InputField
+                    label="Org.nr *"
                     value={orgnr}
-                    onChange={setOrgnr}
+                    onChange={(v) => setOrgnr(formatOrgnr(v))}
                     onBlur={() => setOrgnrTouched(true)}
                     placeholder="556677-8899"
                     error={orgnrError}
                   />
-                  <InputField label="Ort" value={ort} onChange={setOrt} placeholder="Stockholm" />
+                  <InputField
+                    label="Ort *"
+                    value={ort}
+                    onChange={setOrt}
+                    onBlur={() => setOrtTouched(true)}
+                    placeholder="Stockholm"
+                    error={ortError}
+                  />
                   <InputField
                     label="Adress *"
                     value={adress}
@@ -528,7 +566,11 @@ function InputField({
           onBlur={onBlur}
           placeholder={placeholder}
           rows={3}
-          className="w-full border border-foreground/40 bg-background px-3 py-2 text-sm"
+          className={`w-full rounded-button border bg-background px-3 py-2 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
+            error
+              ? "border-destructive focus:border-destructive focus:ring-destructive/40"
+              : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
+          }`}
         />
       ) : (
         <input
