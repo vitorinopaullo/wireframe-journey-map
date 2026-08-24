@@ -1422,6 +1422,16 @@ function UppdragsavtalPreviewModal({
   );
 }
 
+// Övergripande kategorier i valet, mappade till FALTGRUPP_TYPER-nycklar. Grupper med fler än
+// en undertyp (Servering, Frisor) kräver ett andra steg för att välja den slutgiltiga typen.
+const VERKSAMHETSTYP_HUVUDKATEGORIER: { label: string; key: string }[] = [
+  { label: "Butik", key: "Butik" },
+  { label: "Kontor", key: "Kontor" },
+  { label: "Lager", key: "Lager" },
+  { label: "Mat och dryck", key: "Servering" },
+  { label: "Skönhetssalong", key: "Frisor" },
+];
+
 function VerksamhetstypSelect({
   value,
   onChange,
@@ -1429,8 +1439,36 @@ function VerksamhetstypSelect({
   value: string;
   onChange: (v: string) => void;
 }) {
-  function select(tag: string) {
+  // Vilken huvudkategori `value` för närvarande hör till (om någon).
+  const activeKey = VERKSAMHETSTYP_HUVUDKATEGORIER.find((k) => FALTGRUPP_TYPER[k.key].includes(value))?.key ?? null;
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  const effectiveOpenKey = openKey ?? activeKey;
+  const subOptions = effectiveOpenKey ? FALTGRUPP_TYPER[effectiveOpenKey] : null;
+  const showUndertyper = !!subOptions && subOptions.length > 1;
+
+  function selectHuvudkategori(key: string) {
+    const opts = FALTGRUPP_TYPER[key];
+    if (opts.length === 1) {
+      onChange(value === opts[0] ? "" : opts[0]);
+      setOpenKey(null);
+      return;
+    }
+    if (effectiveOpenKey === key) {
+      setOpenKey(null);
+      if (opts.includes(value)) onChange("");
+    } else {
+      setOpenKey(key);
+      if (!opts.includes(value)) onChange("");
+    }
+  }
+
+  function selectUndertyp(tag: string) {
     onChange(value === tag ? "" : tag);
+  }
+
+  function isHuvudkategoriActive(key: string) {
+    const opts = FALTGRUPP_TYPER[key];
+    return opts.length === 1 ? value === opts[0] : effectiveOpenKey === key;
   }
 
   return (
@@ -1439,12 +1477,21 @@ function VerksamhetstypSelect({
         Verksamhetstyp *
       </span>
       <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-background p-3">
-        {VERKSAMHETSTYP_TAGGAR.map((tag) => (
-          <WireTag key={tag} active={value === tag} onClick={() => select(tag)}>
-            {tag}
+        {VERKSAMHETSTYP_HUVUDKATEGORIER.map((k) => (
+          <WireTag key={k.key} active={isHuvudkategoriActive(k.key)} onClick={() => selectHuvudkategori(k.key)}>
+            {k.label}
           </WireTag>
         ))}
       </div>
+      {showUndertyper && subOptions && (
+        <div className="mt-2 flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-background p-3">
+          {subOptions.map((tag) => (
+            <WireTag key={tag} active={value === tag} onClick={() => selectUndertyp(tag)}>
+              {tag}
+            </WireTag>
+          ))}
+        </div>
+      )}
       <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">
         Välj den kategori som bäst beskriver verksamheten.
       </span>
