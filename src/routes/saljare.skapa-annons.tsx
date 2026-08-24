@@ -809,13 +809,23 @@ function CreateListing() {
               );
             })}
           </div>
-          <WireBtn
-            variant="tertiary"
-            className="mt-3 font-mono text-[11px] uppercase tracking-wider underline"
-            onClick={() => setUppdragsavtalOpen(true)}
-          >
-            Se hur ett uppdragsavtal kan se ut →
-          </WireBtn>
+          <div className="mt-4 grid grid-cols-1 gap-6 border-t border-foreground/10 pt-4 md:grid-cols-2">
+            <div>
+              <Annotation>Uppdragsavtal</Annotation>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Innan du skickar in underlaget kan du se hur avtalet du signerar med TreLink ser ut —
+                samma mall som gäller för {activeCat.name}.
+              </p>
+              <div className="mt-4">
+                <WireBtn variant="secondary" onClick={() => setUppdragsavtalOpen(true)}>
+                  Se hur ett uppdragsavtal kan se ut →
+                </WireBtn>
+              </div>
+            </div>
+            <div className="flex min-h-[140px] items-center justify-center rounded-card border border-foreground/15 bg-muted/20 text-center text-xs text-muted-foreground">
+              [ Bild · Uppdragsavtal ]
+            </div>
+          </div>
           <div className="mt-4 border-t border-foreground/10 pt-4">
             <Annotation>Vad TreLink gör för dig</Annotation>
             <p className="mt-1 text-sm">{activeCat.trelink}</p>
