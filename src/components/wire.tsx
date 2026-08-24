@@ -16,14 +16,15 @@ export function WireBox({
 }) {
   const border =
     variant === "dashed"
-      ? "border border-dashed border-muted-foreground/40"
+      ? "border border-foreground/10 bg-muted/20"
       : variant === "ghost"
       ? "border border-muted-foreground/20 bg-muted/30"
-      : "border border-foreground/15";
+      : "border border-foreground/15 bg-background";
+  const labelBg = variant === "dashed" ? "bg-muted/20" : variant === "ghost" ? "bg-muted/30" : "bg-background";
   return (
-    <div className={`relative rounded-card ${border} bg-background p-4 ${className}`}>
+    <div className={`relative rounded-card ${border} p-4 ${className}`}>
       {label && (
-        <div className="absolute -top-2 left-3 bg-background px-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+        <div className={`absolute -top-2 left-3 ${labelBg} px-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground`}>
           {label}
         </div>
       )}
@@ -34,7 +35,7 @@ export function WireBox({
 
 export function Annotation({ children }: { children: ReactNode }) {
   return (
-    <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+    <p className="text-xs text-muted-foreground">
       {children}
     </p>
   );
@@ -86,7 +87,7 @@ export function WireField({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
-      <div className="flex h-11 items-center rounded-button border border-muted-foreground/25 bg-muted/20 px-3 text-sm text-muted-foreground">
+      <div className="flex h-11 items-center rounded-button border border-foreground/15 bg-background px-3 text-sm text-muted-foreground">
         {type === "select" ? `▾ ${placeholder ?? ""}` : placeholder ?? `[ ${label} ]`}
       </div>
       {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
@@ -97,10 +98,10 @@ export function WireField({
 export function StatusDot({ state }: { state: "done" | "active" | "pending" }) {
   const cls =
     state === "done"
-      ? "bg-foreground"
+      ? "bg-[var(--color-success)]"
       : state === "active"
-      ? "bg-foreground/60 ring-2 ring-foreground/30"
-      : "bg-background border border-foreground/40";
+      ? "bg-[var(--color-primary)] ring-2 ring-[var(--color-primary)]/25"
+      : "bg-background border border-foreground/25";
   return <span className={`inline-block h-3 w-3 rounded-full ${cls}`} />;
 }
 
@@ -116,10 +117,10 @@ export function PageHeader({
   right?: ReactNode;
 }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-foreground/20 pb-6">
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-foreground/10 pb-6">
       <div>
         {eyebrow && (
-          <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          <div className="mb-2 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
             {eyebrow}
           </div>
         )}
@@ -143,8 +144,8 @@ export function WireTag({
   const cls = `inline-flex items-center rounded-pill border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider transition-colors duration-150 ${
     active
       ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
-      : "border-foreground/40"
-  } ${onClick ? "cursor-pointer hover:border-foreground" : ""}`;
+      : "border-foreground/20"
+  } ${onClick ? "cursor-pointer hover:border-foreground/60" : ""}`;
 
   if (onClick) {
     return (
