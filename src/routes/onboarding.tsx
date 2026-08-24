@@ -227,7 +227,7 @@ function RoleCard({
       }`}
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold">{title}</h3>
+        <h3 className={`text-xl font-semibold ${active ? "heading-on-dark" : ""}`}>{title}</h3>
         {active ? (
           <CheckCircle2 className="h-5 w-5" />
         ) : (

@@ -338,6 +338,20 @@
     color: var(--color-heading) !important;
   }
 
+  /*
+   * Cascade layers reverse priority for !important declarations, so an
+   * !important Tailwind utility (generated into the later `utilities`
+   * layer) can never beat the h3-h6 rule above, no matter its specificity —
+   * and neither can an unlayered rule, which for !important purposes ranks
+   * even lower than every named layer. The only way to win against an
+   * !important rule is a MORE SPECIFIC !important rule in the SAME layer,
+   * which is what this is: needed for heading text on a filled/dark
+   * background, e.g. a selected onboarding role card.
+   */
+  h3.heading-on-dark {
+    color: var(--color-white) !important;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
