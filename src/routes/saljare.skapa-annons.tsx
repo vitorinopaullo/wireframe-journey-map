@@ -521,6 +521,7 @@ function CreateListing() {
   const [draft, setDraft] = useState<Draft>(empty);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [uppdragsavtalOpen, setUppdragsavtalOpen] = useState(false);
+  const [hyresvardEmailTouched, setHyresvardEmailTouched] = useState(false);
   const [bolagOrt, setBolagOrt] = useState("");
 
   useEffect(() => {
@@ -920,7 +921,7 @@ function CreateListing() {
               {(() => {
                 const email = draft.hyresvardEmail;
                 const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-                const showError = email.length === 0 || !emailValid;
+                const showError = hyresvardEmailTouched && (email.length === 0 || !emailValid);
                 const errorMsg = email.length === 0
                   ? "Hyresvärdens e-postadress krävs för att gå vidare"
                   : "Ange en giltig e-postadress (t.ex. namn@företag.se)";
@@ -936,6 +937,7 @@ function CreateListing() {
                       aria-invalid={showError}
                       value={email}
                       onChange={(e) => set("hyresvardEmail", e.target.value)}
+                      onBlur={() => setHyresvardEmailTouched(true)}
                       placeholder="info@fastighetsbolaget.se"
                       className={`block h-11 w-full rounded-button border bg-muted/20 px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
                         showError
@@ -1008,13 +1010,6 @@ function CreateListing() {
                 </div>
               );
             })}
-          </div>
-          <div className="mt-4 border-t border-foreground/10 pt-4">
-            <Annotation>Så fungerar granskningen</Annotation>
-            <p className="mt-1 text-sm">
-              När du skickar in granskar TreLink varje dokument inom <strong>24h på vardagar</strong>.
-              Du får mejl om något behöver kompletteras — annonsen publiceras automatiskt när allt är godkänt.
-            </p>
           </div>
         </WireBox>
         </>
@@ -1091,7 +1086,7 @@ function CreateListing() {
       )}
 
       {/* Validation hints under content */}
-      {step < 3 && validation[step].length > 0 && (
+      {step < 3 && step !== 2 && validation[step].length > 0 && (
         <WireBox className="mb-6">
           <Annotation>Komplettera innan nästa steg</Annotation>
           <ul className="mt-2 list-inside list-disc text-sm">
@@ -1123,7 +1118,10 @@ function CreateListing() {
             </WireBtn>
           )}
           {step < 3 ? (
-            <WireBtn onClick={() => setStep((s) => s + 1)}>
+            <WireBtn
+              onClick={() => setStep((s) => s + 1)}
+              disabled={step === 2 && !canContinue}
+            >
               Nästa: {STEPS[step + 1]} →
             </WireBtn>
           ) : (
