@@ -126,7 +126,6 @@ export type LagerFalt = {
 };
 
 export type ServeringFalt = {
-  underrubrik: string;
   lage: string;
   interior: string;
   planlosning: string;
@@ -143,7 +142,6 @@ export type ServeringFalt = {
 };
 
 export type FrisorFalt = {
-  underrubrik: string;
   lage: string;
   interior: string;
   planlosning: string;

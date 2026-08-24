@@ -284,7 +284,6 @@ const emptyLagerFalt: LagerFalt = {
 };
 
 // Serverings gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
-const SERVERING_UNDERRUBRIK = ["Restaurang", "Café", "Bageri", "Bistro", "Pub", "Vinbar"];
 const SERVERING_TAGGAR_LAGE = [
   "Trafikerat läge",
   "Stadsmiljö",
@@ -380,7 +379,6 @@ const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
 ];
 
 const emptyServeringFalt: ServeringFalt = {
-  underrubrik: "",
   lage: "",
   interior: "",
   planlosning: "",
@@ -397,7 +395,6 @@ const emptyServeringFalt: ServeringFalt = {
 };
 
 // Skönhetssalongs gemensamma taggpool, uppdelad efter vilken textrad-kategori de hör till.
-const FRISOR_UNDERRUBRIK = ["Frisör", "Nagelsalong", "Massage", "Estetisk"];
 const FRISOR_TAGGAR_LAGE = [
   "Trafikerat läge",
   "Hörnlokal",
@@ -459,7 +456,6 @@ const FRISOR_TAGGAR_PLANLOSNING = [
 const FRISOR_TAGGAR_EKONOMI = ["Förmånlig hyra", "Värme ingår", "Vatten ingår", "Momsbefriad hyra", "Ventilation ingår", "Stabil förening"];
 
 const emptyFrisorFalt: FrisorFalt = {
-  underrubrik: "",
   lage: "",
   interior: "",
   planlosning: "",
@@ -2073,18 +2069,6 @@ function ServeringFaltgrupp({
       <Annotation>Mat och dryck — fält specifika för restaurang, café, bageri och pub.</Annotation>
       <div className="mt-4 space-y-5">
         <div>
-          <FaltgruppRubrik>Typ av verksamhet</FaltgruppRubrik>
-          <div className="mt-2 space-y-3">
-            <SingleTagSelect
-              label="Välj den som stämmer bäst"
-              options={SERVERING_UNDERRUBRIK}
-              value={falt.underrubrik}
-              onChange={(v) => onChange("underrubrik", v)}
-            />
-          </div>
-        </div>
-
-        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2228,18 +2212,6 @@ function FrisorFaltgrupp({
       <Annotation>Skönhetssalong — fält specifika för skönhetssalonger.</Annotation>
       <div className="mt-4 space-y-5">
         <div>
-          <FaltgruppRubrik>Typ av verksamhet</FaltgruppRubrik>
-          <div className="mt-2 space-y-3">
-            <SingleTagSelect
-              label="Välj den som stämmer bäst"
-              options={FRISOR_UNDERRUBRIK}
-              value={falt.underrubrik}
-              onChange={(v) => onChange("underrubrik", v)}
-            />
-          </div>
-        </div>
-
-        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup

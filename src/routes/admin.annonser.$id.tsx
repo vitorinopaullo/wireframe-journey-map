@@ -85,7 +85,6 @@ const GRUPP_FALT: Record<string, GruppFalt[]> = {
     { key: "beskrivning", label: "Övrig info" },
   ],
   Frisor: [
-    { key: "underrubrik", label: "Typ av verksamhet" },
     { key: "lage", label: "Läge", isTags: true },
     { key: "interior", label: "Interiör/stil", isTags: true },
     { key: "planlosning", label: "Planlösning", isTags: true },
@@ -94,7 +93,6 @@ const GRUPP_FALT: Record<string, GruppFalt[]> = {
     { key: "beskrivning", label: "Övrig info" },
   ],
   Servering: [
-    { key: "underrubrik", label: "Typ av verksamhet" },
     { key: "lage", label: "Läge", isTags: true },
     { key: "interior", label: "Interiör och skick", isTags: true },
     { key: "planlosning", label: "Planlösning", isTags: true },
@@ -121,7 +119,6 @@ const FALT_TYPE_KEYS: Record<string, string[]> = {
   ),
   Frisor: Object.keys(
     {
-      underrubrik: "",
       lage: "",
       interior: "",
       planlosning: "",
@@ -133,7 +130,6 @@ const FALT_TYPE_KEYS: Record<string, string[]> = {
   ),
   Servering: Object.keys(
     {
-      underrubrik: "",
       lage: "",
       interior: "",
       planlosning: "",
