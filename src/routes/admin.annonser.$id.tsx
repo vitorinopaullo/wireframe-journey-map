@@ -645,6 +645,8 @@ function AdminAnnonsDetail() {
   // TreLink skriver/reviderar annonstexten — underlaget begränsas till det som
   // faktiskt behövs för att skriva text, resten hörde till Granskning-beslutet.
   const skrivFasen = st === "hyresvard-notifiering";
+  // Kunden har redan godkänt priset i uppdragsavtalet — låst för redigering därefter.
+  const prisLocked = st === "avtal-vantar-signering" || st === "hyresvard-notifiering" || st === "publicerad";
   const canApprove =
     st === "granskas" && stats.obligatoriskaTotal > 0 && stats.obligatoriskaOk === stats.obligatoriskaTotal && stats.kompl === 0;
   const prisValid = prisInput.trim() !== "" && Number(prisInput) > 0;
@@ -1054,61 +1056,110 @@ function AdminAnnonsDetail() {
       {/* Fast åtgärdsrad längst ned — position:sticky med bottom-0 visade sig inte
           fästa i praktiken (verifierat: ett minimalt, ramverksoberoende sticky-element
           i samma container uppvisade samma problem), så vi använder fixed istället,
-          samma mönster som StickyCTA i annons.$id.index.tsx. */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-foreground/30 bg-background px-4 py-3 shadow-sm">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-1.5">
-            {checklist.map((c) => (
-              <span
-                key={c.label}
-                className={`inline-flex items-center gap-1 border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${
-                  c.ok
-                    ? "border-foreground/30 text-muted-foreground"
-                    : "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
-                }`}
+          samma mönster som StickyCTA i annons.$id.index.tsx. Innehållet är
+          kontextberoende på workflow-state: under Granskning visas
+          godkännande-/avvisningsåtgärder, under Annonstext-skrivning är
+          "Publicera annons" huvudhandlingen, och i övriga steg krävs ingen
+          åtgärd härifrån så raden döljs helt. */}
+      {(st === "granskas" || st === "komplettering") && (
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-foreground/30 bg-background px-4 py-3 shadow-sm">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {checklist.map((c) => (
+                <span
+                  key={c.label}
+                  className={`inline-flex items-center gap-1 border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${
+                    c.ok
+                      ? "border-foreground/30 text-muted-foreground"
+                      : "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
+                  }`}
+                >
+                  {c.ok ? "✅" : "⚠️"} {c.label}
+                </span>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <WireBtn variant="ghost" onClick={() => setKomplOpen((v) => !v)}>
+                Begär komplettering
+              </WireBtn>
+              <WireBtn variant="ghost" onClick={() => setRejectOpen((v) => !v)}>
+                Avvisa annons
+              </WireBtn>
+              <WireBtn
+                variant="primary"
+                disabled={!canApproveMedPris}
+                onClick={() => setAvtalPreviewOpen(true)}
+                className={!canApproveMedPris ? "cursor-not-allowed border-muted-foreground/30 bg-muted/30 text-muted-foreground hover:opacity-100" : ""}
               >
-                {c.ok ? "✅" : "⚠️"} {c.label}
-              </span>
-            ))}
+                {canApproveMedPris ? "Skapa uppdragsavtal →" : "Skapa uppdragsavtal (lås upp först)"}
+              </WireBtn>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <WireBtn variant="ghost" onClick={() => setKomplOpen((v) => !v)}>
-              Begär komplettering
-            </WireBtn>
-            <WireBtn variant="ghost" onClick={() => setRejectOpen((v) => !v)}>
-              Avvisa annons
-            </WireBtn>
+        </div>
+      )}
+
+      {skrivFasen && (
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-foreground/30 bg-background px-4 py-3 shadow-sm">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {checklist.map((c) => (
+                <span
+                  key={c.label}
+                  className={`inline-flex items-center gap-1 border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${
+                    c.ok
+                      ? "border-foreground/30 text-muted-foreground"
+                      : "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
+                  }`}
+                >
+                  {c.ok ? "✅" : "⚠️"} {c.label}
+                </span>
+              ))}
+            </div>
             <WireBtn
               variant="primary"
-              disabled={!canApproveMedPris}
-              onClick={() => setAvtalPreviewOpen(true)}
-              className={!canApproveMedPris ? "cursor-not-allowed border-muted-foreground/30 bg-muted/30 text-muted-foreground hover:opacity-100" : ""}
+              disabled={!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()}
+              onClick={publishAnnons}
+              className={
+                !(utkastRubrik.trim() && utkastBeskrivning.trim() && utkastPris.trim())
+                  ? "cursor-not-allowed border-muted-foreground/30 bg-muted/30 text-muted-foreground hover:opacity-100"
+                  : ""
+              }
             >
-              {canApproveMedPris ? "Skapa uppdragsavtal →" : "Skapa uppdragsavtal (lås upp först)"}
+              Publicera annons →
             </WireBtn>
           </div>
         </div>
-      </div>
+      )}
 
-      {(st === "granskas" || st === "komplettering") && (
+      {(st === "granskas" || st === "komplettering" || prisLocked) && (
         <WireBox label="Fastighetsinfo & prissättning" className="mb-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <label className="block">
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Sätt pris (kr)
+                {prisLocked ? "Pris (kr)" : "Sätt pris (kr)"}
               </span>
-              <input
-                type="number"
-                min="0"
-                value={prisInput}
-                onChange={(e) => setPrisInput(e.target.value)}
-                placeholder="1 200 000"
-                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
-              />
+              {prisLocked ? (
+                <div className="flex h-11 w-full items-center rounded-button border border-foreground/15 bg-muted/20 px-3 text-sm tabular-nums">
+                  {item.pris ? `${item.pris} kr` : "—"}
+                </div>
+              ) : (
+                <input
+                  type="number"
+                  min="0"
+                  value={prisInput}
+                  onChange={(e) => setPrisInput(e.target.value)}
+                  placeholder="1 200 000"
+                  className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                />
+              )}
               <span className="mt-1 block text-[11px] text-muted-foreground">
-                TreLink sätter priset baserat på underlaget — detta blir det pris köpare ser.
+                {prisLocked
+                  ? "Priset är godkänt av kunden och låst sedan uppdragsavtalet skapades."
+                  : "TreLink sätter priset baserat på underlaget — detta blir det pris köpare ser."}
               </span>
             </label>
+            {!prisLocked && (
+            <>
             <label className="block">
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Yta (m²)
@@ -1169,7 +1220,9 @@ function AdminAnnonsDetail() {
                 className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
-            {visaOmsattning && (
+            </>
+            )}
+            {!prisLocked && visaOmsattning && (
               <label className="block">
                 <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                   Omsättning
@@ -1373,20 +1426,6 @@ function AdminAnnonsDetail() {
                 className="h-10 w-48 border border-foreground/40 bg-background px-3 text-sm"
               />
             </label>
-          </div>
-          <div className="mt-4">
-            <WireBtn
-              variant="primary"
-              disabled={!utkastRubrik.trim() || !utkastBeskrivning.trim() || !utkastPris.trim()}
-              onClick={publishAnnons}
-              className={
-                !(utkastRubrik.trim() && utkastBeskrivning.trim() && utkastPris.trim())
-                  ? "cursor-not-allowed border-muted-foreground/30 bg-muted/30 text-muted-foreground hover:opacity-100"
-                  : ""
-              }
-            >
-              Publicera annons →
-            </WireBtn>
           </div>
         </WireBox>
       )}

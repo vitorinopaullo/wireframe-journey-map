@@ -57,7 +57,7 @@ export const docsByCat: Record<CatId, DocSpec[]> = {
   inkram: [
     { name: "Hyresavtal", krav: "PDF · alla sidor · signerat", required: true },
     { name: "Hyresavi", krav: "PDF · senaste, max 3 mån gammal", required: true },
-    { name: "Rörelseresultat", krav: "PDF från bokföring · senaste perioden", required: true },
+    { name: "Rörelseresultat", krav: "senaste bokföringsåret", required: true },
     { name: "Bilder på verksamheten", krav: "JPG/PNG · minst 8 st · dagsljus", required: true },
     { name: "Balansräkning", krav: "PDF · senaste perioden", required: false },
     { name: "Årsredovisning", krav: "PDF · signerad", required: false },
