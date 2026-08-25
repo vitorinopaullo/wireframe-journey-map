@@ -329,7 +329,7 @@ function SellerAnnonsDetail() {
       />
 
       {/* Dev-only step switcher */}
-      <div className="mb-4 flex items-center gap-2 border border-dashed border-muted-foreground/40 bg-muted/30 px-3 py-2">
+      <div className="mb-4 flex items-center gap-2 rounded-card border border-foreground/10 bg-muted/20 px-3 py-2">
         <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           Dev · hoppa till steg
         </span>
@@ -381,12 +381,12 @@ function SellerAnnonsDetail() {
           })}
         </div>
         {st === "komplettering" && (
-          <div className="mt-3 border-t border-dashed border-amber-500/40 pt-2 text-xs font-medium text-amber-700 dark:text-amber-500">
+          <div className="mt-3 border-t border-amber-500/40 pt-2 text-xs font-medium text-amber-700 dark:text-amber-500">
             ↩ Komplettering begärd — åtgärda och skicka in på nytt
           </div>
         )}
         {st === "avvisad" && (
-          <div className="mt-3 border-t border-dashed border-foreground/30 pt-2 text-xs font-medium text-foreground/70">
+          <div className="mt-3 border-t border-foreground/10 pt-2 text-xs font-medium text-foreground/70">
             <X className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Avvisad — ärendet är stängt
           </div>
         )}
@@ -446,10 +446,10 @@ function SellerAnnonsDetail() {
                     const names = Array.from(e.dataTransfer.files).map((f) => f.name);
                     setKompletteringFiles((prev) => [...prev, ...names]);
                   }}
-                  className={`flex cursor-pointer flex-col items-center justify-center border-2 border-dashed p-8 text-center text-sm transition ${
+                  className={`flex cursor-pointer flex-col items-center justify-center rounded-card border p-8 text-center text-sm transition-colors duration-150 ${
                     dragOver
-                      ? "border-foreground bg-muted/50"
-                      : "border-muted-foreground/40 bg-muted/20 hover:border-foreground/60"
+                      ? "border-[var(--color-interactive)] bg-[var(--color-purple-50)]"
+                      : "border-foreground/15 bg-muted/20 hover:border-foreground/30"
                   }`}
                 >
                   <input
@@ -471,7 +471,7 @@ function SellerAnnonsDetail() {
                 {kompletteringFiles.length > 0 && (
                   <ul className="mt-3 space-y-1 text-sm">
                     {kompletteringFiles.map((f, i) => (
-                      <li key={i} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 py-1">
+                      <li key={i} className="flex items-center justify-between border-b border-foreground/10 py-1">
                         <span><Paperclip className="inline-block h-3.5 w-3.5 mr-1 align-middle" />{f}</span>
                         <WireBtn
                           variant="tertiary"
@@ -520,7 +520,7 @@ function SellerAnnonsDetail() {
               </WireBox>
 
               <WireBox label="Motivering från Trelink">
-                <div className="border-l-2 border-foreground/40 bg-muted/20 px-4 py-3">
+                <div className="border-l-2 border-foreground/20 bg-muted/20 px-4 py-3">
                   <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                     {wf.avvisadReason?.at
                       ? new Date(wf.avvisadReason.at).toLocaleDateString("sv-SE")
@@ -619,7 +619,7 @@ function SellerAnnonsDetail() {
                   Vid en framtida affär kommer hyresvärden att behöva godkänna köparen innan tillträde kan ske.
                 </p>
 
-                <div className="mt-4 border-b border-dashed border-muted-foreground/30 pb-2">
+                <div className="mt-4 border-b border-foreground/10 pb-2">
                   <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                     HYRESVÄRD E-POST
                   </div>
@@ -708,7 +708,7 @@ function SellerAnnonsDetail() {
               {(wf.timeline ?? []).map((l, i) => {
                 const mail = mailForLogEntry(l.text);
                 return (
-                  <li key={i} className="border-l-2 border-foreground/40 pl-3">
+                  <li key={i} className="border-l-2 border-foreground/20 pl-3">
                     <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                       {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
                     </div>
@@ -798,7 +798,7 @@ function SellerAnnonsDetail() {
 
 function Field({ k, v }: { k: string; v?: string }) {
   return (
-    <div className="border-b border-dashed border-muted-foreground/30 pb-2">
+    <div className="border-b border-foreground/10 pb-2">
       <Annotation>{k}</Annotation>
       <div className="mt-1 tabular-nums">{v || "—"}</div>
     </div>

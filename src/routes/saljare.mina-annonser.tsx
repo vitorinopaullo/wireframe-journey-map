@@ -66,7 +66,7 @@ function MyListings() {
                 <ContractExpiryBanner daysLive={daysSince(avtalSignedAt)} objectLabel={i.titel} />
               )}
               <WireBox className="flex flex-col gap-4 md:flex-row md:items-center">
-                <div className="flex h-24 w-36 shrink-0 items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-[10px] text-muted-foreground">
+                <div className="flex h-24 w-36 shrink-0 items-center justify-center rounded-card border border-foreground/15 bg-muted/20 text-[10px] text-muted-foreground">
                   [ Bild ]
                 </div>
                 <div className="flex-1">

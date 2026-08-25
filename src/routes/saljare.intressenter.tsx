@@ -58,7 +58,7 @@ function Interest() {
             </thead>
             <tbody>
               {rows.map((r, i) => (
-                <tr key={i} className="border-b border-dashed border-muted-foreground/30 transition-colors duration-150 hover:bg-muted/20">
+                <tr key={i} className="border-b border-foreground/10 transition-colors duration-150 hover:bg-muted/20">
                   <td className="py-3">{r.date}</td>
                   <td>{r.annons}</td>
                   <td className="font-mono">{r.code}</td>
