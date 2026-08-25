@@ -49,9 +49,6 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
             TRELINK <span className="text-muted-foreground text-xs">/{mode}</span>
           </Link>
           <div className="flex items-center gap-3">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-              Läge
-            </span>
             <div className="flex rounded-pill border border-foreground/15 p-0.5">
               <Link
                 to="/dashboard"

@@ -90,21 +90,18 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
               </>
             ) : session.role ? (
               <>
-                <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Läge
-                </span>
-                <div className="flex border border-foreground/40">
+                <div className="flex rounded-pill border border-foreground/15 p-0.5">
                   <Link
                     to="/dashboard"
                     search={{ mode: "kopare" }}
-                    className={`px-3 py-1 text-xs ${session.role === "kopare" ? "bg-foreground text-background" : "text-foreground"}`}
+                    className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${session.role === "kopare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
                   >
                     Köpare
                   </Link>
                   <Link
                     to="/dashboard"
                     search={{ mode: "saljare" }}
-                    className={`px-3 py-1 text-xs ${session.role === "saljare" ? "bg-foreground text-background" : "text-foreground"}`}
+                    className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${session.role === "saljare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
                   >
                     Säljare/Överlåtare
                   </Link>
