@@ -31,10 +31,10 @@ const STATUS_LABEL: Record<AccountStatus, string> = {
 function StatusTag({ status }: { status: AccountStatus }) {
   const cls =
     status === "komplett"
-      ? "border-foreground bg-foreground text-background"
+      ? "border-[var(--color-success)] bg-[var(--color-success)] text-white"
       : status === "roll-vald"
       ? "border-amber-500/70 text-amber-700 bg-amber-50/60 dark:text-amber-500 dark:bg-amber-500/10"
-      : "border-foreground/40 text-muted-foreground";
+      : "border-foreground/20 text-muted-foreground";
   return (
     <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${cls}`}>
       {STATUS_LABEL[status]}
@@ -160,13 +160,13 @@ function AdminAnvandare() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-dashed divide-muted-foreground/30">
+                <tbody className="divide-y divide-foreground/10">
                   {filteredAccounts.map((a) => (
                     <tr
                       key={a.id}
                       onClick={() => navigate({ to: "/admin/anvandare/$id", params: { id: a.id } })}
                       className={`cursor-pointer transition-colors duration-500 hover:bg-muted/40 ${
-                        justUpdatedId === a.id ? "bg-foreground/10" : ""
+                        justUpdatedId === a.id ? "bg-[var(--color-primary)]/10" : ""
                       }`}
                     >
                       <td className="px-3 py-2">

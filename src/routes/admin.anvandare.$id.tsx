@@ -46,7 +46,7 @@ function linkadeObjekt(personnr: string | undefined): LinkatObjekt[] {
 
 function Field({ k, v }: { k: string; v?: string }) {
   return (
-    <div className="border-b border-dashed border-muted-foreground/30 pb-2">
+    <div className="border-b border-foreground/10 pb-2">
       <Annotation>{k}</Annotation>
       <div className="mt-1 text-sm">{v || "—"}</div>
     </div>
@@ -143,7 +143,7 @@ function AdminAnvandareDetail() {
                     key={o.id}
                     to="/admin/annonser/$id"
                     params={{ id: o.id }}
-                    className="flex flex-wrap items-center justify-between gap-2 border border-dashed border-muted-foreground/40 p-3 hover:border-foreground"
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-foreground/15 bg-background p-3 transition-colors duration-150 hover:border-foreground/30"
                   >
                     <div className="flex items-center gap-2">
                       <WireTag>{o.kategori}</WireTag>

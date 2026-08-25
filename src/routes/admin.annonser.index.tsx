@@ -65,12 +65,12 @@ function StatusTag({ status }: { status: WorkflowState | null }) {
   const tone = STATUS_TONE[status];
   const cls =
     tone === "success"
-      ? "border-foreground bg-foreground text-background"
+      ? "border-[var(--color-success)] bg-[var(--color-success)] text-white"
       : tone === "danger"
       ? "border-destructive text-destructive bg-destructive/10"
       : tone === "warn"
       ? "border-amber-500/70 text-amber-700 bg-amber-50/60 dark:text-amber-500 dark:bg-amber-500/10"
-      : "border-foreground/40 text-muted-foreground";
+      : "border-foreground/20 text-muted-foreground";
   return (
     <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${cls}`}>
       {stateLabel[status]}
@@ -96,7 +96,7 @@ function NextActorTag({ status }: { status: WorkflowState | null }) {
   if (actor === "trelink") {
     return (
       <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground">
-        <span className="inline-block h-2 w-2 rounded-full bg-foreground" />
+        <span className="inline-block h-2 w-2 rounded-full bg-[var(--color-primary)]" />
         TreLink
       </span>
     );
@@ -177,7 +177,7 @@ function AdminAnnonser() {
               className={`rounded-pill border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 ${
                 active
                   ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
-                  : "border-foreground/40 text-muted-foreground hover:border-foreground hover:text-foreground"
+                  : "border-foreground/20 text-muted-foreground hover:border-foreground/40 hover:text-foreground"
               }`}
             >
               {t.label} ({count})
@@ -200,7 +200,7 @@ function AdminAnnonser() {
           >
             <WireBox
               className={`flex flex-col gap-4 transition-colors duration-500 hover:border-foreground md:flex-row md:items-center ${
-                justUpdatedId === r.id ? "bg-foreground/10" : ""
+                justUpdatedId === r.id ? "bg-[var(--color-primary)]/10" : ""
               }`}
             >
               <div className="flex-1 min-w-0">
@@ -209,7 +209,7 @@ function AdminAnnonser() {
                   <StatusTag status={r.status} />
                   <NextActorTag status={r.status} />
                   {r.status === "hyresvard-notifiering" && (
-                    <span className="inline-flex items-center border border-foreground bg-foreground px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-background">
+                    <span className="inline-flex items-center border border-[var(--color-primary)] bg-[var(--color-primary)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-white">
                       Redo att skriva annonstext
                     </span>
                   )}

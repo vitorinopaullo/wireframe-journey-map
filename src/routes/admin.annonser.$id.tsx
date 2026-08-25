@@ -216,7 +216,7 @@ function Field({
 
   if (!onSave) {
     return (
-      <div className="border-b border-dashed border-muted-foreground/30 pb-2">
+      <div className="border-b border-foreground/10 pb-2">
         <Annotation>{k}</Annotation>
         <div className={`mt-1 text-sm tabular-nums ${missing ? "text-amber-700 dark:text-amber-500" : ""}`}>
           {missing ? "⚠️ Ej ifyllt" : v}
@@ -232,7 +232,7 @@ function Field({
   };
 
   return (
-    <div className={`border-b pb-2 ${edited ? "border-foreground" : "border-dashed border-muted-foreground/30"}`}>
+    <div className={`border-b pb-2 ${edited ? "border-[var(--color-primary)]" : "border-foreground/10"}`}>
       <div className="flex items-center gap-1.5">
         <Annotation>{k}</Annotation>
         {edited && <EditedMark />}
@@ -296,7 +296,7 @@ function TagsField({
   };
 
   return (
-    <div className={`border-b pb-2 ${edited ? "border-foreground" : "border-dashed border-muted-foreground/30"}`}>
+    <div className={`border-b pb-2 ${edited ? "border-[var(--color-primary)]" : "border-foreground/10"}`}>
       <div className="flex items-center gap-1.5">
         <Annotation>{k}</Annotation>
         {edited && <EditedMark />}
@@ -330,7 +330,7 @@ function TagsField({
           type="button"
           onClick={submitCustom}
           aria-label="Lägg till egen tagg"
-          className="flex h-7 w-7 shrink-0 items-center justify-center border border-dashed border-muted-foreground/50 font-mono text-xs hover:border-foreground"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-button border border-foreground/15 font-mono text-xs transition-colors duration-150 hover:border-foreground/30"
         >
           +
         </button>
@@ -362,15 +362,15 @@ function stepIndexForState(state: WorkflowState | null): number {
 function StepDot({ status }: { status: "done" | "active" | "pending" }) {
   if (status === "done") {
     return (
-      <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[9px] font-bold text-background">
+      <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[var(--color-success)] text-[9px] font-bold text-white">
         ✓
       </span>
     );
   }
   if (status === "active") {
-    return <span className="inline-block h-3 w-3 rounded-full bg-foreground/70 ring-2 ring-foreground/30" />;
+    return <span className="inline-block h-3 w-3 rounded-full bg-[var(--color-primary)] ring-2 ring-[var(--color-primary)]/25" />;
   }
-  return <span className="inline-block h-3 w-3 rounded-full border border-foreground/40 bg-background" />;
+  return <span className="inline-block h-3 w-3 rounded-full border border-foreground/25 bg-background" />;
 }
 
 function ProcessStepper({ state }: { state: WorkflowState | null }) {
@@ -404,7 +404,7 @@ function ProcessStepper({ state }: { state: WorkflowState | null }) {
 
 function RejectedBanner({ item }: { item: any }) {
   return (
-    <div className="mb-6 border border-foreground/60 bg-foreground/5 px-4 py-3">
+    <div className="mb-6 rounded-card border border-foreground/15 bg-muted/20 px-4 py-3">
       <div className="font-mono text-xs font-semibold uppercase tracking-wider text-foreground">
         ✕ Avvisad — ärendet är stängt
       </div>
@@ -430,14 +430,14 @@ const avvisningsOrsaker = [
 function KartaPlaceholder({ adress }: { adress?: string }) {
   if (!adress) {
     return (
-      <div className="flex h-24 flex-col items-center justify-center gap-1 border border-dashed border-muted-foreground/40 bg-muted/30 text-center text-xs text-muted-foreground">
+      <div className="flex h-24 flex-col items-center justify-center gap-1 rounded-card border border-foreground/15 bg-muted/20 text-center text-xs text-muted-foreground">
         <span>[ Karta ]</span>
         <span>Ingen adress angiven</span>
       </div>
     );
   }
   return (
-    <div className="h-24 overflow-hidden border border-dashed border-muted-foreground/40">
+    <div className="h-24 overflow-hidden rounded-card border border-foreground/15">
       <iframe
         title="Karta"
         src={`https://www.google.com/maps?q=${encodeURIComponent(adress)}&output=embed`}
@@ -505,16 +505,16 @@ function BilderOversikt({
               type="button"
               onClick={() => toggle(bild)}
               disabled={disabled}
-              className={`relative flex h-16 items-center justify-center border text-[10px] ${
+              className={`relative flex h-16 items-center justify-center rounded-button border text-[10px] transition-colors duration-150 ${
                 isVald
-                  ? "border-foreground bg-foreground/10 text-foreground"
+                  ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-foreground"
                   : disabled
-                  ? "cursor-not-allowed border-dashed border-muted-foreground/30 bg-muted/20 text-muted-foreground/50"
-                  : "border-dashed border-muted-foreground/40 bg-muted/30 text-muted-foreground hover:border-foreground"
+                  ? "cursor-not-allowed border-foreground/10 bg-muted/20 text-muted-foreground/50"
+                  : "border-foreground/15 bg-muted/20 text-muted-foreground hover:border-foreground/30"
               }`}
             >
               {isVald && (
-                <span className="absolute left-1 top-1 flex h-4 w-4 items-center justify-center border border-foreground bg-foreground font-mono text-[9px] text-background">
+                <span className="absolute left-1 top-1 flex h-4 w-4 items-center justify-center border border-[var(--color-primary)] bg-[var(--color-primary)] font-mono text-[9px] text-white">
                   {ordning + 1}
                 </span>
               )}
@@ -540,7 +540,7 @@ function BilderOversikt({
                   setDragIndex(null);
                 }}
                 onDragEnd={() => setDragIndex(null)}
-                className="flex cursor-move items-center gap-1 border border-foreground/40 bg-background px-2 py-1 text-[10px]"
+                className="flex cursor-move items-center gap-1 rounded-button border border-foreground/15 bg-background px-2 py-1 text-[10px]"
               >
                 <span className="font-mono text-muted-foreground">{i + 1}</span>
                 {bild}
@@ -1036,7 +1036,7 @@ function AdminAnnonsDetail() {
         <Link
           to="/admin/anvandare/$id"
           params={{ id: sellerAccount.id }}
-          className="mb-6 inline-flex items-center gap-1.5 border border-dashed border-muted-foreground/40 px-3 py-2 text-sm hover:border-foreground"
+          className="mb-6 inline-flex items-center gap-1.5 rounded-button border border-foreground/15 px-3 py-2 text-sm transition-colors duration-150 hover:border-foreground/30"
         >
           <span className="text-muted-foreground">Inskickad av</span>
           <span className="font-medium">
@@ -1048,7 +1048,7 @@ function AdminAnnonsDetail() {
           <span aria-hidden>→</span>
         </Link>
       ) : (
-        <div className="mb-6 inline-block border border-dashed border-muted-foreground/40 px-3 py-2 text-sm text-muted-foreground">
+        <div className="mb-6 inline-block rounded-button border border-foreground/15 px-3 py-2 text-sm text-muted-foreground">
           Inskickad av okänt konto — ingen kontokoppling hittades.
         </div>
       )}
@@ -1243,7 +1243,7 @@ function AdminAnnonsDetail() {
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Kvadratmeterpris (kr/kvm/år)
               </span>
-              <div className="flex h-10 items-center border border-dashed border-muted-foreground/40 bg-muted/20 px-3 text-sm tabular-nums text-muted-foreground">
+              <div className="flex h-10 items-center rounded-button border border-foreground/15 bg-muted/20 px-3 text-sm tabular-nums text-muted-foreground">
                 {kvmPris != null ? `${kvmPris.toLocaleString("sv-SE")} kr/kvm/år` : "—"}
               </div>
             </div>
@@ -1366,7 +1366,7 @@ function AdminAnnonsDetail() {
               daysSinceAvtalSent >= 3 &&
               daysSinceAvtalSent < 5 &&
               !item.workflow?.reminderSentAt && (
-                <div className="flex flex-wrap items-center justify-between gap-3 border-l-2 border-foreground/40 bg-muted/30 px-3 py-2">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-l-2 border-foreground/20 bg-muted/20 px-3 py-2">
                   <span className="text-sm">Påminnelse bör skickas</span>
                   <WireBtn onClick={sendPaminnelse}>Skicka påminnelse →</WireBtn>
                 </div>
@@ -1377,7 +1377,7 @@ function AdminAnnonsDetail() {
 
       {st === "hyresvard-notifiering" && (
         <WireBox label="Skriv annonstext" className="mb-6">
-          <div className="mb-4 flex flex-wrap items-center gap-2 border-l-2 border-foreground/40 bg-muted/30 px-3 py-2 text-sm">
+          <div className="mb-4 flex flex-wrap items-center gap-2 border-l-2 border-foreground/20 bg-muted/20 px-3 py-2 text-sm">
             <span>✓ Hyresvärden är automatiskt informerad via Signicat</span>
             {(() => {
               const hyresvardMail = (item.workflow?.timeline ?? []).some(
@@ -1412,7 +1412,7 @@ function AdminAnnonsDetail() {
                 onChange={(e) => setUtkastBeskrivning(e.target.value)}
                 rows={6}
                 placeholder="Skriv annonstexten baserat på säljarens underlag…"
-                className="w-full border border-foreground/40 bg-background px-3 py-2 text-sm"
+                className="w-full rounded-button border border-foreground/15 bg-background px-3 py-2 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <label className="block">
@@ -1423,7 +1423,7 @@ function AdminAnnonsDetail() {
                 type="text"
                 value={utkastPris}
                 onChange={(e) => setUtkastPris(e.target.value)}
-                className="h-10 w-48 border border-foreground/40 bg-background px-3 text-sm"
+                className="h-10 w-48 rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
           </div>
@@ -1697,7 +1697,7 @@ function AdminAnnonsDetail() {
                   </div>
 
                   {activeDoc === d.name && (
-                    <div className="mt-4 border-t border-dashed border-muted-foreground/40 pt-3">
+                    <div className="mt-4 border-t border-foreground/10 pt-3">
                       <span className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                         Snabbmallar
                       </span>
@@ -1706,7 +1706,7 @@ function AdminAnnonsDetail() {
                           <button
                             key={m}
                             onClick={() => setDocKomplText(m)}
-                            className="border border-dashed border-muted-foreground/50 px-2 py-1 text-left font-mono text-[10px] text-muted-foreground hover:border-foreground hover:text-foreground"
+                            className="rounded-button border border-foreground/15 px-2 py-1 text-left font-mono text-[10px] text-muted-foreground transition-colors duration-150 hover:border-foreground/30 hover:text-foreground"
                           >
                             + {m.slice(0, 40)}…
                           </button>
@@ -1759,7 +1759,7 @@ function AdminAnnonsDetail() {
               {(item.workflow?.timeline ?? []).map((l: any, i: number) => {
                 const mail = mailForLogEntry(l.text);
                 return (
-                  <li key={i} className="border-l-2 border-foreground/40 pl-3">
+                  <li key={i} className="border-l-2 border-foreground/20 pl-3">
                     <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                       {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
                     </div>
@@ -1778,7 +1778,7 @@ function AdminAnnonsDetail() {
 
       {avtalPreviewOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           onClick={() => setAvtalPreviewOpen(false)}
         >
           <div
@@ -1795,7 +1795,7 @@ function AdminAnnonsDetail() {
             </div>
 
             <div className="space-y-4 p-6">
-              <div className="inline-flex items-center gap-1 border border-foreground bg-foreground px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-background">
+              <div className="inline-flex items-center gap-1 border border-[var(--color-primary)] bg-[var(--color-primary)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-white">
                 ✓ TreLink-signatur: Förifylld
               </div>
 
@@ -1812,7 +1812,7 @@ function AdminAnnonsDetail() {
                 avgift={avtalAvgift}
               />
 
-              <div className="flex flex-wrap justify-end gap-2 border-t border-dashed border-muted-foreground/30 pt-4">
+              <div className="flex flex-wrap justify-end gap-2 border-t border-foreground/10 pt-4">
                 <WireBtn variant="ghost" onClick={() => setAvtalPreviewOpen(false)}>
                   Redigera
                 </WireBtn>
@@ -1843,7 +1843,7 @@ function DocStateBadge({ state }: { state: DocState }) {
   const m = map[state];
   const toneCls =
     m.tone === "filled"
-      ? "border-foreground bg-foreground text-background"
+      ? "border-[var(--color-success)] bg-[var(--color-success)] text-white"
       : m.tone === "warning"
       ? "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
       : m.tone === "neutral"

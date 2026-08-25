@@ -37,7 +37,7 @@ function AdminInstallningar() {
         )}
 
         {confirming && (
-          <div className="border border-dashed border-destructive/60 bg-destructive/5 p-3">
+          <div className="rounded-card border border-destructive/40 bg-destructive/5 p-3">
             <p className="mb-3 text-sm">Detta rensar alla konton och annonser — säker?</p>
             <div className="flex gap-2">
               <WireBtn variant="primary" className="border-destructive bg-destructive text-white" onClick={rensaTestdata}>
