@@ -37,11 +37,11 @@ function OmOss() {
           <Annotation>Placeholder — team-presentation kommer</Annotation>
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
             {["Grundare & VD", "Mäklarchef", "Tech lead"].map((r) => (
-              <div key={r} className="border border-dashed border-muted-foreground/40 p-4">
-                <div className="mb-2 h-24 border border-dashed border-muted-foreground/40 bg-muted/30" />
+              <WireBox key={r}>
+                <div className="mb-2 h-24 rounded-card border border-foreground/15 bg-muted/20" />
                 <div className="text-sm font-medium">[ Namn ]</div>
                 <Annotation>{r}</Annotation>
-              </div>
+              </WireBox>
             ))}
           </div>
         </WireBox>

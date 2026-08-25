@@ -43,7 +43,7 @@ function Unlock() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4 font-mono">
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-sm border-2 border-dashed border-foreground p-8 space-y-4"
+        className="w-full max-w-sm rounded-card border border-foreground/15 bg-background p-8 shadow-md space-y-4"
       >
         <div>
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -60,7 +60,7 @@ function Unlock() {
           type="password"
           autoComplete="current-password"
           autoFocus
-          className="w-full border-2 border-dashed border-foreground bg-background px-3 py-2 text-sm outline-none focus:border-solid"
+          className="w-full rounded-button border border-foreground/15 bg-background px-3 py-2 text-sm outline-none transition-colors duration-150 focus:border-[var(--color-interactive)] focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
         />
         {error && (
           <p className="text-xs text-destructive">Fel lösenord. Försök igen.</p>

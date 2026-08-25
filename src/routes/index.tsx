@@ -168,8 +168,10 @@ function ListingCarousel({
               aria-label={`Sida ${i + 1} av ${scrollSnaps.length}`}
               aria-current={i === selectedIndex}
               className={[
-                "h-2 w-2 rounded-full border border-foreground/40 transition",
-                i === selectedIndex ? "bg-foreground border-foreground" : "bg-background",
+                "h-2 w-2 rounded-full border border-foreground/20 transition-colors duration-150",
+                i === selectedIndex
+                  ? "bg-[var(--color-primary)] border-[var(--color-primary)]"
+                  : "bg-background",
               ].join(" ")}
             />
           ))}
@@ -237,7 +239,7 @@ function HomePage() {
                 <WireBtn to="/om-oss" variant="secondary">Läs mer om oss →</WireBtn>
               </div>
             </div>
-            <div className="flex min-h-[180px] items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-xs text-muted-foreground">
+            <div className="flex min-h-[180px] items-center justify-center rounded-card border border-foreground/15 bg-muted/20 text-xs text-muted-foreground">
               [ Bild · Om TreLink ]
             </div>
           </div>

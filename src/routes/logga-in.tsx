@@ -29,9 +29,11 @@ function Login() {
         subtitle="TreLink använder BankID som enda inloggningssätt — både för köpare och säljare."
       />
       {isSafeNext(next) && (
-        <div className="mb-4 border border-dashed border-muted-foreground/40 bg-muted/30 p-3 font-mono text-xs text-muted-foreground">
-          Efter inloggning skickas du tillbaka till: {next}
-        </div>
+        <WireBox variant="dashed" className="mb-4">
+          <p className="text-sm text-muted-foreground">
+            Efter inloggning skickas du tillbaka till: {next}
+          </p>
+        </WireBox>
       )}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <BankIdPanel

@@ -73,7 +73,7 @@ function Sitemap() {
             <h3 className="mb-3 font-semibold">{s.title}</h3>
             <ul className="space-y-1.5">
               {s.links.map(([to, label]) => (
-                <li key={to} className="flex items-center justify-between gap-3 border-b border-dashed border-muted-foreground/30 py-1.5">
+                <li key={to} className="flex items-center justify-between gap-3 border-b border-foreground/10 py-1.5">
                   <Link to={to} className="text-sm hover:underline">
                     {label}
                   </Link>

@@ -25,9 +25,11 @@ function Register() {
         subtitle="TreLink har inga lösenord — legitimera dig med BankID så skapas kontot. Efter det väljer du köpar- eller säljarläge."
       />
       {isSafeNext(next) && (
-        <div className="mb-4 border border-dashed border-muted-foreground/40 bg-muted/30 p-3 font-mono text-xs text-muted-foreground">
-          Efter registrering skickas du till: {next}
-        </div>
+        <WireBox variant="dashed" className="mb-4">
+          <p className="text-sm text-muted-foreground">
+            Efter registrering skickas du till: {next}
+          </p>
+        </WireBox>
       )}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <BankIdPanel

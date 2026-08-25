@@ -63,7 +63,7 @@ function LokalerPage() {
           className="lg:sticky"
           style={{ top: STICKY_OFFSET, maxHeight: `calc(100vh - ${STICKY_OFFSET})` }}
         >
-          <div className="relative h-full min-h-[400px] overflow-hidden border border-dashed border-muted-foreground/40 bg-muted/30">
+          <div className="relative h-full min-h-[400px] overflow-hidden rounded-card border border-foreground/15 bg-muted/20">
             {/* Rutnät som antyder en karta */}
             <div className="absolute inset-0 grid grid-cols-6 grid-rows-6">
               {Array.from({ length: 36 }).map((_, i) => (
@@ -82,8 +82,8 @@ function LokalerPage() {
                 className="absolute -translate-x-1/2 -translate-y-1/2"
                 style={{ left: `${c.x}%`, top: `${c.y}%` }}
               >
-                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-dashed border-foreground/30 bg-foreground/5">
-                  <span className="whitespace-nowrap rounded-full border border-foreground/40 bg-background px-2 py-0.5 font-mono text-[10px] text-foreground shadow-sm">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5">
+                  <span className="whitespace-nowrap rounded-full border border-foreground/15 bg-background px-2 py-0.5 font-mono text-[10px] text-foreground shadow-sm">
                     {c.pris}
                   </span>
                 </div>
