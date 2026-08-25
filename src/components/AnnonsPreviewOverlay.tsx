@@ -142,7 +142,7 @@ export function AnnonsPreviewOverlay({
           <div className="mt-4 flex flex-wrap gap-2">
             <WireTag><CheckCircle2 className="inline-block h-3 w-3 mr-1 align-middle" />Granskad av Trelink</WireTag>
             {item.draft?.premium && (
-              <span className="inline-flex items-center border border-foreground bg-foreground px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-background">
+              <span className="inline-flex items-center border border-[var(--color-primary)] bg-[var(--color-primary)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-white">
                 Premium
               </span>
             )}
@@ -156,7 +156,7 @@ export function AnnonsPreviewOverlay({
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-xs text-muted-foreground"
+                    className="flex items-center justify-center rounded-card border border-foreground/15 bg-muted/20 text-xs text-muted-foreground"
                     style={{ height: 150 }}
                   >
                     [ Bild {i} ]
@@ -203,7 +203,7 @@ export function AnnonsPreviewOverlay({
                   {dokument.map((namn) => (
                     <li
                       key={namn}
-                      className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 py-2"
+                      className="flex items-center justify-between border-b border-foreground/10 py-2"
                     >
                       <span>▤ {namn}</span>
                       <div className="flex items-center gap-2">
@@ -253,7 +253,7 @@ export function AnnonsPreviewOverlay({
                     type="button"
                     title={disabledTip}
                     onClick={(e) => e.preventDefault()}
-                    className="cursor-not-allowed border border-foreground bg-foreground px-4 py-2 text-sm text-background opacity-80"
+                    className="cursor-not-allowed rounded-button border border-[var(--color-primary)] bg-[var(--color-primary)] px-4 py-2 text-sm text-white opacity-40"
                   >
                     Anmäl intresse →
                   </button>
@@ -261,7 +261,7 @@ export function AnnonsPreviewOverlay({
                     type="button"
                     title={disabledTip}
                     onClick={(e) => e.preventDefault()}
-                    className="cursor-not-allowed border border-foreground bg-background px-4 py-2 text-sm"
+                    className="cursor-not-allowed rounded-button border border-foreground/15 bg-background px-4 py-2 text-sm opacity-40"
                   >
                     <Star className="inline-block h-4 w-4 mr-1" /> Spara som favorit
                   </button>
@@ -269,7 +269,7 @@ export function AnnonsPreviewOverlay({
                     type="button"
                     title={disabledTip}
                     onClick={(e) => e.preventDefault()}
-                    className="cursor-not-allowed border border-foreground bg-background px-4 py-2 text-sm"
+                    className="cursor-not-allowed rounded-button border border-foreground/15 bg-background px-4 py-2 text-sm opacity-40"
                   >
                     Bevaka liknande
                   </button>

@@ -44,7 +44,7 @@ function Dropdown({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex h-12 w-full items-center justify-between border border-foreground/40 bg-background px-3 text-left text-sm"
+        className="flex h-12 w-full items-center justify-between rounded-button border border-foreground/15 bg-background px-3 text-left text-sm transition-colors duration-150 hover:border-foreground/30"
       >
         <span className={selected ? "text-foreground" : "text-foreground/40"}>
           {selected ?? placeholder}
@@ -52,7 +52,7 @@ function Dropdown({
         <span className="text-muted-foreground">▾</span>
       </button>
       {open && (
-        <div className="absolute left-0 right-0 top-full z-20 mt-1 border border-foreground/40 bg-background">
+        <div className="absolute left-0 right-0 top-full z-20 mt-1 rounded-card border border-foreground/15 bg-background shadow-lg">
           {options.map((opt) => (
             <button
               key={opt}

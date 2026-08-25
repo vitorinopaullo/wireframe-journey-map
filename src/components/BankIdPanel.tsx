@@ -54,7 +54,7 @@ export function BankIdPanel({
 
       {phase === "idle" ? (
         <div className="space-y-4">
-          <div className="flex items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/20 p-8">
+          <div className="flex items-center justify-center rounded-card border border-foreground/15 bg-muted/20 p-8">
             <div className="text-center">
               <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center border border-foreground font-mono text-2xl">
                 ▮▮
@@ -76,10 +76,10 @@ export function BankIdPanel({
                 <button
                   key={p.personnr}
                   onClick={() => setTestperson(p)}
-                  className={`border px-3 py-1.5 text-sm ${
+                  className={`rounded-button border px-3 py-1.5 text-sm transition-colors duration-150 ${
                     testperson.personnr === p.personnr
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-foreground/30 hover:border-foreground"
+                      ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white"
+                      : "border-foreground/15 hover:border-foreground/30"
                   }`}
                 >
                   {p.fornamn} {p.efternamn}
@@ -116,7 +116,7 @@ export function BankIdPanel({
             })}
           </ul>
           {bankid && phase === "klar" && (
-            <div className="mt-3 border border-foreground/40 bg-muted/40 p-3 text-xs">
+            <div className="mt-3 rounded-card border border-foreground/15 bg-muted/20 p-3 text-xs">
               <div className="mb-1 flex items-center gap-2">
                 <WireTag>Verifierad</WireTag>
                 <span className="font-mono">{bankid.personnr}</span>
