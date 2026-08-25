@@ -2,6 +2,7 @@ import { Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { getSession, subscribeSession, signOut, type Session } from "@/lib/mock-auth";
+import { WireBtn } from "@/components/wire";
 
 const navItems = [
   { to: "/", label: "Sök annonser" },
@@ -78,15 +79,12 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
           <div className="flex items-center gap-2">
             {!session ? (
               <>
-                <Link to="/logga-in" className="border border-foreground/40 px-3 py-1.5 text-sm">
+                <WireBtn variant="secondary" to="/logga-in">
                   Logga in
-                </Link>
-                <Link
-                  to="/registrera"
-                  className="border border-foreground bg-foreground px-3 py-1.5 text-sm text-background"
-                >
+                </WireBtn>
+                <WireBtn variant="primary" to="/registrera">
                   Registrera (BankID)
-                </Link>
+                </WireBtn>
               </>
             ) : session.role ? (
               <>
@@ -111,9 +109,9 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
                 </button>
               </>
             ) : (
-              <Link to="/onboarding" className="border border-foreground/40 px-3 py-1.5 text-sm">
+              <WireBtn variant="primary" to="/onboarding">
                 Slutför kontosättning →
-              </Link>
+              </WireBtn>
             )}
           </div>
         </div>
