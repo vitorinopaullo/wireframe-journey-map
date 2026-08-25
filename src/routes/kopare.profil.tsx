@@ -156,7 +156,7 @@ function Profile() {
             </thead>
             <tbody>
               {fakturor.map((f) => (
-                <tr key={f.nr} className="border-b border-dashed border-muted-foreground/30 transition-colors duration-150 hover:bg-muted/20">
+                <tr key={f.nr} className="border-b border-foreground/10 transition-colors duration-150 hover:bg-muted/20">
                   <td className="py-3 font-mono text-xs">{f.nr}</td>
                   <td className="py-3">{f.titel}</td>
                   <td className="py-3 text-right font-mono tabular-nums">{f.belopp.toLocaleString("sv-SE")} kr</td>
@@ -189,7 +189,7 @@ function Profile() {
                 ["Signering redo", true],
                 ["Marknadsföringstips", false],
               ].map(([label, on]) => (
-                <li key={String(label)} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 pb-2">
+                <li key={String(label)} className="flex items-center justify-between border-b border-foreground/10 pb-2">
                   <span>{label as string}</span>
                   <input type="checkbox" defaultChecked={Boolean(on)} className="h-4 w-4 accent-[var(--color-primary)]" />
                 </li>
@@ -199,7 +199,7 @@ function Profile() {
           <WireBox label="Kanaler">
             <ul className="space-y-3 text-sm">
               {[["E-post", true], ["SMS", true], ["Push (app)", false]].map(([label, on]) => (
-                <li key={String(label)} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 pb-2">
+                <li key={String(label)} className="flex items-center justify-between border-b border-foreground/10 pb-2">
                   <span>{label as string}</span>
                   <input type="checkbox" defaultChecked={Boolean(on)} className="h-4 w-4 accent-[var(--color-primary)]" />
                 </li>

@@ -130,7 +130,7 @@ function Progress({ steg }: { steg: Steg }) {
       {STEG_ORDNING.map((s, i) => (
         <div
           key={s}
-          className="flex flex-col items-center gap-1 border border-dashed border-muted-foreground/30 p-2 text-center"
+          className="flex flex-col items-center gap-1 rounded-card border border-foreground/15 bg-background p-2 text-center"
         >
           <StatusDot state={i < idx ? "done" : i === idx ? "active" : "pending"} />
           <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
@@ -148,7 +148,7 @@ function SlaPill({ sla }: { sla?: Affar["sla"] }) {
   return (
     <span
       className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${
-        akut ? "border-foreground bg-foreground text-background" : "border-foreground/40"
+        akut ? "border-[var(--color-danger)] bg-[var(--color-danger)] text-white" : "border-foreground/20"
       }`}
     >
       ⏱ {sla.etikett}
@@ -191,7 +191,7 @@ function AffarsKort({ a }: { a: Affar }) {
 
       <Progress steg={a.steg} />
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-dashed border-muted-foreground/30 pt-3">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-foreground/10 pt-3">
         <div className="flex-1 min-w-0">
           <Annotation>Nästa steg</Annotation>
           <p className="mt-1 text-sm">{a.nastaSteg}</p>

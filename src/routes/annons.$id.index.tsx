@@ -191,7 +191,7 @@ function ListingDetail() {
             className="group h-full w-full cursor-zoom-in"
           >
             <img src={listing.bilder[bild]} alt={`${listing.titel} — bild ${bild + 1}`} className="h-full w-full object-cover" />
-            <span className="absolute bottom-3 right-3 flex items-center gap-1 rounded-pill bg-foreground/70 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-background opacity-0 transition group-hover:opacity-100">
+            <span className="absolute bottom-3 right-3 flex items-center gap-1 rounded-pill bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-white opacity-0 transition group-hover:opacity-100">
               <Expand className="h-3 w-3" /> Förstora
             </span>
           </button>
@@ -202,7 +202,7 @@ function ListingDetail() {
             type="button"
             onClick={visaForegaende}
             aria-label="Föregående bild"
-            className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/40 bg-background transition hover:border-foreground"
+            className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/15 bg-background transition-colors duration-150 hover:border-foreground/30"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -210,7 +210,7 @@ function ListingDetail() {
             type="button"
             onClick={visaNasta}
             aria-label="Nästa bild"
-            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/40 bg-background transition hover:border-foreground"
+            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/15 bg-background transition-colors duration-150 hover:border-foreground/30"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -224,7 +224,7 @@ function ListingDetail() {
               type="button"
               onClick={() => setBild(i)}
               className={`h-14 w-20 shrink-0 overflow-hidden rounded-button border transition ${
-                i === bild ? "border-[var(--color-interactive)]" : "border-foreground/15 hover:border-foreground/40"
+                i === bild ? "border-[var(--color-interactive)]" : "border-foreground/15 hover:border-foreground/30"
               }`}
             >
               <img src={src} alt={`Miniatyr ${i + 1}`} className="h-full w-full object-cover" />
@@ -292,7 +292,7 @@ function ListingDetail() {
 
           {/* FAQ */}
           <WireBox label="Vanliga frågor">
-            <div className="divide-y divide-dashed divide-muted-foreground/30">
+            <div className="divide-y divide-foreground/10">
               {listing.faq.map(([q, a]) => (
                 <details key={q} className="group py-3">
                   <summary className="flex cursor-pointer items-center justify-between text-sm font-medium">
@@ -363,7 +363,7 @@ function ListingDetail() {
               params={{ id: l.id }}
               className="group block border border-foreground/30 bg-background p-4 hover:border-foreground transition"
             >
-              <div className="mb-3 flex h-24 items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-[10px] text-muted-foreground">
+              <div className="mb-3 flex h-24 items-center justify-center rounded-card border border-foreground/15 bg-muted/20 text-[10px] text-muted-foreground">
                 [ Bild ]
               </div>
               <WireTag>{l.kat}</WireTag>
@@ -379,7 +379,7 @@ function ListingDetail() {
 
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/80 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
           onClick={() => setLightbox(null)}
         >
           <button

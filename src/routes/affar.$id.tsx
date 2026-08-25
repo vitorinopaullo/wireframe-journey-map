@@ -73,7 +73,7 @@ function SignModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <div
         className="relative w-full max-w-2xl border-2 border-foreground bg-background"
         onClick={(e) => e.stopPropagation()}
@@ -81,7 +81,7 @@ function SignModal({
         {/* topbar */}
         <div className="flex items-center justify-between border-b border-foreground/30 px-4 py-3">
           <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-            <span className="inline-block h-2 w-2 rounded-full bg-foreground" />
+            <span className="inline-block h-2 w-2 rounded-full bg-[var(--color-primary)]" />
             Signicat · BankID
           </div>
           <WireBtn variant="tertiary" className="font-mono text-xs uppercase tracking-wider" onClick={onClose}>
@@ -99,7 +99,7 @@ function SignModal({
                 förfrågan och signerar i sin tur. När båda signerat frigörs kontaktuppgifter.
               </p>
 
-              <div className="mt-5 grid grid-cols-1 gap-3 border border-dashed border-muted-foreground/40 p-4 sm:grid-cols-2">
+              <div className="mt-5 grid grid-cols-1 gap-3 rounded-card border border-foreground/15 p-4 sm:grid-cols-2">
                 <div><Annotation>Avtal</Annotation><p className="mt-1 text-sm">Köpeavtal AFR-A-2041</p></div>
                 <div><Annotation>Köpesumma</Annotation><p className="mt-1 font-mono text-sm">{PRIS.toLocaleString("sv-SE")} kr</p></div>
                 <div><Annotation>Handpenning</Annotation><p className="mt-1 font-mono text-sm">Mottagen <Check className="inline-block h-3.5 w-3.5 ml-0.5 align-middle" /></p></div>
@@ -118,7 +118,7 @@ function SignModal({
               <Annotation>Steg 2 av 3 — Avtalsvillkor</Annotation>
               <h2 className="mt-1 text-xl font-semibold">Läs igenom & godkänn</h2>
 
-              <div className="mt-4 h-56 overflow-auto border border-dashed border-muted-foreground/40 bg-muted/20 p-4 font-mono text-[11px] leading-relaxed text-muted-foreground">
+              <div className="mt-4 h-56 overflow-auto rounded-card border border-foreground/15 bg-muted/20 p-4 font-mono text-[11px] leading-relaxed text-muted-foreground">
                 §1. Parterna … (säljare/köpare, anonymiserade tills signering). <br />
                 §2. Objekt … Restauranglokal Hornstull, inventarier enligt bilaga A. <br />
                 §3. Köpesumma {PRIS.toLocaleString("sv-SE")} kr varav handpenning 10 %. <br />
@@ -163,7 +163,7 @@ function SignModal({
             <div className="py-4 text-center">
               <Annotation>Steg 3 av 3 — BankID</Annotation>
               <h2 className="mt-1 text-xl font-semibold">Öppna BankID på din enhet</h2>
-              <div className="mx-auto mt-6 flex h-32 w-32 items-center justify-center border-2 border-foreground/40">
+              <div className="mx-auto mt-6 flex h-32 w-32 items-center justify-center rounded-card border-2 border-foreground/20">
                 <div className="text-center">
                   <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-foreground/30 border-t-foreground" />
                   <p className="mt-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -256,7 +256,7 @@ function ActionPanel({
           signeringen startar.
         </p>
 
-        <div className="mt-4 grid grid-cols-1 gap-3 border border-dashed border-muted-foreground/40 p-4 md:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-3 rounded-card border border-foreground/15 p-4 md:grid-cols-2">
           <div><Annotation>Belopp</Annotation><p className="mt-1 font-mono text-2xl">{HANDPENNING.toLocaleString("sv-SE")} kr</p></div>
           <div><Annotation>Förfaller</Annotation><p className="mt-1 font-mono text-sm">Om 36 timmar</p></div>
           <div><Annotation>Bankgiro</Annotation><p className="mt-1 font-mono text-sm">5050-1234 (klientmedel)</p></div>
@@ -341,7 +341,7 @@ function DealDetail() {
           <div className="flex flex-col items-end gap-2">
             <WireTag>Pågår · {Math.round(klarAndel * 100)} % klart</WireTag>
             <div className="h-1 w-48 bg-muted">
-              <div className="h-1 bg-foreground transition-all" style={{ width: `${klarAndel * 100}%` }} />
+              <div className="h-1 bg-[var(--color-primary)] transition-all" style={{ width: `${klarAndel * 100}%` }} />
             </div>
           </div>
         }
@@ -376,7 +376,7 @@ function DealDetail() {
 
           <WireBox label="Meddelanden med TreLink">
             <div className="space-y-3">
-              <div className="border-l-2 border-foreground/40 pl-3">
+              <div className="border-l-2 border-foreground/20 pl-3">
                 <Annotation>TreLink · för 2 h sedan</Annotation>
                 <p className="mt-1 text-sm">
                   Handpenning mottagen. Avtalet ligger i Signicat — signera när du är redo.
@@ -419,7 +419,7 @@ function DealDetail() {
                 ["Hyreskontrakt", "Klart"],
                 ["Inventarielista", "Klart"],
               ].map(([n, s]) => (
-                <li key={n} className="flex items-center justify-between border-b border-dashed border-muted-foreground/30 py-1.5">
+                <li key={n} className="flex items-center justify-between border-b border-foreground/10 py-1.5">
                   <span>▤ {n}</span>
                   <WireTag>{s}</WireTag>
                 </li>

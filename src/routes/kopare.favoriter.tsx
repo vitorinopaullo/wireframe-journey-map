@@ -56,7 +56,7 @@ function Favorites() {
             const interest = latestInterestFor(f.annonsId, interests);
             return (
               <WireBox key={f.annonsId} className="flex items-center gap-4">
-                <div className="flex h-20 w-28 shrink-0 items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-[10px] text-muted-foreground">
+                <div className="flex h-20 w-28 shrink-0 items-center justify-center rounded-card border border-foreground/15 bg-muted/20 text-[10px] text-muted-foreground">
                   [ Bild ]
                 </div>
                 <div className="flex-1">

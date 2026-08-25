@@ -90,7 +90,7 @@ function Dashboard() {
               ["Signering", "pending"],
               ["Tillträde", "pending"],
             ].map(([l, s]) => (
-              <div key={l} className="flex flex-col items-center gap-2 border border-dashed border-muted-foreground/30 p-3 text-center">
+              <div key={l} className="flex flex-col items-center gap-2 rounded-card border border-foreground/15 bg-background p-3 text-center">
                 <StatusDot state={s as "done" | "active" | "pending"} />
                 <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{l}</span>
               </div>

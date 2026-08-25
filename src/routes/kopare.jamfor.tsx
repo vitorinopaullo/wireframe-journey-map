@@ -102,7 +102,7 @@ function Compare() {
               <button
                 key={a.id}
                 onClick={() => addOne(a.id)}
-                className="border border-dashed border-muted-foreground/50 px-3 py-1.5 text-xs hover:border-foreground"
+                className="rounded-button border border-foreground/15 px-3 py-1.5 text-xs transition-colors duration-150 hover:border-foreground/30"
               >
                 + {a.titel}
               </button>
@@ -126,7 +126,7 @@ function Compare() {
                 {annonser.map((a) => (
                   <th key={a.id} className="border-b border-foreground/30 p-3 text-left align-top">
                     <div className="space-y-2">
-                      <div className="flex h-24 items-center justify-center border border-dashed border-muted-foreground/40 bg-muted/30 text-[10px] text-muted-foreground">
+                      <div className="flex h-24 items-center justify-center rounded-card border border-foreground/15 bg-muted/20 text-[10px] text-muted-foreground">
                         [ Bild · {a.bilder} st ]
                       </div>
                       <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ function Compare() {
               {rows.map((r, i) => {
                 const best = bestPerRow[i];
                 return (
-                  <tr key={r.label} className="border-b border-dashed border-muted-foreground/30 transition-colors duration-150 hover:bg-muted/20">
+                  <tr key={r.label} className="border-b border-foreground/10 transition-colors duration-150 hover:bg-muted/20">
                     <td className="p-3 align-top font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                       {r.label}
                     </td>

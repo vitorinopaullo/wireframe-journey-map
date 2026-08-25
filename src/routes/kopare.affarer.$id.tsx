@@ -66,7 +66,7 @@ function BuyerCaseDetail() {
       <WireBox label="Ärendehistorik · synlig för dig & TreLink">
         <ul className="mt-1 space-y-3">
           {(interest.timeline ?? []).map((l, i) => (
-            <li key={i} className="border-l-2 border-foreground/40 pl-3">
+            <li key={i} className="border-l-2 border-foreground/20 pl-3">
               <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
               </div>
