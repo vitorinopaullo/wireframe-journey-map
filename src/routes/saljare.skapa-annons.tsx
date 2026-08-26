@@ -707,15 +707,6 @@ function CreateListing() {
   }, [draft, requiredDocs]);
 
 
-  const reset = () => {
-    if (confirm("Rensa utkast och börja om?")) {
-      localStorage.removeItem(STORAGE_KEY);
-      setDraft(empty);
-      setStep(0);
-      setSavedAt(null);
-    }
-  };
-
   const activeCat = cats.find((c) => c.id === draft.cat)!;
   const canSubmit =
     validation[1].length + validation[2].length + validation[3].length === 0;
@@ -728,15 +719,6 @@ function CreateListing() {
         subtitle={editId
           ? "Ändringarna skickas till TreLink för ny granskning innan annonsen publiceras igen."
           : "På denna plattform så hjälper vi dig att förmedla din lokal, ifrån att annonsera (hitta köpare), köpeavtal, presentation till hyresvärden till avslut och kvittenser. Här har du en plattform som agerar som din mäklare/fastighetskonsult och är med dig i hela processen till avslutat affär. Ingen debitering sker förrän affären är klar och då lyfts en förmedlingsprovision ut ur klientmedelskontot för sedan betala ut resten."}
-
-        right={
-          <div className="flex flex-col items-end gap-1">
-            <WireTag>Steg {step + 1} av {STEPS.length}</WireTag>
-            <Annotation>
-              {savedAt ? `Utkast sparat ${savedAt}` : "Utkast sparas automatiskt"}
-            </Annotation>
-          </div>
-        }
       />
 
       {/* Stepper */}
@@ -806,7 +788,11 @@ function CreateListing() {
                   {selected && (
                     <div className="mt-3 border-t border-foreground/10 pt-3">
                       <Annotation>Dokument som krävs</Annotation>
-                      <ul className="mt-2 space-y-1 text-xs">
+                      <ul
+                        className={`mt-2 gap-x-3 text-xs ${
+                          docsByCat[c.id].length > 4 ? "grid grid-cols-2 gap-y-1" : "space-y-1"
+                        }`}
+                      >
                         {docsByCat[c.id].map((d) => (
                           <li key={d.name}>
                             {d.required ? "•" : "○"} {d.name}
@@ -836,10 +822,6 @@ function CreateListing() {
             <div className="flex min-h-[140px] items-center justify-center rounded-card border border-foreground/15 bg-muted/20 text-center text-xs text-muted-foreground">
               [ Bild · Uppdragsavtal ]
             </div>
-          </div>
-          <div className="mt-4 border-t border-foreground/10 pt-4">
-            <Annotation>Vad TreLink gör för dig</Annotation>
-            <p className="mt-1 text-sm">{activeCat.trelink}</p>
           </div>
         </WireBox>
       )}
@@ -1101,16 +1083,12 @@ function CreateListing() {
       {/* Footer nav */}
       <div className="sticky bottom-0 -mx-4 flex items-center justify-between gap-3 border-t border-foreground/20 bg-background/95 px-4 py-4 backdrop-blur">
         <div className="flex items-center gap-2">
-          <WireBtn variant="ghost" onClick={reset}>
-            Rensa utkast
-          </WireBtn>
           <WireBtn
             variant="secondary"
             onClick={() => alert(`Utkast sparat ${savedAt ?? "nu"}. Du kan fortsätta senare från Mina annonser.`)}
           >
             Spara som utkast
           </WireBtn>
-          <Annotation>{savedAt ? `Sparat ${savedAt}` : ""}</Annotation>
         </div>
         <div className="flex gap-2">
           {step > 0 && (
