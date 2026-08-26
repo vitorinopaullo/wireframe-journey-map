@@ -279,10 +279,12 @@ function Step2({
   const [ortTouched, setOrtTouched] = useState(false);
   const [adressTouched, setAdressTouched] = useState(false);
   const [epostTouched, setEpostTouched] = useState(false);
+  const [telefonTouched, setTelefonTouched] = useState(false);
   const [ftRollTouched, setFtRollTouched] = useState(false);
   const [ftFornamnTouched, setFtFornamnTouched] = useState(false);
   const [ftEfternamnTouched, setFtEfternamnTouched] = useState(false);
   const [ftMailTouched, setFtMailTouched] = useState(false);
+  const [ftMobilTouched, setFtMobilTouched] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const ORGNR_REGEX = /^\d{6}-\d{4}$/;
@@ -303,18 +305,22 @@ function Step2({
   const adressError = (adressTouched || submitAttempted) && adressSaknas ? "Adress krävs." : undefined;
   const epostSaknas = epost.trim() === "";
   const epostError = (epostTouched || submitAttempted) && epostSaknas ? "E-post krävs." : undefined;
+  const telefonSaknas = telefon.trim() === "";
+  const telefonError = (telefonTouched || submitAttempted) && telefonSaknas ? "Telefonnummer krävs." : undefined;
 
   const ftRollSaknas = role === "saljare" && !arFirmatecknare && ftRoll.trim() === "";
   const ftFornamnSaknas = role === "saljare" && !arFirmatecknare && ftFornamn.trim() === "";
   const ftEfternamnSaknas = role === "saljare" && !arFirmatecknare && ftEfternamn.trim() === "";
   const ftMailSaknas = role === "saljare" && !arFirmatecknare && ftMail.trim() === "";
+  const ftMobilSaknas = role === "saljare" && !arFirmatecknare && ftMobil.trim() === "";
   const ftRollError = (ftRollTouched || submitAttempted) && ftRollSaknas ? "Roll krävs." : undefined;
   const ftFornamnError = (ftFornamnTouched || submitAttempted) && ftFornamnSaknas ? "Förnamn krävs." : undefined;
   const ftEfternamnError = (ftEfternamnTouched || submitAttempted) && ftEfternamnSaknas ? "Efternamn krävs." : undefined;
   const ftMailError = (ftMailTouched || submitAttempted) && ftMailSaknas ? "Mail krävs." : undefined;
+  const ftMobilError = (ftMobilTouched || submitAttempted) && ftMobilSaknas ? "Mobilnummer krävs." : undefined;
 
   const kanFortsatta =
-    telefon.trim() &&
+    !telefonSaknas &&
     !epostSaknas &&
     !bolagSaknas &&
     !orgnrSaknas &&
@@ -324,7 +330,8 @@ function Step2({
     !ftRollSaknas &&
     !ftFornamnSaknas &&
     !ftEfternamnSaknas &&
-    !ftMailSaknas;
+    !ftMailSaknas &&
+    !ftMobilSaknas;
 
 
   function submit() {
@@ -407,7 +414,14 @@ function Step2({
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
                   <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
-                  <InputField label="Telefon *" value={telefon} onChange={setTelefon} placeholder="076 12 34 56" />
+                  <InputField
+                    label="Telefon *"
+                    value={telefon}
+                    onChange={setTelefon}
+                    onBlur={() => setTelefonTouched(true)}
+                    placeholder="076 12 34 56"
+                    error={telefonError}
+                  />
                   <InputField label="E-post *" value={epost} onChange={setEpost} placeholder="namn@exempel.se" type="email" />
                 </div>
               </WireBox>
@@ -464,7 +478,14 @@ function Step2({
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
                   <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
-                  <InputField label="Mobil nr *" value={telefon} onChange={setTelefon} placeholder="076 12 34 56" />
+                  <InputField
+                    label="Mobil nr *"
+                    value={telefon}
+                    onChange={setTelefon}
+                    onBlur={() => setTelefonTouched(true)}
+                    placeholder="076 12 34 56"
+                    error={telefonError}
+                  />
                   <InputField
                     label="E-post *"
                     value={epost}
@@ -539,7 +560,14 @@ function Step2({
                       type="email"
                       error={ftMailError}
                     />
-                    <InputField label="Mobil" value={ftMobil} onChange={setFtMobil} placeholder="076 12 34 56" />
+                    <InputField
+                      label="Mobil *"
+                      value={ftMobil}
+                      onChange={setFtMobil}
+                      onBlur={() => setFtMobilTouched(true)}
+                      placeholder="076 12 34 56"
+                      error={ftMobilError}
+                    />
                   </div>
                 </WireBox>
               )}
