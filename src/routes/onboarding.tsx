@@ -169,7 +169,6 @@ function Step1({
           tagline="Hitta en verksamhet, lokal eller bolag att ta över."
           bullets={[
             "Spara favoriter och jämför objekt",
-            "Bevakningar på nya annonser",
             "BankID-verifiering vid intresseanmälan",
           ]}
           onPick={() => onPick("kopare")}

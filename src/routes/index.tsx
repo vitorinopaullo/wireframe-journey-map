@@ -210,7 +210,7 @@ function HomePage() {
           </div>
           <div>
             <Annotation>Spara</Annotation>
-            <p className="mt-1 text-sm">Kräver konto + BankID. Favoriter, bevakningar, intresse.</p>
+            <p className="mt-1 text-sm">Kräver konto + BankID. Favoriter, intresse.</p>
           </div>
           <div>
             <Annotation>Affär</Annotation>

@@ -265,14 +265,6 @@ export function AnnonsPreviewOverlay({
                   >
                     <Star className="inline-block h-4 w-4 mr-1" /> Spara som favorit
                   </button>
-                  <button
-                    type="button"
-                    title={disabledTip}
-                    onClick={(e) => e.preventDefault()}
-                    className="cursor-not-allowed rounded-button border border-foreground/15 bg-background px-4 py-2 text-sm opacity-40"
-                  >
-                    Bevaka liknande
-                  </button>
                 </div>
                 <Annotation>
                   <span className="mt-3 block">

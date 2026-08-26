@@ -25,7 +25,6 @@ const sections = [
     links: [
       ["/dashboard?mode=kopare", "Dashboard"],
       ["/kopare/favoriter", "Sparade objekt"],
-      ["/kopare/bevakningar", "Bevakningar"],
       ["/kopare/affarer", "Mina affärer"],
       ["/kopare/profil", "Profil & fakturor"],
     ],

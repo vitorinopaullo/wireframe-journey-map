@@ -20,7 +20,7 @@ const steps = [
   {
     actor: "Köpare",
     title: "Upptäcka & anmäla intresse",
-    body: "Bläddra fritt utan inloggning. Verifiera med BankID för att spara, bevaka och anmäla intresse.",
+    body: "Bläddra fritt utan inloggning. Verifiera med BankID för att spara och anmäla intresse.",
   },
   {
     actor: "TreLink",

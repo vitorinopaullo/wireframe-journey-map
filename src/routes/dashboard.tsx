@@ -64,7 +64,7 @@ function Dashboard() {
         title={mode === "kopare" ? "Välkommen tillbaka" : "Säljarpanel"}
         subtitle={
           mode === "kopare"
-            ? "Pågående affärer högst upp. Sparade objekt, bevakningar och affärsstatus alltid nåbara."
+            ? "Pågående affärer högst upp. Sparade objekt och affärsstatus alltid nåbara."
             : "Mina annonser, intresse på dem och pågående affärer — speglar köparens panel."
         }
         right={<WireTag>BankID-verifierad</WireTag>}
@@ -102,7 +102,6 @@ function Dashboard() {
       {mode === "kopare" ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <DashCard title="Sparade objekt" value="7" link="/kopare/favoriter" hint="Favoriter att jämföra" />
-          <DashCard title="Bevakningar" value="3" link="/kopare/bevakningar" hint="Aktiva sökningar" />
           <DashCard title="Mina affärer" value="1" link="/kopare/affarer" hint="Pågående" />
         </div>
       ) : (

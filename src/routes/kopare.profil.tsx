@@ -182,7 +182,6 @@ function Profile() {
           <WireBox label="Vad vill du få notiser om?">
             <ul className="space-y-3 text-sm">
               {[
-                ["Ny annons matchar bevakning", true],
                 ["Säljare har valt dig", true],
                 ["Hyresvärd har svarat", true],
                 ["Faktura/handpenning", true],

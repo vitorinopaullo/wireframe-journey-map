@@ -328,9 +328,6 @@ function ListingDetail() {
               <WireBtn variant="secondary" onClick={handleSave}>
                 {saved ? <><Star className="h-4 w-4 mr-1 fill-current" />Sparad i favoriter</> : <><Star className="h-4 w-4 mr-1" />Spara som favorit</>}
               </WireBtn>
-              <WireBtn variant="ghost" to="/kopare/bevakningar">
-                Bevaka liknande
-              </WireBtn>
             </div>
           </WireBox>
         </aside>

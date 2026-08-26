@@ -8,7 +8,6 @@ type Mode = "kopare" | "saljare";
 const buyerNav = [
   { to: "/dashboard", label: "Översikt" },
   { to: "/kopare/favoriter", label: "Sparade objekt" },
-  { to: "/kopare/bevakningar", label: "Bevakningar" },
   { to: "/kopare/affarer", label: "Mina affärer" },
   { to: "/kopare/profil", label: "Profil & fakturor" },
 ];
