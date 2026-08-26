@@ -20,11 +20,10 @@ export function WireBox({
       : variant === "ghost"
       ? "border border-muted-foreground/20 bg-muted/30"
       : "border border-foreground/15 bg-background";
-  const labelBg = variant === "dashed" ? "bg-muted/20" : variant === "ghost" ? "bg-muted/30" : "bg-background";
   return (
-    <div className={`relative rounded-card ${border} p-4 ${className}`}>
+    <div className={`rounded-card ${border} p-4 ${className}`}>
       {label && (
-        <div className={`absolute -top-2 left-3 ${labelBg} px-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground`}>
+        <div className="mb-3 text-sm font-semibold text-foreground">
           {label}
         </div>
       )}
