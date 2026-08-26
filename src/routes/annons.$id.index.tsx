@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Star, ChevronLeft, ChevronRight, X, Expand } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation } from "@/components/wire";
+import { ListingCard, type Listing as CardListing } from "@/components/ListingCard";
 import { useIsAuthed } from "@/hooks/use-session";
 import { nyckeltalFor } from "@/lib/nyckeltal";
 import { exempelAnnons, type CatId } from "@/lib/annons-model";
@@ -68,10 +69,12 @@ function fromPublishedItem(item: any): Listing {
   };
 }
 
-const liknande = [
-  { id: "4", titel: "Butik · Vasastan", pris: "1 200 000", kat: "Lokal" },
-  { id: "5", titel: "Frisörsalong · Uppsala", pris: "420 000", kat: "Inkråm" },
-  { id: "2", titel: "Café & bageri", pris: "850 000", kat: "Inkråm" },
+// Samma tre annonser (och samma fältvärden) som visas som kort på startsidan
+// (src/routes/index.tsx) — så att korten alltid stämmer överens oavsett var de visas.
+const liknande: CardListing[] = [
+  { id: "4", kat: "Lokal", cat: "overlatelse", titel: "Butik · Vasastan", pris: "1 200 000", stad: "Stockholm", typ: "Butik", adress: "Odengatan 30", yta: 95, hyra: 33_250 },
+  { id: "5", kat: "Lokal", cat: "overlatelse", titel: "Frisörsalong · Uppsala", pris: "420 000", stad: "Uppsala", typ: "Frisör", adress: "Kungsgatan 9", yta: 45, hyra: 15_000, omsattning: "980 tkr", antalAnstallda: 2, lonsamt: true },
+  { id: "2", kat: "Lokal", cat: "overlatelse", titel: "Café & bageri · Göteborg", pris: "850 000", stad: "Göteborg", typ: "Café", adress: "Kyrkogatan 14", yta: 60, hyra: 22_000, fSkattManad: 1_500, omsattning: "1,9 Mkr", lonsamt: true },
 ];
 
 /* ---------- helpers ---------- */
@@ -237,22 +240,12 @@ function ListingDetail() {
           <h1 className="mt-1 text-2xl md:text-3xl">
             {listing.titel}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{listing.underrubrik}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* ------------- LEFT ------------- */}
         <div className="space-y-6 lg:col-span-2">
-
-          {/* Beskrivning */}
-          <WireBox label="Beskrivning">
-            <div className="space-y-3 text-sm text-muted-foreground">
-              {listing.beskrivning.map((stycke, i) => (
-                <p key={i}>{stycke}</p>
-              ))}
-            </div>
-          </WireBox>
 
           {/* Nyckeltal */}
           <WireBox label="Nyckeltal">
@@ -262,6 +255,15 @@ function ListingDetail() {
                   <Annotation>{n.label}</Annotation>
                   <div className="mt-1 font-mono text-lg tabular-nums">{n.value}</div>
                 </div>
+              ))}
+            </div>
+          </WireBox>
+
+          {/* Beskrivning */}
+          <WireBox label="Beskrivning">
+            <div className="space-y-3 text-sm text-muted-foreground">
+              {listing.beskrivning.map((stycke, i) => (
+                <p key={i}>{stycke}</p>
               ))}
             </div>
           </WireBox>
@@ -308,7 +310,7 @@ function ListingDetail() {
 
         {/* ------------- RIGHT (sticky) ------------- */}
         <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
-          <WireBox label="Pris">
+          <WireBox>
             <div className="font-heading text-3xl tabular-nums">{listing.pris.toLocaleString("sv-SE")} kr</div>
             <p className="mt-1 text-xs text-muted-foreground">Inkråm + inventarier</p>
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
@@ -321,25 +323,7 @@ function ListingDetail() {
                 <p className="mt-1 font-mono">vid tillträde</p>
               </div>
             </div>
-          </WireBox>
-
-          <WireBox label="Nästa steg">
-            <ol className="mb-4 space-y-2 text-xs">
-              {[
-                ["1", "Se dokument (gratis, BankID)"],
-                ["2", "TreLink matchar dig med säljaren"],
-                ["3", "Du får full info & hyresvärd kontrolleras"],
-                ["4", "Handpenning till klientmedel"],
-                ["5", "Signera digitalt (Signicat)"],
-                ["6", "Tillträde — säljaren får betalt"],
-              ].map(([n, t]) => (
-                <li key={n} className="flex gap-2">
-                  <span className="font-mono text-muted-foreground">{n}.</span>
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ol>
-            <div className="flex flex-col gap-2">
+            <div className="mt-4 flex flex-col gap-2">
               <WireBtn onClick={handleInterest}>Se dokument →</WireBtn>
               <WireBtn variant="secondary" onClick={handleSave}>
                 {saved ? <><Star className="h-4 w-4 mr-1 fill-current" />Sparad i favoriter</> : <><Star className="h-4 w-4 mr-1" />Spara som favorit</>}
@@ -357,19 +341,7 @@ function ListingDetail() {
         <h2 className="mb-4 text-lg font-semibold">Liknande annonser</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {liknande.map((l) => (
-            <Link
-              key={l.id}
-              to="/annons/$id"
-              params={{ id: l.id }}
-              className="group block border border-foreground/30 bg-background p-4 hover:border-foreground transition"
-            >
-              <div className="mb-3 flex h-24 items-center justify-center rounded-card border border-foreground/15 bg-muted/20 text-[10px] text-muted-foreground">
-                [ Bild ]
-              </div>
-              <WireTag>{l.kat}</WireTag>
-              <h3 className="mt-2 font-medium group-hover:underline">{l.titel}</h3>
-              <p className="mt-2 font-mono text-sm tabular-nums">{l.pris} kr</p>
-            </Link>
+            <ListingCard key={l.id} l={l} />
           ))}
         </div>
       </div>
