@@ -67,6 +67,10 @@ export function ContractExpiryBanner({ daysLive, objectLabel = "Inkråm · Café
   );
 }
 
+// Om avtalstid återinförs på ärendevyn (src/routes/saljare.annons.$id.tsx): räkna daysLive från
+// signeringsdatumet (avtalSignedAt), aldrig från inskickningsdatumet — avtalets löptid börjar när
+// uppdragsavtalet signeras, inte när underlaget skickades in. ContractExpiryBanner i
+// saljare.mina-annonser.tsx gör redan detta korrekt (daysSince(avtalSignedAt)); följ samma mönster.
 export function ContractExpiryCountdown({ daysLive, signedAt }: { daysLive: number; signedAt?: string }) {
   const total = 90;
   const used = Math.min(daysLive, total);

@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
 import { SignicatFlow } from "@/components/SignicatFlow";
-import { ContractExpiryCountdown } from "@/components/ContractExpiryBanner";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
 import {
@@ -318,14 +317,7 @@ function SellerAnnonsDetail() {
         eyebrow={`Säljarläge · ärende ${id}`}
         title={item.titel}
         subtitle={stateLabel[st]}
-        right={
-          <div className="flex flex-col items-end gap-2">
-            <WireTag>{stateLabel[st]}</WireTag>
-            <Link to="/saljare/mina-annonser" className="text-xs text-muted-foreground underline hover:text-foreground">
-              ← Mina annonser
-            </Link>
-          </div>
-        }
+        right={<WireTag>{stateLabel[st]}</WireTag>}
       />
 
       {/* Dev-only step switcher */}
@@ -710,7 +702,7 @@ function SellerAnnonsDetail() {
                 return (
                   <li key={i} className="border-l-2 border-foreground/20 pl-3">
                     <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
+                      {new Date(l.ts).toLocaleDateString("sv-SE")} · {l.vem}
                     </div>
                     <div className="text-sm">{l.text}</div>
                     {mail && <VisaMailLank onClick={() => setMailPreview(mail)} />}
@@ -719,7 +711,6 @@ function SellerAnnonsDetail() {
               })}
             </ul>
           </WireBox>
-          <ContractExpiryCountdown daysLive={80} signedAt={wf?.avtalSignedAt} />
         </div>
       </div>
 
