@@ -93,7 +93,7 @@ function Onboarding() {
             <WireTag>BankID ✓</WireTag>
             {bankid && (
               <span className="font-mono text-[10px] text-muted-foreground">
-                {bankid.fornamn} {bankid.efternamn} · {bankid.personnr}
+                {bankid.fornamn} {bankid.efternamn}
               </span>
             )}
           </div>
