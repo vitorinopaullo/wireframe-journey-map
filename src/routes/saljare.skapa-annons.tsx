@@ -523,6 +523,7 @@ function CreateListing() {
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [uppdragsavtalOpen, setUppdragsavtalOpen] = useState(false);
   const [hyresvardEmailTouched, setHyresvardEmailTouched] = useState(false);
+  const [adressTouched, setAdressTouched] = useState(false);
   const [bolagOrt, setBolagOrt] = useState("");
 
   useEffect(() => {
@@ -681,6 +682,12 @@ function CreateListing() {
     if (!draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
     if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
       errs[1].push("Org.nr i format 556xxx-xxxx.");
+    const TAG_FALT_KEYS = ["lage", "interior", "planlosning", "ekonomi", "taggar"] as const;
+    const saknarTagg = grupperAttVisa.some((grupp) => {
+      const falt = draft.typFalt[grupp as keyof typeof draft.typFalt] as Record<string, string>;
+      return TAG_FALT_KEYS.some((key) => !falt[key]);
+    });
+    if (saknarTagg) errs[1].push("Välj minst 1 tagg i varje fältgrupp.");
     if (!draft.hyresvardEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.hyresvardEmail))
       errs[2].push("Ange hyresvärdens e-postadress.");
     if (!draft.hyresvardTel) errs[2].push("Ange hyresvärdens telefonnummer.");
@@ -689,7 +696,7 @@ function CreateListing() {
     );
     if (missingReq.length) errs[2].push(`${missingReq.length} obligatoriska dokument saknas.`);
     return errs;
-  }, [draft, requiredDocs]);
+  }, [draft, requiredDocs, grupperAttVisa]);
 
   const canContinue = (validation[step] ?? []).length === 0;
 
@@ -850,8 +857,10 @@ function CreateListing() {
                 label="Försäljningsadress *"
                 value={draft.adress}
                 onChange={(v) => set("adress", v)}
+                onBlur={() => setAdressTouched(true)}
                 placeholder="Hornsgatan 45, Stockholm"
                 hint="Adressen till objektet som säljs — kan skilja sig från bolagets registrerade adress."
+                error={adressTouched && !draft.adress ? "Ange försäljningsadress." : undefined}
               />
               <VerksamhetstypSelect
                 value={draft.verksamhet}
@@ -1069,7 +1078,7 @@ function CreateListing() {
       )}
 
       {/* Validation hints under content */}
-      {step < 3 && step !== 2 && validation[step].length > 0 && (
+      {step === 0 && validation[step].length > 0 && (
         <WireBox className="mb-6">
           <Annotation>Komplettera innan nästa steg</Annotation>
           <ul className="mt-2 list-inside list-disc text-sm">
@@ -1099,7 +1108,7 @@ function CreateListing() {
           {step < 3 ? (
             <WireBtn
               onClick={() => setStep((s) => s + 1)}
-              disabled={step === 2 && !canContinue}
+              disabled={(step === 1 || step === 2) && !canContinue}
             >
               Nästa: {STEPS[step + 1]} →
             </WireBtn>
@@ -2287,14 +2296,18 @@ function WireFieldEditable({
   label,
   value,
   onChange,
+  onBlur,
   placeholder,
   hint,
+  error,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   hint?: string;
+  error?: string;
 }) {
   return (
     <label className="block">
@@ -2305,10 +2318,19 @@ function WireFieldEditable({
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
         placeholder={placeholder}
-        className="block h-11 w-full rounded-button border border-foreground/15 bg-muted/20 px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+        className={`block h-11 w-full rounded-button border bg-muted/20 px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
+          error
+            ? "border-destructive focus:border-destructive focus:ring-destructive/40"
+            : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
+        }`}
       />
-      {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
+      {error ? (
+        <span className="mt-1 block font-mono text-[10px] text-destructive">{error}</span>
+      ) : (
+        hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>
+      )}
     </label>
   );
 }
