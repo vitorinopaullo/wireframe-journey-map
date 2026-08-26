@@ -115,7 +115,7 @@ function Onboarding() {
           return (
             <div
               key={s.n}
-              className="flex items-center gap-2 border border-dashed border-muted-foreground/40 p-3"
+              className="flex items-center gap-2 rounded-card border border-foreground/15 bg-background p-3"
             >
               <StatusDot state={state as "done" | "active" | "pending"} />
               <div>
@@ -187,19 +187,11 @@ function Step1({
         />
       </div>
 
-      <WireBox variant="dashed" className="mt-6">
-        <Annotation>Bra att veta</Annotation>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Ditt val nu bestämmer bara vilket <em>startläge</em> du hamnar i. Du
-          kan alltid växla till det andra läget uppe i headern — utan att
-          registrera dig igen.
-        </p>
-      </WireBox>
-
       <NavBar
         primary={
           <WireBtn
-            variant={role ? "primary" : "ghost"}
+            variant="primary"
+            disabled={!role}
             onClick={role ? onNext : undefined}
           >
             Fortsätt →
@@ -226,7 +218,7 @@ function RoleCard({
   return (
     <button
       onClick={onPick}
-      className={`rounded-card text-left border p-6 shadow-sm transition-shadow duration-150 ease-standard active:scale-[0.99] ${
+      className={`w-full rounded-card text-left border p-6 shadow-sm transition-shadow duration-150 ease-standard active:scale-[0.99] ${
         active
           ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
           : "border-foreground/15 hover:shadow-md"
