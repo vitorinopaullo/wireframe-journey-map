@@ -101,8 +101,8 @@ function Onboarding() {
       />
 
       {role && step === 2 && (
-        <div className="mb-6 flex items-center gap-2 border border-dashed border-muted-foreground/40 bg-muted/20 px-3 py-2">
-          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        <div className="mb-6 flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
             Du registrerar dig som
           </span>
           <WireTag active>{role === "kopare" ? "Köpare" : "Säljare/Överlåtare"}</WireTag>
@@ -456,7 +456,6 @@ function Step2({
                       onChange={setPresentation}
                       placeholder="Kort beskrivning av bolag, ägare och bakgrund…"
                       multiline
-                      hint="Frivilligt — visas på dina annonser för att skapa förtroende."
                     />
                   </div>
                 </div>
@@ -478,7 +477,7 @@ function Step2({
                   />
                 </div>
 
-                <div className="mt-6 border-t border-dashed border-muted-foreground/40 pt-6">
+                <div className="mt-6 border-t border-foreground/10 pt-6">
                   <Annotation>Firmatecknare</Annotation>
                   <div className="mt-3 flex flex-wrap gap-4">
                     <label className="flex items-center gap-2 text-sm">
@@ -549,37 +548,40 @@ function Step2({
           )}
         </div>
 
-        <aside className="space-y-4">
-          <WireBox label="Skickas till TreLink admin" variant="dashed">
+        <aside className="space-y-6 rounded-card border border-foreground/15 bg-background p-4">
+          <div>
+            <div className="mb-2 text-sm font-semibold text-foreground">Skickas till TreLink admin</div>
             <p className="text-sm text-muted-foreground">
               När du sparar skickas ditt BankID-verifierade namn, personnummer och dessa uppgifter till TreLinks admin
               för granskning av nytt konto.
             </p>
-          </WireBox>
+          </div>
 
-          <WireBox label="Vad ser andra?" variant="ghost">
+          <div className="border-t border-foreground/10 pt-6">
+            <div className="mb-2 text-sm font-semibold text-foreground">Vad ser andra?</div>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>· Motpart ser bara det som behövs — aldrig personnummer eller kontaktuppgifter innan match.</li>
               <li>· TreLink ser allt för att kunna granska.</li>
               <li>· Bolagspresentation visas i intresseanmälan.</li>
             </ul>
-          </WireBox>
+          </div>
 
           {role === "kopare" && (
-            <WireBox label="Varför frivilligt?" variant="dashed">
+            <div className="border-t border-foreground/10 pt-6">
+              <div className="mb-2 text-sm font-semibold text-foreground">Varför frivilligt?</div>
               <p className="text-sm text-muted-foreground">
                 Många köpare startar bolag <em>i samband</em> med köpet. Du kan skapa konto och börja titta direkt —
                 men innan handpenning och signering måste bolag och org.nr finnas på plats.
               </p>
-            </WireBox>
+            </div>
           )}
         </aside>
       </div>
 
       <NavBar
-        secondary={<WireBtn variant="ghost" onClick={onBack}>← Tillbaka</WireBtn>}
+        secondary={<WireBtn variant="secondary" onClick={onBack}>← Tillbaka</WireBtn>}
         primary={
-          <WireBtn variant={kanFortsatta ? "primary" : "ghost"} onClick={submit}>
+          <WireBtn variant="primary" disabled={!kanFortsatta} onClick={submit}>
             Spara & skicka till TreLink →
           </WireBtn>
         }
@@ -669,7 +671,7 @@ function NavBar({
   primary: React.ReactNode;
 }) {
   return (
-    <div className="mt-8 flex items-center justify-between border-t border-dashed border-muted-foreground/40 pt-6">
+    <div className="mt-8 flex items-center justify-between border-t border-foreground/10 pt-6">
       <div>{secondary}</div>
       <div>{primary}</div>
     </div>
