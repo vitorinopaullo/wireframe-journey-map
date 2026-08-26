@@ -627,7 +627,7 @@ function AdminAnnonsDetail() {
   const ytaNum = Number(draft.yta);
   const hyraNum = Number(draft.hyra);
   const fastighetsskattNum = Number(draft.fastighetsskatt) || 0;
-  const kvmPris = ytaNum > 0 && hyraNum > 0 ? Math.round((hyraNum * 12 + fastighetsskattNum) / ytaNum) : null;
+  const kvmPris = ytaNum > 0 && hyraNum > 0 ? Math.round((hyraNum * 12 + fastighetsskattNum * 12) / ytaNum) : null;
 
   const stats = useMemo(() => {
     const obligatoriska = specs.filter((s) => s.required);
@@ -1186,13 +1186,13 @@ function AdminAnnonsDetail() {
             </label>
             <label className="block">
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Fastighetsskatt (kr/år)
+                Fastighetsskatt (kr/mån)
               </span>
               <input
                 type="text"
                 value={draft.fastighetsskatt || ""}
                 onChange={(e) => setDraftField("fastighetsskatt", e.target.value)}
-                placeholder="12 000"
+                placeholder="1 000"
                 className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
@@ -1617,7 +1617,7 @@ function AdminAnnonsDetail() {
               <>
                 <Field k="Yta" v={draft.yta ? `${draft.yta} kvm` : undefined} />
                 <Field k="Hyra" v={draft.hyra ? `${draft.hyra} kr/mån` : undefined} />
-                <Field k="Fastighetsskatt" v={draft.fastighetsskatt ? `${draft.fastighetsskatt} kr/år` : undefined} />
+                <Field k="Fastighetsskatt" v={draft.fastighetsskatt ? `${draft.fastighetsskatt} kr/mån` : undefined} />
                 <Field k="Fastighetsbeteckning" v={draft.fastighetsbeteckning} />
                 <Field k="F-skatt" v={draft.fSkattManad ? `${draft.fSkattManad} kr/mån` : undefined} />
                 <Field k="Kvadratmeterpris" v={kvmPris != null ? `${kvmPris.toLocaleString("sv-SE")} kr/kvm/år` : undefined} />
