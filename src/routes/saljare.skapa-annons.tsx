@@ -761,7 +761,10 @@ function CreateListing() {
       {/* Progress bar */}
       <div className="mb-6 flex items-center gap-3">
         <div className="h-1 flex-1 bg-muted">
-          <div className="h-full bg-foreground transition-all" style={{ width: `${completion}%` }} />
+          <div
+            className={`h-full transition-all ${completion === 100 ? "bg-[var(--color-primary)]" : "bg-foreground"}`}
+            style={{ width: `${completion}%` }}
+          />
         </div>
         <Annotation>{completion}% komplett</Annotation>
       </div>
@@ -977,24 +980,21 @@ function CreateListing() {
                   key={d.name}
                   className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between"
                 >
-                  <div className="flex items-start gap-3">
-                    <DocStatusDot state={s} />
-                    <div>
-                      <div className="text-sm font-medium">
-                        {d.name}
-                        {d.required ? <span> *</span> : <span className="text-muted-foreground"> (frivilligt)</span>}
-                      </div>
-                      <Annotation>{d.krav}</Annotation>
+                  <div>
+                    <div className="text-sm font-medium">
+                      {d.name}
+                      {d.required ? <span> *</span> : <span className="text-muted-foreground"> (frivilligt)</span>}
                     </div>
+                    <Annotation>{d.krav}</Annotation>
                   </div>
                   <div className="flex items-center gap-2">
-                    <DocStatusTag state={s} />
+                    <DocStatusIndicator state={s} />
                     {s === "saknas" || s === "komplettera" ? (
                       <WireBtn variant="secondary" onClick={() => setDoc(d.name, "uppladdad")}>
                         Ladda upp
                       </WireBtn>
                     ) : (
-                      <WireBtn variant="ghost" onClick={() => setDoc(d.name, "saknas")}>
+                      <WireBtn variant="secondary" onClick={() => setDoc(d.name, "saknas")}>
                         Byt fil
                       </WireBtn>
                     )}
@@ -1195,8 +1195,7 @@ function BildGalleri({
           <Annotation>{doc.krav}</Annotation>
         </div>
         <div className="flex items-center gap-2">
-          <DocStatusDot state={status} />
-          <DocStatusTag state={status} />
+          <DocStatusIndicator state={status} />
         </div>
       </div>
       <p className="mb-3 text-sm text-muted-foreground">
@@ -1216,7 +1215,7 @@ function BildGalleri({
               ) : (
                 <>
                   <span>[ Bild {i + 1} ]</span>
-                  <WireBtn variant="ghost" className="px-2 py-1 text-[10px]" onClick={onUpload}>
+                  <WireBtn variant="secondary" className="px-2 py-1 text-[10px]" onClick={onUpload}>
                     Ladda upp
                   </WireBtn>
                 </>
@@ -2385,6 +2384,20 @@ const docLabels: Record<DocState, string> = {
 
 function DocStatusTag({ state }: { state: DocState }) {
   return <WireTag>{docLabels[state]}</WireTag>;
+}
+
+// Kompaktare statusindikator för dokumentrader/bildgalleri: ingen tom cirkel,
+// ingen "Saknas"-etikett (tomt läge är underförstått), grön bock för uppladdat.
+function DocStatusIndicator({ state }: { state: DocState }) {
+  if (state === "saknas") return null;
+  if (state === "uppladdad") {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-success)]">
+        <Check className="h-3.5 w-3.5" /> Uppladdad
+      </span>
+    );
+  }
+  return <DocStatusTag state={state} />;
 }
 
 function DocStatusDot({ state }: { state: DocState }) {
