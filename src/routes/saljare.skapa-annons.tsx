@@ -1010,18 +1010,43 @@ function CreateListing() {
       {/* STEP 3 — Granska & skicka */}
       {step === 3 && (
         <>
+          <KontoSammanfattning />
+
           <WireBox label="Sammanfattning" className="mb-6">
             <dl className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <Row k="Paket" v={activeCat.name} />
               <Row k="Avgift vid affär" v={activeCat.avgift} />
               <Row k="Försäljningsadress" v={draft.adress || "—"} />
               <Row k="Verksamhet" v={draft.verksamhet || "—"} />
+              <Row k="Hyresvärdens namn" v={draft.hyresvardNamn || "—"} />
               <Row k="Hyresvärd e-post" v={draft.hyresvardEmail || "—"} />
               <Row k="Hyresvärd telefon" v={draft.hyresvardTel || "—"} />
               <Row k="BRF-kontaktperson" v={draft.brfKontakt || "—"} />
               <Row k="Nyckeltal" v="Hämtas från uppladdade dokument" />
             </dl>
           </WireBox>
+
+          {grupperAttVisa.length > 0 && (
+            <WireBox label="Verksamhetstypfält" className="mb-6">
+              <div className="space-y-6">
+                {grupperAttVisa.map((grupp) => {
+                  const falt = draft.typFalt[grupp as keyof typeof draft.typFalt] as Record<string, string>;
+                  return (
+                    <div key={grupp}>
+                      <p className="text-sm font-semibold text-foreground">
+                        {FALTGRUPP_LABEL[grupp] ?? grupp}
+                      </p>
+                      <dl className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2">
+                        {Object.entries(falt).map(([key, value]) => (
+                          <Row key={key} k={FALT_FIELD_LABEL[key] ?? key} v={value || "—"} />
+                        ))}
+                      </dl>
+                    </div>
+                  );
+                })}
+              </div>
+            </WireBox>
+          )}
 
           <WireBox label="Dokumentstatus" className="mb-6">
             <ul className="space-y-2">
@@ -1412,6 +1437,28 @@ const VERKSAMHETSTYP_HUVUDKATEGORIER: { label: string; key: string }[] = [
   { label: "Mat och dryck", key: "Servering" },
   { label: "Skönhetssalong", key: "Frisor" },
 ];
+
+// Läsbara etiketter för typFalt-fältnycklarna, använda i Granska & skicka-sammanfattningen.
+const FALTGRUPP_LABEL: Record<string, string> = Object.fromEntries(
+  VERKSAMHETSTYP_HUVUDKATEGORIER.map((h) => [h.key, h.label]),
+);
+const FALT_FIELD_LABEL: Record<string, string> = {
+  lage: "Läge",
+  interior: "Interiör/stil",
+  planlosning: "Planlösning",
+  ekonomi: "Ekonomi",
+  taggar: "Teknisk info",
+  beskrivning: "Övrig info",
+  koksutrustning: "Köksutrustning",
+  alkoholtillstand: "Alkoholtillstånd",
+  utvecklingsmojlighet: "Utvecklingsmöjlighet",
+  anledningTillForsaljning: "Anledning till försäljning",
+  typAvKok: "Typ av kök",
+  skickILokal: "Skick i lokalen",
+  myndighetskrav: "Myndighetskrav",
+  ovrigInfo: "Övrig info",
+  antalStolar: "Antal stolar",
+};
 
 function VerksamhetstypSelect({
   value,
