@@ -682,10 +682,31 @@ function CreateListing() {
     if (!draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
     if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
       errs[1].push("Org.nr i format 556xxx-xxxx.");
-    const TAG_FALT_KEYS = ["lage", "interior", "planlosning", "ekonomi", "taggar"] as const;
+    // Vilka tagg-fält som faktiskt renderas per fältgrupp — måste spegla vad respektive
+    // *Faltgrupp-komponent binder onChange till. Servering och Frisor har inget fält
+    // bundet till "taggar" (till skillnad från Kontor/Butik/Lager), så de listas separat
+    // — annars blir "taggar" ett fält utan UI som aldrig kan fyllas i, vilket permanent
+    // blockerar inskickning för de kategorierna.
+    const TAG_FALT_KEYS_BY_GRUPP: Record<string, readonly string[]> = {
+      Kontor: ["lage", "interior", "planlosning", "ekonomi", "taggar"],
+      Butik: ["lage", "interior", "planlosning", "ekonomi", "taggar"],
+      Lager: ["lage", "interior", "planlosning", "ekonomi", "taggar"],
+      Servering: [
+        "lage",
+        "interior",
+        "planlosning",
+        "ekonomi",
+        "typAvKok",
+        "utvecklingsmojlighet",
+        "anledningTillForsaljning",
+        "myndighetskrav",
+      ],
+      Frisor: ["lage", "interior", "planlosning", "ekonomi"],
+    };
     const saknarTagg = grupperAttVisa.some((grupp) => {
       const falt = draft.typFalt[grupp as keyof typeof draft.typFalt] as Record<string, string>;
-      return TAG_FALT_KEYS.some((key) => !falt[key]);
+      const keys = TAG_FALT_KEYS_BY_GRUPP[grupp] ?? [];
+      return keys.some((key) => !falt[key]);
     });
     if (saknarTagg) errs[1].push("Välj minst 1 tagg i varje fältgrupp.");
     if (!draft.hyresvardEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.hyresvardEmail))
