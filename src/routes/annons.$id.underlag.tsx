@@ -43,7 +43,7 @@ function UnderlagsGranskning() {
   }
 
   const besluta = (status: "vill-ga-vidare" | "avböjt") => {
-    const beslutText = status === "vill-ga-vidare" ? "Vill gå vidare och lägga bud" : "Avböjde köpet";
+    const beslutText = status === "vill-ga-vidare" ? "Vill köpa objektet" : "Avvisade objektet";
     patchBuyerInterest(interest.id, (item) =>
       logBuyerEntry({ ...item, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText),
     );
@@ -54,7 +54,7 @@ function UnderlagsGranskning() {
       const annonsTitel = getAnnons(interest.annonsId)?.titel || `Annons #${interest.annonsId}`;
       addNotis(
         "kopare",
-        `${interest.kKod} vill gå vidare på "${annonsTitel}" — redo för matchning`,
+        `${interest.kKod} vill köpa "${annonsTitel}" — redo för matchning`,
         "/admin/kopare",
       );
     }
@@ -130,13 +130,16 @@ function UnderlagsGranskning() {
 
       {pdfOppnad && interest.status === "väntar-pdf" && (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/30 bg-background/95 backdrop-blur">
-          <div className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-6 py-3">
-            <p className="text-sm font-medium">Vill du gå vidare och lägga bud på objektet?</p>
-            <div className="flex flex-wrap gap-3">
-              <WireBtn onClick={() => besluta("vill-ga-vidare")}>Ja, jag vill lägga bud</WireBtn>
-              <WireBtn variant="secondary" onClick={() => besluta("avböjt")}>
-                Nej, avböj
+          <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-between gap-4 px-6 py-3">
+            <p className="text-sm font-medium">Vad vill du göra härnäst?</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <WireBtn variant="tertiary" to="/">
+                Sök vidare
               </WireBtn>
+              <WireBtn variant="secondary" onClick={() => besluta("avböjt")}>
+                Avvisa
+              </WireBtn>
+              <WireBtn onClick={() => besluta("vill-ga-vidare")}>Köp →</WireBtn>
             </div>
           </div>
         </div>

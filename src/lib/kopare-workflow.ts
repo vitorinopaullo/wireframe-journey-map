@@ -19,14 +19,14 @@ export type BuyerInterest = {
 
 export const statusLabel: Record<BuyerInterestStatus, string> = {
   "väntar-pdf": "Väntar på ditt beslut",
-  "vill-ga-vidare": "Du vill gå vidare",
-  "avböjt": "Avböjt",
+  "vill-ga-vidare": "Du vill köpa",
+  "avböjt": "Avvisat",
 };
 
 export const statusHint: Record<BuyerInterestStatus, string> = {
   "väntar-pdf": "Öppna underlaget och ta ställning.",
   "vill-ga-vidare": "TreLink kontaktar dig när nästa steg är klart.",
-  "avböjt": "Du valde att inte gå vidare med detta objekt.",
+  "avböjt": "Du avvisade det här objektet.",
 };
 
 export const STORAGE_KEY = "kopare-intressen";

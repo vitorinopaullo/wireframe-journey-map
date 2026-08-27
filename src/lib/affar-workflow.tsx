@@ -114,7 +114,7 @@ export function buildAvslutade(interests: BuyerInterest[]) {
         id: i.id,
         titel: info.titel,
         pris: info.pris,
-        resultat: "Avböjt av dig",
+        resultat: "Avvisat av dig",
       };
     });
 }

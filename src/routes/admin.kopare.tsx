@@ -21,8 +21,8 @@ type StatusFilter = "alla" | BuyerInterestStatus;
 const FILTER_LABEL: Record<StatusFilter, string> = {
   alla: "Alla",
   "väntar-pdf": "Väntar på köparen",
-  "vill-ga-vidare": "Vill gå vidare",
-  avböjt: "Avböjt",
+  "vill-ga-vidare": "Vill köpa",
+  avböjt: "Avvisat",
 };
 
 function formatTid(ts: string) {
