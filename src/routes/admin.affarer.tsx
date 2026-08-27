@@ -5,6 +5,7 @@ import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
 import { markKategoriRead } from "@/lib/admin-notiser";
 import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY, type BuyerInterest } from "@/lib/kopare-workflow";
 import { buildAffarer, buildAvslutade, Progress, type Vantar, type Affar } from "@/lib/affar-workflow";
+import { readAnnonser, STORAGE_KEY as ANNONS_STORAGE_KEY } from "@/lib/annons-workflow";
 
 export const Route = createFileRoute("/admin/affarer")({
   component: AdminAffarer,
@@ -50,8 +51,37 @@ function AffarsRad({ a }: { a: Affar }) {
   );
 }
 
+function formatTid(ts: string) {
+  if (!ts) return "—";
+  return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
+}
+
+function PubliceradRad({ item }: { item: any }) {
+  const navigate = useNavigate();
+  const titel = item.workflow?.utkast?.rubrik || item.titel || "—";
+  return (
+    <div
+      onClick={() => navigate({ to: "/admin/annonser/$id", params: { id: item.id } })}
+      className="cursor-pointer"
+    >
+      <WireBox className="flex flex-col gap-1 transition-colors hover:border-foreground">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-mono text-[10px] text-muted-foreground">#{item.id}</span>
+        </div>
+        <h3 className="font-medium">{titel}</h3>
+        <Annotation>
+          {item.draft?.adress || "Ingen adress angiven"} · {item.pris ? `${item.pris} kr` : "Pris ej satt"} · publicerad{" "}
+          {formatTid(item.workflow?.publiceradAt)}
+        </Annotation>
+      </WireBox>
+    </div>
+  );
+}
+
 function AdminAffarer() {
   const [interests, setInterests] = useState<BuyerInterest[]>(() => readBuyerInterests());
+  const [annonser, setAnnonser] = useState<any[]>(() => readAnnonser());
+  const [tab, setTab] = useState<"affarer" | "publicerade">("affarer");
 
   useEffect(() => {
     markKategoriRead("affarer");
@@ -60,6 +90,7 @@ function AdminAffarer() {
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
       if (e.key === KOPARE_STORAGE_KEY) setInterests(readBuyerInterests());
+      if (e.key === ANNONS_STORAGE_KEY) setAnnonser(readAnnonser());
     }
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
@@ -67,42 +98,78 @@ function AdminAffarer() {
 
   const affarer = useMemo(() => buildAffarer(interests), [interests]);
   const avslutade = useMemo(() => buildAvslutade(interests), [interests]);
+  const publicerade = useMemo(() => annonser.filter((a) => a.workflow?.state === "publicerad"), [annonser]);
 
   return (
     <AdminLayout>
       <PageHeader eyebrow="TreLink Admin" title="Affärer/Uppdrag" subtitle="Alla pågående och avslutade affärer, över samtliga säljare och köpare." />
 
-      {affarer.length === 0 && avslutade.length === 0 ? (
-        <WireBox variant="dashed">
-          <Annotation>Inga aktiva affärer än.</Annotation>
-        </WireBox>
-      ) : (
-        <div className="space-y-6">
-          {affarer.length > 0 && (
-            <div className="space-y-3">
-              {affarer.map((a) => (
-                <AffarsRad key={a.id} a={a} />
-              ))}
-            </div>
-          )}
+      <div className="mb-4 flex flex-wrap gap-2">
+        <button
+          onClick={() => setTab("affarer")}
+          className={`rounded-pill border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 ${
+            tab === "affarer"
+              ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
+              : "border-foreground/20 text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+          }`}
+        >
+          Affärer ({affarer.length + avslutade.length})
+        </button>
+        <button
+          onClick={() => setTab("publicerade")}
+          className={`rounded-pill border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 ${
+            tab === "publicerade"
+              ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
+              : "border-foreground/20 text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+          }`}
+        >
+          Publicerade annonser ({publicerade.length})
+        </button>
+      </div>
 
-          {avslutade.length > 0 && (
-            <div>
-              <Annotation>Avslutade</Annotation>
-              <div className="mt-3 space-y-3">
-                {avslutade.map((a) => (
-                  <WireBox key={a.id} className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium">{a.titel}</h3>
-                      <Annotation>
-                        #{a.id} · {a.pris} · {a.resultat}
-                      </Annotation>
-                    </div>
-                  </WireBox>
+      {tab === "affarer" ? (
+        affarer.length === 0 && avslutade.length === 0 ? (
+          <WireBox variant="dashed">
+            <Annotation>Inga aktiva affärer än.</Annotation>
+          </WireBox>
+        ) : (
+          <div className="space-y-6">
+            {affarer.length > 0 && (
+              <div className="space-y-3">
+                {affarer.map((a) => (
+                  <AffarsRad key={a.id} a={a} />
                 ))}
               </div>
-            </div>
-          )}
+            )}
+
+            {avslutade.length > 0 && (
+              <div>
+                <Annotation>Avslutade</Annotation>
+                <div className="mt-3 space-y-3">
+                  {avslutade.map((a) => (
+                    <WireBox key={a.id} className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium">{a.titel}</h3>
+                        <Annotation>
+                          #{a.id} · {a.pris} · {a.resultat}
+                        </Annotation>
+                      </div>
+                    </WireBox>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      ) : publicerade.length === 0 ? (
+        <WireBox variant="dashed">
+          <Annotation>Inga publicerade annonser än.</Annotation>
+        </WireBox>
+      ) : (
+        <div className="space-y-3">
+          {publicerade.map((item) => (
+            <PubliceradRad key={item.id} item={item} />
+          ))}
         </div>
       )}
     </AdminLayout>

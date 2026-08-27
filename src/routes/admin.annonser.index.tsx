@@ -27,6 +27,7 @@ type Row = {
 
 function toRows(list: any[]): Row[] {
   return list
+    .filter((item) => item.workflow?.state !== "publicerad")
     .map((item) => {
       const catId: CatId | undefined = item.draft?.cat;
       const specs = catId ? docsByCat[catId] ?? [] : [];
@@ -109,13 +110,12 @@ function NextActorTag({ status }: { status: WorkflowState | null }) {
   );
 }
 
-type TabId = "granskning" | "signering" | "text" | "publicerad" | "avvisad";
+type TabId = "granskning" | "signering" | "text" | "avvisad";
 
 const TABS: { id: TabId; label: string; states: (WorkflowState | null)[] }[] = [
   { id: "granskning", label: "Att granska", states: ["granskas", "komplettering", null] },
   { id: "signering", label: "Väntar på signering", states: ["avtal-vantar-signering"] },
   { id: "text", label: "Redo att skriva text", states: ["hyresvard-notifiering"] },
-  { id: "publicerad", label: "Publicerade", states: ["publicerad"] },
   { id: "avvisad", label: "Avvisade", states: ["avvisad"] },
 ];
 
