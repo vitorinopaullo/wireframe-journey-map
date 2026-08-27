@@ -627,7 +627,7 @@ function AdminAnnonsDetail() {
   const ytaNum = Number(draft.yta);
   const hyraNum = Number(draft.hyra);
   const fastighetsskattNum = Number(draft.fastighetsskatt) || 0;
-  const kvmPris = ytaNum > 0 && hyraNum > 0 ? Math.round((hyraNum * 12 + fastighetsskattNum * 12) / ytaNum) : null;
+  const kvmPris = ytaNum > 0 && hyraNum > 0 ? Math.round(((hyraNum + fastighetsskattNum) * 12) / ytaNum) : null;
 
   const stats = useMemo(() => {
     const obligatoriska = specs.filter((s) => s.required);
@@ -877,6 +877,30 @@ function AdminAnnonsDetail() {
         ),
       };
     });
+    refresh();
+  };
+
+  const backaTillGranskning = () => {
+    patchAnnons(id, (it) => ({
+      ...it,
+      workflow: logEntry(
+        { ...it.workflow, state: "granskas" },
+        "TreLink",
+        "TreLink flyttade ärendet tillbaka till granskning",
+      ),
+    }));
+    refresh();
+  };
+
+  const backaTillUppdragsavtal = () => {
+    patchAnnons(id, (it) => ({
+      ...it,
+      workflow: logEntry(
+        { ...it.workflow, state: "avtal-vantar-signering" },
+        "TreLink",
+        "TreLink flyttade ärendet tillbaka till uppdragsavtal",
+      ),
+    }));
     refresh();
   };
 
@@ -1208,18 +1232,6 @@ function AdminAnnonsDetail() {
                 className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
-            <label className="block">
-              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                F-skatt (kr/mån)
-              </span>
-              <input
-                type="text"
-                value={draft.fSkattManad || ""}
-                onChange={(e) => setDraftField("fSkattManad", e.target.value)}
-                placeholder="1 200"
-                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
-              />
-            </label>
             </>
             )}
             {!prisLocked && visaOmsattning && (
@@ -1371,6 +1383,12 @@ function AdminAnnonsDetail() {
                   <WireBtn onClick={sendPaminnelse}>Skicka påminnelse →</WireBtn>
                 </div>
               )}
+
+            <div className="border-t border-foreground/10 pt-3">
+              <WireBtn variant="ghost" onClick={backaTillGranskning}>
+                ← Tillbaka till granskning
+              </WireBtn>
+            </div>
           </div>
         </WireBox>
       )}
@@ -1415,17 +1433,12 @@ function AdminAnnonsDetail() {
                 className="w-full rounded-button border border-foreground/15 bg-background px-3 py-2 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
-            <label className="block">
-              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Pris (kr)
-              </span>
-              <input
-                type="text"
-                value={utkastPris}
-                onChange={(e) => setUtkastPris(e.target.value)}
-                className="h-10 w-48 rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
-              />
-            </label>
+
+            <div className="border-t border-foreground/10 pt-3">
+              <WireBtn variant="ghost" onClick={backaTillUppdragsavtal}>
+                ← Tillbaka till uppdragsavtal
+              </WireBtn>
+            </div>
           </div>
         </WireBox>
       )}
@@ -1619,7 +1632,6 @@ function AdminAnnonsDetail() {
                 <Field k="Hyra" v={draft.hyra ? `${draft.hyra} kr/mån` : undefined} />
                 <Field k="Fastighetsskatt" v={draft.fastighetsskatt ? `${draft.fastighetsskatt} kr/mån` : undefined} />
                 <Field k="Fastighetsbeteckning" v={draft.fastighetsbeteckning} />
-                <Field k="F-skatt" v={draft.fSkattManad ? `${draft.fSkattManad} kr/mån` : undefined} />
                 <Field k="Kvadratmeterpris" v={kvmPris != null ? `${kvmPris.toLocaleString("sv-SE")} kr/kvm/år` : undefined} />
               </>
             )}
