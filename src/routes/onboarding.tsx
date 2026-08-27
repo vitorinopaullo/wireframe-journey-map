@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, FileText, Upload } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import {
   WireBox,
@@ -266,7 +266,9 @@ function Step2({
   const [bolag, setBolag] = useState("");
   const [orgnr, setOrgnr] = useState("");
   const [presentation, setPresentation] = useState("");
+  const [presentationFil, setPresentationFil] = useState("");
 
+  const [harBolag, setHarBolag] = useState(false);
   const [arFirmatecknare, setArFirmatecknare] = useState(true);
   const [ftRoll, setFtRoll] = useState("");
   const [ftFornamn, setFtFornamn] = useState("");
@@ -342,7 +344,7 @@ function Step2({
       localStorage.setItem(
         `${ONBOARDING_SALJARE_KEY}:${userId}`,
         JSON.stringify({
-          bolagsuppgifter: { bolag, orgnr, ort, adress, presentation },
+          bolagsuppgifter: { bolag, orgnr, ort, adress, presentation: presentationFil },
           saljaruppgifter: {
             fornamn: bankid.fornamn,
             efternamn: bankid.efternamn,
@@ -356,6 +358,8 @@ function Step2({
       );
     }
 
+    const presentationValue = role === "saljare" ? presentationFil : presentation;
+
     onFinish({
       fornamn: bankid.fornamn,
       efternamn: bankid.efternamn,
@@ -365,7 +369,7 @@ function Step2({
       ...(role === "saljare" && { ort, adress }),
       ...(bolag && { bolag }),
       ...(orgnr && { orgnr }),
-      ...(presentation && { presentation }),
+      ...(presentationValue && { presentation: presentationValue }),
       ...(role === "saljare" && { arFirmatecknare: arFirmatecknare ? "ja" : "nej" }),
       ...(role === "saljare" &&
         !arFirmatecknare && {
@@ -380,16 +384,38 @@ function Step2({
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          {role === "kopare" ? (
-            <>
-              <WireBox label="Bolagsuppgifter">
-                <div className="mb-3 flex items-center justify-between">
-                  <Annotation>Frivilligt nu</Annotation>
-                  <WireTag>Krävs innan köp</WireTag>
-                </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="space-y-6">
+        {role === "kopare" ? (
+          <>
+            <WireBox label="Bolagsuppgifter">
+              <div className="mb-3 flex items-center justify-between">
+                <Annotation>Frivilligt nu</Annotation>
+                <WireTag>Krävs innan köp</WireTag>
+              </div>
+              <div className="flex flex-wrap gap-4">
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="radio"
+                    name="harBolag"
+                    checked={!harBolag}
+                    onChange={() => setHarBolag(false)}
+                    className="h-4 w-4 accent-[var(--color-interactive)]"
+                  />
+                  Jag har inte bolag
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="radio"
+                    name="harBolag"
+                    checked={harBolag}
+                    onChange={() => setHarBolag(true)}
+                    className="h-4 w-4 accent-[var(--color-interactive)]"
+                  />
+                  Jag har bolag
+                </label>
+              </div>
+              {harBolag && (
+                <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                   <InputField label="Bolag" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
                   <InputField
                     label="Org.nr"
@@ -408,201 +434,179 @@ function Step2({
                     />
                   </div>
                 </div>
-              </WireBox>
+              )}
+            </WireBox>
 
-              <WireBox label="Köparuppgifter">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
-                  <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
-                  <InputField
-                    label="Telefon *"
-                    value={telefon}
-                    onChange={setTelefon}
-                    onBlur={() => setTelefonTouched(true)}
-                    placeholder="076 12 34 56"
-                    error={telefonError}
+            <WireBox label="Köparuppgifter">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
+                <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
+                <InputField
+                  label="Telefon *"
+                  value={telefon}
+                  onChange={setTelefon}
+                  onBlur={() => setTelefonTouched(true)}
+                  placeholder="076 12 34 56"
+                  error={telefonError}
+                />
+                <InputField
+                  label="E-post *"
+                  value={epost}
+                  onChange={setEpost}
+                  onBlur={() => setEpostTouched(true)}
+                  placeholder="namn@exempel.se"
+                  type="email"
+                  error={epostError}
+                />
+              </div>
+            </WireBox>
+          </>
+        ) : (
+          <>
+            <WireBox label="Bolagsuppgifter">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <InputField
+                  label="Bolag *"
+                  value={bolag}
+                  onChange={setBolag}
+                  onBlur={() => setBolagTouched(true)}
+                  placeholder="Anna Restauranger AB"
+                  error={bolagError}
+                />
+                <InputField
+                  label="Org.nr *"
+                  value={orgnr}
+                  onChange={(v) => setOrgnr(formatOrgnr(v))}
+                  onBlur={() => setOrgnrTouched(true)}
+                  placeholder="556677-8899"
+                  error={orgnrError}
+                />
+                <InputField
+                  label="Ort *"
+                  value={ort}
+                  onChange={setOrt}
+                  onBlur={() => setOrtTouched(true)}
+                  placeholder="Stockholm"
+                  error={ortError}
+                />
+                <InputField
+                  label="Adress *"
+                  value={adress}
+                  onChange={setAdress}
+                  onBlur={() => setAdressTouched(true)}
+                  placeholder="Storgatan 1, 113 27"
+                  error={adressError}
+                />
+                <div className="md:col-span-2">
+                  <FileUploadField
+                    label="Företagspresentation"
+                    fileName={presentationFil}
+                    onSelect={setPresentationFil}
+                    onRemove={() => setPresentationFil("")}
                   />
-                  <InputField label="E-post *" value={epost} onChange={setEpost} placeholder="namn@exempel.se" type="email" />
                 </div>
-              </WireBox>
-            </>
-          ) : (
-            <>
-              <WireBox label="Bolagsuppgifter">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <InputField
-                    label="Bolag *"
-                    value={bolag}
-                    onChange={setBolag}
-                    onBlur={() => setBolagTouched(true)}
-                    placeholder="Anna Restauranger AB"
-                    error={bolagError}
-                  />
-                  <InputField
-                    label="Org.nr *"
-                    value={orgnr}
-                    onChange={(v) => setOrgnr(formatOrgnr(v))}
-                    onBlur={() => setOrgnrTouched(true)}
-                    placeholder="556677-8899"
-                    error={orgnrError}
-                  />
-                  <InputField
-                    label="Ort *"
-                    value={ort}
-                    onChange={setOrt}
-                    onBlur={() => setOrtTouched(true)}
-                    placeholder="Stockholm"
-                    error={ortError}
-                  />
-                  <InputField
-                    label="Adress *"
-                    value={adress}
-                    onChange={setAdress}
-                    onBlur={() => setAdressTouched(true)}
-                    placeholder="Storgatan 1, 113 27"
-                    error={adressError}
-                  />
-                  <div className="md:col-span-2">
-                    <InputField
-                      label="Företagspresentation"
-                      value={presentation}
-                      onChange={setPresentation}
-                      placeholder="Kort beskrivning av bolag, ägare och bakgrund…"
-                      multiline
+              </div>
+            </WireBox>
+
+            <WireBox label="Säljar-/Överlåtaruppgifter">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
+                <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
+                <InputField
+                  label="Mobil nr *"
+                  value={telefon}
+                  onChange={setTelefon}
+                  onBlur={() => setTelefonTouched(true)}
+                  placeholder="076 12 34 56"
+                  error={telefonError}
+                />
+                <InputField
+                  label="E-post *"
+                  value={epost}
+                  onChange={setEpost}
+                  onBlur={() => setEpostTouched(true)}
+                  placeholder="namn@exempel.se"
+                  type="email"
+                  error={epostError}
+                />
+              </div>
+
+              <div className="mt-6 border-t border-foreground/10 pt-6">
+                <Annotation>Firmatecknare</Annotation>
+                <div className="mt-3 flex flex-wrap gap-4">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="radio"
+                      name="firmatecknare"
+                      checked={arFirmatecknare}
+                      onChange={() => setArFirmatecknare(true)}
+                      className="h-4 w-4 accent-[var(--color-interactive)]"
                     />
-                  </div>
+                    Jag är firmatecknare
+                  </label>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="radio"
+                      name="firmatecknare"
+                      checked={!arFirmatecknare}
+                      onChange={() => setArFirmatecknare(false)}
+                      className="h-4 w-4 accent-[var(--color-interactive)]"
+                    />
+                    Jag är inte firmatecknare
+                  </label>
                 </div>
-              </WireBox>
+              </div>
+            </WireBox>
 
-              <WireBox label="Säljar-/Överlåtaruppgifter">
+            {!arFirmatecknare && (
+              <WireBox label="Firmatecknarens uppgifter" variant="dashed">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <ReadonlyField label="Förnamn *" value={bankid.fornamn} hint="Från BankID" />
-                  <ReadonlyField label="Efternamn *" value={bankid.efternamn} hint="Från BankID" />
                   <InputField
-                    label="Mobil nr *"
-                    value={telefon}
-                    onChange={setTelefon}
-                    onBlur={() => setTelefonTouched(true)}
-                    placeholder="076 12 34 56"
-                    error={telefonError}
+                    label="Roll *"
+                    value={ftRoll}
+                    onChange={setFtRoll}
+                    onBlur={() => setFtRollTouched(true)}
+                    placeholder="VD / Styrelseordförande"
+                    error={ftRollError}
                   />
                   <InputField
-                    label="E-post *"
-                    value={epost}
-                    onChange={setEpost}
-                    onBlur={() => setEpostTouched(true)}
+                    label="Förnamn *"
+                    value={ftFornamn}
+                    onChange={setFtFornamn}
+                    onBlur={() => setFtFornamnTouched(true)}
+                    placeholder="Förnamn"
+                    error={ftFornamnError}
+                  />
+                  <InputField
+                    label="Efternamn *"
+                    value={ftEfternamn}
+                    onChange={setFtEfternamn}
+                    onBlur={() => setFtEfternamnTouched(true)}
+                    placeholder="Efternamn"
+                    error={ftEfternamnError}
+                  />
+                  <InputField
+                    label="Mail *"
+                    value={ftMail}
+                    onChange={setFtMail}
+                    onBlur={() => setFtMailTouched(true)}
                     placeholder="namn@exempel.se"
                     type="email"
-                    error={epostError}
+                    error={ftMailError}
+                  />
+                  <InputField
+                    label="Mobil *"
+                    value={ftMobil}
+                    onChange={setFtMobil}
+                    onBlur={() => setFtMobilTouched(true)}
+                    placeholder="076 12 34 56"
+                    error={ftMobilError}
                   />
                 </div>
-
-                <div className="mt-6 border-t border-foreground/10 pt-6">
-                  <Annotation>Firmatecknare</Annotation>
-                  <div className="mt-3 flex flex-wrap gap-4">
-                    <label className="flex items-center gap-2 text-sm">
-                      <input
-                        type="radio"
-                        name="firmatecknare"
-                        checked={arFirmatecknare}
-                        onChange={() => setArFirmatecknare(true)}
-                        className="h-4 w-4 accent-[var(--color-interactive)]"
-                      />
-                      Jag är firmatecknare
-                    </label>
-                    <label className="flex items-center gap-2 text-sm">
-                      <input
-                        type="radio"
-                        name="firmatecknare"
-                        checked={!arFirmatecknare}
-                        onChange={() => setArFirmatecknare(false)}
-                        className="h-4 w-4 accent-[var(--color-interactive)]"
-                      />
-                      Jag är inte firmatecknare
-                    </label>
-                  </div>
-                </div>
               </WireBox>
-
-              {!arFirmatecknare && (
-                <WireBox label="Firmatecknarens uppgifter" variant="dashed">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <InputField
-                      label="Roll *"
-                      value={ftRoll}
-                      onChange={setFtRoll}
-                      onBlur={() => setFtRollTouched(true)}
-                      placeholder="VD / Styrelseordförande"
-                      error={ftRollError}
-                    />
-                    <InputField
-                      label="Förnamn *"
-                      value={ftFornamn}
-                      onChange={setFtFornamn}
-                      onBlur={() => setFtFornamnTouched(true)}
-                      placeholder="Förnamn"
-                      error={ftFornamnError}
-                    />
-                    <InputField
-                      label="Efternamn *"
-                      value={ftEfternamn}
-                      onChange={setFtEfternamn}
-                      onBlur={() => setFtEfternamnTouched(true)}
-                      placeholder="Efternamn"
-                      error={ftEfternamnError}
-                    />
-                    <InputField
-                      label="Mail *"
-                      value={ftMail}
-                      onChange={setFtMail}
-                      onBlur={() => setFtMailTouched(true)}
-                      placeholder="namn@exempel.se"
-                      type="email"
-                      error={ftMailError}
-                    />
-                    <InputField
-                      label="Mobil *"
-                      value={ftMobil}
-                      onChange={setFtMobil}
-                      onBlur={() => setFtMobilTouched(true)}
-                      placeholder="076 12 34 56"
-                      error={ftMobilError}
-                    />
-                  </div>
-                </WireBox>
-              )}
-            </>
-          )}
-        </div>
-
-        <aside className="space-y-6 rounded-card border border-foreground/15 bg-background p-4">
-          <div>
-            <div className="mb-2 text-sm font-semibold text-foreground">Skickas till TreLink admin</div>
-            <p className="text-sm text-muted-foreground">
-              När du sparar skickas ditt BankID-verifierade namn, personnummer och dessa uppgifter till TreLinks admin
-              för granskning av nytt konto.
-            </p>
-          </div>
-
-          <div className="border-t border-foreground/10 pt-6">
-            <div className="mb-2 text-sm font-semibold text-foreground">Vad ser andra?</div>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>· Motpart ser bara det som behövs — aldrig personnummer eller kontaktuppgifter innan match.</li>
-              <li>· TreLink ser allt för att kunna granska.</li>
-              <li>· Bolagspresentation visas i intresseanmälan.</li>
-            </ul>
-          </div>
-
-          {role === "kopare" && (
-            <div className="border-t border-foreground/10 pt-6">
-              <div className="mb-2 text-sm font-semibold text-foreground">Varför frivilligt?</div>
-              <p className="text-sm text-muted-foreground">
-                Många köpare startar bolag <em>i samband</em> med köpet. Du kan skapa konto och börja titta direkt —
-                men innan handpenning och signering måste bolag och org.nr finnas på plats.
-              </p>
-            </div>
-          )}
-        </aside>
+            )}
+          </>
+        )}
       </div>
 
       <NavBar
@@ -689,6 +693,56 @@ function ReadonlyField({ label, value, hint }: { label: string; value: string; h
   );
 }
 
+
+function FileUploadField({
+  label,
+  fileName,
+  onSelect,
+  onRemove,
+  hint,
+}: {
+  label: string;
+  fileName: string;
+  onSelect: (name: string) => void;
+  onRemove: () => void;
+  hint?: string;
+}) {
+  return (
+    <div>
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
+      {fileName ? (
+        <div className="flex h-11 items-center justify-between rounded-button border border-foreground/15 bg-background px-3 text-sm">
+          <span className="flex min-w-0 items-center gap-2">
+            <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <span className="truncate">{fileName}</span>
+          </span>
+          <button
+            type="button"
+            onClick={onRemove}
+            className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+          >
+            Ta bort
+          </button>
+        </div>
+      ) : (
+        <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-button border border-dashed border-foreground/25 bg-muted/20 px-3 text-sm text-muted-foreground transition-colors duration-150 hover:border-foreground/40">
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onSelect(file.name);
+            }}
+          />
+          <Upload className="h-4 w-4" />
+          Ladda upp PDF eller Word
+        </label>
+      )}
+      {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
+    </div>
+  );
+}
 
 function NavBar({
   secondary,
