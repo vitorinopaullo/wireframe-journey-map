@@ -1103,7 +1103,7 @@ function CreateListing() {
       )}
 
       {/* Validation hints under content */}
-      {step === 0 && validation[step].length > 0 && (
+      {validation[step].length > 0 && (
         <WireBox className="mb-6">
           <Annotation>Komplettera innan nästa steg</Annotation>
           <ul className="mt-2 list-inside list-disc text-sm">
@@ -1639,13 +1639,13 @@ function YesNoToggle({
   );
 }
 
+const FINNS_INTE = "Finns inte";
+
 function TagToggleGroup({
-  label,
   options,
   value,
   onChange,
 }: {
-  label: string;
   options: string[];
   value: string;
   onChange: (v: string) => void;
@@ -1659,15 +1659,15 @@ function TagToggleGroup({
 
   return (
     <div>
-      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-        {label}
-      </span>
       <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-background p-3">
         {options.map((tag) => (
           <WireTag key={tag} active={selected.includes(tag)} onClick={() => toggle(tag)}>
             {tag}
           </WireTag>
         ))}
+        <WireTag active={selected.includes(FINNS_INTE)} onClick={() => toggle(FINNS_INTE)}>
+          {FINNS_INTE}
+        </WireTag>
       </div>
     </div>
   );
@@ -1712,7 +1712,6 @@ function KontorFaltgrupp({
   setDoc: (name: string, s: DocState) => void;
 }) {
   const ritningNamn = "Ritning (Kontor)";
-  const ritningStatus = docStatus(ritningNamn);
 
   return (
     <>
@@ -1722,7 +1721,6 @@ function KontorFaltgrupp({
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={KONTOR_TAGGAR_LAGE}
               value={falt.lage}
               onChange={(v) => onChange("lage", v)}
@@ -1734,7 +1732,6 @@ function KontorFaltgrupp({
           <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={KONTOR_TAGGAR_INTERIOR}
               value={falt.interior}
               onChange={(v) => onChange("interior", v)}
@@ -1746,7 +1743,6 @@ function KontorFaltgrupp({
           <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={KONTOR_TAGGAR_PLANLOSNING}
               value={falt.planlosning}
               onChange={(v) => onChange("planlosning", v)}
@@ -1758,7 +1754,6 @@ function KontorFaltgrupp({
           <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={KONTOR_TAGGAR_EKONOMI}
               value={falt.ekonomi}
               onChange={(v) => onChange("ekonomi", v)}
@@ -1770,7 +1765,6 @@ function KontorFaltgrupp({
           <FaltgruppRubrik>Teknisk info</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={KONTOR_TAGGAR_TEKNISK_INFO}
               value={falt.taggar}
               onChange={(v) => onChange("taggar", v)}
@@ -1789,26 +1783,14 @@ function KontorFaltgrupp({
         </div>
 
         <div className="border-t border-foreground/10 pt-4">
-          <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-start gap-3">
-              <DocStatusDot state={ritningStatus} />
-              <div>
-                <div className="text-sm font-medium">Ritning</div>
-                <Annotation>PDF · planlösning över kontorsytan</Annotation>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <DocStatusTag state={ritningStatus} />
-              {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
-                <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
-                  Ladda upp
-                </WireBtn>
-              ) : (
-                <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
-                  Byt fil
-                </WireBtn>
-              )}
-            </div>
+          <FaltgruppRubrik>Dokument</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <DocUploadRad
+              namn={ritningNamn}
+              hint="PDF · planlösning över kontorsytan"
+              docStatus={docStatus}
+              setDoc={setDoc}
+            />
           </div>
         </div>
       </div>
@@ -1828,7 +1810,6 @@ function ButikFaltgrupp({
   setDoc: (name: string, s: DocState) => void;
 }) {
   const ritningNamn = "Ritning (Butik)";
-  const ritningStatus = docStatus(ritningNamn);
 
   return (
     <>
@@ -1838,7 +1819,6 @@ function ButikFaltgrupp({
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={BUTIK_TAGGAR_LAGE}
               value={falt.lage}
               onChange={(v) => onChange("lage", v)}
@@ -1850,7 +1830,6 @@ function ButikFaltgrupp({
           <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={BUTIK_TAGGAR_INTERIOR}
               value={falt.interior}
               onChange={(v) => onChange("interior", v)}
@@ -1862,7 +1841,6 @@ function ButikFaltgrupp({
           <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={BUTIK_TAGGAR_PLANLOSNING}
               value={falt.planlosning}
               onChange={(v) => onChange("planlosning", v)}
@@ -1874,7 +1852,6 @@ function ButikFaltgrupp({
           <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={BUTIK_TAGGAR_EKONOMI}
               value={falt.ekonomi}
               onChange={(v) => onChange("ekonomi", v)}
@@ -1886,7 +1863,6 @@ function ButikFaltgrupp({
           <FaltgruppRubrik>Teknisk info</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={BUTIK_TAGGAR_TEKNISK_INFO}
               value={falt.taggar}
               onChange={(v) => onChange("taggar", v)}
@@ -1905,26 +1881,14 @@ function ButikFaltgrupp({
         </div>
 
         <div className="border-t border-foreground/10 pt-4">
-          <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-start gap-3">
-              <DocStatusDot state={ritningStatus} />
-              <div>
-                <div className="text-sm font-medium">Ritning</div>
-                <Annotation>PDF · planlösning över butiksytan</Annotation>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <DocStatusTag state={ritningStatus} />
-              {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
-                <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
-                  Ladda upp
-                </WireBtn>
-              ) : (
-                <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
-                  Byt fil
-                </WireBtn>
-              )}
-            </div>
+          <FaltgruppRubrik>Dokument</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <DocUploadRad
+              namn={ritningNamn}
+              hint="PDF · planlösning över butiksytan"
+              docStatus={docStatus}
+              setDoc={setDoc}
+            />
           </div>
         </div>
       </div>
@@ -1944,7 +1908,6 @@ function LagerFaltgrupp({
   setDoc: (name: string, s: DocState) => void;
 }) {
   const ritningNamn = "Ritning (Lager)";
-  const ritningStatus = docStatus(ritningNamn);
 
   return (
     <>
@@ -1954,7 +1917,6 @@ function LagerFaltgrupp({
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={LAGER_TAGGAR_LAGE}
               value={falt.lage}
               onChange={(v) => onChange("lage", v)}
@@ -1966,7 +1928,6 @@ function LagerFaltgrupp({
           <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={LAGER_TAGGAR_INTERIOR}
               value={falt.interior}
               onChange={(v) => onChange("interior", v)}
@@ -1978,7 +1939,6 @@ function LagerFaltgrupp({
           <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={LAGER_TAGGAR_PLANLOSNING}
               value={falt.planlosning}
               onChange={(v) => onChange("planlosning", v)}
@@ -1990,7 +1950,6 @@ function LagerFaltgrupp({
           <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={LAGER_TAGGAR_EKONOMI}
               value={falt.ekonomi}
               onChange={(v) => onChange("ekonomi", v)}
@@ -2002,7 +1961,6 @@ function LagerFaltgrupp({
           <FaltgruppRubrik>Teknisk info</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={LAGER_TAGGAR_TEKNISK_INFO}
               value={falt.taggar}
               onChange={(v) => onChange("taggar", v)}
@@ -2021,26 +1979,14 @@ function LagerFaltgrupp({
         </div>
 
         <div className="border-t border-foreground/10 pt-4">
-          <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-start gap-3">
-              <DocStatusDot state={ritningStatus} />
-              <div>
-                <div className="text-sm font-medium">Ritning</div>
-                <Annotation>PDF · planlösning över lagerytan</Annotation>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <DocStatusTag state={ritningStatus} />
-              {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
-                <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
-                  Ladda upp
-                </WireBtn>
-              ) : (
-                <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
-                  Byt fil
-                </WireBtn>
-              )}
-            </div>
+          <FaltgruppRubrik>Dokument</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <DocUploadRad
+              namn={ritningNamn}
+              hint="PDF · planlösning över lagerytan"
+              docStatus={docStatus}
+              setDoc={setDoc}
+            />
           </div>
         </div>
       </div>
@@ -2070,7 +2016,7 @@ function DocUploadRad({
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <DocStatusTag state={status} />
+        <DocStatusIndicator state={status} />
         {status === "saknas" || status === "komplettera" ? (
           <WireBtn variant="secondary" onClick={() => setDoc(namn, "uppladdad")}>
             Ladda upp
@@ -2104,7 +2050,6 @@ function ServeringFaltgrupp({
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={SERVERING_TAGGAR_LAGE}
               value={falt.lage}
               onChange={(v) => onChange("lage", v)}
@@ -2116,7 +2061,6 @@ function ServeringFaltgrupp({
           <FaltgruppRubrik>Interiör och skick</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={SERVERING_TAGGAR_INTERIOR}
               value={falt.interior}
               onChange={(v) => onChange("interior", v)}
@@ -2128,7 +2072,6 @@ function ServeringFaltgrupp({
           <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={SERVERING_TAGGAR_PLANLOSNING}
               value={falt.planlosning}
               onChange={(v) => onChange("planlosning", v)}
@@ -2140,7 +2083,6 @@ function ServeringFaltgrupp({
           <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={SERVERING_TAGGAR_EKONOMI}
               value={falt.ekonomi}
               onChange={(v) => onChange("ekonomi", v)}
@@ -2152,7 +2094,6 @@ function ServeringFaltgrupp({
           <FaltgruppRubrik>Köksteknik</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={SERVERING_TAGGAR_TYP_AV_KOK}
               value={falt.typAvKok}
               onChange={(v) => onChange("typAvKok", v)}
@@ -2164,7 +2105,6 @@ function ServeringFaltgrupp({
           <FaltgruppRubrik>Utvecklingsmöjlighet</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={SERVERING_TAGGAR_UTVECKLINGSMOJLIGHET}
               value={falt.utvecklingsmojlighet}
               onChange={(v) => onChange("utvecklingsmojlighet", v)}
@@ -2176,7 +2116,6 @@ function ServeringFaltgrupp({
           <FaltgruppRubrik>Anledning till försäljning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={SERVERING_TAGGAR_ANLEDNING_FORSALJNING}
               value={falt.anledningTillForsaljning}
               onChange={(v) => onChange("anledningTillForsaljning", v)}
@@ -2188,16 +2127,9 @@ function ServeringFaltgrupp({
           <FaltgruppRubrik>Myndighetskrav</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={SERVERING_TAGGAR_MYNDIGHETSKRAV}
               value={falt.myndighetskrav}
               onChange={(v) => onChange("myndighetskrav", v)}
-            />
-            <DocUploadRad
-              namn="Myndighetsdokument (Servering)"
-              hint="JPG/PDF · bifoga tillstånd/protokoll som styrker taggarna ovan"
-              docStatus={docStatus}
-              setDoc={setDoc}
             />
           </div>
         </div>
@@ -2215,6 +2147,12 @@ function ServeringFaltgrupp({
         <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Dokument</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
+            <DocUploadRad
+              namn="Myndighetsdokument (Servering)"
+              hint="JPG/PDF · bifoga tillstånd/protokoll som styrker taggarna ovan"
+              docStatus={docStatus}
+              setDoc={setDoc}
+            />
             {SERVERING_UPPLADDNINGAR.map((doc) => (
               <DocUploadRad key={doc.namn} namn={doc.namn} hint={doc.hint} docStatus={docStatus} setDoc={setDoc} />
             ))}
@@ -2247,7 +2185,6 @@ function FrisorFaltgrupp({
           <FaltgruppRubrik>Läge</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={FRISOR_TAGGAR_LAGE}
               value={falt.lage}
               onChange={(v) => onChange("lage", v)}
@@ -2259,7 +2196,6 @@ function FrisorFaltgrupp({
           <FaltgruppRubrik>Interiör/stil</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={FRISOR_TAGGAR_INTERIOR}
               value={falt.interior}
               onChange={(v) => onChange("interior", v)}
@@ -2271,7 +2207,6 @@ function FrisorFaltgrupp({
           <FaltgruppRubrik>Planlösning</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={FRISOR_TAGGAR_PLANLOSNING}
               value={falt.planlosning}
               onChange={(v) => onChange("planlosning", v)}
@@ -2283,7 +2218,6 @@ function FrisorFaltgrupp({
           <FaltgruppRubrik>Ekonomi</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
-              label="Taggar"
               options={FRISOR_TAGGAR_EKONOMI}
               value={falt.ekonomi}
               onChange={(v) => onChange("ekonomi", v)}
