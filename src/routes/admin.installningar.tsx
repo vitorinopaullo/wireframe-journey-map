@@ -4,6 +4,7 @@ import { AdminLayout, AdminComingSoon } from "@/components/layouts/AdminLayout";
 import { PageHeader, WireBox, WireBtn, Annotation } from "@/components/wire";
 import { ADMIN_ACCOUNTS_STORAGE_KEY } from "@/lib/mock-auth";
 import { STORAGE_KEY as ANNONSER_STORAGE_KEY } from "@/lib/annons-workflow";
+import { STORAGE_KEY as KOPARE_STORAGE_KEY } from "@/lib/kopare-workflow";
 
 export const Route = createFileRoute("/admin/installningar")({
   component: AdminInstallningar,
@@ -16,6 +17,7 @@ function AdminInstallningar() {
   function rensaTestdata() {
     window.localStorage.removeItem(ADMIN_ACCOUNTS_STORAGE_KEY);
     window.localStorage.removeItem(ANNONSER_STORAGE_KEY);
+    window.localStorage.removeItem(KOPARE_STORAGE_KEY);
     setConfirming(false);
     setCleared(true);
   }
@@ -26,8 +28,8 @@ function AdminInstallningar() {
 
       <WireBox label="Testdata" variant="dashed" className="mb-6">
         <p className="mb-3 text-sm text-muted-foreground">
-          Rensar alla konton (Användare) och annonser sparade i denna webbläsare, så du kan börja om från ett tomt
-          läge vid test.
+          Rensar alla konton (Användare), annonser samt affärer/intresseanmälningar sparade i denna webbläsare, så
+          du kan börja om från ett tomt läge vid test.
         </p>
 
         {!confirming && !cleared && (
