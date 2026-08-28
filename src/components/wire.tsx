@@ -8,11 +8,13 @@ export function WireBox({
   children,
   className = "",
   variant = "solid",
+  id,
 }: {
   label?: string;
   children?: ReactNode;
   className?: string;
   variant?: "solid" | "dashed" | "ghost";
+  id?: string;
 }) {
   const border =
     variant === "dashed"
@@ -21,7 +23,7 @@ export function WireBox({
       ? "border border-muted-foreground/20 bg-muted/30"
       : "border border-foreground/15 bg-background";
   return (
-    <div className={`rounded-card ${border} p-4 ${className}`}>
+    <div id={id} className={`rounded-card ${border} p-4 ${className}`}>
       {label && (
         <div className="mb-3 text-sm font-semibold text-foreground">
           {label}

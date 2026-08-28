@@ -528,6 +528,16 @@ function CreateListing() {
   const navigate = useNavigate();
   const { edit: editId } = Route.useSearch();
   const [step, setStep] = useState(0);
+
+  // Hoppar till angivet steg och scrollar/fokuserar till en specifik sektion där,
+  // använd av "Editera"-länkarna i Granska & skicka-sammanfattningen.
+  function goToStep(targetStep: number, sectionId: string) {
+    setStep(targetStep);
+    setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  }
+
   const [draft, setDraft] = useState<Draft>(empty);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [uppdragsavtalOpen, setUppdragsavtalOpen] = useState(false);
@@ -804,7 +814,7 @@ function CreateListing() {
       {/* STEP 0 — Paket */}
       {step === 0 && (
         <>
-        <WireBox label="Välj paket — detta styr avgift, dokument och process" className="mb-6">
+        <WireBox id="steg-paket" label="Välj paket — detta styr avgift, dokument och process" className="mb-6">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             {cats.map((c) => {
               const selected = draft.cat === c.id;
@@ -884,7 +894,7 @@ function CreateListing() {
         <>
           <KontoSammanfattning />
 
-          <WireBox label="Objektet" className="mb-6">
+          <WireBox id="steg-objektet" label="Objektet" className="mb-6">
             <p className="text-base font-semibold text-foreground">Vad är det vi förmedlar?</p>
             <p className="mt-2 text-sm text-muted-foreground">
               Med hjälp av er och oss kan vi tillsammans formulera en annonstext med hjälp av AI. Hjälp oss att
@@ -925,7 +935,7 @@ function CreateListing() {
             </div>
 
             {grupperAttVisa.map((grupp) => (
-              <div key={grupp} className="mt-6 border-t border-foreground/10 pt-4">
+              <div key={grupp} id={`grupp-${grupp}`} className="mt-6 border-t border-foreground/10 pt-4">
                 {TYP_FALTGRUPPER[grupp]()}
               </div>
             ))}
@@ -938,7 +948,7 @@ function CreateListing() {
       {/* STEP 2 — Underlag */}
       {step === 2 && (
         <>
-          <WireBox label="Hyresvärd & BRF" className="mb-6">
+          <WireBox id="steg-hyresvard" label="Hyresvärd & BRF" className="mb-6">
             <p className="text-sm text-muted-foreground">
               TreLink behöver kontaktuppgifter till hyresvärden för att få godkännande av överlåtelse.
               Vid BRF anger du kontaktpersonen i föreningen.
@@ -1003,7 +1013,7 @@ function CreateListing() {
             </div>
           </WireBox>
 
-          <WireBox label={`Underlag för ${activeCat.name}`} className="mb-6">
+          <WireBox id="steg-dokument" label={`Underlag för ${activeCat.name}`} className="mb-6">
           <Annotation>* = obligatoriskt för att kunna skicka på granskning. Övriga stärker annonsen men går att komplettera senare.</Annotation>
           <div className="mt-3 space-y-3">
             {requiredDocs.map((d) => {
@@ -1058,14 +1068,14 @@ function CreateListing() {
 
           <WireBox label="Sammanfattning" className="mb-6">
             <dl className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <Row k="Paket" v={activeCat.name} />
-              <Row k="Avgift vid affär" v={activeCat.avgift} />
-              <Row k="Försäljningsadress" v={draft.adress || "—"} />
-              <Row k="Verksamhet" v={draft.verksamhet || "—"} />
-              <Row k="Hyresvärdens namn" v={draft.hyresvardNamn || "—"} />
-              <Row k="Hyresvärd e-post" v={draft.hyresvardEmail || "—"} />
-              <Row k="Hyresvärd telefon" v={draft.hyresvardTel || "—"} />
-              <Row k="BRF-kontaktperson" v={draft.brfKontakt || "—"} />
+              <Row k="Paket" v={activeCat.name} onEdit={() => goToStep(0, "steg-paket")} />
+              <Row k="Avgift vid affär" v={activeCat.avgift} onEdit={() => goToStep(0, "steg-paket")} />
+              <Row k="Försäljningsadress" v={draft.adress || "—"} onEdit={() => goToStep(1, "steg-objektet")} />
+              <Row k="Verksamhet" v={draft.verksamhet || "—"} onEdit={() => goToStep(1, "steg-objektet")} />
+              <Row k="Hyresvärdens namn" v={draft.hyresvardNamn || "—"} onEdit={() => goToStep(2, "steg-hyresvard")} />
+              <Row k="Hyresvärd e-post" v={draft.hyresvardEmail || "—"} onEdit={() => goToStep(2, "steg-hyresvard")} />
+              <Row k="Hyresvärd telefon" v={draft.hyresvardTel || "—"} onEdit={() => goToStep(2, "steg-hyresvard")} />
+              <Row k="BRF-kontaktperson" v={draft.brfKontakt || "—"} onEdit={() => goToStep(2, "steg-hyresvard")} />
               <Row k="Nyckeltal" v="Hämtas från uppladdade dokument" />
             </dl>
           </WireBox>
@@ -1077,9 +1087,9 @@ function CreateListing() {
                   const falt = draft.typFalt[grupp as keyof typeof draft.typFalt] as Record<string, string>;
                   return (
                     <div key={grupp}>
-                      <p className="text-sm font-semibold text-foreground">
+                      <SektionsRubrikMedEdit onEdit={() => goToStep(1, `grupp-${grupp}`)}>
                         {FALTGRUPP_LABEL[grupp] ?? grupp}
-                      </p>
+                      </SektionsRubrikMedEdit>
                       <dl className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2">
                         {Object.entries(falt).map(([key, value]) => (
                           <Row key={key} k={FALT_FIELD_LABEL[key] ?? key} v={value || "—"} />
@@ -1092,8 +1102,9 @@ function CreateListing() {
             </WireBox>
           )}
 
-          <WireBox label="Dokumentstatus" className="mb-6">
-            <ul className="space-y-2">
+          <WireBox className="mb-6">
+            <SektionsRubrikMedEdit onEdit={() => goToStep(2, "steg-dokument")}>Dokumentstatus</SektionsRubrikMedEdit>
+            <ul className="mt-3 space-y-2">
               {requiredDocs.map((d) => {
                 const s = docStatus(d.name);
                 return (
@@ -1107,6 +1118,31 @@ function CreateListing() {
                 );
               })}
             </ul>
+          </WireBox>
+
+          <WireBox className="mb-6">
+            <SektionsRubrikMedEdit onEdit={() => goToStep(2, "steg-dokument")}>Bilder</SektionsRubrikMedEdit>
+            <div className="mt-3">
+              {draft.bilder.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Inga bilder uppladdade ännu.</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {draft.bilder.map((b) => (
+                    <div
+                      key={b}
+                      className="flex h-14 w-14 items-center justify-center rounded-button border border-foreground/15 bg-muted/20 text-[10px] text-muted-foreground"
+                    >
+                      {b}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <Annotation>
+                <span className="mt-2 block">
+                  {draft.bilder.length} av {BILD_ANTAL_KRAV} bilder uppladdade
+                </span>
+              </Annotation>
+            </div>
           </WireBox>
 
           <WireBox label="Premium (frivilligt)" className="mb-6">
@@ -1280,11 +1316,37 @@ function BildGalleri({
   );
 }
 
-function Row({ k, v }: { k: string; v: string }) {
+function Row({ k, v, onEdit }: { k: string; v: string; onEdit?: () => void }) {
   return (
     <div className="border-b border-foreground/10 pb-2">
-      <Annotation>{k}</Annotation>
+      <div className="flex items-center justify-between gap-2">
+        <Annotation>{k}</Annotation>
+        {onEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-interactive)] hover:underline"
+          >
+            Editera
+          </button>
+        )}
+      </div>
       <div className="mt-1 text-sm">{v}</div>
+    </div>
+  );
+}
+
+function SektionsRubrikMedEdit({ children, onEdit }: { children: ReactNode; onEdit: () => void }) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <p className="text-sm font-semibold text-foreground">{children}</p>
+      <button
+        type="button"
+        onClick={onEdit}
+        className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-interactive)] hover:underline"
+      >
+        Editera
+      </button>
     </div>
   );
 }
