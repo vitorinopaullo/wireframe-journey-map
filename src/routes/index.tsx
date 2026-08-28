@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
-import { WireBox, WireBtn, Annotation, PageHeader } from "@/components/wire";
+import { WireBox, WireBtn, Annotation } from "@/components/wire";
 import { SearchBox } from "@/components/SearchFilters";
 import { ListingCard, type Listing } from "@/components/ListingCard";
 import { exempelAnnons } from "@/lib/annons-model";
@@ -184,12 +184,39 @@ function ListingCarousel({
 function HomePage() {
   return (
     <PublicLayout>
-      <PageHeader
-        title="Hitta verksamheter att ta över"
-        subtitle="Lokaler, inkråm och aktiebolag — granskade av TreLink innan publicering. Bläddra fritt, spara med konto, agera med BankID-verifiering."
-      />
+      {/* Hero — full-bredd gradientyta med ett flytande vitt sökkort som
+          delvis överlappar ner i den vanliga sidbakgrunden. */}
+      <div className="relative -mt-10 mb-24 md:mb-32">
+        <div className="relative left-1/2 right-1/2 w-screen -mx-[50vw]">
+          <div className="relative h-[300px] overflow-hidden bg-gradient-to-br from-[var(--color-purple-950)] via-[var(--color-purple-800)] to-[var(--color-purple-600)] md:h-[420px]">
+            {/* Dekorativa former — inga fotografier, bara mjuka former/mönster */}
+            <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-[var(--color-pink-300)]/20 blur-3xl md:-right-24 md:-top-24 md:h-80 md:w-80" />
+            <div className="absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-[var(--color-purple-400)]/25 blur-3xl md:-left-24 md:h-72 md:w-72" />
+            <div
+              className="absolute inset-0 opacity-[0.08]"
+              style={{
+                backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+                backgroundSize: "28px 28px",
+              }}
+            />
+          </div>
+        </div>
 
-      <SearchBox />
+        <div className="relative mx-auto max-w-7xl px-6">
+          <div className="-mt-[220px] rounded-card bg-card p-6 shadow-lg md:-mt-[320px] md:p-10">
+            <h1 className="text-4xl font-semibold text-foreground md:text-5xl">
+              Hitta verksamheter att ta över
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">
+              Lokaler, inkråm och aktiebolag — granskade av TreLink innan publicering. Bläddra fritt, spara med
+              konto, agera med BankID-verifiering.
+            </p>
+            <div className="mt-6">
+              <SearchBox />
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Aktuella annonser */}
       <div className="mb-4 flex items-end justify-between">

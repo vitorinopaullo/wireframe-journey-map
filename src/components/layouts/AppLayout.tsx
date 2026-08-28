@@ -37,7 +37,6 @@ function useNotisCount(kategori: AdminNotisKategori) {
 
 export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode }) {
   const nav = mode === "kopare" ? buyerNav : sellerNav;
-  const otherMode: Mode = mode === "kopare" ? "saljare" : "kopare";
   const location = useLocation();
   const obehandladeIntressen = useNotisCount("saljare-intresse");
   return (
@@ -99,22 +98,6 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
               );
             })}
           </nav>
-          <div className="mt-8 border border-dashed border-muted-foreground/40 p-3">
-            <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-              Tips
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Ett konto, två lägen. Växla till{" "}
-              <Link
-                to="/dashboard"
-                search={{ mode: otherMode }}
-                className="underline"
-              >
-                {otherMode}-läge
-              </Link>{" "}
-              utan ny inloggning.
-            </p>
-          </div>
         </aside>
         <main className="flex-1 min-w-0">{children ?? <Outlet />}</main>
       </div>

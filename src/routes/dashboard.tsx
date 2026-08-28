@@ -127,7 +127,7 @@ function Dashboard() {
         </div>
       )}
 
-      <WireBox label={mode === "kopare" ? "Inga pågående? Börja söka." : "Skapa din nästa annons"} variant="dashed" className="mt-8">
+      <WireBox label={mode === "kopare" ? "Inga pågående? Börja söka." : "Skapa din nästa annons"} className="mt-8">
         <p className="text-sm text-muted-foreground">
           {mode === "kopare"
             ? "Hitta objekt och spara favoriter — vi hör av oss vid relevanta nyheter."

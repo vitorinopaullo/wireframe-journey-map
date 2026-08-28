@@ -37,6 +37,12 @@ function formatOrgnr(raw: string): string {
   return digits.length <= 6 ? digits : `${digits.slice(0, 6)}-${digits.slice(6)}`;
 }
 
+/** Infogar mellanslag efter 3 siffror medan användaren skriver: 123 45. */
+function formatPostnr(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 5);
+  return digits.length <= 3 ? digits : `${digits.slice(0, 3)} ${digits.slice(3)}`;
+}
+
 function Onboarding() {
   const { next, role: roleParam } = Route.useSearch();
   const navigate = useNavigate();
@@ -88,16 +94,6 @@ function Onboarding() {
         eyebrow={`Onboarding · steg ${step} av 2`}
         title="Sätt upp ditt konto"
         subtitle="Ett konto — två lägen. Du kan alltid växla mellan köpare och säljare senare. Informationen du fyller i följer med respektive läge."
-        right={
-          <div className="flex flex-col items-end gap-1">
-            <WireTag>BankID ✓</WireTag>
-            {bankid && (
-              <span className="font-mono text-[10px] text-muted-foreground">
-                {bankid.fornamn} {bankid.efternamn}
-              </span>
-            )}
-          </div>
-        }
       />
 
       {role && step === 2 && (
@@ -115,7 +111,7 @@ function Onboarding() {
           return (
             <div
               key={s.n}
-              className="flex items-center gap-2 rounded-card border border-foreground/15 bg-background p-3"
+              className="flex items-center gap-2 rounded-card border border-foreground/15 bg-card p-3"
             >
               <StatusDot state={state as "done" | "active" | "pending"} />
               <div>
@@ -263,6 +259,7 @@ function Step2({
   const [epost, setEpost] = useState("");
   const [ort, setOrt] = useState("");
   const [adress, setAdress] = useState("");
+  const [postnr, setPostnr] = useState("");
   const [bolag, setBolag] = useState("");
   const [orgnr, setOrgnr] = useState("");
   const [presentation, setPresentation] = useState("");
@@ -280,6 +277,7 @@ function Step2({
   const [orgnrTouched, setOrgnrTouched] = useState(false);
   const [ortTouched, setOrtTouched] = useState(false);
   const [adressTouched, setAdressTouched] = useState(false);
+  const [postnrTouched, setPostnrTouched] = useState(false);
   const [epostTouched, setEpostTouched] = useState(false);
   const [telefonTouched, setTelefonTouched] = useState(false);
   const [ftRollTouched, setFtRollTouched] = useState(false);
@@ -294,6 +292,7 @@ function Step2({
   const orgnrSaknas = role === "saljare" && orgnr.trim() === "";
   const ortSaknas = role === "saljare" && ort.trim() === "";
   const adressSaknas = role === "saljare" && adress.trim() === "";
+  const postnrSaknas = role === "saljare" && postnr.trim() === "";
   const orgnrFelFormat = orgnr.trim() !== "" && !ORGNR_REGEX.test(orgnr.trim());
   const bolagError = (bolagTouched || submitAttempted) && bolagSaknas ? "Bolag krävs." : undefined;
   const orgnrError = (orgnrTouched || submitAttempted)
@@ -305,6 +304,7 @@ function Step2({
     : undefined;
   const ortError = (ortTouched || submitAttempted) && ortSaknas ? "Ort krävs." : undefined;
   const adressError = (adressTouched || submitAttempted) && adressSaknas ? "Adress krävs." : undefined;
+  const postnrError = (postnrTouched || submitAttempted) && postnrSaknas ? "Postnummer krävs." : undefined;
   const epostSaknas = epost.trim() === "";
   const epostError = (epostTouched || submitAttempted) && epostSaknas ? "E-post krävs." : undefined;
   const telefonSaknas = telefon.trim() === "";
@@ -328,6 +328,7 @@ function Step2({
     !orgnrSaknas &&
     !ortSaknas &&
     !adressSaknas &&
+    !postnrSaknas &&
     !orgnrFelFormat &&
     !ftRollSaknas &&
     !ftFornamnSaknas &&
@@ -344,7 +345,7 @@ function Step2({
       localStorage.setItem(
         `${ONBOARDING_SALJARE_KEY}:${userId}`,
         JSON.stringify({
-          bolagsuppgifter: { bolag, orgnr, ort, adress, presentation: presentationFil },
+          bolagsuppgifter: { bolag, orgnr, ort, adress, postnr, presentation: presentationFil },
           saljaruppgifter: {
             fornamn: bankid.fornamn,
             efternamn: bankid.efternamn,
@@ -366,7 +367,7 @@ function Step2({
       personnr: bankid.personnr,
       telefon,
       epost,
-      ...(role === "saljare" && { ort, adress }),
+      ...(role === "saljare" && { ort, adress, postnr }),
       ...(bolag && { bolag }),
       ...(orgnr && { orgnr }),
       ...(presentationValue && { presentation: presentationValue }),
@@ -494,8 +495,16 @@ function Step2({
                   value={adress}
                   onChange={setAdress}
                   onBlur={() => setAdressTouched(true)}
-                  placeholder="Storgatan 1, 113 27"
+                  placeholder="Storgatan 1"
                   error={adressError}
+                />
+                <InputField
+                  label="Postnummer *"
+                  value={postnr}
+                  onChange={(v) => setPostnr(formatPostnr(v))}
+                  onBlur={() => setPostnrTouched(true)}
+                  placeholder="113 27"
+                  error={postnrError}
                 />
                 <div className="md:col-span-2">
                   <FileUploadField
@@ -559,7 +568,7 @@ function Step2({
             </WireBox>
 
             {!arFirmatecknare && (
-              <WireBox label="Firmatecknarens uppgifter" variant="dashed">
+              <WireBox label="Firmatecknarens uppgifter">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <InputField
                     label="Roll *"
@@ -725,7 +734,7 @@ function FileUploadField({
           </button>
         </div>
       ) : (
-        <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-button border border-dashed border-foreground/25 bg-muted/20 px-3 text-sm text-muted-foreground transition-colors duration-150 hover:border-foreground/40">
+        <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-button border border-foreground/15 bg-background px-3 text-sm text-muted-foreground transition-colors duration-150 hover:border-foreground/40">
           <input
             type="file"
             accept=".pdf,.doc,.docx"

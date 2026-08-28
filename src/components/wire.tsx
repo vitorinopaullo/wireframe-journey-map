@@ -18,9 +18,9 @@ export function WireBox({
 }) {
   const border =
     variant === "dashed"
-      ? "border border-foreground/10 bg-muted/20"
+      ? "border border-foreground/10 bg-card"
       : variant === "ghost"
-      ? "border border-muted-foreground/20 bg-muted/30"
+      ? "border border-muted-foreground/20 bg-card"
       : "border border-foreground/15 bg-card";
   return (
     <div id={id} className={`rounded-card ${border} p-4 ${className}`}>

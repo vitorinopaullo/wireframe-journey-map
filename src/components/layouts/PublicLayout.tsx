@@ -116,7 +116,7 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-6 py-10">{children ?? <Outlet />}</main>
-      <footer className="border-t border-foreground/20">
+      <footer className="border-t border-foreground/20 bg-card">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="grid grid-cols-1 gap-8 border-b border-dashed border-muted-foreground/40 pb-10 md:grid-cols-4">
             {footerCols.map((col, i) => (
@@ -143,11 +143,7 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
               </div>
             ))}
           </div>
-          <div className="mt-6 flex flex-col items-center justify-between gap-2 text-xs text-muted-foreground md:flex-row">
-            <span>CC Projects × Trelink — wireframe v0.1</span>
-            <span className="font-mono">Publik yta</span>
-          </div>
-          <div className="mt-2 text-center text-xs text-muted-foreground md:text-left">
+          <div className="mt-6 text-center text-xs text-muted-foreground md:text-left">
             © 2026 Trelink AB · Org.nr XXXXXX-XXXX
           </div>
         </div>
