@@ -1137,18 +1137,6 @@ function CreateListing() {
         </>
       )}
 
-      {/* Validation hints under content */}
-      {validation[step].length > 0 && (
-        <WireBox className="mb-6">
-          <Annotation>Komplettera innan nästa steg</Annotation>
-          <ul className="mt-2 list-inside list-disc text-sm">
-            {validation[step].map((e) => (
-              <li key={e}>{e}</li>
-            ))}
-          </ul>
-        </WireBox>
-      )}
-
       {/* Footer nav */}
       <div className="sticky bottom-0 -mx-4 flex items-center justify-between gap-3 border-t border-foreground/20 bg-background/95 px-4 py-4 backdrop-blur">
         <div className="flex items-center gap-2">
@@ -1168,7 +1156,7 @@ function CreateListing() {
           {step < 3 ? (
             <WireBtn
               onClick={() => setStep((s) => s + 1)}
-              disabled={(step === 1 || step === 2) && !canContinue}
+              disabled={(step === 0 || step === 1 || step === 2) && !canContinue}
             >
               Nästa: {STEPS[step + 1]} →
             </WireBtn>
