@@ -378,6 +378,15 @@ const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
   { namn: "Inventarielista (Servering)", hint: "PDF · fylls i via mall online" },
 ];
 
+// PDF-uppladdningar specifika för Skönhetssalong (Frisör/Nagelsalong/Massage/Estetisk) —
+// namn + hjälptext, renderas i en lista. OBS: generiska förslag, ej juridiskt
+// avstämda — stäm av exakt vilka tillstånd som krävs innan detta anses slutgiltigt.
+const FRISOR_UPPLADDNINGAR: { namn: string; hint: string }[] = [
+  { namn: "Ritning (Skönhetssalong)", hint: "PDF · planlösning över salongsytan" },
+  { namn: "Hygientillstånd/registrering (Skönhetssalong)", hint: "PDF · registrering hos berörd myndighet, om tillämpligt" },
+  { namn: "Inventarielista (Skönhetssalong)", hint: "PDF · fylls i via mall online, frivilligt" },
+];
+
 const emptyServeringFalt: ServeringFalt = {
   lage: "",
   interior: "",
@@ -2189,9 +2198,6 @@ function FrisorFaltgrupp({
   docStatus: (name: string) => DocState;
   setDoc: (name: string, s: DocState) => void;
 }) {
-  const ritningNamn = "Ritning (Skönhetssalong)";
-  const ritningStatus = docStatus(ritningNamn);
-
   return (
     <>
       <Annotation>Skönhetssalong — fält specifika för skönhetssalonger.</Annotation>
@@ -2260,26 +2266,11 @@ function FrisorFaltgrupp({
         </div>
 
         <div className="border-t border-foreground/10 pt-4">
-          <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-start gap-3">
-              <DocStatusDot state={ritningStatus} />
-              <div>
-                <div className="text-sm font-medium">Ritning</div>
-                <Annotation>PDF · planlösning över salongsytan</Annotation>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <DocStatusTag state={ritningStatus} />
-              {ritningStatus === "saknas" || ritningStatus === "komplettera" ? (
-                <WireBtn variant="secondary" onClick={() => setDoc(ritningNamn, "uppladdad")}>
-                  Ladda upp
-                </WireBtn>
-              ) : (
-                <WireBtn variant="ghost" onClick={() => setDoc(ritningNamn, "saknas")}>
-                  Byt fil
-                </WireBtn>
-              )}
-            </div>
+          <FaltgruppRubrik>Dokument</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            {FRISOR_UPPLADDNINGAR.map((doc) => (
+              <DocUploadRad key={doc.namn} namn={doc.namn} hint={doc.hint} docStatus={docStatus} setDoc={setDoc} />
+            ))}
           </div>
         </div>
       </div>
