@@ -792,6 +792,7 @@ function CreateListing() {
 
       {/* STEP 0 — Paket */}
       {step === 0 && (
+        <>
         <WireBox label="Välj paket — detta styr avgift, dokument och process" className="mb-6">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             {cats.map((c) => {
@@ -837,10 +838,12 @@ function CreateListing() {
               );
             })}
           </div>
-          <div className="mt-4 grid grid-cols-1 gap-6 border-t border-foreground/10 pt-4 md:grid-cols-2">
+        </WireBox>
+
+        <WireBox label="Uppdragsavtal" className="mb-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <Annotation>Uppdragsavtal</Annotation>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 Innan du skickar in underlaget kan du se hur avtalet du signerar med TreLink ser ut —
                 samma mall som gäller för {activeCat.name}.
               </p>
@@ -855,6 +858,7 @@ function CreateListing() {
             </div>
           </div>
         </WireBox>
+        </>
       )}
 
       <UppdragsavtalPreviewModal
