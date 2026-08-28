@@ -24,7 +24,7 @@ export type Listing = {
 
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-foreground/20 bg-background p-1.5">
+    <div className="border border-foreground/20 bg-card p-1.5">
       <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-0.5 truncate text-xs font-medium tabular-nums">{value}</div>
     </div>
@@ -38,7 +38,7 @@ export function ListingCard({ l }: { l: Listing }) {
     <Link
       to="/annons/$id"
       params={{ id: l.id }}
-      className="group flex h-full flex-col overflow-hidden rounded-card bg-background shadow-md transition-shadow duration-150 ease-standard hover:shadow-lg"
+      className="group flex h-full flex-col overflow-hidden rounded-card bg-card shadow-md transition-shadow duration-150 ease-standard hover:shadow-lg"
     >
       <div className="flex h-48 items-center justify-center bg-muted/30 text-xs text-muted-foreground">
         [ Bild · {l.kat} ]

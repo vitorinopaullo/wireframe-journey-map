@@ -21,7 +21,7 @@ export function WireBox({
       ? "border border-foreground/10 bg-muted/20"
       : variant === "ghost"
       ? "border border-muted-foreground/20 bg-muted/30"
-      : "border border-foreground/15 bg-background";
+      : "border border-foreground/15 bg-card";
   return (
     <div id={id} className={`rounded-card ${border} p-4 ${className}`}>
       {label && (
@@ -60,7 +60,7 @@ export function WireBtn({
     variant === "primary"
       ? "bg-[var(--color-primary)] text-[var(--color-white)] border-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] hover:border-[var(--color-primary-hover)] hover:opacity-100"
       : variant === "secondary"
-      ? "bg-background text-foreground border-foreground/15"
+      ? "bg-card text-foreground border-foreground/15"
       : variant === "tertiary"
       ? "border-transparent bg-transparent px-0 text-[var(--color-interactive)] underline-offset-4 hover:underline hover:opacity-100"
       : "bg-transparent text-foreground border-dashed border-muted-foreground/50";
@@ -88,7 +88,7 @@ export function WireField({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
-      <div className="flex h-11 items-center rounded-button border border-foreground/15 bg-background px-3 text-sm text-muted-foreground">
+      <div className="flex h-11 items-center rounded-button border border-foreground/15 bg-card px-3 text-sm text-muted-foreground">
         {type === "select" ? `▾ ${placeholder ?? ""}` : placeholder ?? `[ ${label} ]`}
       </div>
       {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
@@ -102,7 +102,7 @@ export function StatusDot({ state }: { state: "done" | "active" | "pending" }) {
       ? "bg-[var(--color-success)]"
       : state === "active"
       ? "bg-[var(--color-primary)] ring-2 ring-[var(--color-primary)]/25"
-      : "bg-background border border-foreground/25";
+      : "bg-card border border-foreground/25";
   return <span className={`inline-block h-3 w-3 rounded-full ${cls}`} />;
 }
 
