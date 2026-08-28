@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Check, X } from "lucide-react";
+import { Check, X, Upload } from "lucide-react";
+import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { initialWorkflow, logEntry, canSellerEdit } from "@/lib/annons-workflow";
@@ -618,15 +619,53 @@ function CreateListing() {
   const setDoc = (name: string, s: DocState) =>
     setDraft((d) => ({ ...d, docs: { ...d.docs, [name]: s } }));
 
-  const addBildPlaceholder = (docName: string) =>
-    setDraft((d) => {
-      const bilder = [...d.bilder, `Bild ${d.bilder.length + 1}`];
-      return {
-        ...d,
-        bilder,
-        docs: { ...d.docs, [docName]: bilder.length >= BILD_ANTAL_KRAV ? "uppladdad" : "saknas" },
-      };
+  // object-URL-förhandsgranskningar per filnamn — bara i minnet, inte persisterat
+  // (draft.bilder sparar filnamnen, som redan gjordes innan denna funktion fanns).
+  const [bildPreviews, setBildPreviews] = useState<Record<string, string>>({});
+
+  function setBilder(docName: string, bilder: string[]) {
+    setDraft((d) => ({
+      ...d,
+      bilder,
+      docs: { ...d.docs, [docName]: bilder.length >= BILD_ANTAL_KRAV ? "uppladdad" : "saknas" },
+    }));
+  }
+
+  const addBilder = (docName: string, files: File[]) => {
+    const remaining = BILD_ANTAL_KRAV - draft.bilder.length;
+    const toAdd = files.slice(0, remaining);
+    if (files.length > toAdd.length) {
+      toast(`Max ${BILD_ANTAL_KRAV} bilder valda — resten ignorerades.`);
+    }
+    if (toAdd.length === 0) return;
+    setBildPreviews((p) => ({
+      ...p,
+      ...Object.fromEntries(toAdd.map((f) => [f.name, URL.createObjectURL(f)])),
+    }));
+    setBilder(docName, [...draft.bilder, ...toAdd.map((f) => f.name)]);
+  };
+
+  const replaceBild = (docName: string, index: number, file: File) => {
+    const gammalt = draft.bilder[index];
+    setBildPreviews((p) => {
+      const next = { ...p };
+      if (gammalt && next[gammalt]) URL.revokeObjectURL(next[gammalt]);
+      next[file.name] = URL.createObjectURL(file);
+      return next;
     });
+    setBilder(docName, draft.bilder.map((b, i) => (i === index ? file.name : b)));
+  };
+
+  const removeBild = (docName: string, index: number) => {
+    const borttagen = draft.bilder[index];
+    setBildPreviews((p) => {
+      const next = { ...p };
+      if (borttagen && next[borttagen]) URL.revokeObjectURL(next[borttagen]);
+      delete next[borttagen];
+      return next;
+    });
+    setBilder(docName, draft.bilder.filter((_, i) => i !== index));
+  };
 
   const setTypFalt = <T extends keyof Draft["typFalt"], K extends keyof Draft["typFalt"][T]>(
     typ: T,
@@ -1025,7 +1064,10 @@ function CreateListing() {
                     doc={d}
                     status={s}
                     bilder={draft.bilder}
-                    onUpload={() => addBildPlaceholder(d.name)}
+                    previews={bildPreviews}
+                    onFilesSelected={(files) => addBilder(d.name, files)}
+                    onReplace={(index, file) => replaceBild(d.name, index, file)}
+                    onRemove={(index) => removeBild(d.name, index)}
                   />
                 );
               }
@@ -1262,13 +1304,22 @@ function BildGalleri({
   doc,
   status,
   bilder,
-  onUpload,
+  previews,
+  onFilesSelected,
+  onReplace,
+  onRemove,
 }: {
   doc: DocSpec;
   status: DocState;
   bilder: string[];
-  onUpload: () => void;
+  previews: Record<string, string>;
+  onFilesSelected: (files: File[]) => void;
+  onReplace: (index: number, file: File) => void;
+  onRemove: (index: number) => void;
 }) {
+  const [dragOver, setDragOver] = useState(false);
+  const full = bilder.length >= BILD_ANTAL_KRAV;
+
   return (
     <div className="rounded-card border border-foreground/15 bg-background p-3">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
@@ -1287,24 +1338,88 @@ function BildGalleri({
         Föreslagna bilder: 1 bild av fasad/skylt, 2-3 bilder av interiör/ytan, 1 bild av entré, 1 bild av
         eventuell uteplats eller specialutrustning, 1-2 bilder av detaljer som gör objektet attraktivt.
       </p>
+
+      {!full && (
+        <label
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOver(true);
+          }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragOver(false);
+            const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+            if (files.length) onFilesSelected(files);
+          }}
+          className={`mb-3 flex cursor-pointer flex-col items-center justify-center gap-1 rounded-card border p-4 text-center text-sm transition-colors duration-150 ${
+            dragOver
+              ? "border-[var(--color-interactive)] bg-[var(--color-purple-50)]"
+              : "border-foreground/15 bg-muted/20 hover:border-foreground/30"
+          }`}
+        >
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const files = Array.from(e.target.files ?? []);
+              if (files.length) onFilesSelected(files);
+              e.target.value = "";
+            }}
+          />
+          <Upload className="h-5 w-5 text-muted-foreground" />
+          <span className="font-medium">Ladda upp bilder</span>
+          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            Släpp filer här eller klicka för att välja · JPG/PNG
+          </span>
+        </label>
+      )}
+
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {Array.from({ length: BILD_ANTAL_KRAV }).map((_, i) => {
-          const uppladdad = i < bilder.length;
+          const namn = bilder[i];
+          const previewUrl = namn ? previews[namn] : undefined;
+          if (!namn) {
+            return (
+              <div
+                key={i}
+                className="flex h-24 items-center justify-center rounded-card border border-dashed border-foreground/15 bg-muted/10 text-center text-[10px] text-muted-foreground"
+              >
+                Bild {i + 1}
+              </div>
+            );
+          }
           return (
-            <div
-              key={i}
-              className="flex h-24 flex-col items-center justify-center gap-1 rounded-card border border-foreground/15 bg-muted/20 text-center text-[10px] text-muted-foreground"
-            >
-              {uppladdad ? (
-                <span>✓ {bilder[i]}</span>
-              ) : (
-                <>
-                  <span>[ Bild {i + 1} ]</span>
-                  <WireBtn variant="secondary" className="px-2 py-1 text-[10px]" onClick={onUpload}>
-                    Ladda upp
-                  </WireBtn>
-                </>
-              )}
+            <div key={i} className="group relative h-24 overflow-hidden rounded-card border border-foreground/15 bg-muted/20">
+              <label className="block h-full w-full cursor-pointer" title={`Byt ut ${namn}`}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) onReplace(i, file);
+                    e.target.value = "";
+                  }}
+                />
+                {previewUrl ? (
+                  <img src={previewUrl} alt={namn} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="flex h-full items-center justify-center px-1 text-center text-[10px] text-muted-foreground">
+                    {namn}
+                  </span>
+                )}
+              </label>
+              <button
+                type="button"
+                onClick={() => onRemove(i)}
+                aria-label={`Ta bort ${namn}`}
+                className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-foreground/70 text-background opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+              >
+                <X className="h-3 w-3" />
+              </button>
             </div>
           );
         })}
