@@ -19,6 +19,7 @@ type Row = {
   id: string;
   titel: string;
   kat: "Lokal" | "Inkråm" | "Bolag";
+  ort: string;
   status: WorkflowState | null;
   inkommen: string;
   docsInlamnade: number;
@@ -36,6 +37,7 @@ function toRows(list: any[]): Row[] {
         id: item.id,
         titel: item.titel || "—",
         kat: catId ? KAT_NAMN[catId] : "Lokal",
+        ort: item.draft?.ort || "",
         status: (item.workflow?.state as WorkflowState) ?? null,
         inkommen: item.skickadAt || "",
         docsInlamnade: specs.filter((d) => (docs[d.name] ?? "saknas") !== "saknas").length,
@@ -140,6 +142,8 @@ function AdminAnnonser() {
   const [rows, setRows] = useState<Row[]>(() => toRows(readAnnonser()));
   const [justUpdatedId, setJustUpdatedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>(() => defaultTab(toRows(readAnnonser())));
+  const [ortFilter, setOrtFilter] = useState("alla");
+  const [sortBy, setSortBy] = useState<"inkommen" | "ort">("inkommen");
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
@@ -157,6 +161,17 @@ function AdminAnnonser() {
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
+
+  const orter = Array.from(new Set(rows.map((r) => r.ort).filter(Boolean))).sort((a, b) =>
+    a.localeCompare(b, "sv"),
+  );
+
+  const visningsRader = rows
+    .filter((r) => tabForStatus(r.status) === activeTab)
+    .filter((r) => ortFilter === "alla" || r.ort === ortFilter)
+    .sort((a, b) =>
+      sortBy === "ort" ? a.ort.localeCompare(b.ort, "sv") : (b.inkommen || "").localeCompare(a.inkommen || ""),
+    );
 
   return (
     <AdminLayout>
@@ -186,13 +201,37 @@ function AdminAnnonser() {
         })}
       </div>
 
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <label className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+          Ort
+          <select
+            value={ortFilter}
+            onChange={(e) => setOrtFilter(e.target.value)}
+            className="rounded-button border border-foreground/15 bg-background px-2 py-1 text-xs text-foreground"
+          >
+            <option value="alla">Alla</option>
+            {orter.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          onClick={() => setSortBy((s) => (s === "inkommen" ? "ort" : "inkommen"))}
+          className="rounded-pill border border-foreground/20 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground transition-colors duration-150 hover:border-foreground/40 hover:text-foreground"
+        >
+          Sortera: {sortBy === "inkommen" ? "Senast inkommen" : "Ort A–Ö"}
+        </button>
+      </div>
+
       <div className="space-y-3">
-        {rows.filter((r) => tabForStatus(r.status) === activeTab).length === 0 && (
+        {visningsRader.length === 0 && (
           <WireBox variant="dashed">
             <Annotation>Inga ärenden i denna flik.</Annotation>
           </WireBox>
         )}
-        {rows.filter((r) => tabForStatus(r.status) === activeTab).map((r) => (
+        {visningsRader.map((r) => (
           <div
             key={r.id}
             onClick={() => navigate({ to: "/admin/annonser/$id", params: { id: r.id } })}
@@ -222,6 +261,7 @@ function AdminAnnonser() {
                 </div>
                 <h3 className="font-medium">{r.titel}</h3>
                 <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+                  <span>Ort: {r.ort || "—"}</span>
                   <span>
                     Dokument: {r.docsInlamnade}/{r.docsTotal} inlämnade
                   </span>

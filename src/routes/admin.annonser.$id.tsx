@@ -1621,6 +1621,12 @@ function AdminAnnonsDetail() {
               onSave={saveDraftField("adress")}
             />
             <Field
+              k="Ort"
+              v={draft.ort}
+              edited={!!item.trelinkEdits?.["draft.ort"]}
+              onSave={saveDraftField("ort")}
+            />
+            <Field
               k="Verksamhetstyp"
               v={draft.verksamhet}
               edited={!!item.trelinkEdits?.["draft.verksamhet"]}

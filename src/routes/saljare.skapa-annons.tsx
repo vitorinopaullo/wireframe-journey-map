@@ -524,6 +524,7 @@ function CreateListing() {
   const [uppdragsavtalOpen, setUppdragsavtalOpen] = useState(false);
   const [hyresvardEmailTouched, setHyresvardEmailTouched] = useState(false);
   const [adressTouched, setAdressTouched] = useState(false);
+  const [ortTouched, setOrtTouched] = useState(false);
   const [bolagOrt, setBolagOrt] = useState("");
 
   useEffect(() => {
@@ -679,6 +680,7 @@ function CreateListing() {
     const errs: Record<number, string[]> = { 0: [], 1: [], 2: [], 3: [] };
     if (!draft.cat) errs[0].push("Välj paket.");
     if (!draft.adress) errs[1].push("Ange försäljningsadress.");
+    if (!draft.ort) errs[1].push("Ange ort.");
     if (!draft.verksamhet) errs[1].push("Ange verksamhetstyp.");
     if (draft.cat === "aktie" && !/^\d{6}-?\d{4}$/.test(draft.orgnr))
       errs[1].push("Org.nr i format 556xxx-xxxx.");
@@ -889,6 +891,14 @@ function CreateListing() {
                 placeholder="Hornsgatan 45, Stockholm"
                 hint="Adressen till objektet som säljs — kan skilja sig från bolagets registrerade adress."
                 error={adressTouched && !draft.adress ? "Ange försäljningsadress." : undefined}
+              />
+              <WireFieldEditable
+                label="Ort *"
+                value={draft.ort}
+                onChange={(v) => set("ort", v)}
+                onBlur={() => setOrtTouched(true)}
+                placeholder="Stockholm"
+                error={ortTouched && !draft.ort ? "Ange ort." : undefined}
               />
               <VerksamhetstypSelect
                 value={draft.verksamhet}
