@@ -1117,21 +1117,12 @@ function CreateListing() {
             </label>
           </WireBox>
 
-          {canSubmit ? (
+          {canSubmit && (
             <WireBox className="mb-6">
               <p className="text-sm">
                 <Check className="inline-block h-4 w-4 mr-1 align-middle" /> Allt är ifyllt. Skickar du in nu får du besked från TreLink inom 24h på vardagar.
                 Inget publiceras innan du har sett och godkänt slutversionen.
               </p>
-            </WireBox>
-          ) : (
-            <WireBox className="mb-6">
-              <Annotation>Innan du kan skicka in</Annotation>
-              <ul className="mt-2 list-inside list-disc text-sm">
-                {[...validation[1], ...validation[2], ...validation[3]].map((e) => (
-                  <li key={e}>{e}</li>
-                ))}
-              </ul>
             </WireBox>
           )}
         </>
@@ -1162,6 +1153,7 @@ function CreateListing() {
             </WireBtn>
           ) : (
             <WireBtn
+              disabled={!canSubmit}
               onClick={() => {
                 let itemId = editId ?? "";
                 try {
