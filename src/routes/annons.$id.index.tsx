@@ -93,7 +93,7 @@ function StickyCTA({
 }) {
   if (!scrolled) return null;
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/30 bg-background/95 backdrop-blur">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/30 bg-card/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
         <div className="flex items-center gap-3">
           <WireTag>{listing.kategori}</WireTag>
@@ -205,7 +205,7 @@ function ListingDetail() {
             type="button"
             onClick={visaForegaende}
             aria-label="Föregående bild"
-            className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/15 bg-background transition-colors duration-150 hover:border-foreground/30"
+            className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/15 bg-card transition-colors duration-150 hover:border-foreground/30"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -213,7 +213,7 @@ function ListingDetail() {
             type="button"
             onClick={visaNasta}
             aria-label="Nästa bild"
-            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/15 bg-background transition-colors duration-150 hover:border-foreground/30"
+            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/15 bg-card transition-colors duration-150 hover:border-foreground/30"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -366,7 +366,7 @@ function ListingDetail() {
             onClick={(e) => e.stopPropagation()}
           />
           {lightbox.caption && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-pill bg-background/90 px-3 py-1 text-xs text-foreground">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-pill bg-card/90 px-3 py-1 text-xs text-foreground">
               {lightbox.caption}
             </div>
           )}

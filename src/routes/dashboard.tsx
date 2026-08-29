@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
+import { WireBox, PageHeader, WireBtn, Annotation, StatusDot } from "@/components/wire";
 import { readAnnonser, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
 import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY } from "@/lib/kopare-workflow";
 
@@ -67,7 +67,6 @@ function Dashboard() {
             ? "Pågående affärer högst upp. Sparade objekt och affärsstatus alltid nåbara."
             : "Mina annonser, intresse på dem och pågående affärer — speglar köparens panel."
         }
-        right={<WireTag>BankID-verifierad</WireTag>}
       />
 
       {affar && (
@@ -90,7 +89,7 @@ function Dashboard() {
               ["Signering", "pending"],
               ["Tillträde", "pending"],
             ].map(([l, s]) => (
-              <div key={l} className="flex flex-col items-center gap-2 rounded-card border border-foreground/15 bg-background p-3 text-center">
+              <div key={l} className="flex flex-col items-center gap-2 rounded-card border border-foreground/15 bg-card p-3 text-center">
                 <StatusDot state={s as "done" | "active" | "pending"} />
                 <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{l}</span>
               </div>
@@ -147,7 +146,7 @@ function Dashboard() {
 
 function DashCard({ title, value, link, hint }: { title: string; value: string; link: string; hint: string }) {
   return (
-    <Link to={link} className="block border border-foreground/30 p-5 hover:border-foreground">
+    <Link to={link} className="block rounded-card border border-foreground/30 bg-card p-5 hover:border-foreground">
       <Annotation>{title}</Annotation>
       <div className="mt-2 font-mono text-3xl">{value}</div>
       <p className="mt-2 text-xs text-muted-foreground">{hint}</p>

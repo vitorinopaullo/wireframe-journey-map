@@ -129,7 +129,7 @@ function UnderlagsGranskning() {
       </div>
 
       {pdfOppnad && interest.status === "väntar-pdf" && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/30 bg-background/95 backdrop-blur">
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/30 bg-card/95 backdrop-blur">
           <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-between gap-4 px-6 py-3">
             <p className="text-sm font-medium">Vad vill du göra härnäst?</p>
             <div className="flex flex-wrap items-center gap-3">

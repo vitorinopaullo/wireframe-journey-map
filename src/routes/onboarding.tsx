@@ -216,7 +216,7 @@ function RoleCard({
       className={`w-full rounded-card text-left border p-6 shadow-sm transition-shadow duration-150 ease-standard active:scale-[0.99] ${
         active
           ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
-          : "border-foreground/15 hover:shadow-md"
+          : "border-foreground/15 bg-card hover:shadow-md"
       }`}
     >
       <div className="flex items-center justify-between">
@@ -661,7 +661,7 @@ function InputField({
           onBlur={onBlur}
           placeholder={placeholder}
           rows={3}
-          className={`w-full rounded-button border bg-background px-3 py-2 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
+          className={`w-full rounded-button border bg-card px-3 py-2 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
             error
               ? "border-destructive focus:border-destructive focus:ring-destructive/40"
               : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
@@ -674,7 +674,7 @@ function InputField({
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           placeholder={placeholder}
-          className={`h-11 w-full rounded-button border bg-background px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
+          className={`h-11 w-full rounded-button border bg-card px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
             error
               ? "border-destructive focus:border-destructive focus:ring-destructive/40"
               : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
@@ -694,7 +694,7 @@ function ReadonlyField({ label, value, hint }: { label: string; value: string; h
   return (
     <label className="block">
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
-      <div className="flex h-11 items-center rounded-button border border-foreground/15 bg-background px-3 text-sm">
+      <div className="flex h-11 items-center rounded-button border border-foreground/15 bg-card px-3 text-sm">
         {value}
       </div>
       {hint && <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">{hint}</span>}
@@ -720,7 +720,7 @@ function FileUploadField({
     <div>
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
       {fileName ? (
-        <div className="flex h-11 items-center justify-between rounded-button border border-foreground/15 bg-background px-3 text-sm">
+        <div className="flex h-11 items-center justify-between rounded-button border border-foreground/15 bg-card px-3 text-sm">
           <span className="flex min-w-0 items-center gap-2">
             <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
             <span className="truncate">{fileName}</span>
@@ -734,7 +734,7 @@ function FileUploadField({
           </button>
         </div>
       ) : (
-        <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-button border border-foreground/15 bg-background px-3 text-sm text-muted-foreground transition-colors duration-150 hover:border-foreground/40">
+        <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-button border border-foreground/15 bg-card px-3 text-sm text-muted-foreground transition-colors duration-150 hover:border-foreground/40">
           <input
             type="file"
             accept=".pdf,.doc,.docx"

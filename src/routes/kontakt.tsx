@@ -33,7 +33,7 @@ function Kontakt() {
                 <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                   Meddelande
                 </span>
-                <div className="flex h-32 items-start rounded-button border border-foreground/15 bg-background p-3 text-sm text-muted-foreground">
+                <div className="flex h-32 items-start rounded-button border border-foreground/15 bg-card p-3 text-sm text-muted-foreground">
                   [ Ditt meddelande ]
                 </div>
               </label>

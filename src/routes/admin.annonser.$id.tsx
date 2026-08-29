@@ -251,7 +251,7 @@ function Field({
               setEditing(false);
             }
           }}
-          className="mt-1 h-8 w-full border border-foreground/50 bg-background px-2 text-sm"
+          className="mt-1 h-8 w-full border border-foreground/50 bg-card px-2 text-sm"
         />
       ) : (
         <button
@@ -324,7 +324,7 @@ function TagsField({
             }
           }}
           placeholder="Egen tagg…"
-          className="h-7 flex-1 border border-foreground/15 bg-background px-2 text-xs focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+          className="h-7 flex-1 border border-foreground/15 bg-card px-2 text-xs focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
         />
         <button
           type="button"
@@ -1163,7 +1163,7 @@ function AdminAnnonsDetail() {
                 {prisLocked ? "Pris (kr)" : "Sätt pris (kr)"}
               </span>
               {prisLocked ? (
-                <div className="flex h-11 w-full items-center rounded-button border border-foreground/15 bg-muted/20 px-3 text-sm tabular-nums">
+                <div className="flex h-11 w-full items-center rounded-button border border-foreground/15 bg-card px-3 text-sm tabular-nums">
                   {item.pris ? `${item.pris} kr` : "—"}
                 </div>
               ) : (
@@ -1173,7 +1173,7 @@ function AdminAnnonsDetail() {
                   value={prisInput}
                   onChange={(e) => setPrisInput(e.target.value)}
                   placeholder="1 200 000"
-                  className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                  className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
                 />
               )}
               <span className="mt-1 block text-[11px] text-muted-foreground">
@@ -1193,7 +1193,7 @@ function AdminAnnonsDetail() {
                 value={draft.yta || ""}
                 onChange={(e) => setDraftField("yta", e.target.value)}
                 placeholder="180"
-                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <label className="block">
@@ -1205,7 +1205,7 @@ function AdminAnnonsDetail() {
                 value={draft.hyra || ""}
                 onChange={(e) => setDraftField("hyra", e.target.value)}
                 placeholder="45 000"
-                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <label className="block">
@@ -1217,7 +1217,7 @@ function AdminAnnonsDetail() {
                 value={draft.fastighetsskatt || ""}
                 onChange={(e) => setDraftField("fastighetsskatt", e.target.value)}
                 placeholder="1 000"
-                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <label className="block">
@@ -1229,7 +1229,7 @@ function AdminAnnonsDetail() {
                 value={draft.fastighetsbeteckning || ""}
                 onChange={(e) => setDraftField("fastighetsbeteckning", e.target.value)}
                 placeholder="Innerstaden 12:34"
-                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             </>
@@ -1244,7 +1244,7 @@ function AdminAnnonsDetail() {
                   value={draft.omsattning || ""}
                   onChange={(e) => setDraftField("omsattning", e.target.value)}
                   placeholder="1,9 Mkr"
-                  className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                  className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
                 />
               </label>
             )}
@@ -1255,7 +1255,7 @@ function AdminAnnonsDetail() {
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Kvadratmeterpris (kr/kvm/år)
               </span>
-              <div className="flex h-10 items-center rounded-button border border-foreground/15 bg-muted/20 px-3 text-sm tabular-nums text-muted-foreground">
+              <div className="flex h-10 items-center rounded-button border border-foreground/15 bg-card px-3 text-sm tabular-nums text-muted-foreground">
                 {kvmPris != null ? `${kvmPris.toLocaleString("sv-SE")} kr/kvm/år` : "—"}
               </div>
             </div>
@@ -1276,7 +1276,7 @@ function AdminAnnonsDetail() {
             onChange={(e) => setKomplText(e.target.value)}
             rows={3}
             placeholder="Vad behöver säljaren komplettera övergripande?"
-            className="w-full border border-foreground/50 bg-background px-3 py-2 text-sm"
+            className="w-full border border-foreground/50 bg-card px-3 py-2 text-sm"
           />
           <div className="mt-2 flex justify-end gap-2">
             <WireBtn variant="ghost" onClick={() => { setKomplOpen(false); setKomplText(""); }}>
@@ -1302,7 +1302,7 @@ function AdminAnnonsDetail() {
               <select
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
-                className="w-full border border-foreground/50 bg-background px-3 py-2 text-sm"
+                className="w-full border border-foreground/50 bg-card px-3 py-2 text-sm"
               >
                 <option value="">— välj orsak —</option>
                 {avvisningsOrsaker.map((o) => <option key={o}>{o}</option>)}
@@ -1314,7 +1314,7 @@ function AdminAnnonsDetail() {
                 value={rejectNote}
                 onChange={(e) => setRejectNote(e.target.value)}
                 rows={3}
-                className="w-full border border-foreground/50 bg-background px-3 py-2 text-sm"
+                className="w-full border border-foreground/50 bg-card px-3 py-2 text-sm"
                 placeholder="Skriv något konstruktivt — säljaren ser detta."
               />
             </div>
@@ -1418,7 +1418,7 @@ function AdminAnnonsDetail() {
                 value={utkastRubrik}
                 onChange={(e) => setUtkastRubrik(e.target.value)}
                 placeholder="T.ex. Välskött café i centrala Stockholm"
-                className="h-11 w-full rounded-button border border-foreground/15 bg-background px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <label className="block">
@@ -1430,7 +1430,7 @@ function AdminAnnonsDetail() {
                 onChange={(e) => setUtkastBeskrivning(e.target.value)}
                 rows={6}
                 placeholder="Skriv annonstexten baserat på säljarens underlag…"
-                className="w-full rounded-button border border-foreground/15 bg-background px-3 py-2 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                className="w-full rounded-button border border-foreground/15 bg-card px-3 py-2 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
 
@@ -1735,7 +1735,7 @@ function AdminAnnonsDetail() {
                         onChange={(e) => setDocKomplText(e.target.value)}
                         rows={3}
                         placeholder="Skriv tydligt vad säljaren ska göra. Detta skickas direkt till säljaren."
-                        className="w-full border border-foreground/50 bg-background px-3 py-2 text-sm"
+                        className="w-full border border-foreground/50 bg-card px-3 py-2 text-sm"
                       />
                       <div className="mt-2 flex justify-end gap-2">
                         <WireBtn variant="ghost" onClick={() => { setActiveDoc(null); setDocKomplText(""); }}>Avbryt</WireBtn>

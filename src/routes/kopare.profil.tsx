@@ -144,7 +144,7 @@ function Profile() {
       {tab === "fakturor" && (
         <WireBox label="Fakturahistorik">
           <table className="w-full text-sm">
-            <thead className="sticky top-0 border-b border-foreground/20 bg-background font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+            <thead className="sticky top-0 border-b border-foreground/20 bg-card font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
               <tr>
                 <th className="py-2 text-left">Nr</th>
                 <th className="py-2 text-left">Beskrivning</th>

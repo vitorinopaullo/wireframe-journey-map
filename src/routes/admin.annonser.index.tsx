@@ -207,7 +207,7 @@ function AdminAnnonser() {
           <select
             value={ortFilter}
             onChange={(e) => setOrtFilter(e.target.value)}
-            className="rounded-button border border-foreground/15 bg-background px-2 py-1 text-xs text-foreground"
+            className="rounded-button border border-foreground/15 bg-card px-2 py-1 text-xs text-foreground"
           >
             <option value="alla">Alla</option>
             {orter.map((o) => (

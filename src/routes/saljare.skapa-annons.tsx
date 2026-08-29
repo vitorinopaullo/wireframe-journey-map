@@ -80,6 +80,22 @@ const KONTOR_TAGGAR_INTERIOR = [
   "Reception",
   "Ljust",
   "Rymligt",
+  "Skandinaviskt design",
+  "Avskalat och naturnära",
+  "Ljust och fräscht",
+  "Vintage möbler",
+  "Antikt och kuriosa",
+  "Sekelskiftsstil",
+  "Lantligt inredning",
+  "Franskt",
+  "Shabby chic",
+  "Stugstil",
+  "Modern",
+  "Lyx känsla",
+  "Art deco",
+  "Bohemiskt",
+  "Etnisk design",
+  "Eklektisk stil",
 ];
 const KONTOR_TAGGAR_PLANLOSNING = [
   "Lunchrum",
@@ -139,6 +155,18 @@ const BUTIK_TAGGAR_LAGE = [
   "Nära apotek",
   "Nära livsmedelsbutik",
   "Hiss",
+  "Skyltfönster",
+  "Markplan",
+  "Butikslokal",
+  "Handelsstråk",
+  "Synlig",
+  "Exponering",
+  "Fotgängarflöde",
+  "Gågata",
+  "Handelsplats",
+  "Köpcentrum",
+  "Galleria",
+  "Etablerat handelsområde",
 ];
 const BUTIK_TAGGAR_INTERIOR = [
   "Modernt",
@@ -160,6 +188,22 @@ const BUTIK_TAGGAR_INTERIOR = [
   "Reception",
   "Ljust",
   "Rymligt",
+  "Skandinaviskt design",
+  "Avskalat och naturnära",
+  "Ljust och fräscht",
+  "Vintage möbler",
+  "Antikt och kuriosa",
+  "Sekelskiftsstil",
+  "Lantligt inredning",
+  "Franskt",
+  "Shabby chic",
+  "Stugstil",
+  "Modern",
+  "Lyx känsla",
+  "Art deco",
+  "Bohemiskt",
+  "Etnisk design",
+  "Eklektisk stil",
 ];
 const BUTIK_TAGGAR_PLANLOSNING = [
   "Lunchrum",
@@ -182,6 +226,16 @@ const BUTIK_TAGGAR_PLANLOSNING = [
   "Inflyttningsklart",
   "Tillgänglighetsanpassad",
   "Co-working yta",
+  "Flexibel planlösning",
+  "Rektangulär planlösning",
+  "Genomgående planlösning",
+  "Publikt flöde",
+  "Skyltfönster läge",
+  "Rundgång",
+  "Hörnlokal",
+  "Säljyta",
+  "Bakutrymme",
+  "Lastzon",
 ];
 const BUTIK_TAGGAR_EKONOMI = ["Förmånlig hyra", "Värme ingår", "Vatten ingår", "Momsbefriad hyra", "Ventilation ingår", "Stabil förening"];
 const BUTIK_TAGGAR_TEKNISK_INFO = [
@@ -240,6 +294,22 @@ const LAGER_TAGGAR_INTERIOR = [
   "Reception",
   "Ljust",
   "Rymligt",
+  "Skandinaviskt design",
+  "Avskalat och naturnära",
+  "Ljust och fräscht",
+  "Vintage möbler",
+  "Antikt och kuriosa",
+  "Sekelskiftsstil",
+  "Lantligt inredning",
+  "Franskt",
+  "Shabby chic",
+  "Stugstil",
+  "Modern",
+  "Lyx känsla",
+  "Art deco",
+  "Bohemiskt",
+  "Etnisk design",
+  "Eklektisk stil",
 ];
 const LAGER_TAGGAR_PLANLOSNING = [
   "Lunchrum",
@@ -312,6 +382,22 @@ const SERVERING_TAGGAR_INTERIOR = [
   "Gammal maskinpark",
   "Funktionsduglig maskinpark",
   "Renoveringsbehov av kök",
+  "Skandinaviskt design",
+  "Avskalat och naturnära",
+  "Ljust och fräscht",
+  "Vintage möbler",
+  "Antikt och kuriosa",
+  "Sekelskiftsstil",
+  "Lantligt inredning",
+  "Franskt",
+  "Shabby chic",
+  "Stugstil",
+  "Modern",
+  "Lyx känsla",
+  "Art deco",
+  "Bohemiskt",
+  "Etnisk design",
+  "Eklektisk stil",
 ];
 const SERVERING_TAGGAR_PLANLOSNING = [
   "Ca 30 sittplatser",
@@ -440,6 +526,22 @@ const FRISOR_TAGGAR_INTERIOR = [
   "Reception",
   "Ljust",
   "Rymligt",
+  "Skandinaviskt design",
+  "Avskalat och naturnära",
+  "Ljust och fräscht",
+  "Vintage möbler",
+  "Antikt och kuriosa",
+  "Sekelskiftsstil",
+  "Lantligt inredning",
+  "Franskt",
+  "Shabby chic",
+  "Stugstil",
+  "Modern",
+  "Lyx känsla",
+  "Art deco",
+  "Bohemiskt",
+  "Etnisk design",
+  "Eklektisk stil",
 ];
 const FRISOR_TAGGAR_PLANLOSNING = [
   "Lunchrum",
@@ -822,8 +924,8 @@ function CreateListing() {
                 isActive
                   ? "border-[var(--color-primary)] bg-[var(--color-purple-100)]"
                   : isDone
-                  ? "border-foreground/25 bg-background"
-                  : "border-foreground/15 bg-background"
+                  ? "border-foreground/25 bg-card"
+                  : "border-foreground/15 bg-card"
               }`}
             >
               <div
@@ -864,7 +966,7 @@ function CreateListing() {
                   className={`rounded-card border p-4 text-left shadow-sm transition-colors duration-150 ease-standard ${
                     selected
                       ? "border-[var(--color-primary)] bg-[var(--color-purple-100)]"
-                      : "border-foreground/15 bg-background hover:shadow-md"
+                      : "border-foreground/15 bg-card hover:shadow-md"
                   }`}
                 >
                   <div className="mb-2 flex items-center justify-between">
@@ -1027,7 +1129,7 @@ function CreateListing() {
                       onChange={(e) => set("hyresvardEmail", e.target.value)}
                       onBlur={() => setHyresvardEmailTouched(true)}
                       placeholder="info@fastighetsbolaget.se"
-                      className={`block h-11 w-full rounded-button border bg-muted/20 px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
+                      className={`block h-11 w-full rounded-button border bg-card px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
                         showError
                           ? "border-[var(--color-danger)] focus:border-[var(--color-danger)] focus:ring-[var(--color-danger)]/30"
                           : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
@@ -1074,7 +1176,7 @@ function CreateListing() {
               return (
                 <div
                   key={d.name}
-                  className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between"
+                  className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-card p-3 md:flex-row md:items-center md:justify-between"
                 >
                   <div>
                     <div className="text-sm font-medium">
@@ -1168,13 +1270,18 @@ function CreateListing() {
               {draft.bilder.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Inga bilder uppladdade ännu.</p>
               ) : (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-col gap-2">
                   {draft.bilder.map((b) => (
                     <div
                       key={b}
-                      className="flex h-14 w-14 items-center justify-center rounded-button border border-foreground/15 bg-muted/20 text-[10px] text-muted-foreground"
+                      className="flex items-center gap-3 rounded-button border border-foreground/15 bg-card p-2"
                     >
-                      {b}
+                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-button bg-muted/20">
+                        {bildPreviews[b] && (
+                          <img src={bildPreviews[b]} alt={b} className="h-full w-full object-cover" />
+                        )}
+                      </div>
+                      <span className="truncate text-sm">{b}</span>
                     </div>
                   ))}
                 </div>
@@ -1216,7 +1323,7 @@ function CreateListing() {
       )}
 
       {/* Footer nav */}
-      <div className="sticky bottom-0 -mx-4 flex items-center justify-between gap-3 border-t border-foreground/20 bg-background/95 px-4 py-4 backdrop-blur">
+      <div className="sticky bottom-0 -mx-4 flex items-center justify-between gap-3 border-t border-foreground/20 bg-card/95 px-4 py-4 backdrop-blur">
         <div className="flex items-center gap-2">
           <WireBtn
             variant="secondary"
@@ -1321,7 +1428,7 @@ function BildGalleri({
   const full = bilder.length >= BILD_ANTAL_KRAV;
 
   return (
-    <div className="rounded-card border border-foreground/15 bg-background p-3">
+    <div className="rounded-card border border-foreground/15 bg-card p-3">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="text-sm font-medium">
@@ -1355,7 +1462,7 @@ function BildGalleri({
           className={`mb-3 flex cursor-pointer flex-col items-center justify-center gap-1 rounded-card border p-4 text-center text-sm transition-colors duration-150 ${
             dragOver
               ? "border-[var(--color-interactive)] bg-[var(--color-purple-50)]"
-              : "border-foreground/15 bg-muted/20 hover:border-foreground/30"
+              : "border-foreground/15 bg-card hover:border-foreground/30"
           }`}
         >
           <input
@@ -1385,14 +1492,14 @@ function BildGalleri({
             return (
               <div
                 key={i}
-                className="flex h-24 items-center justify-center rounded-card border border-dashed border-foreground/15 bg-muted/10 text-center text-[10px] text-muted-foreground"
+                className="flex h-24 items-center justify-center rounded-card border border-dashed border-foreground/15 bg-card text-center text-[10px] text-muted-foreground"
               >
                 Bild {i + 1}
               </div>
             );
           }
           return (
-            <div key={i} className="group relative h-24 overflow-hidden rounded-card border border-foreground/15 bg-muted/20">
+            <div key={i} className="group relative h-24 overflow-hidden rounded-card border border-foreground/15 bg-card">
               <label className="block h-full w-full cursor-pointer" title={`Byt ut ${namn}`}>
                 <input
                   type="file"
@@ -1574,7 +1681,7 @@ function UppdragsavtalPreviewModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 p-4" onClick={onClose}>
       <div
-        className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-foreground bg-background"
+        className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-foreground bg-card"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-foreground/30 px-4 py-3">
@@ -1705,7 +1812,7 @@ function VerksamhetstypSelect({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         Verksamhetstyp *
       </span>
-      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-background p-3">
+      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-card p-3">
         {VERKSAMHETSTYP_HUVUDKATEGORIER.map((k) => (
           <WireTag key={k.key} active={isHuvudkategoriActive(k.key)} onClick={() => selectHuvudkategori(k.key)}>
             {k.label}
@@ -1713,7 +1820,7 @@ function VerksamhetstypSelect({
         ))}
       </div>
       {showUndertyper && subOptions && (
-        <div className="mt-2 flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-background p-3">
+        <div className="mt-2 flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-card p-3">
           {subOptions.map((tag) => (
             <WireTag key={tag} active={value === tag} onClick={() => selectUndertyp(tag)}>
               {tag}
@@ -1763,7 +1870,7 @@ function TagMultiSelect({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
-      <div className="rounded-card border border-foreground/15 bg-background p-3">
+      <div className="rounded-card border border-foreground/15 bg-card p-3">
         {selected.length > 0 && (
           <div className="mb-3 flex flex-wrap gap-2">
             {selected.map((tag) => (
@@ -1794,7 +1901,7 @@ function TagMultiSelect({
               }
             }}
             placeholder="Egen tagg (ett par ord)…"
-            className="h-8 flex-1 border border-foreground/15 bg-background px-2 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+            className="h-8 flex-1 border border-foreground/15 bg-card px-2 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
           />
           <button
             type="button"
@@ -1860,7 +1967,7 @@ function TagToggleGroup({
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-background p-3">
+      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-card p-3">
         {options.map((tag) => (
           <WireTag key={tag} active={selected.includes(tag)} onClick={() => toggle(tag)}>
             {tag}
@@ -1890,7 +1997,7 @@ function SingleTagSelect({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
-      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-background p-3">
+      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-card p-3">
         {options.map((tag) => (
           <WireTag key={tag} active={value === tag} onClick={() => onChange(value === tag ? "" : tag)}>
             {tag}
@@ -2208,7 +2315,7 @@ function DocUploadRad({
 }) {
   const status = docStatus(namn);
   return (
-    <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-background p-3 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-card p-3 md:flex-row md:items-center md:justify-between">
       <div className="flex items-start gap-3">
         <DocStatusDot state={status} />
         <div>
@@ -2483,7 +2590,7 @@ function WireFieldEditable({
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         placeholder={placeholder}
-        className={`block h-11 w-full rounded-button border bg-muted/20 px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
+        className={`block h-11 w-full rounded-button border bg-card px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
           error
             ? "border-destructive focus:border-destructive focus:ring-destructive/40"
             : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
@@ -2524,7 +2631,7 @@ function WireArea({
         placeholder={placeholder}
         rows={3}
         maxLength={maxLength}
-        className="block w-full rounded-button border border-foreground/15 bg-muted/20 p-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+        className="block w-full rounded-button border border-foreground/15 bg-card p-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
       />
       {maxLength ? (
         <span className="mt-1 block font-mono text-[10px] text-muted-foreground/70">
@@ -2573,7 +2680,7 @@ function DocStatusDot({ state }: { state: DocState }) {
       : state === "uppladdad"
       ? "bg-foreground/40"
       : state === "komplettera"
-      ? "bg-background border border-foreground"
-      : "bg-background border border-foreground/30";
+      ? "bg-card border border-foreground"
+      : "bg-card border border-foreground/30";
   return <span className={`inline-block h-3 w-3 shrink-0 rounded-full ${cls}`} />;
 }

@@ -328,7 +328,7 @@ function SellerAnnonsDetail() {
         <select
           value={st}
           onChange={(e) => jumpTo(e.target.value as WorkflowState)}
-          className="border border-foreground/30 bg-background px-2 py-1 text-xs"
+          className="border border-foreground/30 bg-card px-2 py-1 text-xs"
         >
           {flowSteps.map((s) => (
             <option key={s.state} value={s.state}>{s.label}</option>
@@ -718,7 +718,7 @@ function SellerAnnonsDetail() {
 
       {showLandlordUpdate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md border border-foreground/20 bg-background p-6">
+          <div className="w-full max-w-md border border-foreground/20 bg-card p-6">
             <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
               Uppdatera hyresvärdens e-post
             </div>
@@ -737,7 +737,7 @@ function SellerAnnonsDetail() {
                 value={newLandlordEmail}
                 onChange={(e) => setNewLandlordEmail(e.target.value)}
                 placeholder={item.draft?.hyresvardEmail || "info@fastighetsbolaget.se"}
-                className="block h-11 w-full rounded-button border border-foreground/15 bg-muted/20 px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                className="block h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
             <div className="flex justify-end gap-2">

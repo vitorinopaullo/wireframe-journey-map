@@ -75,7 +75,7 @@ function SignModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <div
-        className="relative w-full max-w-2xl border-2 border-foreground bg-background"
+        className="relative w-full max-w-2xl border-2 border-foreground bg-card"
         onClick={(e) => e.stopPropagation()}
       >
         {/* topbar */}
@@ -385,7 +385,7 @@ function DealDetail() {
               <textarea
                 rows={3}
                 placeholder="Skriv ett meddelande till TreLink…"
-                className="w-full border border-foreground/15 bg-background p-3 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                className="w-full border border-foreground/15 bg-card p-3 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
               <div className="flex justify-end">
                 <WireBtn variant="secondary">Skicka</WireBtn>

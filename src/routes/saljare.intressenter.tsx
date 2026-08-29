@@ -49,7 +49,7 @@ function Interest() {
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="sticky top-0 border-b border-foreground/30 bg-background text-left text-muted-foreground">
+              <tr className="sticky top-0 border-b border-foreground/30 bg-card text-left text-muted-foreground">
                 <th className="py-2 font-mono text-[10px] uppercase tracking-[0.02em]">Datum</th>
                 <th className="font-mono text-[10px] uppercase tracking-[0.02em]">Annons</th>
                 <th className="font-mono text-[10px] uppercase tracking-[0.02em]">Köpare</th>
