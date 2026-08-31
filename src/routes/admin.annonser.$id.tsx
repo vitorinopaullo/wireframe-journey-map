@@ -21,6 +21,7 @@ import {
   type ServeringFalt,
   type FrisorFalt,
 } from "@/lib/annons-model";
+import { SERVERING_UPPLADDNINGAR, FRISOR_UPPLADDNINGAR } from "@/routes/saljare.skapa-annons";
 
 export const Route = createFileRoute("/admin/annonser/$id")({
   component: AdminAnnonsDetail,
@@ -90,6 +91,7 @@ const GRUPP_FALT: Record<string, GruppFalt[]> = {
     { key: "planlosning", label: "Planlösning", isTags: true },
     { key: "ekonomi", label: "Ekonomi", isTags: true },
     { key: "antalStolar", label: "Antal stolar" },
+    { key: "taggar", label: "Teknisk info", isTags: true },
     { key: "beskrivning", label: "Övrig info" },
   ],
   Servering: [
@@ -97,9 +99,13 @@ const GRUPP_FALT: Record<string, GruppFalt[]> = {
     { key: "interior", label: "Interiör och skick", isTags: true },
     { key: "planlosning", label: "Planlösning", isTags: true },
     { key: "ekonomi", label: "Ekonomi", isTags: true },
+    { key: "koksutrustning", label: "Köksutrustning", isTags: true },
+    { key: "alkoholtillstand", label: "Alkoholtillstånd", isTags: true },
+    { key: "skickILokal", label: "Skick i lokal", isTags: true },
     { key: "typAvKok", label: "Köksteknik", isTags: true },
     { key: "utvecklingsmojlighet", label: "Utvecklingsmöjlighet", isTags: true },
     { key: "anledningTillForsaljning", label: "Anledning till försäljning", isTags: true },
+    { key: "taggar", label: "Teknisk info", isTags: true },
     { key: "myndighetskrav", label: "Myndighetskrav", isTags: true },
     { key: "ovrigInfo", label: "Övrig info" },
   ],
@@ -160,22 +166,36 @@ if (import.meta.env.DEV) {
 }
 
 // Ritning-dokument som säljaren laddar upp per Verksamhetstyp, sparade fristående
-// i draft.docs (utanför docsByCat) — se t.ex. KontorFaltgrupp/ServeringFaltgrupp i
-// saljare.skapa-annons.tsx. Måste hållas i synk med FALTGRUPP_TYPER — annars
-// visas dokumentet aldrig för TreLink.
+// i draft.docs (utanför docsByCat) — se t.ex. KontorFaltgrupp i saljare.skapa-annons.tsx.
+// Måste hållas i synk med FALTGRUPP_TYPER — annars visas dokumentet aldrig för TreLink.
+// Servering/Frisor har egna uppladdningslistor (GRUPP_DOKUMENT_LISTOR nedan) som redan
+// innehåller ett Ritning-dokument var — de listas därför inte här (undviker dubblett).
 const RITNING_DOC_BY_GRUPP: Record<string, { name: string; krav: string }> = {
   Kontor: { name: "Ritning (Kontor)", krav: "PDF · planlösning över kontorsytan" },
   Butik: { name: "Ritning (Butik)", krav: "PDF · planlösning över butiksytan" },
   Lager: { name: "Ritning (Lager)", krav: "PDF · planlösning över lagerytan" },
-  Servering: { name: "Ritning (Servering)", krav: "PDF · planlösning över lokalen" },
-  Frisor: { name: "Ritning (Skönhetssalong)", krav: "PDF · planlösning över salongsytan" },
+};
+
+// Kategori-specifika uppladdningslistor säljaren fyller i, sparade fristående i
+// draft.docs (utanför docsByCat) — se ServeringFaltgrupp/FrisorFaltgrupp i
+// saljare.skapa-annons.tsx. Måste hållas i synk med FALTGRUPP_TYPER — annars visas
+// dokumenten aldrig för TreLink. Inget av dokumenten i dessa listor är markerat med
+// asterisk (*) i säljarens UI, så samtliga är required: false.
+const GRUPP_DOKUMENT_LISTOR: Record<string, { name: string; krav: string }[]> = {
+  Servering: [
+    { name: "Myndighetsdokument (Servering)", krav: "JPG/PDF · bifoga tillstånd/protokoll som styrker taggarna ovan" },
+    ...SERVERING_UPPLADDNINGAR.map((d) => ({ name: d.namn, krav: d.hint })),
+  ],
+  Frisor: FRISOR_UPPLADDNINGAR.map((d) => ({ name: d.namn, krav: d.hint })),
 };
 
 if (import.meta.env.DEV) {
-  const missingRitning = Object.keys(FALTGRUPP_TYPER).filter((g) => !RITNING_DOC_BY_GRUPP[g]);
-  if (missingRitning.length > 0) {
+  const missingDoc = Object.keys(FALTGRUPP_TYPER).filter(
+    (g) => !RITNING_DOC_BY_GRUPP[g] && !GRUPP_DOKUMENT_LISTOR[g],
+  );
+  if (missingDoc.length > 0) {
     console.warn(
-      `[admin.annonser.$id] RITNING_DOC_BY_GRUPP saknar Ritning-dokument för: ${missingRitning.join(", ")} — dokumentet visas aldrig för TreLink.`,
+      `[admin.annonser.$id] Varken RITNING_DOC_BY_GRUPP eller GRUPP_DOKUMENT_LISTOR har dokument för: ${missingDoc.join(", ")} — dokumenten visas aldrig för TreLink.`,
     );
   }
 }
@@ -621,7 +641,14 @@ function AdminAnnonsDetail() {
     .map((g) => RITNING_DOC_BY_GRUPP[g])
     .filter(Boolean)
     .map((r) => ({ name: r.name, krav: r.krav, required: false }));
-  const specs: DocSpec[] = [...(catId ? docsByCat[catId] ?? [] : []), ...ritningSpecs];
+  const grupperDokumentSpecs: DocSpec[] = valdaGrupper
+    .flatMap((g) => GRUPP_DOKUMENT_LISTOR[g] ?? [])
+    .map((d) => ({ name: d.name, krav: d.krav, required: false }));
+  const specs: DocSpec[] = [
+    ...(catId ? docsByCat[catId] ?? [] : []),
+    ...ritningSpecs,
+    ...grupperDokumentSpecs,
+  ];
   const docsState: Record<string, DocState> = draft.docs ?? {};
 
   const ytaNum = Number(draft.yta);

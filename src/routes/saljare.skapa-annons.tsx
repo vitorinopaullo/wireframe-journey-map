@@ -454,7 +454,7 @@ const SERVERING_TAGGAR_ANLEDNING_FORSALJNING = [
 const SERVERING_TAGGAR_MYNDIGHETSKRAV = ["Serveringstillstånd", "Uteservering", "Livsmedelsintyg", "Brandskyddsdokumentation"];
 
 // PDF-uppladdningar specifika för Servering — namn + hjälptext, renderas i en lista.
-const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
+export const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
   { namn: "Ritning (Servering)", hint: "PDF · planlösning över lokalen" },
   { namn: "OVK (Servering)", hint: "PDF · obligatorisk ventilationskontroll" },
   { namn: "Serveringstillstånd (Servering)", hint: "PDF · tillstånd för alkoholservering" },
@@ -468,7 +468,7 @@ const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
 // PDF-uppladdningar specifika för Skönhetssalong (Frisör/Nagelsalong/Massage/Estetisk) —
 // namn + hjälptext, renderas i en lista. OBS: generiska förslag, ej juridiskt
 // avstämda — stäm av exakt vilka tillstånd som krävs innan detta anses slutgiltigt.
-const FRISOR_UPPLADDNINGAR: { namn: string; hint: string }[] = [
+export const FRISOR_UPPLADDNINGAR: { namn: string; hint: string }[] = [
   { namn: "Ritning (Skönhetssalong)", hint: "PDF · planlösning över salongsytan" },
   { namn: "Hygientillstånd/registrering (Skönhetssalong)", hint: "PDF · registrering hos berörd myndighet, om tillämpligt" },
   { namn: "Inventarielista (Skönhetssalong)", hint: "PDF · fylls i via mall online, frivilligt" },
