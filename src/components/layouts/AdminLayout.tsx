@@ -71,8 +71,9 @@ export function AdminLayout({ children }: { children?: ReactNode }) {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-foreground/20 bg-foreground text-background">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link to="/admin" className="font-mono text-lg font-semibold">
-            TRELINK <span className="text-background/60 text-xs">Admin</span>
+          <Link to="/admin" className="flex items-center gap-2">
+            <img src="/trelink-logo.svg" alt="TreLink" className="h-6 w-auto brightness-0 invert" />
+            <span className="font-mono text-background/60 text-xs">Admin</span>
           </Link>
           <Link to="/logga-in" className="text-xs text-background/70 hover:text-background">
             Logga ut

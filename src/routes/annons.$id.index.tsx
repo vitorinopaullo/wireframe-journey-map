@@ -194,7 +194,7 @@ function ListingDetail() {
             className="group h-full w-full cursor-zoom-in"
           >
             <img src={listing.bilder[bild]} alt={`${listing.titel} — bild ${bild + 1}`} className="h-full w-full object-cover" />
-            <span className="absolute bottom-3 right-3 flex items-center gap-1 rounded-pill bg-black/60 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-white opacity-0 transition group-hover:opacity-100">
+            <span className="absolute bottom-3 right-3 flex items-center gap-1 rounded-pill bg-black/60 px-3 py-1.5 text-sm text-white opacity-0 transition group-hover:opacity-100">
               <Expand className="h-3 w-3" /> Förstora
             </span>
           </button>

@@ -75,7 +75,7 @@ function StatusTag({ status }: { status: WorkflowState | null }) {
       ? "border-amber-500/70 text-amber-700 bg-amber-50/60 dark:text-amber-500 dark:bg-amber-500/10"
       : "border-foreground/20 text-muted-foreground";
   return (
-    <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${cls}`}>
+    <span className={`inline-flex items-center rounded-pill border px-3 py-1 text-sm ${cls}`}>
       {stateLabel[status]}
     </span>
   );
@@ -184,19 +184,10 @@ function AdminAnnonser() {
       <div className="mb-4 flex flex-wrap gap-2">
         {TABS.map((t) => {
           const count = rows.filter((r) => tabForStatus(r.status) === t.id).length;
-          const active = activeTab === t.id;
           return (
-            <button
-              key={t.id}
-              onClick={() => setActiveTab(t.id)}
-              className={`rounded-pill border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 ${
-                active
-                  ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
-                  : "border-foreground/20 text-muted-foreground hover:border-foreground/40 hover:text-foreground"
-              }`}
-            >
+            <WireTag key={t.id} active={activeTab === t.id} onClick={() => setActiveTab(t.id)}>
               {t.label} ({count})
-            </button>
+            </WireTag>
           );
         })}
       </div>
@@ -217,12 +208,9 @@ function AdminAnnonser() {
             ))}
           </select>
         </label>
-        <button
-          onClick={() => setSortBy((s) => (s === "inkommen" ? "ort" : "inkommen"))}
-          className="rounded-pill border border-foreground/20 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground transition-colors duration-150 hover:border-foreground/40 hover:text-foreground"
-        >
+        <WireTag onClick={() => setSortBy((s) => (s === "inkommen" ? "ort" : "inkommen"))}>
           Sortera: {sortBy === "inkommen" ? "Senast inkommen" : "Ort A–Ö"}
-        </button>
+        </WireTag>
       </div>
 
       <div className="space-y-3">
@@ -248,9 +236,7 @@ function AdminAnnonser() {
                   <StatusTag status={r.status} />
                   <NextActorTag status={r.status} />
                   {r.status === "hyresvard-notifiering" && (
-                    <span className="inline-flex items-center border border-[var(--color-primary)] bg-[var(--color-primary)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-white">
-                      Redo att skriva annonstext
-                    </span>
+                    <WireTag active>Redo att skriva annonstext</WireTag>
                   )}
                   <span className="font-mono text-[10px] text-muted-foreground">#{r.id}</span>
                   {justUpdatedId === r.id && (

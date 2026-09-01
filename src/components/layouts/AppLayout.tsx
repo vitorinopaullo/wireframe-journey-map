@@ -43,8 +43,9 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-foreground/20">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link to="/dashboard" search={{ mode }} className="font-mono text-lg font-semibold">
-            TRELINK <span className="text-muted-foreground text-xs">/{mode}</span>
+          <Link to="/dashboard" search={{ mode }} className="flex items-center gap-2">
+            <img src="/trelink-logo.svg" alt="TreLink" className="h-6 w-auto" />
+            <span className="font-mono text-muted-foreground text-xs">/{mode}</span>
           </Link>
           <div className="flex items-center gap-3">
             <div className="flex rounded-pill border border-foreground/15 p-0.5">

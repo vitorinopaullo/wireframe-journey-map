@@ -1119,7 +1119,7 @@ function AdminAnnonsDetail() {
               {checklist.map((c) => (
                 <span
                   key={c.label}
-                  className={`inline-flex items-center gap-1 border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${
+                  className={`inline-flex items-center gap-1 rounded-pill border px-3 py-1 text-sm ${
                     c.ok
                       ? "border-foreground/30 text-muted-foreground"
                       : "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
@@ -1156,7 +1156,7 @@ function AdminAnnonsDetail() {
               {checklist.map((c) => (
                 <span
                   key={c.label}
-                  className={`inline-flex items-center gap-1 border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${
+                  className={`inline-flex items-center gap-1 rounded-pill border px-3 py-1 text-sm ${
                     c.ok
                       ? "border-foreground/30 text-muted-foreground"
                       : "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
@@ -1840,9 +1840,7 @@ function AdminAnnonsDetail() {
             </div>
 
             <div className="space-y-4 p-6">
-              <div className="inline-flex items-center gap-1 border border-[var(--color-primary)] bg-[var(--color-primary)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-white">
-                ✓ TreLink-signatur: Förifylld
-              </div>
+              <WireTag active>✓ TreLink-signatur: Förifylld</WireTag>
 
               <UppdragsavtalDokument
                 bolag={onboarding?.bolagsuppgifter.bolag}
@@ -1895,7 +1893,7 @@ function DocStateBadge({ state }: { state: DocState }) {
       ? "border-muted-foreground/40 bg-muted/40 text-muted-foreground"
       : "border-foreground/50 text-foreground";
   return (
-    <span className={`border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${toneCls}`}>
+    <span className={`rounded-pill border px-3 py-1 text-sm ${toneCls}`}>
       {m.label}
     </span>
   );

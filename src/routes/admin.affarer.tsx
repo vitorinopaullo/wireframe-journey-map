@@ -105,26 +105,12 @@ function AdminAffarer() {
       <PageHeader eyebrow="TreLink Admin" title="Affärer/Uppdrag" subtitle="Alla pågående och avslutade affärer, över samtliga säljare och köpare." />
 
       <div className="mb-4 flex flex-wrap gap-2">
-        <button
-          onClick={() => setTab("affarer")}
-          className={`rounded-pill border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 ${
-            tab === "affarer"
-              ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
-              : "border-foreground/20 text-muted-foreground hover:border-foreground/40 hover:text-foreground"
-          }`}
-        >
+        <WireTag active={tab === "affarer"} onClick={() => setTab("affarer")}>
           Affärer ({affarer.length + avslutade.length})
-        </button>
-        <button
-          onClick={() => setTab("publicerade")}
-          className={`rounded-pill border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 ${
-            tab === "publicerade"
-              ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
-              : "border-foreground/20 text-muted-foreground hover:border-foreground/40 hover:text-foreground"
-          }`}
-        >
+        </WireTag>
+        <WireTag active={tab === "publicerade"} onClick={() => setTab("publicerade")}>
           Publicerade annonser ({publicerade.length})
-        </button>
+        </WireTag>
       </div>
 
       {tab === "affarer" ? (
