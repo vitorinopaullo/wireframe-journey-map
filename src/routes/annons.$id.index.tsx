@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Star, ChevronLeft, ChevronRight, X, Expand } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, X, Expand, Lock, FileText, CheckCircle2 } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { ListingCard, type Listing as CardListing } from "@/components/ListingCard";
@@ -10,6 +10,15 @@ import { exempelAnnons, type CatId } from "@/lib/annons-model";
 import { readAnnonser } from "@/lib/annons-workflow";
 import { placeholderImage } from "@/lib/placeholder-image";
 import { isFavorit, toggleFavorit } from "@/lib/favoriter";
+import {
+  readBuyerInterests,
+  findOrCreateInterest,
+  patchBuyerInterest,
+  logBuyerEntry,
+  type BuyerInterest,
+} from "@/lib/kopare-workflow";
+import { addNotis } from "@/lib/admin-notiser";
+import { getSession, getAccountByUserId } from "@/lib/mock-auth";
 
 export const Route = createFileRoute("/annons/$id/")({
   component: ListingDetail,
@@ -99,13 +108,19 @@ function StickyCTA({
   scrolled,
   saved,
   onSave,
-  onInterest,
+  interest,
+  onInteresserad,
+  onAvvisa,
+  onKop,
 }: {
   listing: Listing;
   scrolled: boolean;
   saved: boolean;
   onSave: () => void;
-  onInterest: () => void;
+  interest: BuyerInterest | undefined;
+  onInteresserad: () => void;
+  onAvvisa: () => void;
+  onKop: () => void;
 }) {
   if (!scrolled) return null;
   return (
@@ -120,7 +135,18 @@ function StickyCTA({
           <WireBtn variant="ghost" onClick={onSave}>
             {saved ? <><Star className="h-4 w-4 mr-1 fill-current" />Sparad</> : <><Star className="h-4 w-4 mr-1" />Spara</>}
           </WireBtn>
-          <WireBtn onClick={onInterest}>Se dokument →</WireBtn>
+          {!interest || interest.status === "väntar-pdf" ? (
+            interest ? (
+              <>
+                <WireBtn variant="secondary" onClick={onAvvisa}>Avvisa</WireBtn>
+                <WireBtn onClick={onKop}>Köp →</WireBtn>
+              </>
+            ) : (
+              <WireBtn onClick={onInteresserad}>Interesserad →</WireBtn>
+            )
+          ) : (
+            <WireTag active>{interest.status === "vill-ga-vidare" ? "Du vill köpa" : "Avvisat"}</WireTag>
+          )}
         </div>
       </div>
     </div>
@@ -134,6 +160,9 @@ function ListingDetail() {
   const [bild, setBild] = useState(0);
   const [lightbox, setLightbox] = useState<{ src: string; caption?: string } | null>(null);
   const [publishedItem, setPublishedItem] = useState<any | null>(null);
+  const [interest, setInterest] = useState<BuyerInterest | undefined>(() =>
+    readBuyerInterests().filter((i) => i.annonsId === id).pop(),
+  );
   const isAuthed = useIsAuthed();
   const navigate = useNavigate();
 
@@ -174,9 +203,56 @@ function ListingDetail() {
   const gotoLogin = (next: string) =>
     navigate({ to: "/logga-in", search: { next, role: "kopare" } });
 
-  const handleInterest = () => {
-    if (isAuthed) navigate({ to: "/annons/$id/intresse", params: { id } });
-    else gotoLogin(`/annons/${id}/intresse`);
+  const handleInteresserad = () => {
+    if (!isAuthed) return gotoLogin(`/annons/${id}`);
+    const { interest: reg, created } = findOrCreateInterest(id, getSession()?.userId);
+    setInterest(reg);
+    if (created) {
+      addNotis(
+        "saljare-intresse",
+        `Ny intresseanmälan (${reg.kKod}) på "${listing.titel}"`,
+        "/saljare/intressenter",
+      );
+      addNotis("kopare", `Nytt lead (${reg.kKod}) på "${listing.titel}"`, "/admin/kopare");
+    }
+    document.getElementById("dokument")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const besluta = (status: "vill-ga-vidare" | "avböjt") => {
+    if (!interest) return;
+    const beslutText = status === "vill-ga-vidare" ? "Vill köpa objektet" : "Avvisade objektet";
+    patchBuyerInterest(interest.id, (item) =>
+      logBuyerEntry({ ...item, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText),
+    );
+    setInterest((prev) =>
+      prev ? logBuyerEntry({ ...prev, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText) : prev,
+    );
+    if (status === "vill-ga-vidare") {
+      addNotis("kopare", `${interest.kKod} vill köpa "${listing.titel}" — redo för matchning`, "/admin/kopare");
+    }
+  };
+
+  // Köp kräver bolagsuppgifter (TreLink upprättar avtal mot ett bolag). Saknas de
+  // skickas köparen till sin profil för att fylla i dem — intresset ligger kvar som
+  // "väntar-pdf" (dvs bland de intresserade objekten) tills köpet kan slutföras.
+  const handleKop = () => {
+    if (!interest) return;
+    const session = getSession();
+    const bolag = getAccountByUserId(session?.userId)?.profil?.bolag;
+    if (!bolag) {
+      patchBuyerInterest(interest.id, (item) =>
+        logBuyerEntry({ ...item }, "Köpare", "Försökte köpa — väntar på bolagsuppgifter"),
+      );
+      navigate({ to: "/kopare/profil", search: { next: `/annons/${id}` } });
+      return;
+    }
+    besluta("vill-ga-vidare");
+  };
+
+  const openDoc = (namn: string) => {
+    window.open("about:blank", "_blank");
+    if (!interest) return;
+    patchBuyerInterest(interest.id, (item) => logBuyerEntry({ ...item }, "Köpare", `Öppnade ${namn}`));
   };
 
   const handleSave = () => {
@@ -285,15 +361,24 @@ function ListingDetail() {
           </WireBox>
 
           {/* Dokument */}
-          <WireBox label="Dokument — granskade av TreLink" variant="dashed">
+          <WireBox id="dokument" label="Dokument" variant="dashed">
             <ul className="divide-y divide-foreground/10 text-sm">
               {listing.dokument.map((namn) => (
                 <li key={namn} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                  <span>▤ {namn}</span>
-                  <div className="flex items-center gap-2">
-                    <WireTag>Godkänt</WireTag>
-                    <span className="text-xs text-muted-foreground">Förhandsvisa efter intresseanmälan</span>
-                  </div>
+                  <span className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    {namn}
+                  </span>
+                  {interest ? (
+                    <WireBtn variant="secondary" onClick={() => openDoc(namn)}>
+                      Öppna →
+                    </WireBtn>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Lock className="h-3.5 w-3.5 shrink-0" />
+                      Lås upp genom att visa intresse
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -355,7 +440,28 @@ function ListingDetail() {
               </div>
             </div>
             <div className="mt-4 flex flex-col gap-2">
-              <WireBtn onClick={handleInterest}>Se dokument →</WireBtn>
+              {!interest && <WireBtn onClick={handleInteresserad}>Interesserad →</WireBtn>}
+              {interest && interest.status === "väntar-pdf" && (
+                <div className="flex gap-2">
+                  <WireBtn variant="secondary" className="flex-1" onClick={() => besluta("avböjt")}>
+                    Avvisa
+                  </WireBtn>
+                  <WireBtn className="flex-1" onClick={handleKop}>
+                    Köp →
+                  </WireBtn>
+                </div>
+              )}
+              {interest && interest.status === "vill-ga-vidare" && (
+                <div className="flex items-center gap-2 rounded-button border border-foreground/15 bg-card px-3 py-2 text-sm">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  Du vill köpa — TreLink hör av sig.
+                </div>
+              )}
+              {interest && interest.status === "avböjt" && (
+                <div className="rounded-button border border-foreground/15 bg-card px-3 py-2 text-sm text-muted-foreground">
+                  Du avvisade det här objektet.
+                </div>
+              )}
               <WireBtn variant="secondary" onClick={handleSave}>
                 {saved ? <><Star className="h-4 w-4 mr-1 fill-current" />Sparad i favoriter</> : <><Star className="h-4 w-4 mr-1" />Spara som favorit</>}
               </WireBtn>
@@ -374,7 +480,16 @@ function ListingDetail() {
         </div>
       </div>
 
-      <StickyCTA listing={listing} scrolled={scrolled} saved={saved} onSave={handleSave} onInterest={handleInterest} />
+      <StickyCTA
+        listing={listing}
+        scrolled={scrolled}
+        saved={saved}
+        onSave={handleSave}
+        interest={interest}
+        onInteresserad={handleInteresserad}
+        onAvvisa={() => besluta("avböjt")}
+        onKop={handleKop}
+      />
       <div className="h-20" />
 
       {lightbox && (

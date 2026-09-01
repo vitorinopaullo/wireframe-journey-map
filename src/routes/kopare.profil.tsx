@@ -1,9 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireField, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
+import { getSession, getAccountByUserId, upsertAdminAccount } from "@/lib/mock-auth";
+
+function isSafeNext(v: string | undefined): v is string {
+  return !!v && v.startsWith("/") && !v.startsWith("//");
+}
 
 export const Route = createFileRoute("/kopare/profil")({
+  validateSearch: (s: Record<string, unknown>): { next?: string } => ({
+    ...(typeof s.next === "string" ? { next: s.next } : {}),
+  }),
   component: Profile,
 });
 
@@ -21,8 +29,54 @@ const fakturor = [
   { nr: "INV-2041-A", titel: "Trelinks förmedlingsavgift", belopp: 39_000, datum: "Vid tillträde", status: "Kommande" },
 ];
 
+function EditableField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="flex h-11 w-full items-center rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+      />
+    </label>
+  );
+}
+
 function Profile() {
+  const { next } = Route.useSearch();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("uppgifter");
+  const session = getSession();
+  const account = getAccountByUserId(session?.userId);
+  const [bolag, setBolag] = useState(() => account?.profil?.bolag ?? "");
+  const [orgnr, setOrgnr] = useState(() => account?.profil?.orgnr ?? "");
+  const [bolagSparat, setBolagSparat] = useState(false);
+  const bolagKravsForKop = isSafeNext(next);
+
+  const sparaBolag = () => {
+    if (!session) return;
+    upsertAdminAccount(session.userId, {
+      profil: { ...account?.profil, bolag, orgnr },
+    });
+    setBolagSparat(true);
+    if (bolagKravsForKop && bolag.trim()) {
+      navigate({ to: next });
+    }
+  };
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "uppgifter", label: "Uppgifter" },
@@ -83,15 +137,24 @@ function Profile() {
             </WireBox>
           </div>
           <aside>
-            <WireBox label="Företag (frivilligt)" variant="dashed">
+            <WireBox label={bolagKravsForKop ? "Företag (krävs för att slutföra köpet)" : "Företag (frivilligt)"}>
+              {bolagKravsForKop && (
+                <p className="mb-3 text-sm text-[var(--color-primary)]">
+                  Fyll i bolagsuppgifter för att kunna slutföra ditt köp.
+                </p>
+              )}
               <div className="space-y-3">
-                <WireField label="Företagsnamn" placeholder="Anna Restauranger AB" />
-                <WireField label="Org.nr" placeholder="556677-8899" />
+                <EditableField label="Företagsnamn" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
+                <EditableField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
                 <Annotation>
                   <span className="mt-1 block">
                     Lägg till org.nr om du köper via bolag — sparar tid vid nästa affär.
                   </span>
                 </Annotation>
+                <WireBtn onClick={sparaBolag} disabled={bolagKravsForKop && !bolag.trim()}>
+                  {bolagKravsForKop ? "Spara och fortsätt →" : "Spara"}
+                </WireBtn>
+                {bolagSparat && !bolagKravsForKop && <Annotation>✓ Sparat</Annotation>}
               </div>
             </WireBox>
           </aside>

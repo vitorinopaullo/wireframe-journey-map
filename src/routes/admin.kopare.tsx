@@ -11,6 +11,7 @@ import {
 } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
 import { markKategoriRead } from "@/lib/admin-notiser";
+import { getAccountByUserId } from "@/lib/mock-auth";
 
 export const Route = createFileRoute("/admin/kopare")({
   component: AdminKopare,
@@ -91,6 +92,9 @@ function AdminKopare() {
                   Status
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                  Bolag
+                </th>
+                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                   PDF
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
@@ -99,13 +103,29 @@ function AdminKopare() {
               </tr>
             </thead>
             <tbody className="divide-y divide-dashed divide-muted-foreground/30">
-              {rows.map((i) => (
+              {rows.map((i) => {
+                const bolag = getAccountByUserId(i.userId)?.profil?.bolag;
+                const forsokteKopaUtanBolag =
+                  i.status === "väntar-pdf" && !bolag && i.timeline?.some((t) => t.text.includes("Försökte köpa"));
+                return (
                 <tr key={i.id} className="transition-colors duration-150 hover:bg-muted/20">
                   <td className="px-3 py-2 font-mono text-xs">{formatTid(i.skapadAt)}</td>
                   <td className="px-3 py-2">{getAnnons(i.annonsId)?.titel || `Annons #${i.annonsId}`}</td>
                   <td className="px-3 py-2 font-mono">{i.kKod}</td>
                   <td className="px-3 py-2">
                     <WireTag>{statusLabel[i.status]}</WireTag>
+                    {forsokteKopaUtanBolag && (
+                      <span className="mt-1 block text-xs text-amber-700 dark:text-amber-500">
+                        ⚠ Försökte köpa — väntar på bolagsuppgifter
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-3 py-2">
+                    {bolag ? (
+                      <span className="text-sm">✓ {bolag}</span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Ej ifyllt</span>
+                    )}
                   </td>
                   <td className="px-3 py-2">
                     {i.pdfOppnadAt ? (
@@ -127,7 +147,8 @@ function AdminKopare() {
                       ))}
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>

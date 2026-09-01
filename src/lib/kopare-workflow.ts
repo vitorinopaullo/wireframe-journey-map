@@ -15,6 +15,10 @@ export type BuyerInterest = {
   timeline?: BuyerTimelineEntry[];
   pdfOppnadAt?: string;
   remarketingTag?: boolean;
+  // Länkar intresset till kontot som skapade det — inte synligt för säljaren
+  // (som bara ser K-koden), men gör att TreLink admin kan slå upp t.ex.
+  // köparens bolagsuppgifter för det aktuella intresset.
+  userId?: string;
 };
 
 export const statusLabel: Record<BuyerInterestStatus, string> = {
@@ -68,6 +72,30 @@ export function logBuyerEntry(
       ...(interest.timeline ?? []),
     ],
   };
+}
+
+/** Hittar en befintlig intresseanmälan för annonsen, eller skapar en ny.
+ * Delas mellan annons.$id.index.tsx (inline "Interesserad"-flöde) och
+ * annons.$id.intresse.tsx (äldre redirect-flöde) så att skapandelogiken
+ * inte divergerar mellan de två ställena. */
+export function findOrCreateInterest(
+  annonsId: string,
+  userId?: string,
+): { interest: BuyerInterest; created: boolean } {
+  const interests = readBuyerInterests();
+  const existing = interests.find((i) => i.annonsId === annonsId);
+  if (existing) return { interest: existing, created: false };
+  const interest: BuyerInterest = {
+    id: `bi-${Date.now()}`,
+    annonsId,
+    kKod: genereraKKod(),
+    status: "väntar-pdf",
+    skapadAt: new Date().toISOString(),
+    timeline: [{ ts: new Date().toISOString(), vem: "Köpare", text: "Skickade intresseanmälan" }],
+    userId,
+  };
+  writeBuyerInterests([...interests, interest]);
+  return { interest, created: true };
 }
 
 /** "K-" + 4 slumpsiffror, unik mot befintliga poster. */

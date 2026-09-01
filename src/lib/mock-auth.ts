@@ -147,3 +147,8 @@ export function readAdminAccounts(): AdminAccountEvent[] {
     return [];
   }
 }
+
+export function getAccountByUserId(userId: string | undefined): AdminAccountEvent | undefined {
+  if (!userId) return undefined;
+  return readAdminAccounts().find((a) => a.userId === userId);
+}
