@@ -70,7 +70,7 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
         </div>
       </header>
       <div className="mx-auto flex max-w-7xl gap-8 px-6 py-8">
-        <aside className="w-56 shrink-0 border-r border-dashed border-muted-foreground/40 pr-6">
+        <aside className="w-56 shrink-0 border-r border-foreground/10 pr-6">
           <div className="mb-3 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
             {mode === "kopare" ? "Köparmeny" : "Säljar-/Överlåtarmeny"}
           </div>
