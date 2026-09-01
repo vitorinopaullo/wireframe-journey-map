@@ -142,11 +142,11 @@ export function WireTag({
   onClick?: () => void;
   active?: boolean;
 }) {
-  const cls = `inline-flex items-center rounded-pill border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider transition-colors duration-150 ${
+  const cls = `inline-flex items-center rounded-pill border px-4 py-2 text-sm transition-colors duration-150 ${
     active
       ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
-      : "border-foreground/20"
-  } ${onClick ? "cursor-pointer hover:border-foreground/60" : ""}`;
+      : `border-transparent bg-muted text-foreground ${onClick ? "hover:bg-muted-foreground/15" : ""}`
+  } ${onClick ? "cursor-pointer" : ""}`;
 
   if (onClick) {
     return (

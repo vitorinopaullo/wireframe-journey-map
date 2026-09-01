@@ -1962,9 +1962,9 @@ function YesNoToggle({
 
 const FINNS_INTE = "Finns inte";
 
-// Fyra rader taggar + padding, baserat på WireTag-höjd (21px) och gap-2 (8px):
-// 12 (p-3 topp) + 4×21 + 3×8 + 12 (p-3 botten) = 132px.
-const TAG_GROUP_COLLAPSED_HEIGHT = 132;
+// Fyra rader taggar, baserat på WireTag-höjd (39px, px-4 py-2 text-sm) och gap-2 (8px):
+// 4×39 + 3×8 = 180px.
+const TAG_GROUP_COLLAPSED_HEIGHT = 180;
 
 function TagToggleGroup({
   options,
@@ -2000,7 +2000,7 @@ function TagToggleGroup({
     <div>
       <div
         ref={containerRef}
-        className="flex flex-wrap gap-2 overflow-hidden rounded-card border border-foreground/15 bg-card p-3"
+        className="flex flex-wrap gap-2 overflow-hidden"
         style={!expanded && overflowing ? { maxHeight: TAG_GROUP_COLLAPSED_HEIGHT } : undefined}
       >
         {options.map((tag) => (
@@ -2041,7 +2041,7 @@ function SingleTagSelect({
       <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
-      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-card p-3">
+      <div className="flex flex-wrap gap-2">
         {options.map((tag) => (
           <WireTag key={tag} active={value === tag} onClick={() => onChange(value === tag ? "" : tag)}>
             {tag}
