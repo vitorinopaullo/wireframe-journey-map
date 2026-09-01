@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Check, X, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
@@ -33,6 +33,12 @@ const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
 // Antal platshållarbilder som krävs i bild-galleriet, se docsByCat i annons-model.ts.
 const BILD_ANTAL_KRAV = 8;
 const isBildDoc = (name: string) => name.startsWith("Bilder");
+
+/** Infogar mellanslag efter 3 siffror medan användaren skriver: 123 45. */
+function formatPostnr(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 5);
+  return digits.length <= 3 ? digits : `${digits.slice(0, 3)} ${digits.slice(3)}`;
+}
 // Sparas av onboardingflödet ("Sätt upp ditt konto") — läses här för att visa en sammanfattning.
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
@@ -581,6 +587,7 @@ const empty: Draft = {
   cat: "overlatelse",
   ort: "",
   adress: "",
+  postnr: "",
   yta: "",
   hyra: "",
   fastighetsskatt: "",
@@ -1035,7 +1042,7 @@ function CreateListing() {
         <>
           <KontoSammanfattning />
 
-          <WireBox id="steg-objektet" label="Objektet" className="mb-6">
+          <WireBox id="steg-objektet" className="mb-6">
             <p className="text-base font-semibold text-foreground">Vad är det vi förmedlar?</p>
             <p className="mt-2 text-sm text-muted-foreground">
               Med hjälp av er och oss kan vi tillsammans formulera en annonstext med hjälp av AI. Hjälp oss att
@@ -1059,6 +1066,12 @@ function CreateListing() {
                 onBlur={() => setOrtTouched(true)}
                 placeholder="Stockholm"
                 error={ortTouched && !draft.ort ? "Ange ort." : undefined}
+              />
+              <WireFieldEditable
+                label="Postnummer"
+                value={draft.postnr}
+                onChange={(v) => set("postnr", formatPostnr(v))}
+                placeholder="113 27"
               />
               <VerksamhetstypSelect
                 value={draft.verksamhet}
@@ -1949,6 +1962,10 @@ function YesNoToggle({
 
 const FINNS_INTE = "Finns inte";
 
+// Fyra rader taggar + padding, baserat på WireTag-höjd (21px) och gap-2 (8px):
+// 12 (p-3 topp) + 4×21 + 3×8 + 12 (p-3 botten) = 132px.
+const TAG_GROUP_COLLAPSED_HEIGHT = 132;
+
 function TagToggleGroup({
   options,
   value,
@@ -1959,6 +1976,20 @@ function TagToggleGroup({
   onChange: (v: string) => void;
 }) {
   const selected = value ? value.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const [expanded, setExpanded] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    function measure() {
+      const el = containerRef.current;
+      if (!el) return;
+      setOverflowing(el.scrollHeight > TAG_GROUP_COLLAPSED_HEIGHT + 1);
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [options]);
 
   function toggle(tag: string) {
     const next = selected.includes(tag) ? selected.filter((t) => t !== tag) : [...selected, tag];
@@ -1967,7 +1998,11 @@ function TagToggleGroup({
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2 rounded-card border border-foreground/15 bg-card p-3">
+      <div
+        ref={containerRef}
+        className="flex flex-wrap gap-2 overflow-hidden rounded-card border border-foreground/15 bg-card p-3"
+        style={!expanded && overflowing ? { maxHeight: TAG_GROUP_COLLAPSED_HEIGHT } : undefined}
+      >
         {options.map((tag) => (
           <WireTag key={tag} active={selected.includes(tag)} onClick={() => toggle(tag)}>
             {tag}
@@ -1977,6 +2012,15 @@ function TagToggleGroup({
           {FINNS_INTE}
         </WireTag>
       </div>
+      {overflowing && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="mt-2 font-mono text-[10px] uppercase tracking-wider text-[var(--color-interactive)] hover:underline"
+        >
+          {expanded ? "Visa färre ↑" : "Visa fler ↓"}
+        </button>
+      )}
     </div>
   );
 }

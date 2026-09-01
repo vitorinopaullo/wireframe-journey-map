@@ -165,6 +165,7 @@ export type Draft = {
   cat: CatId;
   ort: string;
   adress: string;
+  postnr: string;
   yta: string;
   // Fastighetsinfo & prissättning — sätts av TreLink under Granskning.
   hyra: string;
