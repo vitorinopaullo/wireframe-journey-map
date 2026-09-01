@@ -35,7 +35,22 @@ const KAT_NAMN: Record<CatId, "Lokal" | "Inkråm" | "Bolag"> = {
   aktie: "Bolag",
 };
 
-type Listing = typeof exempelAnnons & { kategori: string; faq: [string, string][] };
+type Listing = typeof exempelAnnons & { kategori: string; faq: [string, string][]; dokument: string[] };
+
+// Visas för demo-annonsen (exempelAnnons) som inte har egna, riktiga dokument.
+export const DEMO_DOKUMENT = ["Hyresavtal", "Hyresavi", "Bilder på verksamheten"];
+
+/** Namnen på de dokument TreLink har granskat och godkänt för annonsen — de
+ * enda dokument köparen ska kunna se listade (och, efter intresseanmälan, öppna).
+ * Delas med annons.$id.underlag.tsx så att samma dokumentlista visas låst
+ * (före intresseanmälan) och upplåst (efter). */
+export function godkandaDokument(docs: Record<string, string> | undefined): string[] {
+  if (!docs) return [];
+  return Object.entries(docs)
+    .filter(([, status]) => status === "godkant")
+    .map(([namn]) => namn)
+    .sort((a, b) => a.localeCompare(b, "sv"));
+}
 
 /** Bygger en publik listing-vy från en riktig, publicerad annons i saljare-annonser. */
 function fromPublishedItem(item: any): Listing {
@@ -66,6 +81,7 @@ function fromPublishedItem(item: any): Listing {
     planskiss: exempelAnnons.planskiss,
     kategori: KAT_NAMN[cat],
     faq: FAQ,
+    dokument: godkandaDokument(draft.docs).length ? godkandaDokument(draft.docs) : DEMO_DOKUMENT,
   };
 }
 
@@ -130,7 +146,7 @@ function ListingDetail() {
     () =>
       publishedItem
         ? fromPublishedItem(publishedItem)
-        : { ...exempelAnnons, kategori: KAT_NAMN[exempelAnnons.cat], faq: FAQ },
+        : { ...exempelAnnons, kategori: KAT_NAMN[exempelAnnons.cat], faq: FAQ, dokument: DEMO_DOKUMENT },
     [publishedItem],
   );
   const ANTAL_BILDER = listing.bilder.length;
@@ -266,6 +282,21 @@ function ListingDetail() {
                 <p key={i}>{stycke}</p>
               ))}
             </div>
+          </WireBox>
+
+          {/* Dokument */}
+          <WireBox label="Dokument — granskade av TreLink" variant="dashed">
+            <ul className="divide-y divide-foreground/10 text-sm">
+              {listing.dokument.map((namn) => (
+                <li key={namn} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                  <span>▤ {namn}</span>
+                  <div className="flex items-center gap-2">
+                    <WireTag>Godkänt</WireTag>
+                    <span className="text-xs text-muted-foreground">Förhandsvisa efter intresseanmälan</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </WireBox>
 
           {/* Planlösning */}

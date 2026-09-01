@@ -7,6 +7,7 @@ import { useIsAuthed } from "@/hooks/use-session";
 import { readBuyerInterests, patchBuyerInterest, logBuyerEntry, type BuyerInterest } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
 import { addNotis } from "@/lib/admin-notiser";
+import { godkandaDokument, DEMO_DOKUMENT } from "./annons.$id.index";
 
 export const Route = createFileRoute("/annons/$id/underlag")({
   component: UnderlagsGranskning,
@@ -41,6 +42,10 @@ function UnderlagsGranskning() {
       </PublicLayout>
     );
   }
+
+  const annonsItem = getAnnons(interest.annonsId) as any;
+  const godkanda = godkandaDokument(annonsItem?.draft?.docs);
+  const dokument = godkanda.length ? godkanda : DEMO_DOKUMENT;
 
   const besluta = (status: "vill-ga-vidare" | "avböjt") => {
     const beslutText = status === "vill-ga-vidare" ? "Vill köpa objektet" : "Avvisade objektet";
@@ -96,6 +101,30 @@ function UnderlagsGranskning() {
             Öppna PDF →
           </WireBtn>
           {pdfOppnad && <Annotation>✓ Underlaget öppnat</Annotation>}
+        </WireBox>
+
+        <WireBox label="Dokument — granskade av TreLink">
+          <p className="text-sm text-muted-foreground">
+            Din intresseanmälan är registrerad — dokumenten nedan är nu upplåsta.
+          </p>
+          <ul className="mt-3 divide-y divide-foreground/10 text-sm">
+            {dokument.map((namn) => (
+              <li key={namn} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                <span>▤ {namn}</span>
+                <WireBtn
+                  variant="secondary"
+                  onClick={() => {
+                    window.open("about:blank", "_blank");
+                    patchBuyerInterest(interest.id, (item) =>
+                      logBuyerEntry({ ...item }, "Köpare", `Öppnade ${namn}`),
+                    );
+                  }}
+                >
+                  Öppna →
+                </WireBtn>
+              </li>
+            ))}
+          </ul>
         </WireBox>
 
         {interest.status === "vill-ga-vidare" && (
