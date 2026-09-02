@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { PageHeader, Annotation, WireTag, WireBtn } from "@/components/wire";
@@ -28,6 +28,27 @@ const FILTER_LABEL: Record<StatusFilter, string> = {
 
 function formatTid(ts: string) {
   return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
+}
+
+const STATUS_TONE: Record<BuyerInterestStatus, "success" | "danger" | "warn"> = {
+  "väntar-pdf": "warn",
+  "vill-ga-vidare": "success",
+  avböjt: "danger",
+};
+
+function StatusTag({ status }: { status: BuyerInterestStatus }) {
+  const tone = STATUS_TONE[status];
+  const cls =
+    tone === "success"
+      ? "border-[var(--color-success)] bg-[var(--color-success)] text-white"
+      : tone === "danger"
+      ? "border-destructive text-destructive bg-destructive/10"
+      : "border-amber-500/70 text-amber-700 bg-amber-50/60 dark:text-amber-500 dark:bg-amber-500/10";
+  return (
+    <span className={`inline-flex items-center rounded-pill border px-3 py-1 text-sm ${cls}`}>
+      {statusLabel[status]}
+    </span>
+  );
 }
 
 function AdminKopare() {
@@ -80,25 +101,25 @@ function AdminKopare() {
             <thead>
               <tr className="sticky top-0 border-b border-foreground/30 bg-muted/30">
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  Datum
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                   Annons
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                   K-kod
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  Status
+                  Bolag
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  Bolag
+                  Status
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                   PDF
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                   Ombokning
+                </th>
+                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                  Datum
                 </th>
               </tr>
             </thead>
@@ -109,22 +130,29 @@ function AdminKopare() {
                   i.status === "väntar-pdf" && !bolag && i.timeline?.some((t) => t.text.includes("Försökte köpa"));
                 return (
                 <tr key={i.id} className="transition-colors duration-150 hover:bg-muted/20">
-                  <td className="px-3 py-2 font-mono text-xs">{formatTid(i.skapadAt)}</td>
-                  <td className="px-3 py-2">{getAnnons(i.annonsId)?.titel || `Annons #${i.annonsId}`}</td>
+                  <td className="px-3 py-2">
+                    <Link
+                      to="/admin/annonser/$id"
+                      params={{ id: i.annonsId }}
+                      className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+                    >
+                      {getAnnons(i.annonsId)?.titel || `Annons #${i.annonsId}`}
+                    </Link>
+                  </td>
                   <td className="px-3 py-2 font-mono">{i.kKod}</td>
                   <td className="px-3 py-2">
-                    <WireTag>{statusLabel[i.status]}</WireTag>
+                    {bolag ? (
+                      <span className="text-sm">{bolag}</span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Ej ifyllt</span>
+                    )}
+                  </td>
+                  <td className="px-3 py-2">
+                    <StatusTag status={i.status} />
                     {forsokteKopaUtanBolag && (
                       <span className="mt-1 block text-xs text-amber-700 dark:text-amber-500">
                         ⚠ Försökte köpa — väntar på bolagsuppgifter
                       </span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2">
-                    {bolag ? (
-                      <span className="text-sm">✓ {bolag}</span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">Ej ifyllt</span>
                     )}
                   </td>
                   <td className="px-3 py-2">
@@ -146,6 +174,7 @@ function AdminKopare() {
                         </WireBtn>
                       ))}
                   </td>
+                  <td className="px-3 py-2 font-mono text-xs">{formatTid(i.skapadAt)}</td>
                 </tr>
                 );
               })}
