@@ -261,6 +261,7 @@ function BuyerCaseDetail() {
         seller={{ bolag: saljareBolag }}
         docTitle="Köpeavtal"
         doneHeading="Köpeavtalet är signerat"
+        signerandePart={kopareBolag}
         renderDoc={() => (
           <KopeavtalDokument
             saljareBolag={saljareBolag}
@@ -285,6 +286,7 @@ function BuyerCaseDetail() {
         seller={{ bolag: saljareBolag }}
         docTitle="Överenskommelse om överlåtelse"
         doneHeading="Överenskommelsen är signerad"
+        signerandePart={kopareBolag}
         renderDoc={() => (
           <OverenskommelseDokument
             saljareBolag={saljareBolag}

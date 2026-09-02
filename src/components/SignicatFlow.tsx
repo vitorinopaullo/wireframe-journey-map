@@ -19,6 +19,7 @@ export function SignicatFlow({
   docTitle = "Uppdragsavtal",
   doneHeading = "Uppdragsavtalet är signerat",
   renderDoc,
+  signerandePart,
 }: {
   open: boolean;
   seller: SignicatSellerInfo;
@@ -28,6 +29,8 @@ export function SignicatFlow({
   doneHeading?: string;
   /** Ersätter de hårdkodade uppdragsavtals-sidorna med valfritt innehåll — en enda sida. */
   renderDoc?: () => ReactNode;
+  /** Namnet/bolaget som visas som "Signerat av" på klart-skärmen — den part som faktiskt signerar i detta anrop. */
+  signerandePart?: string;
 }) {
   const [screen, setScreen] = useState<Screen>("doc");
   const [checked, setChecked] = useState(false);
@@ -81,7 +84,12 @@ export function SignicatFlow({
       {screen === "bankid" && <BankIdScreen onCancel={() => setScreen("start-modal")} />}
 
       {screen === "done" && (
-        <DoneScreen seller={seller} doneHeading={doneHeading} onClose={onSigned} />
+        <DoneScreen
+          seller={seller}
+          doneHeading={doneHeading}
+          signerandePart={signerandePart}
+          onClose={onSigned}
+        />
       )}
     </div>
   );
@@ -465,10 +473,12 @@ function BankIdScreen({ onCancel }: { onCancel: () => void }) {
 function DoneScreen({
   seller,
   doneHeading,
+  signerandePart,
   onClose,
 }: {
   seller: SignicatSellerInfo;
   doneHeading: string;
+  signerandePart?: string;
   onClose: () => void;
 }) {
   const dt = new Date().toLocaleString("sv-SE");
@@ -495,7 +505,7 @@ function DoneScreen({
 
         <div className="space-y-2 text-left text-sm">
           <Row k="Dokument:" v="Uppdragsavtal · 2 sidor" />
-          <Row k="Signerat av:" v={seller.bolag || "—"} />
+          <Row k="Signerat av:" v={signerandePart || seller.bolag || "—"} />
           <Row k="Förmedlare:" v="Trelink AB" />
         </div>
 

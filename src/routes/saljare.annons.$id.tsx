@@ -309,6 +309,7 @@ function SellerAnnonsDetail() {
           objektAdress: item.draft?.adress,
           utgangspris: item.pris || "Enligt överenskommelse",
         }}
+        signerandePart={item.draft?.bolag}
         onCancel={() => setSignicatOpen(false)}
         onSigned={completeSigning}
       />
