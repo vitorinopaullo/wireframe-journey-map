@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { PageHeader, WireBox } from "@/components/wire";
 import { BankIdPanel } from "@/components/BankIdPanel";
@@ -37,20 +37,6 @@ function Register() {
           hint="Vi hämtar för- och efternamn samt personnummer från BankID. Inga andra sätt att skapa konto finns."
           onDone={() => navigate({ to: "/onboarding" })}
         />
-        <WireBox label="Vad händer sen?" variant="dashed">
-          <ol className="ml-4 list-decimal space-y-2 text-sm text-muted-foreground">
-            <li>Du väljer köpare eller säljare.</li>
-            <li>Du fyller i telefon, e-post och (för säljare) adress.</li>
-            <li>Bolagsuppgifter är frivilligt nu — men krävs innan du kan köpa eller sälja.</li>
-            <li>All information skickas till TreLinks admin för granskning.</li>
-          </ol>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Redan konto?{" "}
-            <Link to="/logga-in" className="underline">
-              Logga in med BankID
-            </Link>
-          </p>
-        </WireBox>
       </div>
     </PublicLayout>
   );
