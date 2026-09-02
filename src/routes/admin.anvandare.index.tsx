@@ -10,7 +10,7 @@ export const Route = createFileRoute("/admin/anvandare/")({
 });
 
 function formatTid(ts: number) {
-  return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
+  return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short" });
 }
 
 type AccountStatus = "inloggad" | "roll-vald" | "komplett";

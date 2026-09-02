@@ -77,7 +77,7 @@ function AdminAnvandareDetail() {
       </Link>
 
       <PageHeader
-        eyebrow={`TreLink Admin · Konto #${id}`}
+        eyebrow={`Konto #${id}`}
         title={account ? `${account.bankid.fornamn} ${account.bankid.efternamn}` : "Okänt konto"}
       />
 
