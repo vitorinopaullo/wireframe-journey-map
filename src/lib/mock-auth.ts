@@ -36,7 +36,7 @@ export function mockBankIdVerify(testperson: BankIdPayload): BankIdPayload {
 export function getSession(): Session | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(SESSION_KEY);
+    const raw = window.sessionStorage.getItem(SESSION_KEY);
     return raw ? (JSON.parse(raw) as Session) : null;
   } catch {
     return null;
@@ -56,8 +56,8 @@ export function subscribeSession(fn: () => void) {
 
 export function setSession(s: Session | null) {
   if (typeof window === "undefined") return;
-  if (s) window.localStorage.setItem(SESSION_KEY, JSON.stringify(s));
-  else window.localStorage.removeItem(SESSION_KEY);
+  if (s) window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(s));
+  else window.sessionStorage.removeItem(SESSION_KEY);
   emit();
 }
 
