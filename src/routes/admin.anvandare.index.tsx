@@ -36,7 +36,7 @@ function StatusTag({ status }: { status: AccountStatus }) {
       ? "border-amber-500/70 text-amber-700 bg-amber-50/60 dark:text-amber-500 dark:bg-amber-500/10"
       : "border-foreground/20 text-muted-foreground";
   return (
-    <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${cls}`}>
+    <span className={`inline-flex items-center rounded-pill border px-3 py-1 text-sm ${cls}`}>
       {STATUS_LABEL[status]}
     </span>
   );
