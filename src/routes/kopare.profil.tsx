@@ -124,7 +124,6 @@ function Profile() {
             <WireBox label="Personuppgifter">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <WireField label="Namn" placeholder="Anna Andersson" hint="Hämtat från BankID — ej redigerbart" />
-                <WireField label="Personnummer" placeholder="••••••-••••" hint="Maskerat" />
                 <WireField label="E-post" placeholder="anna@exempel.se" />
                 <WireField label="Telefon" placeholder="+46 70 123 45 67" />
                 <WireField label="Adress" placeholder="Storgatan 1, Stockholm" />

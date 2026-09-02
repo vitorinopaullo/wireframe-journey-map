@@ -119,7 +119,6 @@ export function BankIdPanel({
             <div className="mt-3 rounded-card border border-foreground/15 bg-muted/20 p-3 text-xs">
               <div className="mb-1 flex items-center gap-2">
                 <WireTag>Verifierad</WireTag>
-                <span className="font-mono">{bankid.personnr}</span>
               </div>
               <div>
                 {bankid.fornamn} {bankid.efternamn}
