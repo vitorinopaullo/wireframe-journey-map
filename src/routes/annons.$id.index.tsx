@@ -168,7 +168,7 @@ function ListingDetail() {
 
   useEffect(() => {
     const match = readAnnonser().find((i: any) => i.id === id);
-    setPublishedItem(match && match.workflow?.state === "publicerad" ? match : null);
+    setPublishedItem(match && match.workflow?.state === "publicerad" && !match.reserverad ? match : null);
   }, [id]);
 
   const listing: Listing = useMemo(

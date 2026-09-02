@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { X, Globe } from "lucide-react";
 
 type Screen = "doc" | "start-modal" | "bankid" | "done";
@@ -16,11 +16,18 @@ export function SignicatFlow({
   seller,
   onCancel,
   onSigned,
+  docTitle = "Uppdragsavtal",
+  doneHeading = "Uppdragsavtalet är signerat",
+  renderDoc,
 }: {
   open: boolean;
   seller: SignicatSellerInfo;
   onCancel: () => void;
   onSigned: () => void;
+  docTitle?: string;
+  doneHeading?: string;
+  /** Ersätter de hårdkodade uppdragsavtals-sidorna med valfritt innehåll — en enda sida. */
+  renderDoc?: () => ReactNode;
 }) {
   const [screen, setScreen] = useState<Screen>("doc");
   const [checked, setChecked] = useState(false);
@@ -55,6 +62,8 @@ export function SignicatFlow({
       {(screen === "doc" || screen === "start-modal") && (
         <DocViewer
           seller={seller}
+          docTitle={docTitle}
+          renderDoc={renderDoc}
           onSign={() => setScreen("start-modal")}
           blurred={screen === "start-modal"}
         />
@@ -71,7 +80,9 @@ export function SignicatFlow({
 
       {screen === "bankid" && <BankIdScreen onCancel={() => setScreen("start-modal")} />}
 
-      {screen === "done" && <DoneScreen seller={seller} onClose={onSigned} />}
+      {screen === "done" && (
+        <DoneScreen seller={seller} doneHeading={doneHeading} onClose={onSigned} />
+      )}
     </div>
   );
 }
@@ -79,10 +90,14 @@ export function SignicatFlow({
 /* ---------- Screen 1: Document viewer ---------- */
 function DocViewer({
   seller,
+  docTitle,
+  renderDoc,
   onSign,
   blurred,
 }: {
   seller: SignicatSellerInfo;
+  docTitle: string;
+  renderDoc?: () => ReactNode;
   onSign: () => void;
   blurred: boolean;
 }) {
@@ -97,7 +112,9 @@ function DocViewer({
         style={{ borderBottom: "1px solid #E7E5E4" }}
       >
         <div className="text-sm text-black">100%</div>
-        <div className="flex items-center gap-1 text-sm text-black"><Globe className="h-3.5 w-3.5" /> English</div>
+        <div className="flex items-center gap-1 text-sm text-black">
+          <Globe className="h-3.5 w-3.5" /> English
+        </div>
         <div className="flex items-center gap-3">
           <button className="text-sm text-black">More actions ▾</button>
           <button
@@ -113,14 +130,27 @@ function DocViewer({
       <div className="mx-auto flex max-w-6xl gap-6 p-6">
         {/* Document */}
         <div className="flex-1">
-          <DocumentPage seller={seller} />
-          {/* Page break */}
-          <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1" style={{ backgroundColor: "#E7E5E4" }} />
-            <span className="text-[10px] uppercase tracking-widest text-black/60">Sida 2</span>
-            <div className="h-px flex-1" style={{ backgroundColor: "#E7E5E4" }} />
-          </div>
-          <DocumentPage2 />
+          {renderDoc ? (
+            <div
+              className="mx-auto max-w-2xl bg-white p-10"
+              style={{ border: "1px solid #E7E5E4", borderRadius: "3px" }}
+            >
+              <div className="mb-8 text-xl font-bold text-black">⬡ TreLink</div>
+              <h1 className="mb-8 text-2xl font-bold text-black">{docTitle}</h1>
+              {renderDoc()}
+            </div>
+          ) : (
+            <>
+              <DocumentPage seller={seller} docTitle={docTitle} />
+              {/* Page break */}
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1" style={{ backgroundColor: "#E7E5E4" }} />
+                <span className="text-[10px] uppercase tracking-widest text-black/60">Sida 2</span>
+                <div className="h-px flex-1" style={{ backgroundColor: "#E7E5E4" }} />
+              </div>
+              <DocumentPage2 />
+            </>
+          )}
         </div>
 
         {/* Sidebar */}
@@ -131,7 +161,7 @@ function DocViewer({
             style={{ border: "1px solid #E7E5E4", borderRadius: "3px" }}
           >
             <div className="flex items-center justify-between">
-              <div className="font-medium text-black">Uppdragsavtal</div>
+              <div className="font-medium text-black">{docTitle}</div>
               <span
                 className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-black"
                 style={{ border: "1px solid #0F0F0F", borderRadius: "3px" }}
@@ -147,7 +177,7 @@ function DocViewer({
   );
 }
 
-function DocumentPage({ seller }: { seller: SignicatSellerInfo }) {
+function DocumentPage({ seller, docTitle }: { seller: SignicatSellerInfo; docTitle: string }) {
   return (
     <div
       className="mx-auto max-w-2xl bg-white p-10"
@@ -155,7 +185,7 @@ function DocumentPage({ seller }: { seller: SignicatSellerInfo }) {
     >
       <div className="mb-8 text-xl font-bold text-black">⬡ TreLink</div>
 
-      <h1 className="mb-8 text-2xl font-bold text-black">Uppdragsavtal</h1>
+      <h1 className="mb-8 text-2xl font-bold text-black">{docTitle}</h1>
 
       <Section title="Förmedlare">
         <p>George Kashou</p>
@@ -275,7 +305,10 @@ function DocumentPage2() {
           Uppdragsgivaren skall löpande hålla Mäklaren informerad om väsentliga händelser för
           Förmedlingsuppdragets genomförande.
         </p>
-        <p>Textmanus och den bildproduktion som Mäklaren låter ta fram äger Trelink AB rättigheterna till.</p>
+        <p>
+          Textmanus och den bildproduktion som Mäklaren låter ta fram äger Trelink AB rättigheterna
+          till.
+        </p>
         <p>
           Mäklaren ansvarar för direkt eller indirekt skada som orsakas av Mäklaren, om denne har
           varit vårdslös vid utförande av sitt uppdrag. Mäklarens skadeståndsansvar är dock alltid
@@ -315,7 +348,7 @@ function DocumentPage2() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+export function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-5">
       <h2 className="mb-2 text-sm font-bold text-black">{title}</h2>
@@ -340,7 +373,9 @@ function StartModal({
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/30 p-4">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
         <h2 className="text-lg font-semibold text-gray-900">Start signing</h2>
-        <p className="mt-2 text-sm text-gray-600">You are about to sign the following document(s):</p>
+        <p className="mt-2 text-sm text-gray-600">
+          You are about to sign the following document(s):
+        </p>
 
         <div className="mt-4 flex items-center justify-between rounded-lg bg-gray-100 px-4 py-3">
           <div>
@@ -363,7 +398,10 @@ function StartModal({
         </label>
 
         <div className="mt-6 flex items-center justify-end gap-2">
-          <button onClick={onCancel} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+          >
             Cancel
           </button>
           <button
@@ -413,10 +451,7 @@ function BankIdScreen({ onCancel }: { onCancel: () => void }) {
           />
         </div>
 
-        <button
-          onClick={onCancel}
-          className="mt-6 text-sm text-gray-500 hover:text-gray-900"
-        >
+        <button onClick={onCancel} className="mt-6 text-sm text-gray-500 hover:text-gray-900">
           Avbryt
         </button>
       </div>
@@ -427,7 +462,15 @@ function BankIdScreen({ onCancel }: { onCancel: () => void }) {
 }
 
 /* ---------- Screen 4: Done ---------- */
-function DoneScreen({ seller, onClose }: { seller: SignicatSellerInfo; onClose: () => void }) {
+function DoneScreen({
+  seller,
+  doneHeading,
+  onClose,
+}: {
+  seller: SignicatSellerInfo;
+  doneHeading: string;
+  onClose: () => void;
+}) {
   const dt = new Date().toLocaleString("sv-SE");
   return (
     <div className="flex min-h-screen items-center justify-center bg-white p-6">
@@ -445,7 +488,7 @@ function DoneScreen({ seller, onClose }: { seller: SignicatSellerInfo; onClose: 
           <path d="M18 33 L28 43 L46 23" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
 
-        <h1 className="text-2xl font-bold text-gray-900">Uppdragsavtalet är signerat</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{doneHeading}</h1>
         <p className="mt-2 text-sm text-gray-500">Signeringen genomfördes med BankID · {dt}</p>
 
         <hr className="my-6 border-gray-200" />

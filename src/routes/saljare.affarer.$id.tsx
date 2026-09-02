@@ -1,16 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Upload, FileText } from "lucide-react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
-import { getBuyerInterest, statusLabel, statusHint } from "@/lib/kopare-workflow";
+import { getBuyerInterest, statusLabel } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
 import { getAccountByUserId, getSession } from "@/lib/mock-auth";
 import {
   annonsInfo,
   getDeal,
-  laddaUppHandpenningKvitto,
-  laddaUppUcUtdrag,
   signeraKopeavtal,
   signeraOverenskommelse,
   Progress,
@@ -19,8 +16,8 @@ import { SignicatFlow } from "@/components/SignicatFlow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
 
-export const Route = createFileRoute("/kopare/affarer/$id")({
-  component: BuyerCaseDetail,
+export const Route = createFileRoute("/saljare/affarer/$id")({
+  component: SellerCaseDetail,
 });
 
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
@@ -35,44 +32,7 @@ function readSaljareBolag(userId?: string): string | undefined {
   }
 }
 
-function FileUploadRow({
-  label,
-  fileName,
-  onUpload,
-}: {
-  label: string;
-  fileName?: string;
-  onUpload: (filnamn: string) => void;
-}) {
-  return (
-    <div className="border-b border-foreground/10 py-2">
-      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-        {label}
-      </span>
-      {fileName ? (
-        <div className="flex h-11 items-center gap-2 rounded-button border border-foreground/15 bg-card px-3 text-sm">
-          <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <span className="truncate">{fileName}</span>
-        </div>
-      ) : (
-        <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-button border border-foreground/15 bg-card px-3 text-sm text-muted-foreground transition-colors duration-150 hover:border-foreground/40">
-          <input
-            type="file"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) onUpload(file.name);
-            }}
-          />
-          <Upload className="h-4 w-4" />
-          Ladda upp fil
-        </label>
-      )}
-    </div>
-  );
-}
-
-function BuyerCaseDetail() {
+function SellerCaseDetail() {
   const { id } = Route.useParams();
   const [, forceRerender] = useState(0);
   const refresh = () => forceRerender((n) => n + 1);
@@ -82,9 +42,9 @@ function BuyerCaseDetail() {
 
   if (!interest) {
     return (
-      <AppLayout mode="kopare">
-        <PageHeader eyebrow="Köparläge" title="Ärendet hittades inte" />
-        <Link to="/kopare/affarer">
+      <AppLayout mode="saljare">
+        <PageHeader eyebrow="Säljarläge" title="Ärendet hittades inte" />
+        <Link to="/saljare/affarer">
           <WireBtn variant="secondary">← Till mina affärer</WireBtn>
         </Link>
       </AppLayout>
@@ -95,32 +55,24 @@ function BuyerCaseDetail() {
   const annonsTitel = annons?.titel ?? `Annons #${interest.annonsId}`;
   const deal = getDeal(id);
   const info = annonsInfo(interest.annonsId);
-  const buyerAccount = getAccountByUserId(getSession()?.userId);
+  const buyerAccount = getAccountByUserId(interest.userId);
   const kopareBolag = buyerAccount?.profil?.bolag;
   const kopareOrgnr = buyerAccount?.profil?.orgnr;
-  const saljareBolag = readSaljareBolag(annons?.agarUserId);
+  const saljareBolag = readSaljareBolag(annons?.agarUserId ?? getSession()?.userId);
 
   return (
-    <AppLayout mode="kopare">
+    <AppLayout mode="saljare">
       <Link
-        to="/kopare/affarer"
+        to="/saljare/affarer"
         className="mb-4 inline-block text-xs text-muted-foreground hover:underline"
       >
         ← Tillbaka till mina affärer
       </Link>
 
-      <PageHeader eyebrow={`Köparläge · ärende ${interest.kKod}`} title={annonsTitel} />
+      <PageHeader eyebrow={`Säljarläge · ärende ${interest.kKod}`} title={annonsTitel} />
 
       <WireBox label="Status" className="mb-6">
         <WireTag>{statusLabel[interest.status]}</WireTag>
-        <Annotation>
-          <span className="mt-2 block">{statusHint[interest.status]}</span>
-        </Annotation>
-        {interest.status === "väntar-pdf" && (
-          <WireBtn to="/annons/$id/underlag" params={{ id: interest.annonsId }} className="mt-4">
-            Öppna underlaget →
-          </WireBtn>
-        )}
       </WireBox>
 
       {interest.status === "vill-ga-vidare" && !deal.avvisad && (
@@ -133,7 +85,7 @@ function BuyerCaseDetail() {
         <WireBox label="Affären avslutad" className="mb-6">
           <Annotation>
             <span className="mt-2 block">
-              Hyresvärden nekade överlåtelsen. Din handpenning återbetalas (simulerat).
+              Hyresvärden nekade överlåtelsen. Affären är avslutad och din annons är åter publik.
             </span>
           </Annotation>
         </WireBox>
@@ -145,7 +97,7 @@ function BuyerCaseDetail() {
             <Annotation>
               TreLink upprättar köpeavtalet. Du får besked här när det är dags att signera.
             </Annotation>
-          ) : !deal.kopeavtal.signerat.kopare ? (
+          ) : !deal.kopeavtal.signerat.saljare ? (
             <>
               <Annotation>Köpeavtalet är klart för signering.</Annotation>
               <WireBtn className="mt-4" onClick={() => setSignOpen("kopeavtal")}>
@@ -154,7 +106,7 @@ function BuyerCaseDetail() {
             </>
           ) : (
             <Annotation>
-              <span className="mt-2 block">Du har signerat. Väntar på att säljaren signerar.</span>
+              <span className="mt-2 block">Du har signerat. Väntar på att köparen signerar.</span>
             </Annotation>
           )}
         </WireBox>
@@ -163,34 +115,10 @@ function BuyerCaseDetail() {
       {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "handpenning" && (
         <WireBox label="Handpenning" className="mb-6">
           <Annotation>
-            Betala handpenningen till TreLinks klientmedelskonto och ladda upp kvittens samt ditt
-            UC-utdrag som underlag för hyresvärdens godkännande.
+            <span className="mt-2 block">
+              Väntar på att köparen betalar handpenningen och att TreLink bekräftar mottagandet.
+            </span>
           </Annotation>
-          <div className="mt-3">
-            <FileUploadRow
-              label="Kvittens handpenning"
-              fileName={deal.handpenning?.kvitto}
-              onUpload={(filnamn) => {
-                laddaUppHandpenningKvitto(id, filnamn);
-                refresh();
-              }}
-            />
-            <FileUploadRow
-              label="UC-utdrag (ditt eget, ej TreLink-kontroll)"
-              fileName={deal.handpenning?.ucUtdrag}
-              onUpload={(filnamn) => {
-                laddaUppUcUtdrag(id, filnamn);
-                refresh();
-              }}
-            />
-          </div>
-          {deal.handpenning?.kvitto && deal.handpenning?.ucUtdrag && (
-            <Annotation>
-              <span className="mt-2 block">
-                Väntar på att TreLink bekräftar mottagen handpenning.
-              </span>
-            </Annotation>
-          )}
         </WireBox>
       )}
 
@@ -210,7 +138,7 @@ function BuyerCaseDetail() {
             <Annotation>
               Hyresvärden har godkänt. TreLink upprättar överenskommelsen om överlåtelse.
             </Annotation>
-          ) : !deal.overenskommelse.signerat.kopare ? (
+          ) : !deal.overenskommelse.signerat.saljare ? (
             <>
               <Annotation>Överenskommelsen är klar för signering.</Annotation>
               <WireBtn className="mt-4" onClick={() => setSignOpen("overenskommelse")}>
@@ -219,7 +147,7 @@ function BuyerCaseDetail() {
             </>
           ) : (
             <Annotation>
-              <span className="mt-2 block">Du har signerat. Väntar på att säljaren signerar.</span>
+              <span className="mt-2 block">Du har signerat. Väntar på att köparen signerar.</span>
             </Annotation>
           )}
         </WireBox>
@@ -274,7 +202,7 @@ function BuyerCaseDetail() {
         )}
         onCancel={() => setSignOpen(null)}
         onSigned={() => {
-          signeraKopeavtal(id, "kopare");
+          signeraKopeavtal(id, "saljare");
           setSignOpen(null);
           refresh();
         }}
@@ -297,7 +225,7 @@ function BuyerCaseDetail() {
         )}
         onCancel={() => setSignOpen(null)}
         onSigned={() => {
-          signeraOverenskommelse(id, "kopare");
+          signeraOverenskommelse(id, "saljare");
           setSignOpen(null);
           refresh();
         }}

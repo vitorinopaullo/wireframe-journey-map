@@ -47,6 +47,8 @@ import { Route as SaljareMinaAnnonserRouteImport } from './routes/saljare.mina-a
 import { Route as SaljareSkapaAnnonsRouteImport } from './routes/saljare.skapa-annons'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as AdminAffarerIndexRouteImport } from './routes/admin.affarer.index'
+import { Route as AdminAffarerIdRouteImport } from './routes/admin.affarer.$id'
 import { Route as AdminAnnonserIndexRouteImport } from './routes/admin.annonser.index'
 import { Route as AdminAnnonserIdRouteImport } from './routes/admin.annonser.$id'
 import { Route as AdminAnvandareIndexRouteImport } from './routes/admin.anvandare.index'
@@ -56,6 +58,8 @@ import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intres
 import { Route as AnnonsIdUnderlagRouteImport } from './routes/annons.$id.underlag'
 import { Route as KopareAffarerIndexRouteImport } from './routes/kopare.affarer.index'
 import { Route as KopareAffarerIdRouteImport } from './routes/kopare.affarer.$id'
+import { Route as SaljareAffarerIndexRouteImport } from './routes/saljare.affarer.index'
+import { Route as SaljareAffarerIdRouteImport } from './routes/saljare.affarer.$id'
 import { Route as SaljareAnnonsIdRouteImport } from './routes/saljare.annons.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -251,6 +255,16 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminAffarerIndexRoute = AdminAffarerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminAffarerRoute,
+} as any)
+const AdminAffarerIdRoute = AdminAffarerIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminAffarerRoute,
+} as any)
 const AdminAnnonserIndexRoute = AdminAnnonserIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -296,6 +310,16 @@ const KopareAffarerIdRoute = KopareAffarerIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => KopareAffarerRoute,
 } as any)
+const SaljareAffarerIndexRoute = SaljareAffarerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SaljareAffarerRoute,
+} as any)
+const SaljareAffarerIdRoute = SaljareAffarerIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => SaljareAffarerRoute,
+} as any)
 const SaljareAnnonsIdRoute = SaljareAnnonsIdRouteImport.update({
   id: '/saljare/annons/$id',
   path: '/saljare/annons/$id',
@@ -322,7 +346,7 @@ export interface FileRoutesByFullPath {
   '/villkor': typeof VillkorRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
-  '/admin/affarer': typeof AdminAffarerRoute
+  '/admin/affarer': typeof AdminAffarerRouteWithChildren
   '/admin/annonser': typeof AdminAnnonserRouteWithChildren
   '/admin/anvandare': typeof AdminAnvandareRouteWithChildren
   '/admin/installningar': typeof AdminInstallningarRoute
@@ -333,7 +357,7 @@ export interface FileRoutesByFullPath {
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/jamfor': typeof KopareJamforRoute
   '/kopare/profil': typeof KopareProfilRoute
-  '/saljare/affarer': typeof SaljareAffarerRoute
+  '/saljare/affarer': typeof SaljareAffarerRouteWithChildren
   '/saljare/annons-inskickad': typeof SaljareAnnonsInskickadRoute
   '/saljare/intressenter': typeof SaljareIntressenterRoute
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
@@ -341,16 +365,20 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/affarer/$id': typeof AdminAffarerIdRoute
   '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
   '/kopare/affarer/$id': typeof KopareAffarerIdRoute
+  '/saljare/affarer/$id': typeof SaljareAffarerIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
+  '/admin/affarer/': typeof AdminAffarerIndexRoute
   '/admin/annonser/': typeof AdminAnnonserIndexRoute
   '/admin/anvandare/': typeof AdminAnvandareIndexRoute
   '/annons/$id/': typeof AnnonsIdIndexRoute
   '/kopare/affarer/': typeof KopareAffarerIndexRoute
+  '/saljare/affarer/': typeof SaljareAffarerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -372,14 +400,12 @@ export interface FileRoutesByTo {
   '/villkor': typeof VillkorRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
-  '/admin/affarer': typeof AdminAffarerRoute
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
   '/affar/$id': typeof AffarIdRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/jamfor': typeof KopareJamforRoute
   '/kopare/profil': typeof KopareProfilRoute
-  '/saljare/affarer': typeof SaljareAffarerRoute
   '/saljare/annons-inskickad': typeof SaljareAnnonsInskickadRoute
   '/saljare/intressenter': typeof SaljareIntressenterRoute
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
@@ -387,16 +413,20 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/affarer/$id': typeof AdminAffarerIdRoute
   '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
   '/kopare/affarer/$id': typeof KopareAffarerIdRoute
+  '/saljare/affarer/$id': typeof SaljareAffarerIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
+  '/admin/affarer': typeof AdminAffarerIndexRoute
   '/admin/annonser': typeof AdminAnnonserIndexRoute
   '/admin/anvandare': typeof AdminAnvandareIndexRoute
   '/annons/$id': typeof AnnonsIdIndexRoute
   '/kopare/affarer': typeof KopareAffarerIndexRoute
+  '/saljare/affarer': typeof SaljareAffarerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -419,7 +449,7 @@ export interface FileRoutesById {
   '/villkor': typeof VillkorRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
-  '/admin/affarer': typeof AdminAffarerRoute
+  '/admin/affarer': typeof AdminAffarerRouteWithChildren
   '/admin/annonser': typeof AdminAnnonserRouteWithChildren
   '/admin/anvandare': typeof AdminAnvandareRouteWithChildren
   '/admin/installningar': typeof AdminInstallningarRoute
@@ -430,7 +460,7 @@ export interface FileRoutesById {
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/jamfor': typeof KopareJamforRoute
   '/kopare/profil': typeof KopareProfilRoute
-  '/saljare/affarer': typeof SaljareAffarerRoute
+  '/saljare/affarer': typeof SaljareAffarerRouteWithChildren
   '/saljare/annons-inskickad': typeof SaljareAnnonsInskickadRoute
   '/saljare/intressenter': typeof SaljareIntressenterRoute
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
@@ -438,16 +468,20 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/affarer/$id': typeof AdminAffarerIdRoute
   '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
   '/kopare/affarer/$id': typeof KopareAffarerIdRoute
+  '/saljare/affarer/$id': typeof SaljareAffarerIdRoute
   '/saljare/annons/$id': typeof SaljareAnnonsIdRoute
+  '/admin/affarer/': typeof AdminAffarerIndexRoute
   '/admin/annonser/': typeof AdminAnnonserIndexRoute
   '/admin/anvandare/': typeof AdminAnvandareIndexRoute
   '/annons/$id/': typeof AnnonsIdIndexRoute
   '/kopare/affarer/': typeof KopareAffarerIndexRoute
+  '/saljare/affarer/': typeof SaljareAffarerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -490,16 +524,20 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/affarer/$id'
     | '/admin/annonser/$id'
     | '/admin/anvandare/$id'
     | '/annons/$id/intresse'
     | '/annons/$id/underlag'
     | '/kopare/affarer/$id'
+    | '/saljare/affarer/$id'
     | '/saljare/annons/$id'
+    | '/admin/affarer/'
     | '/admin/annonser/'
     | '/admin/anvandare/'
     | '/annons/$id/'
     | '/kopare/affarer/'
+    | '/saljare/affarer/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -521,14 +559,12 @@ export interface FileRouteTypes {
     | '/villkor'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
-    | '/admin/affarer'
     | '/admin/installningar'
     | '/admin/kopare'
     | '/affar/$id'
     | '/kopare/favoriter'
     | '/kopare/jamfor'
     | '/kopare/profil'
-    | '/saljare/affarer'
     | '/saljare/annons-inskickad'
     | '/saljare/intressenter'
     | '/saljare/mina-annonser'
@@ -536,16 +572,20 @@ export interface FileRouteTypes {
     | '/admin'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/affarer/$id'
     | '/admin/annonser/$id'
     | '/admin/anvandare/$id'
     | '/annons/$id/intresse'
     | '/annons/$id/underlag'
     | '/kopare/affarer/$id'
+    | '/saljare/affarer/$id'
     | '/saljare/annons/$id'
+    | '/admin/affarer'
     | '/admin/annonser'
     | '/admin/anvandare'
     | '/annons/$id'
     | '/kopare/affarer'
+    | '/saljare/affarer'
   id:
     | '__root__'
     | '/'
@@ -586,16 +626,20 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/affarer/$id'
     | '/admin/annonser/$id'
     | '/admin/anvandare/$id'
     | '/annons/$id/intresse'
     | '/annons/$id/underlag'
     | '/kopare/affarer/$id'
+    | '/saljare/affarer/$id'
     | '/saljare/annons/$id'
+    | '/admin/affarer/'
     | '/admin/annonser/'
     | '/admin/anvandare/'
     | '/annons/$id/'
     | '/kopare/affarer/'
+    | '/saljare/affarer/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -618,7 +662,7 @@ export interface RootRouteChildren {
   VillkorRoute: typeof VillkorRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
-  AdminAffarerRoute: typeof AdminAffarerRoute
+  AdminAffarerRoute: typeof AdminAffarerRouteWithChildren
   AdminAnnonserRoute: typeof AdminAnnonserRouteWithChildren
   AdminAnvandareRoute: typeof AdminAnvandareRouteWithChildren
   AdminInstallningarRoute: typeof AdminInstallningarRoute
@@ -629,7 +673,7 @@ export interface RootRouteChildren {
   KopareFavoriterRoute: typeof KopareFavoriterRoute
   KopareJamforRoute: typeof KopareJamforRoute
   KopareProfilRoute: typeof KopareProfilRoute
-  SaljareAffarerRoute: typeof SaljareAffarerRoute
+  SaljareAffarerRoute: typeof SaljareAffarerRouteWithChildren
   SaljareAnnonsInskickadRoute: typeof SaljareAnnonsInskickadRoute
   SaljareIntressenterRoute: typeof SaljareIntressenterRoute
   SaljareMinaAnnonserRoute: typeof SaljareMinaAnnonserRoute
@@ -908,6 +952,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/affarer/': {
+      id: '/admin/affarer/'
+      path: '/'
+      fullPath: '/admin/affarer/'
+      preLoaderRoute: typeof AdminAffarerIndexRouteImport
+      parentRoute: typeof AdminAffarerRoute
+    }
+    '/admin/affarer/$id': {
+      id: '/admin/affarer/$id'
+      path: '/$id'
+      fullPath: '/admin/affarer/$id'
+      preLoaderRoute: typeof AdminAffarerIdRouteImport
+      parentRoute: typeof AdminAffarerRoute
+    }
     '/admin/annonser/': {
       id: '/admin/annonser/'
       path: '/'
@@ -971,6 +1029,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KopareAffarerIdRouteImport
       parentRoute: typeof KopareAffarerRoute
     }
+    '/saljare/affarer/': {
+      id: '/saljare/affarer/'
+      path: '/'
+      fullPath: '/saljare/affarer/'
+      preLoaderRoute: typeof SaljareAffarerIndexRouteImport
+      parentRoute: typeof SaljareAffarerRoute
+    }
+    '/saljare/affarer/$id': {
+      id: '/saljare/affarer/$id'
+      path: '/$id'
+      fullPath: '/saljare/affarer/$id'
+      preLoaderRoute: typeof SaljareAffarerIdRouteImport
+      parentRoute: typeof SaljareAffarerRoute
+    }
     '/saljare/annons/$id': {
       id: '/saljare/annons/$id'
       path: '/saljare/annons/$id'
@@ -980,6 +1052,20 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminAffarerRouteChildren {
+  AdminAffarerIdRoute: typeof AdminAffarerIdRoute
+  AdminAffarerIndexRoute: typeof AdminAffarerIndexRoute
+}
+
+const AdminAffarerRouteChildren: AdminAffarerRouteChildren = {
+  AdminAffarerIdRoute: AdminAffarerIdRoute,
+  AdminAffarerIndexRoute: AdminAffarerIndexRoute,
+}
+
+const AdminAffarerRouteWithChildren = AdminAffarerRoute._addFileChildren(
+  AdminAffarerRouteChildren,
+)
 
 interface AdminAnnonserRouteChildren {
   AdminAnnonserIdRoute: typeof AdminAnnonserIdRoute
@@ -1039,6 +1125,20 @@ const KopareAffarerRouteWithChildren = KopareAffarerRoute._addFileChildren(
   KopareAffarerRouteChildren,
 )
 
+interface SaljareAffarerRouteChildren {
+  SaljareAffarerIdRoute: typeof SaljareAffarerIdRoute
+  SaljareAffarerIndexRoute: typeof SaljareAffarerIndexRoute
+}
+
+const SaljareAffarerRouteChildren: SaljareAffarerRouteChildren = {
+  SaljareAffarerIdRoute: SaljareAffarerIdRoute,
+  SaljareAffarerIndexRoute: SaljareAffarerIndexRoute,
+}
+
+const SaljareAffarerRouteWithChildren = SaljareAffarerRoute._addFileChildren(
+  SaljareAffarerRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
@@ -1060,7 +1160,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
-  AdminAffarerRoute: AdminAffarerRoute,
+  AdminAffarerRoute: AdminAffarerRouteWithChildren,
   AdminAnnonserRoute: AdminAnnonserRouteWithChildren,
   AdminAnvandareRoute: AdminAnvandareRouteWithChildren,
   AdminInstallningarRoute: AdminInstallningarRoute,
@@ -1071,7 +1171,7 @@ const rootRouteChildren: RootRouteChildren = {
   KopareFavoriterRoute: KopareFavoriterRoute,
   KopareJamforRoute: KopareJamforRoute,
   KopareProfilRoute: KopareProfilRoute,
-  SaljareAffarerRoute: SaljareAffarerRoute,
+  SaljareAffarerRoute: SaljareAffarerRouteWithChildren,
   SaljareAnnonsInskickadRoute: SaljareAnnonsInskickadRoute,
   SaljareIntressenterRoute: SaljareIntressenterRoute,
   SaljareMinaAnnonserRoute: SaljareMinaAnnonserRoute,
