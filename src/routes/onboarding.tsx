@@ -425,12 +425,11 @@ function Step2({
                     placeholder="556677-8899"
                   />
                   <div className="md:col-span-2">
-                    <InputField
+                    <FileUploadField
                       label="Företagspresentation"
-                      value={presentation}
-                      onChange={setPresentation}
-                      placeholder="Kort beskrivning av bolag, ägare och bakgrund…"
-                      multiline
+                      fileName={presentation}
+                      onSelect={setPresentation}
+                      onRemove={() => setPresentation("")}
                       hint="Frivilligt nu — hjälper säljare att välja dig. Måste vara på plats innan du kan slutföra ett köp."
                     />
                   </div>
