@@ -90,8 +90,12 @@ function AdminAnvandareDetail() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field k="Bolag" v={profil?.bolag} />
                 <Field k="Org.nr" v={profil?.orgnr} />
-                <Field k="Ort" v={profil?.ort} />
-                <Field k="Adress" v={profil?.adress} />
+                {account.role === "saljare" && (
+                  <>
+                    <Field k="Ort" v={profil?.ort} />
+                    <Field k="Adress" v={profil?.adress} />
+                  </>
+                )}
                 <div className="md:col-span-2">
                   <Field k="Företagspresentation" v={profil?.presentation} />
                 </div>
