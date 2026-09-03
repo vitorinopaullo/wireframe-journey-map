@@ -15,7 +15,8 @@ import {
   type WorkflowState,
   type WorkflowData,
 } from "@/lib/annons-workflow";
-import { cats } from "@/lib/annons-model";
+import { cats, type CatId, type DocState } from "@/lib/annons-model";
+import { buildDocSpecs } from "@/routes/admin.annonser.$id";
 import { getSession } from "@/lib/mock-auth";
 import { addNotis } from "@/lib/admin-notiser";
 
@@ -120,6 +121,9 @@ function SellerAnnonsDetail() {
   const st: WorkflowState = wf?.state ?? "granskas";
   const currentStep = stateOrder[st];
   const refresh = () => setTick((t) => t + 1);
+
+  const docSpecs = buildDocSpecs((item.cat ?? item.draft?.cat) as CatId | undefined, item.draft?.verksamhet);
+  const docsState: Record<string, DocState> = item.draft?.docs ?? {};
 
   // Dev-only: jump to a specific step and seed timeline entries.
   const jumpTo = (target: WorkflowState) => {
@@ -692,6 +696,29 @@ function SellerAnnonsDetail() {
               <Field k="Hyresvärd e-post" v={item.draft?.hyresvardEmail} />
             </div>
           </WireBox>
+
+          <WireBox label="Dina dokument">
+            {docSpecs.length === 0 ? (
+              <Annotation>Inga dokumentkrav hittades för denna annons.</Annotation>
+            ) : (
+              <ul className="space-y-2">
+                {docSpecs.map((d) => (
+                  <li
+                    key={d.name}
+                    className="flex flex-wrap items-center justify-between gap-2 border-b border-foreground/10 py-2 last:border-0"
+                  >
+                    <div>
+                      <span className="text-sm font-medium">{d.name}</span>{" "}
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        · {d.required ? "obligatorisk" : "valfri"}
+                      </span>
+                    </div>
+                    <SellerDocStatus state={docsState[d.name] ?? "saknas"} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </WireBox>
         </div>
 
         {/* Timeline */}
@@ -795,4 +822,27 @@ function Field({ k, v }: { k: string; v?: string }) {
       <div className="mt-1 tabular-nums">{v || "—"}</div>
     </div>
   );
+}
+
+/** Läsbar dokumentstatus för säljaren — samma ordval som DocStateBadge i
+ * admin.annonser.$id.tsx, men utan interaktion (ingen klickbar rad, inga knappar). */
+function SellerDocStatus({ state }: { state: DocState }) {
+  const map: Record<DocState, { label: string; tone: "default" | "filled" | "warning" | "neutral" }> = {
+    "saknas": { label: "⚠️ VÄNTAR PÅ UPPLADDNING", tone: "warning" },
+    "uppladdad": { label: "UPPLADDAD · VÄNTAR GRANSKNING", tone: "default" },
+    "granskas": { label: "GRANSKAS", tone: "default" },
+    "godkant": { label: "✓ GODKÄNT", tone: "filled" },
+    "komplettera": { label: "⏳ KOMPLETTERING BEGÄRD", tone: "default" },
+    "ej-aktuell": { label: "N/A · EJ AKTUELLT", tone: "neutral" },
+  };
+  const m = map[state];
+  const toneCls =
+    m.tone === "filled"
+      ? "border-[var(--color-success)] bg-[var(--color-success)] text-white"
+      : m.tone === "warning"
+      ? "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
+      : m.tone === "neutral"
+      ? "border-muted-foreground/40 bg-muted/40 text-muted-foreground"
+      : "border-foreground/50 text-foreground";
+  return <span className={`rounded-pill border px-3 py-1 text-sm ${toneCls}`}>{m.label}</span>;
 }

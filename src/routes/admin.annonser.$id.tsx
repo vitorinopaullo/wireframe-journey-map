@@ -204,6 +204,30 @@ function groupForTyp(typ: string): string | undefined {
   return Object.keys(FALTGRUPP_TYPER).find((g) => FALTGRUPP_TYPER[g].includes(typ));
 }
 
+/** Bygger dokumentkravslistan för en annons — samma mönster som används inline
+ * nedan i AdminAnnonsDetail (catId + valda verksamhetsgrupper → docsByCat +
+ * ritningar + gruppspecifika dokument). Exporterad så säljarens vy kan visa
+ * samma lista utan att duplicera logiken (se saljare.annons.$id.tsx). */
+export function buildDocSpecs(catId: CatId | undefined, verksamhet: unknown): DocSpec[] {
+  const valdaGrupper = Array.from(
+    new Set(
+      (verksamhet ? String(verksamhet).split(",") : [])
+        .map((s: string) => s.trim())
+        .filter(Boolean)
+        .map((typ: string) => groupForTyp(typ))
+        .filter(Boolean) as string[],
+    ),
+  );
+  const ritningSpecs: DocSpec[] = valdaGrupper
+    .map((g) => RITNING_DOC_BY_GRUPP[g])
+    .filter(Boolean)
+    .map((r) => ({ name: r.name, krav: r.krav, required: false }));
+  const grupperDokumentSpecs: DocSpec[] = valdaGrupper
+    .flatMap((g) => GRUPP_DOKUMENT_LISTOR[g] ?? [])
+    .map((d) => ({ name: d.name, krav: d.krav, required: false }));
+  return [...(catId ? docsByCat[catId] ?? [] : []), ...ritningSpecs, ...grupperDokumentSpecs];
+}
+
 function EditedMark() {
   return (
     <span
