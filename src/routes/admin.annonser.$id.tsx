@@ -587,6 +587,7 @@ function AdminAnnonsDetail() {
   const [prisInput, setPrisInput] = useState("");
   const [mailPreview, setMailPreview] = useState<MailData | null>(null);
   const [avtalPreviewOpen, setAvtalPreviewOpen] = useState(false);
+  const [docPreviewOpen, setDocPreviewOpen] = useState<DocSpec | null>(null);
   const [utkastRubrik, setUtkastRubrik] = useState("");
   const [utkastBeskrivning, setUtkastBeskrivning] = useState("");
   const [utkastPris, setUtkastPris] = useState("");
@@ -821,6 +822,17 @@ function AdminAnnonsDetail() {
       trelinkEdits: { ...it.trelinkEdits, "draft.cat": true },
     }));
     refresh();
+  };
+
+  const openDoc = (d: DocSpec) => {
+    setDocPreviewOpen(d);
+    if (!draft.docsGranskade?.[d.name]) {
+      patchAnnons(id, (it) => ({
+        ...it,
+        draft: { ...it.draft, docsGranskade: { ...it.draft?.docsGranskade, [d.name]: true } },
+      }));
+      refresh();
+    }
   };
 
   const approveDoc = (docName: string) => {
@@ -1714,21 +1726,37 @@ function AdminAnnonsDetail() {
             )}
             {specs.map((d) => {
               const state = docsState[d.name] ?? "saknas";
+              const granskad = !!draft.docsGranskade?.[d.name];
               return (
                 <WireBox key={d.name}>
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => openDoc(d)}
+                      className="flex-1 min-w-0 text-left transition-colors duration-150 hover:opacity-80"
+                    >
                       <div className="mb-1 flex flex-wrap items-center gap-2">
                         <DocStateBadge state={state} />
                         {d.required ? <WireTag>obligatorisk</WireTag> : <span className="font-mono text-[10px] text-muted-foreground">valfri</span>}
                       </div>
                       <h4 className="font-medium">{d.name}</h4>
                       <Annotation>{d.krav}</Annotation>
-                    </div>
-                    <div className="flex shrink-0 gap-2">
-                      <WireBtn variant="ghost" className="text-xs">Förhandsgranska</WireBtn>
+                    </button>
+                    <div className="flex shrink-0 items-center gap-2">
                       {state !== "godkant" && (
-                        <WireBtn variant="secondary" onClick={() => approveDoc(d.name)}>Godkänn</WireBtn>
+                        <>
+                          {!granskad && (
+                            <span className="text-xs text-muted-foreground">Öppna dokumentet först</span>
+                          )}
+                          <WireBtn
+                            variant="secondary"
+                            disabled={!granskad}
+                            onClick={() => approveDoc(d.name)}
+                            className={!granskad ? "cursor-not-allowed border-muted-foreground/30 text-muted-foreground hover:opacity-100" : ""}
+                          >
+                            Godkänn
+                          </WireBtn>
+                        </>
                       )}
                       <WireBtn variant="ghost" onClick={() => setActiveDoc(activeDoc === d.name ? null : d.name)}>
                         Begär komplettering
@@ -1866,6 +1894,37 @@ function AdminAnnonsDetail() {
         </div>
       )}
 
+      {docPreviewOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setDocPreviewOpen(null)}
+        >
+          <div
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-foreground bg-background"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 flex items-center justify-between border-b border-foreground/30 bg-background px-4 py-3">
+              <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                Dokumentvy · {docPreviewOpen.name}
+              </div>
+              <WireBtn variant="ghost" onClick={() => setDocPreviewOpen(null)}>
+                Stäng
+              </WireBtn>
+            </div>
+
+            <div className="space-y-4 p-6">
+              <div>
+                <h3 className="font-medium">{docPreviewOpen.name}</h3>
+                <Annotation>{docPreviewOpen.krav}</Annotation>
+              </div>
+              <div className="border border-dashed border-foreground/20 bg-muted/10 p-8 text-center text-sm text-muted-foreground">
+                Simulerad dokumentvy — i produktion visas den uppladdade filen här.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <MailPreview open={!!mailPreview} mail={mailPreview} onClose={() => setMailPreview(null)} />
 
       {/* Reserverar plats så den fasta åtgärdsraden inte täcker sista innehållet. */}
@@ -1875,15 +1934,15 @@ function AdminAnnonsDetail() {
 }
 
 function DocStateBadge({ state }: { state: DocState }) {
-  const map: Record<DocState, { label: string; tone: "default" | "filled" | "warning" | "neutral" }> = {
+  if (state === "uppladdad") return null;
+  const map: Partial<Record<DocState, { label: string; tone: "default" | "filled" | "warning" | "neutral" }>> = {
     "saknas": { label: "⚠️ VÄNTAR PÅ UPPLADDNING", tone: "warning" },
-    "uppladdad": { label: "UPPLADDAD · VÄNTAR GRANSKNING", tone: "default" },
     "granskas": { label: "GRANSKAS", tone: "default" },
     "godkant": { label: "✓ GODKÄNT", tone: "filled" },
     "komplettera": { label: "⏳ KOMPLETTERING BEGÄRD", tone: "default" },
     "ej-aktuell": { label: "N/A · EJ AKTUELLT", tone: "neutral" },
   };
-  const m = map[state];
+  const m = map[state]!;
   const toneCls =
     m.tone === "filled"
       ? "border-[var(--color-success)] bg-[var(--color-success)] text-white"
