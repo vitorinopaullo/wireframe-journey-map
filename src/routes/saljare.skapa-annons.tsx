@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { initialWorkflow, logEntry, canSellerEdit } from "@/lib/annons-workflow";
 import { getSession } from "@/lib/mock-auth";
+import { formatTelefon, isValidEmail } from "@/lib/format";
 import {
   type CatId,
   cats,
@@ -878,7 +879,7 @@ function CreateListing() {
       return keys.some((key) => !falt[key]);
     });
     if (saknarTagg) errs[1].push("Välj minst 1 tagg i varje fältgrupp.");
-    if (!draft.hyresvardEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.hyresvardEmail))
+    if (!draft.hyresvardEmail || !isValidEmail(draft.hyresvardEmail))
       errs[2].push("Ange hyresvärdens e-postadress.");
     if (!draft.hyresvardTel) errs[2].push("Ange hyresvärdens telefonnummer.");
     const missingReq = requiredDocs.filter(
@@ -1118,12 +1119,12 @@ function CreateListing() {
               <WireFieldEditable
                 label="Hyresvärdens telefon *"
                 value={draft.hyresvardTel}
-                onChange={(v) => set("hyresvardTel", v)}
-                placeholder="08 123 45 67"
+                onChange={(v) => set("hyresvardTel", formatTelefon(v))}
+                placeholder="076 12 34 56"
               />
               {(() => {
                 const email = draft.hyresvardEmail;
-                const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                const emailValid = isValidEmail(email);
                 const showError = hyresvardEmailTouched && (email.length === 0 || !emailValid);
                 const errorMsg = email.length === 0
                   ? "Hyresvärdens e-postadress krävs för att gå vidare"
