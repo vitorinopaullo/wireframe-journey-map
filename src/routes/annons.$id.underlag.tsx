@@ -7,7 +7,7 @@ import { useIsAuthed } from "@/hooks/use-session";
 import { readBuyerInterests, patchBuyerInterest, logBuyerEntry, type BuyerInterest } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
 import { addNotis } from "@/lib/admin-notiser";
-import { getSession } from "@/lib/mock-auth";
+import { getSession, getAccountByUserId } from "@/lib/mock-auth";
 import { godkandaDokument, DEMO_DOKUMENT } from "./annons.$id.index";
 
 export const Route = createFileRoute("/annons/$id/underlag")({
@@ -64,6 +64,24 @@ function UnderlagsGranskning() {
         "/admin/kopare",
       );
     }
+  };
+
+  // Köp kräver bolagsuppgifter (TreLink upprättar avtal mot ett bolag). Saknas de
+  // skickas köparen till sin profil för att fylla i dem — intresset ligger kvar som
+  // "väntar-pdf" (dvs bland de intresserade objekten) tills köpet kan slutföras.
+  // Samma gate som annons.$id.index.tsx's handleKop, så beteendet är identiskt
+  // oavsett vilken sida köparen köper från.
+  const handleKop = () => {
+    const session = getSession();
+    const bolag = getAccountByUserId(session?.userId)?.profil?.bolag;
+    if (!bolag) {
+      patchBuyerInterest(interest.id, (item) =>
+        logBuyerEntry({ ...item }, "Köpare", "Försökte köpa — väntar på bolagsuppgifter"),
+      );
+      nav({ to: "/kopare/profil", search: { next: `/annons/${id}/underlag` } });
+      return;
+    }
+    besluta("vill-ga-vidare");
   };
 
   return (
@@ -172,7 +190,7 @@ function UnderlagsGranskning() {
               <WireBtn variant="secondary" onClick={() => besluta("avböjt")}>
                 Avvisa
               </WireBtn>
-              <WireBtn onClick={() => besluta("vill-ga-vidare")}>Köp →</WireBtn>
+              <WireBtn onClick={handleKop}>Köp →</WireBtn>
             </div>
           </div>
         </div>
