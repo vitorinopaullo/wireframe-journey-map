@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { readFavoriter, removeFavorit, type Favorit } from "@/lib/favoriter";
 import { readBuyerInterests, statusLabel, statusHint, type BuyerInterest } from "@/lib/kopare-workflow";
+import { getSession } from "@/lib/mock-auth";
 
 export const Route = createFileRoute("/kopare/favoriter")({
   component: Favorites,
@@ -20,12 +21,14 @@ function Favorites() {
   const [interests, setInterests] = useState<BuyerInterest[]>([]);
 
   useEffect(() => {
-    setFavoriter(readFavoriter());
-    setInterests(readBuyerInterests());
+    const userId = getSession()?.userId;
+    setFavoriter(readFavoriter(userId));
+    setInterests(readBuyerInterests(userId));
   }, []);
 
   function remove(annonsId: string) {
-    setFavoriter(removeFavorit(annonsId));
+    const userId = getSession()?.userId ?? "";
+    setFavoriter(removeFavorit(annonsId, userId));
   }
 
   return (

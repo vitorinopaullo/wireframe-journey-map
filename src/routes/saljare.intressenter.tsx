@@ -5,6 +5,7 @@ import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
 import { readBuyerInterests, type BuyerInterestStatus } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
 import { markKategoriRead } from "@/lib/admin-notiser";
+import { getSession } from "@/lib/mock-auth";
 
 export const Route = createFileRoute("/saljare/intressenter")({
   component: Interest,
@@ -26,7 +27,9 @@ function Interest() {
     markKategoriRead("saljare-intresse");
   }, []);
 
+  const userId = getSession()?.userId;
   const rows = readBuyerInterests()
+    .filter((i) => getAnnons(i.annonsId)?.agarUserId === userId)
     .slice()
     .sort((a, b) => (b.skapadAt || "").localeCompare(a.skapadAt || ""))
     .map((i) => ({

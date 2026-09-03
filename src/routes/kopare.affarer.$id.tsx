@@ -80,7 +80,7 @@ function BuyerCaseDetail() {
 
   const interest = getBuyerInterest(id);
 
-  if (!interest) {
+  if (!interest || interest.userId !== getSession()?.userId) {
     return (
       <AppLayout mode="kopare">
         <PageHeader eyebrow="Köparläge" title="Ärendet hittades inte" />

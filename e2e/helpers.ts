@@ -38,6 +38,28 @@ export async function seedAnnons(page: Page, annons: Record<string, unknown>) {
   }, annons);
 }
 
+/** Same record shape as favoriter.ts (STORAGE_KEY = "kopare-favoriter"). */
+export async function seedFavorit(page: Page, favorit: Record<string, unknown>) {
+  await page.evaluate((item) => {
+    const list: { annonsId: unknown; userId: unknown }[] = JSON.parse(
+      localStorage.getItem("kopare-favoriter") ?? "[]",
+    );
+    const next = list.filter((f) => !(f.annonsId === item.annonsId && f.userId === item.userId));
+    next.push(item);
+    localStorage.setItem("kopare-favoriter", JSON.stringify(next));
+  }, favorit);
+}
+
+/** Same record shape as kopare-workflow.ts (STORAGE_KEY = "kopare-intressen"). */
+export async function seedBuyerInterest(page: Page, interest: Record<string, unknown>) {
+  await page.evaluate((item) => {
+    const list: { id: unknown }[] = JSON.parse(localStorage.getItem("kopare-intressen") ?? "[]");
+    const next = list.filter((i) => i.id !== item.id);
+    next.push(item);
+    localStorage.setItem("kopare-intressen", JSON.stringify(next));
+  }, interest);
+}
+
 /**
  * Same shape as Session in mock-auth.ts. Session moved to sessionStorage
  * (per-tab, not shared across tabs) — see the "trelink-gate" commit history.

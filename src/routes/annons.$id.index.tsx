@@ -155,13 +155,13 @@ function StickyCTA({
 
 function ListingDetail() {
   const { id } = Route.useParams();
-  const [saved, setSaved] = useState(() => isFavorit(id));
+  const [saved, setSaved] = useState(() => isFavorit(id, getSession()?.userId));
   const [scrolled, setScrolled] = useState(false);
   const [bild, setBild] = useState(0);
   const [lightbox, setLightbox] = useState<{ src: string; caption?: string } | null>(null);
   const [publishedItem, setPublishedItem] = useState<any | null>(null);
   const [interest, setInterest] = useState<BuyerInterest | undefined>(() =>
-    readBuyerInterests().filter((i) => i.annonsId === id).pop(),
+    readBuyerInterests(getSession()?.userId).filter((i) => i.annonsId === id).pop(),
   );
   const isAuthed = useIsAuthed();
   const navigate = useNavigate();
@@ -257,7 +257,9 @@ function ListingDetail() {
 
   const handleSave = () => {
     if (!isAuthed) return gotoLogin(`/annons/${id}`);
+    const userId = getSession()?.userId ?? "";
     const next = toggleFavorit({
+      userId,
       annonsId: id,
       titel: listing.titel,
       pris: listing.pris,

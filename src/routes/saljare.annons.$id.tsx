@@ -99,7 +99,11 @@ function SellerAnnonsDetail() {
 
 
   useEffect(() => {
-    const load = () => setItem(getAnnons(id) ?? null);
+    const load = () => {
+      const found = getAnnons(id) ?? null;
+      const userId = getSession()?.userId;
+      setItem(found && found.agarUserId === userId ? found : null);
+    };
     load();
     const onStorage = () => load();
     window.addEventListener("storage", onStorage);

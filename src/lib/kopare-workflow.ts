@@ -35,10 +35,14 @@ export const statusHint: Record<BuyerInterestStatus, string> = {
 
 export const STORAGE_KEY = "kopare-intressen";
 
-export function readBuyerInterests(): BuyerInterest[] {
+/** Utan userId returneras hela listan (t.ex. för TreLink admin, som ska se
+ * alla köpares intresseanmälningar). Med userId filtreras listan till den
+ * inloggade köparens egna anmälningar — se BuyerInterest.userId. */
+export function readBuyerInterests(userId?: string): BuyerInterest[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+    const all: BuyerInterest[] = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+    return userId === undefined ? all : all.filter((i) => i.userId === userId);
   } catch {
     return [];
   }
@@ -83,7 +87,7 @@ export function findOrCreateInterest(
   userId?: string,
 ): { interest: BuyerInterest; created: boolean } {
   const interests = readBuyerInterests();
-  const existing = interests.find((i) => i.annonsId === annonsId);
+  const existing = interests.find((i) => i.annonsId === annonsId && i.userId === userId);
   if (existing) return { interest: existing, created: false };
   const interest: BuyerInterest = {
     id: `bi-${Date.now()}`,

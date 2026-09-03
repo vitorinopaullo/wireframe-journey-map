@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY, type BuyerInterest } from "@/lib/kopare-workflow";
+import { getSession } from "@/lib/mock-auth";
 import {
   buildAffarer,
   buildAvslutade,
@@ -88,11 +89,11 @@ function AffarsKort({ a }: { a: Affar }) {
 /* ---------- sida ---------- */
 function BuyerDeals() {
   const [flik, setFlik] = useState<"dig" | "andra" | "klar">("dig");
-  const [interests, setInterests] = useState<BuyerInterest[]>(() => readBuyerInterests());
+  const [interests, setInterests] = useState<BuyerInterest[]>(() => readBuyerInterests(getSession()?.userId));
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
-      if (e.key === KOPARE_STORAGE_KEY) setInterests(readBuyerInterests());
+      if (e.key === KOPARE_STORAGE_KEY) setInterests(readBuyerInterests(getSession()?.userId));
     }
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);

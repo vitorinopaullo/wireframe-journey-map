@@ -679,6 +679,10 @@ function CreateListing() {
           const list = JSON.parse(raw) as any[];
           const item = list.find((i) => i.id === editId);
           if (item?.draft) {
+            if (item.agarUserId !== getSession()?.userId) {
+              navigate({ to: "/saljare/mina-annonser", replace: true });
+              return;
+            }
             // Låst för säljaren om den granskas / avtal / publicerad — skicka till detaljvyn
             const wfState = item?.workflow?.state ?? "granskas";
             if (!canSellerEdit(wfState)) {

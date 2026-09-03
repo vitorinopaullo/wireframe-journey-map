@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { ContractExpiryBanner } from "@/components/ContractExpiryBanner";
 import { canSellerEdit, stateHint, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import { getSession } from "@/lib/mock-auth";
 
 export const Route = createFileRoute("/saljare/mina-annonser")({
   component: MyListings,
@@ -19,6 +20,7 @@ type Item = {
   ort?: string;
   pris?: string;
   skickadAt?: string;
+  agarUserId?: string;
   workflow?: { state: WorkflowState; avtalSignedAt?: string };
 };
 
@@ -36,7 +38,7 @@ function MyListings() {
     } catch {}
   }, []);
 
-  const items = userItems;
+  const items = userItems.filter((i) => i.agarUserId === getSession()?.userId);
 
   function remove(id: string) {
     const next = userItems.filter((i) => i.id !== id);

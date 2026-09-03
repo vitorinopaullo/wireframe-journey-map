@@ -7,6 +7,7 @@ import { useIsAuthed } from "@/hooks/use-session";
 import { readBuyerInterests, patchBuyerInterest, logBuyerEntry, type BuyerInterest } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
 import { addNotis } from "@/lib/admin-notiser";
+import { getSession } from "@/lib/mock-auth";
 import { godkandaDokument, DEMO_DOKUMENT } from "./annons.$id.index";
 
 export const Route = createFileRoute("/annons/$id/underlag")({
@@ -181,6 +182,6 @@ function UnderlagsGranskning() {
 }
 
 function getLatestInterestForAnnons(annonsId: string): BuyerInterest | undefined {
-  const matches = readBuyerInterests().filter((i) => i.annonsId === annonsId);
+  const matches = readBuyerInterests(getSession()?.userId).filter((i) => i.annonsId === annonsId);
   return matches[matches.length - 1];
 }

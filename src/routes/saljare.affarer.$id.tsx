@@ -39,8 +39,9 @@ function SellerCaseDetail() {
   const [signOpen, setSignOpen] = useState<"kopeavtal" | "overenskommelse" | null>(null);
 
   const interest = getBuyerInterest(id);
+  const annons = interest ? getAnnons(interest.annonsId) : undefined;
 
-  if (!interest) {
+  if (!interest || annons?.agarUserId !== getSession()?.userId) {
     return (
       <AppLayout mode="saljare">
         <PageHeader eyebrow="Säljarläge" title="Ärendet hittades inte" />
@@ -51,7 +52,6 @@ function SellerCaseDetail() {
     );
   }
 
-  const annons = getAnnons(interest.annonsId);
   const annonsTitel = annons?.titel ?? `Annons #${interest.annonsId}`;
   const deal = getDeal(id);
   const info = annonsInfo(interest.annonsId);
