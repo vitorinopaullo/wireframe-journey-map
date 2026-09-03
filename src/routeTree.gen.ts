@@ -34,6 +34,7 @@ import { Route as AdminAnnonserRouteImport } from './routes/admin.annonser'
 import { Route as AdminAnvandareRouteImport } from './routes/admin.anvandare'
 import { Route as AdminInstallningarRouteImport } from './routes/admin.installningar'
 import { Route as AdminKopareRouteImport } from './routes/admin.kopare'
+import { Route as AdminPubliceratRouteImport } from './routes/admin.publicerat'
 import { Route as AffarIdRouteImport } from './routes/affar.$id'
 import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
 import { Route as KopareAffarerRouteImport } from './routes/kopare.affarer'
@@ -187,6 +188,11 @@ const AdminInstallningarRoute = AdminInstallningarRouteImport.update({
 const AdminKopareRoute = AdminKopareRouteImport.update({
   id: '/admin/kopare',
   path: '/admin/kopare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPubliceratRoute = AdminPubliceratRouteImport.update({
+  id: '/admin/publicerat',
+  path: '/admin/publicerat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AffarIdRoute = AffarIdRouteImport.update({
@@ -351,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/admin/anvandare': typeof AdminAnvandareRouteWithChildren
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
+  '/admin/publicerat': typeof AdminPubliceratRoute
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/kopare/affarer': typeof KopareAffarerRouteWithChildren
@@ -402,6 +409,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
+  '/admin/publicerat': typeof AdminPubliceratRoute
   '/affar/$id': typeof AffarIdRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/jamfor': typeof KopareJamforRoute
@@ -454,6 +462,7 @@ export interface FileRoutesById {
   '/admin/anvandare': typeof AdminAnvandareRouteWithChildren
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
+  '/admin/publicerat': typeof AdminPubliceratRoute
   '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/kopare/affarer': typeof KopareAffarerRouteWithChildren
@@ -510,6 +519,7 @@ export interface FileRouteTypes {
     | '/admin/anvandare'
     | '/admin/installningar'
     | '/admin/kopare'
+    | '/admin/publicerat'
     | '/affar/$id'
     | '/annons/$id'
     | '/kopare/affarer'
@@ -561,6 +571,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin/installningar'
     | '/admin/kopare'
+    | '/admin/publicerat'
     | '/affar/$id'
     | '/kopare/favoriter'
     | '/kopare/jamfor'
@@ -612,6 +623,7 @@ export interface FileRouteTypes {
     | '/admin/anvandare'
     | '/admin/installningar'
     | '/admin/kopare'
+    | '/admin/publicerat'
     | '/affar/$id'
     | '/annons/$id'
     | '/kopare/affarer'
@@ -667,6 +679,7 @@ export interface RootRouteChildren {
   AdminAnvandareRoute: typeof AdminAnvandareRouteWithChildren
   AdminInstallningarRoute: typeof AdminInstallningarRoute
   AdminKopareRoute: typeof AdminKopareRoute
+  AdminPubliceratRoute: typeof AdminPubliceratRoute
   AffarIdRoute: typeof AffarIdRoute
   AnnonsIdRoute: typeof AnnonsIdRouteWithChildren
   KopareAffarerRoute: typeof KopareAffarerRouteWithChildren
@@ -859,6 +872,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/kopare'
       fullPath: '/admin/kopare'
       preLoaderRoute: typeof AdminKopareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/publicerat': {
+      id: '/admin/publicerat'
+      path: '/admin/publicerat'
+      fullPath: '/admin/publicerat'
+      preLoaderRoute: typeof AdminPubliceratRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/affar/$id': {
@@ -1165,6 +1185,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAnvandareRoute: AdminAnvandareRouteWithChildren,
   AdminInstallningarRoute: AdminInstallningarRoute,
   AdminKopareRoute: AdminKopareRoute,
+  AdminPubliceratRoute: AdminPubliceratRoute,
   AffarIdRoute: AffarIdRoute,
   AnnonsIdRoute: AnnonsIdRouteWithChildren,
   KopareAffarerRoute: KopareAffarerRouteWithChildren,

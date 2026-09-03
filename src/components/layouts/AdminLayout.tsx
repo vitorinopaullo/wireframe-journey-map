@@ -8,6 +8,7 @@ import { unreadCountByKategori, STORAGE_KEY as NOTISER_STORAGE_KEY, type AdminNo
 const adminNav = [
   { to: "/admin", label: "Översikt" },
   { to: "/admin/annonser", label: "Granskning" },
+  { to: "/admin/publicerat", label: "Publicerat" },
   { to: "/admin/kopare", label: "Köpare/Intressenter" },
   { to: "/admin/affarer", label: "Affärer/Uppdrag" },
   { to: "/admin/anvandare", label: "Användare" },
