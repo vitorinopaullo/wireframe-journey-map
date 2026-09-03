@@ -672,15 +672,6 @@ function SellerAnnonsDetail() {
                     </Link>
                   </div>
                 </div>
-
-                {/* Stat chips */}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <WireTag>0 intressenter</WireTag>
-                  <WireTag>
-                    Publicerad {wf.publiceradAt ? new Date(wf.publiceradAt).toLocaleDateString("sv-SE") : nowSv()}
-                  </WireTag>
-                  <WireTag>Premium: Nej</WireTag>
-                </div>
               </WireBox>
             </>
           )}
