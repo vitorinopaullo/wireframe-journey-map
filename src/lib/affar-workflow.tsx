@@ -6,6 +6,15 @@
 import { StatusDot } from "@/components/wire";
 import { getAnnons, patchAnnons } from "@/lib/annons-workflow";
 import { patchBuyerInterest, logBuyerEntry, type BuyerInterest } from "@/lib/kopare-workflow";
+import type { CatId } from "@/lib/annons-model";
+
+// Samma mönster som KAT_NAMN i admin.annonser.index.tsx/admin.publicerat.tsx
+// — de kortare visningsnamnen som används i affärslistorna.
+const KAT_NAMN: Record<CatId, "Lokal" | "Inkråm" | "Bolag"> = {
+  overlatelse: "Lokal",
+  inkram: "Inkråm",
+  aktie: "Bolag",
+};
 
 export type Steg =
   | "intresse-inskickat"
@@ -327,7 +336,7 @@ export function annonsInfo(annonsId: string) {
     titel: annons?.titel ?? `Annons #${annonsId}`,
     pris: annons?.pris ?? "Pris ej tillgängligt",
     ort: annons?.ort ?? "—",
-    kat: annons?.kat ?? "—",
+    kat: annons?.cat ? KAT_NAMN[annons.cat as CatId] : "—",
   };
 }
 
