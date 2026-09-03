@@ -643,6 +643,11 @@ function AdminAnnonsDetail() {
     setUtkastRubrik((prev) => prev || item.workflow?.utkast?.rubrik || "");
     setUtkastBeskrivning((prev) => prev || item.workflow?.utkast?.beskrivning || "");
     setUtkastPris((prev) => prev || item.workflow?.utkast?.pris || item.pris || "");
+    // item.pris är formaterat med tusentalsavgränsare (toLocaleString) för visning —
+    // <input type="number"> kräver rena siffror, så vi strippar allt annat. Utan
+    // detta visas fältet tomt varje gång ärendet öppnas igen efter att ha skickats
+    // tillbaka till granskning, trots att ett pris redan godkänts en gång.
+    setPrisInput((prev) => prev || (item.pris ? String(item.pris).replace(/\D/g, "") : ""));
     setValdaBilder(item.draft?.valdaBilderOrdning ?? []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item?.id]);
