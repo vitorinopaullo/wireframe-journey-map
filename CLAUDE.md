@@ -24,3 +24,6 @@ A clickable wireframe prototype for Trelink — a Swedish marketplace for busine
 
 ## Sync
 main → Lovable auto-sync → preview at preview--wireframe-journey-map.lovable.app. Local dev runs at localhost:8080. Published client URL is currently unpublished — do not deploy without explicit approval.
+
+## Testing
+Playwright smoke tests live in `e2e/` (config at `playwright.config.ts`, baseURL `http://localhost:8080` — the dev server must already be running, Playwright does not start it). New UI behavior involving conditional enable/disable states or click-through navigation should get a Playwright smoke test in `e2e/` rather than relying on manual clicking alone. Run `npm run test:e2e` and report its actual output before claiming such a change is verified — this supplements, not replaces, visually checking localhost:8080 for general layout/design regressions.
