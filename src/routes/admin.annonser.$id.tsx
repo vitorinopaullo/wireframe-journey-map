@@ -8,6 +8,7 @@ import { readAdminAccounts } from "@/lib/mock-auth";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
 import { GRUPP_MAT_TYPER, GRUPP_SKONHET_TYPER } from "@/lib/nyckeltal";
+import { formatTelefon, isValidEmail } from "@/lib/format";
 import {
   cats,
   docsByCat,
@@ -244,15 +245,24 @@ function Field({
   v,
   edited,
   onSave,
+  format,
+  invalid,
 }: {
   k: string;
   v?: string;
   edited?: boolean;
   onSave?: (value: string) => void;
+  /** Formaterar värdet medan admin skriver och innan det sparas, t.ex. formatTelefon. */
+  format?: (value: string) => string;
+  /** Flaggar ett befintligt, ifyllt värde som felformaterat (t.ex. ogiltig e-post) utan att blockera sparning. */
+  invalid?: (value: string) => boolean;
 }) {
   const [editing, setEditing] = useState(false);
   const [draftVal, setDraftVal] = useState(v ?? "");
   const missing = !v;
+  const invalidVal = !missing && !!invalid?.(v!);
+  const warn = missing || invalidVal;
+  const displayVal = missing ? "⚠️ Ej ifyllt" : invalidVal ? `⚠️ ${v}` : v;
 
   useEffect(() => {
     if (!editing) setDraftVal(v ?? "");
@@ -262,8 +272,8 @@ function Field({
     return (
       <div className="border-b border-foreground/10 pb-2">
         <Annotation>{k}</Annotation>
-        <div className={`mt-1 text-sm tabular-nums ${missing ? "text-amber-700 dark:text-amber-500" : ""}`}>
-          {missing ? "⚠️ Ej ifyllt" : v}
+        <div className={`mt-1 text-sm tabular-nums ${warn ? "text-amber-700 dark:text-amber-500" : ""}`}>
+          {displayVal}
         </div>
       </div>
     );
@@ -271,7 +281,7 @@ function Field({
 
   const commit = () => {
     setEditing(false);
-    const next = draftVal.trim();
+    const next = format ? format(draftVal.trim()) : draftVal.trim();
     if (next !== (v ?? "")) onSave(next);
   };
 
@@ -286,7 +296,7 @@ function Field({
           autoFocus
           type="text"
           value={draftVal}
-          onChange={(e) => setDraftVal(e.target.value)}
+          onChange={(e) => setDraftVal(format ? format(e.target.value) : e.target.value)}
           onBlur={commit}
           onKeyDown={(e) => {
             if (e.key === "Enter") commit();
@@ -303,9 +313,7 @@ function Field({
           onClick={() => setEditing(true)}
           className="mt-1 flex w-full items-center justify-between gap-2 text-left text-sm hover:text-foreground"
         >
-          <span className={missing ? "text-amber-700 dark:text-amber-500" : ""}>
-            {missing ? "⚠️ Ej ifyllt" : v}
-          </span>
+          <span className={warn ? "text-amber-700 dark:text-amber-500" : ""}>{displayVal}</span>
           <Pencil className="h-3 w-3 shrink-0 text-muted-foreground" />
         </button>
       )}
@@ -1613,6 +1621,7 @@ function AdminAnnonsDetail() {
               k="Mobil"
               v={onboarding?.saljaruppgifter.mobil}
               edited={!!item.trelinkEdits?.["onboarding.kontakt.mobil"]}
+              format={formatTelefon}
               onSave={saveOnboardingField("onboarding.kontakt.mobil", (d, v) => ({
                 ...d,
                 saljaruppgifter: { ...d.saljaruppgifter, mobil: v },
@@ -1622,6 +1631,7 @@ function AdminAnnonsDetail() {
               k="E-post"
               v={onboarding?.saljaruppgifter.epost}
               edited={!!item.trelinkEdits?.["onboarding.kontakt.epost"]}
+              invalid={(v) => !isValidEmail(v)}
               onSave={saveOnboardingField("onboarding.kontakt.epost", (d, v) => ({
                 ...d,
                 saljaruppgifter: { ...d.saljaruppgifter, epost: v },
@@ -1661,6 +1671,7 @@ function AdminAnnonsDetail() {
                   k="Mail"
                   v={onboarding.firmatecknare.mail}
                   edited={!!item.trelinkEdits?.["onboarding.firmatecknare.mail"]}
+                  invalid={(v) => !isValidEmail(v)}
                   onSave={saveOnboardingField("onboarding.firmatecknare.mail", (d, v) =>
                     d.firmatecknare ? { ...d, firmatecknare: { ...d.firmatecknare, mail: v } } : d,
                   )}
@@ -1669,6 +1680,7 @@ function AdminAnnonsDetail() {
                   k="Mobil"
                   v={onboarding.firmatecknare.mobil}
                   edited={!!item.trelinkEdits?.["onboarding.firmatecknare.mobil"]}
+                  format={formatTelefon}
                   onSave={saveOnboardingField("onboarding.firmatecknare.mobil", (d, v) =>
                     d.firmatecknare ? { ...d, firmatecknare: { ...d.firmatecknare, mobil: v } } : d,
                   )}
@@ -1728,12 +1740,14 @@ function AdminAnnonsDetail() {
               k="Hyresvärd e-post"
               v={draft.hyresvardEmail}
               edited={!!item.trelinkEdits?.["draft.hyresvardEmail"]}
+              invalid={(v) => !isValidEmail(v)}
               onSave={saveDraftField("hyresvardEmail")}
             />
             <Field
               k="Hyresvärd telefon"
               v={draft.hyresvardTel}
               edited={!!item.trelinkEdits?.["draft.hyresvardTel"]}
+              format={formatTelefon}
               onSave={saveDraftField("hyresvardTel")}
             />
             <Field
