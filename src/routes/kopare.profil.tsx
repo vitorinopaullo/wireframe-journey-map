@@ -125,7 +125,7 @@ function Profile() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <WireField label="Namn" placeholder="Anna Andersson" hint="Hämtat från BankID — ej redigerbart" />
                 <WireField label="E-post" placeholder="anna@exempel.se" />
-                <WireField label="Telefon" placeholder="+46 70 123 45 67" />
+                <WireField label="Telefon" placeholder="076 12 34 56" />
                 <WireField label="Adress" placeholder="Storgatan 1, Stockholm" />
                 <WireField label="Postnummer" placeholder="113 27" />
               </div>

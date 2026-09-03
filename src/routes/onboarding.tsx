@@ -43,6 +43,13 @@ function formatPostnr(raw: string): string {
   return digits.length <= 3 ? digits : `${digits.slice(0, 3)} ${digits.slice(3)}`;
 }
 
+/** Formaterar mobilnummer medan användaren skriver: 076 12 34 56 — exakt 9 siffror, inte fler eller färre. */
+function formatTelefon(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 9);
+  const grupper = [digits.slice(0, 3), digits.slice(3, 5), digits.slice(5, 7), digits.slice(7, 9)].filter(Boolean);
+  return grupper.join(" ");
+}
+
 function Onboarding() {
   const { next, role: roleParam } = Route.useSearch();
   const navigate = useNavigate();
@@ -444,7 +451,7 @@ function Step2({
                 <InputField
                   label="Telefon *"
                   value={telefon}
-                  onChange={setTelefon}
+                  onChange={(v) => setTelefon(formatTelefon(v))}
                   onBlur={() => setTelefonTouched(true)}
                   placeholder="076 12 34 56"
                   error={telefonError}
@@ -523,7 +530,7 @@ function Step2({
                 <InputField
                   label="Mobil nr *"
                   value={telefon}
-                  onChange={setTelefon}
+                  onChange={(v) => setTelefon(formatTelefon(v))}
                   onBlur={() => setTelefonTouched(true)}
                   placeholder="076 12 34 56"
                   error={telefonError}
@@ -605,7 +612,7 @@ function Step2({
                   <InputField
                     label="Mobil *"
                     value={ftMobil}
-                    onChange={setFtMobil}
+                    onChange={(v) => setFtMobil(formatTelefon(v))}
                     onBlur={() => setFtMobilTouched(true)}
                     placeholder="076 12 34 56"
                     error={ftMobilError}
