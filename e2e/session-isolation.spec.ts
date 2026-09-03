@@ -92,4 +92,27 @@ test("seller A cannot open seller B's ärende by navigating directly to its URL"
   // Sanity check: seller A can still open their own ärende.
   await pageA.goto("/saljare/annons/sellerA-annons");
   await expect(pageA.getByText("Säljare A:s annons")).toBeVisible();
+
+  // One buyer interest per seller's own annons, so a leaked (unfiltered)
+  // count would show 2 instead of 1 for each seller on dashboard.tsx.
+  await seedBuyerInterest(pageA, {
+    id: "bi-sellerA-lead",
+    annonsId: "sellerA-annons",
+    kKod: "K-8888",
+    status: "väntar-pdf",
+    skapadAt: new Date().toISOString(),
+  });
+  await seedBuyerInterest(pageA, {
+    id: "bi-sellerB-lead",
+    annonsId: "sellerB-annons",
+    kKod: "K-9999",
+    status: "väntar-pdf",
+    skapadAt: new Date().toISOString(),
+  });
+
+  await pageA.goto("/dashboard?mode=saljare");
+  const minaAnnonserCard = pageA.locator("a", { hasText: "Mina annonser" });
+  const intresseanmalningarCard = pageA.locator("a", { hasText: "Intresseanmälningar" });
+  await expect(minaAnnonserCard.locator(".font-mono.text-3xl")).toHaveText("1");
+  await expect(intresseanmalningarCard.locator(".font-mono.text-3xl")).toHaveText("1");
 });

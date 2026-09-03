@@ -5,6 +5,7 @@ import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, Annotation, StatusDot } from "@/components/wire";
 import { readAnnonser, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
 import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY } from "@/lib/kopare-workflow";
+import { getSession } from "@/lib/mock-auth";
 
 const searchSchema = z.object({
   mode: z.enum(["kopare", "saljare"]).catch("kopare").default("kopare"),
@@ -57,6 +58,12 @@ function Dashboard() {
 
   const affar = annonser.find((a) => DEAL_STATES.includes(a.workflow?.state));
 
+  const userId = getSession()?.userId;
+  const minaAnnonser = annonser.filter((a) => a.agarUserId === userId);
+  const minaIntresseanmalningar = buyerInterests.filter((i) =>
+    minaAnnonser.some((a) => a.id === i.annonsId),
+  );
+
   return (
     <AppLayout mode={mode}>
       <PageHeader
@@ -107,15 +114,15 @@ function Dashboard() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <DashCard
             title="Mina annonser"
-            value={String(annonser.length)}
+            value={String(minaAnnonser.length)}
             link="/saljare/mina-annonser"
-            hint={annonserSummary(annonser)}
+            hint={annonserSummary(minaAnnonser)}
           />
           <DashCard
             title="Intresseanmälningar"
-            value={String(buyerInterests.length)}
+            value={String(minaIntresseanmalningar.length)}
             link="/saljare/intressenter"
-            hint={intresseanmalningarHint(buyerInterests)}
+            hint={intresseanmalningarHint(minaIntresseanmalningar)}
           />
           <DashCard
             title="Mina affärer"
