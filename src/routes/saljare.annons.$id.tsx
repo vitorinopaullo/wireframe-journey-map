@@ -329,23 +329,25 @@ function SellerAnnonsDetail() {
         right={<WireTag>{stateLabel[st]}</WireTag>}
       />
 
-      {/* Dev-only step switcher */}
-      <div className="mb-4 flex items-center gap-2 rounded-card border border-foreground/10 bg-muted/20 px-3 py-2">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          Dev · hoppa till steg
-        </span>
-        <select
-          value={st}
-          onChange={(e) => jumpTo(e.target.value as WorkflowState)}
-          className="border border-foreground/30 bg-card px-2 py-1 text-xs"
-        >
-          {flowSteps.map((s) => (
-            <option key={s.state} value={s.state}>{s.label}</option>
-          ))}
-          <option value="komplettering">Komplettering krävs</option>
-          <option value="avvisad">Avvisad</option>
-        </select>
-      </div>
+      {/* Dev-only step switcher — bypasser TreLinks granskning, får aldrig visas utanför lokal utveckling. */}
+      {import.meta.env.DEV && (
+        <div className="mb-4 flex items-center gap-2 rounded-card border border-foreground/10 bg-muted/20 px-3 py-2">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Dev · hoppa till steg
+          </span>
+          <select
+            value={st}
+            onChange={(e) => jumpTo(e.target.value as WorkflowState)}
+            className="border border-foreground/30 bg-card px-2 py-1 text-xs"
+          >
+            {flowSteps.map((s) => (
+              <option key={s.state} value={s.state}>{s.label}</option>
+            ))}
+            <option value="komplettering">Komplettering krävs</option>
+            <option value="avvisad">Avvisad</option>
+          </select>
+        </div>
+      )}
 
       {/* Flödesindikator */}
       <WireBox className="mb-6" variant="dashed">

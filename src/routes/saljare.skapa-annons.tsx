@@ -928,10 +928,14 @@ function CreateListing() {
         {STEPS.map((label, i) => {
           const isDone = i < step;
           const isActive = i === step;
+          // Stegmarkörerna ska alltid synas som förloppsindikator, men själva
+          // hoppet (onClick, som kringgår valideringen på tidigare steg) får
+          // bara vara klickbart under lokal utveckling — inte i produktion.
+          const StepTag = import.meta.env.DEV ? "button" : "div";
           return (
-            <button
+            <StepTag
               key={label}
-              onClick={() => setStep(i)}
+              {...(import.meta.env.DEV ? { onClick: () => setStep(i) } : {})}
               className={`rounded-card border p-3 text-left transition-colors duration-150 ease-standard ${
                 isActive
                   ? "border-[var(--color-primary)] bg-[var(--color-purple-100)]"
@@ -948,7 +952,7 @@ function CreateListing() {
                 {String(i + 1).padStart(2, "0")} {isDone ? <Check className="inline-block h-3 w-3 align-middle" /> : null}
               </div>
               <div className="text-sm font-medium">{label}</div>
-            </button>
+            </StepTag>
           );
         })}
       </div>
