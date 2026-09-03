@@ -1457,8 +1457,8 @@ function AdminAnnonsDetail() {
       )}
 
       {st === "hyresvard-notifiering" && (
-        <WireBox label="Skriv annonstext" className="mb-6">
-          <div className="mb-4 flex flex-wrap items-center gap-2 border-l-2 border-foreground/20 bg-muted/20 px-3 py-2 text-sm">
+        <WireBox label="Hyresvärd" className="mb-6">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
             <span>✓ Hyresvärden är automatiskt informerad via Signicat</span>
             {(() => {
               const hyresvardMail = (item.workflow?.timeline ?? []).some(
@@ -1471,6 +1471,11 @@ function AdminAnnonsDetail() {
               ) : null;
             })()}
           </div>
+        </WireBox>
+      )}
+
+      {st === "hyresvard-notifiering" && (
+        <WireBox label="Skriv annonstext" className="mb-6">
           <div className="space-y-4">
             <label className="block">
               <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
