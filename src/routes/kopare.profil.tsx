@@ -129,9 +129,22 @@ function Profile() {
                 <WireField label="Adress" placeholder="Storgatan 1, Stockholm" />
                 <WireField label="Postnummer" placeholder="113 27" />
               </div>
-              <div className="mt-4 flex justify-end gap-2">
-                <WireBtn variant="ghost">Ångra</WireBtn>
-                <WireBtn>Spara ändringar</WireBtn>
+              <div className="mt-4 flex items-center justify-end gap-2">
+                <Annotation>Kommer snart</Annotation>
+                <WireBtn
+                  variant="ghost"
+                  disabled
+                  className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+                >
+                  Ångra
+                </WireBtn>
+                <WireBtn
+                  variant="secondary"
+                  disabled
+                  className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+                >
+                  Spara ändringar
+                </WireBtn>
               </div>
             </WireBox>
           </div>
@@ -195,9 +208,22 @@ function Profile() {
               <div className="flex justify-between"><span className="text-muted-foreground">Bank</span><span className="font-mono">SEB</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Giltigt t.o.m.</span><span className="font-mono">2026-12-31</span></div>
             </div>
-            <div className="mt-4 flex gap-2">
-              <WireBtn variant="secondary">Ladda upp nytt lånelöfte</WireBtn>
-              <WireBtn variant="ghost">Ta bort</WireBtn>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <WireBtn
+                variant="secondary"
+                disabled
+                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+              >
+                Ladda upp nytt lånelöfte
+              </WireBtn>
+              <WireBtn
+                variant="ghost"
+                disabled
+                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+              >
+                Ta bort
+              </WireBtn>
+              <Annotation>Kommer snart</Annotation>
             </div>
           </WireBox>
         </div>
@@ -225,7 +251,14 @@ function Profile() {
                   <td className="py-3 font-mono text-xs">{f.datum}</td>
                   <td className="py-3"><WireTag>{f.status}</WireTag></td>
                   <td className="py-3 text-right">
-                    <WireBtn variant="ghost">PDF</WireBtn>
+                    <WireBtn
+                      variant="ghost"
+                      disabled
+                      className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+                      title="Kommer snart"
+                    >
+                      PDF
+                    </WireBtn>
                   </td>
                 </tr>
               ))}
@@ -277,8 +310,15 @@ function Profile() {
               <li className="flex items-center gap-2"><StatusDot state="done" /> BankID (primär)</li>
               <li className="flex items-center gap-2"><StatusDot state="done" /> 2FA via SMS</li>
             </ul>
-            <div className="mt-4">
-              <WireBtn variant="secondary">Visa aktiva sessioner</WireBtn>
+            <div className="mt-4 flex items-center gap-2">
+              <WireBtn
+                variant="secondary"
+                disabled
+                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+              >
+                Visa aktiva sessioner
+              </WireBtn>
+              <Annotation>Kommer snart</Annotation>
             </div>
           </WireBox>
           <WireBox label="Dataexport & radering" variant="dashed">
@@ -286,9 +326,22 @@ function Profile() {
               Du kan när som helst exportera all data eller begära radering. Pågående affärer måste
               avslutas först.
             </p>
-            <div className="mt-4 flex gap-2">
-              <WireBtn variant="ghost">Exportera data (JSON)</WireBtn>
-              <WireBtn variant="ghost">Begär radering</WireBtn>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <WireBtn
+                variant="ghost"
+                disabled
+                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+              >
+                Exportera data (JSON)
+              </WireBtn>
+              <WireBtn
+                variant="ghost"
+                disabled
+                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+              >
+                Begär radering
+              </WireBtn>
+              <Annotation>Kommer snart</Annotation>
             </div>
           </WireBox>
         </div>
