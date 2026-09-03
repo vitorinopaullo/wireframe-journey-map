@@ -35,7 +35,6 @@ import { Route as AdminAnvandareRouteImport } from './routes/admin.anvandare'
 import { Route as AdminInstallningarRouteImport } from './routes/admin.installningar'
 import { Route as AdminKopareRouteImport } from './routes/admin.kopare'
 import { Route as AdminPubliceratRouteImport } from './routes/admin.publicerat'
-import { Route as AffarIdRouteImport } from './routes/affar.$id'
 import { Route as AnnonsIdRouteImport } from './routes/annons.$id'
 import { Route as KopareAffarerRouteImport } from './routes/kopare.affarer'
 import { Route as KopareFavoriterRouteImport } from './routes/kopare.favoriter'
@@ -193,11 +192,6 @@ const AdminKopareRoute = AdminKopareRouteImport.update({
 const AdminPubliceratRoute = AdminPubliceratRouteImport.update({
   id: '/admin/publicerat',
   path: '/admin/publicerat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AffarIdRoute = AffarIdRouteImport.update({
-  id: '/affar/$id',
-  path: '/affar/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnnonsIdRoute = AnnonsIdRouteImport.update({
@@ -358,7 +352,6 @@ export interface FileRoutesByFullPath {
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
   '/admin/publicerat': typeof AdminPubliceratRoute
-  '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/kopare/affarer': typeof KopareAffarerRouteWithChildren
   '/kopare/favoriter': typeof KopareFavoriterRoute
@@ -410,7 +403,6 @@ export interface FileRoutesByTo {
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
   '/admin/publicerat': typeof AdminPubliceratRoute
-  '/affar/$id': typeof AffarIdRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/jamfor': typeof KopareJamforRoute
   '/kopare/profil': typeof KopareProfilRoute
@@ -463,7 +455,6 @@ export interface FileRoutesById {
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
   '/admin/publicerat': typeof AdminPubliceratRoute
-  '/affar/$id': typeof AffarIdRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/kopare/affarer': typeof KopareAffarerRouteWithChildren
   '/kopare/favoriter': typeof KopareFavoriterRoute
@@ -520,7 +511,6 @@ export interface FileRouteTypes {
     | '/admin/installningar'
     | '/admin/kopare'
     | '/admin/publicerat'
-    | '/affar/$id'
     | '/annons/$id'
     | '/kopare/affarer'
     | '/kopare/favoriter'
@@ -572,7 +562,6 @@ export interface FileRouteTypes {
     | '/admin/installningar'
     | '/admin/kopare'
     | '/admin/publicerat'
-    | '/affar/$id'
     | '/kopare/favoriter'
     | '/kopare/jamfor'
     | '/kopare/profil'
@@ -624,7 +613,6 @@ export interface FileRouteTypes {
     | '/admin/installningar'
     | '/admin/kopare'
     | '/admin/publicerat'
-    | '/affar/$id'
     | '/annons/$id'
     | '/kopare/affarer'
     | '/kopare/favoriter'
@@ -680,7 +668,6 @@ export interface RootRouteChildren {
   AdminInstallningarRoute: typeof AdminInstallningarRoute
   AdminKopareRoute: typeof AdminKopareRoute
   AdminPubliceratRoute: typeof AdminPubliceratRoute
-  AffarIdRoute: typeof AffarIdRoute
   AnnonsIdRoute: typeof AnnonsIdRouteWithChildren
   KopareAffarerRoute: typeof KopareAffarerRouteWithChildren
   KopareFavoriterRoute: typeof KopareFavoriterRoute
@@ -879,13 +866,6 @@ declare module '@tanstack/react-router' {
       path: '/admin/publicerat'
       fullPath: '/admin/publicerat'
       preLoaderRoute: typeof AdminPubliceratRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/affar/$id': {
-      id: '/affar/$id'
-      path: '/affar/$id'
-      fullPath: '/affar/$id'
-      preLoaderRoute: typeof AffarIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/annons/$id': {
@@ -1186,7 +1166,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminInstallningarRoute: AdminInstallningarRoute,
   AdminKopareRoute: AdminKopareRoute,
   AdminPubliceratRoute: AdminPubliceratRoute,
-  AffarIdRoute: AffarIdRoute,
   AnnonsIdRoute: AnnonsIdRouteWithChildren,
   KopareAffarerRoute: KopareAffarerRouteWithChildren,
   KopareFavoriterRoute: KopareFavoriterRoute,

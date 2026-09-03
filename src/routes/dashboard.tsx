@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { WireBox, PageHeader, WireBtn, Annotation, StatusDot } from "@/components/wire";
+import { WireBox, PageHeader, WireBtn, Annotation } from "@/components/wire";
 import { readAnnonser, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
 import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY } from "@/lib/kopare-workflow";
 import { getSession } from "@/lib/mock-auth";
@@ -15,12 +15,6 @@ export const Route = createFileRoute("/dashboard")({
   validateSearch: searchSchema,
   component: Dashboard,
 });
-
-// Ingen workflow-state representerar ännu en verklig pågående affär
-// (köpare matchad, handpenning, signering, tillträde) — se annons-workflow.ts.
-// Listan är avsiktligt tom tills en sådan state finns; "Mina affärer" och
-// "Pågående affär"-kortet ska då visa 0 / döljas, inte hårdkodad exempeldata.
-const DEAL_STATES: WorkflowState[] = [];
 
 function annonserSummary(list: any[]) {
   if (list.length === 0) return "Inga annonser än";
@@ -56,8 +50,6 @@ function Dashboard() {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  const affar = annonser.find((a) => DEAL_STATES.includes(a.workflow?.state));
-
   const userId = getSession()?.userId;
   const minaAnnonser = annonser.filter((a) => a.agarUserId === userId);
   const minaIntresseanmalningar = buyerInterests.filter((i) =>
@@ -75,35 +67,6 @@ function Dashboard() {
             : "Mina annonser, intresse på dem och pågående affärer — speglar köparens panel."
         }
       />
-
-      {affar && (
-        <WireBox label="Pågående affär · status" className="mb-6">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold">{affar.titel}</h3>
-              <Annotation>Affär #{affar.id}</Annotation>
-            </div>
-            <WireBtn variant="secondary" to="/affar/$id" params={{ id: affar.id }}>
-              Öppna affärsstatus →
-            </WireBtn>
-          </div>
-          <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
-            {[
-              ["Annons godkänd", "done"],
-              ["Köpare matchad", "done"],
-              ["Hyresvärd", "active"],
-              ["Handpenning", "pending"],
-              ["Signering", "pending"],
-              ["Tillträde", "pending"],
-            ].map(([l, s]) => (
-              <div key={l} className="flex flex-col items-center gap-2 rounded-card border border-foreground/15 bg-card p-3 text-center">
-                <StatusDot state={s as "done" | "active" | "pending"} />
-                <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{l}</span>
-              </div>
-            ))}
-          </div>
-        </WireBox>
-      )}
 
       {mode === "kopare" ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -124,12 +87,7 @@ function Dashboard() {
             link="/saljare/intressenter"
             hint={intresseanmalningarHint(minaIntresseanmalningar)}
           />
-          <DashCard
-            title="Mina affärer"
-            value={affar ? "1" : "0"}
-            link="/saljare/affarer"
-            hint={affar ? "Pågående" : "Inga affärer än"}
-          />
+          <DashCard title="Mina affärer" value="0" link="/saljare/affarer" hint="Inga affärer än" />
         </div>
       )}
 
