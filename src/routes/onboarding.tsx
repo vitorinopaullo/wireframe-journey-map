@@ -12,6 +12,7 @@ import {
   StatusDot,
 } from "@/components/wire";
 import { getSession, upsertAdminAccount, updateSession } from "@/lib/mock-auth";
+import { formatTelefon, isValidEmail } from "@/lib/format";
 
 function isSafeNext(v: string | undefined): v is string {
   return !!v && v.startsWith("/") && !v.startsWith("//");
@@ -43,12 +44,6 @@ function formatPostnr(raw: string): string {
   return digits.length <= 3 ? digits : `${digits.slice(0, 3)} ${digits.slice(3)}`;
 }
 
-/** Formaterar mobilnummer medan användaren skriver: 076 12 34 56 — exakt 9 siffror, inte fler eller färre. */
-function formatTelefon(raw: string): string {
-  const digits = raw.replace(/\D/g, "").slice(0, 9);
-  const grupper = [digits.slice(0, 3), digits.slice(3, 5), digits.slice(5, 7), digits.slice(7, 9)].filter(Boolean);
-  return grupper.join(" ");
-}
 
 function Onboarding() {
   const { next, role: roleParam } = Route.useSearch();
@@ -313,7 +308,14 @@ function Step2({
   const adressError = (adressTouched || submitAttempted) && adressSaknas ? "Adress krävs." : undefined;
   const postnrError = (postnrTouched || submitAttempted) && postnrSaknas ? "Postnummer krävs." : undefined;
   const epostSaknas = epost.trim() === "";
-  const epostError = (epostTouched || submitAttempted) && epostSaknas ? "E-post krävs." : undefined;
+  const epostFelFormat = !epostSaknas && !isValidEmail(epost);
+  const epostError = (epostTouched || submitAttempted)
+    ? epostSaknas
+      ? "E-post krävs."
+      : epostFelFormat
+      ? "Ogiltig e-postadress. Ange som namn@domän.se."
+      : undefined
+    : undefined;
   const telefonSaknas = telefon.trim() === "";
   const telefonError = (telefonTouched || submitAttempted) && telefonSaknas ? "Telefonnummer krävs." : undefined;
 
@@ -321,16 +323,24 @@ function Step2({
   const ftFornamnSaknas = role === "saljare" && !arFirmatecknare && ftFornamn.trim() === "";
   const ftEfternamnSaknas = role === "saljare" && !arFirmatecknare && ftEfternamn.trim() === "";
   const ftMailSaknas = role === "saljare" && !arFirmatecknare && ftMail.trim() === "";
+  const ftMailFelFormat = !ftMailSaknas && ftMail.trim() !== "" && !isValidEmail(ftMail);
   const ftMobilSaknas = role === "saljare" && !arFirmatecknare && ftMobil.trim() === "";
   const ftRollError = (ftRollTouched || submitAttempted) && ftRollSaknas ? "Roll krävs." : undefined;
   const ftFornamnError = (ftFornamnTouched || submitAttempted) && ftFornamnSaknas ? "Förnamn krävs." : undefined;
   const ftEfternamnError = (ftEfternamnTouched || submitAttempted) && ftEfternamnSaknas ? "Efternamn krävs." : undefined;
-  const ftMailError = (ftMailTouched || submitAttempted) && ftMailSaknas ? "Mail krävs." : undefined;
+  const ftMailError = (ftMailTouched || submitAttempted)
+    ? ftMailSaknas
+      ? "Mail krävs."
+      : ftMailFelFormat
+      ? "Ogiltig e-postadress. Ange som namn@domän.se."
+      : undefined
+    : undefined;
   const ftMobilError = (ftMobilTouched || submitAttempted) && ftMobilSaknas ? "Mobilnummer krävs." : undefined;
 
   const kanFortsatta =
     !telefonSaknas &&
     !epostSaknas &&
+    !epostFelFormat &&
     !bolagSaknas &&
     !orgnrSaknas &&
     !ortSaknas &&
@@ -341,6 +351,7 @@ function Step2({
     !ftFornamnSaknas &&
     !ftEfternamnSaknas &&
     !ftMailSaknas &&
+    !ftMailFelFormat &&
     !ftMobilSaknas;
 
 
