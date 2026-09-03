@@ -37,3 +37,30 @@ export async function seedAnnons(page: Page, annons: Record<string, unknown>) {
     localStorage.setItem("saljare-annonser", JSON.stringify(next));
   }, annons);
 }
+
+/**
+ * Same shape as Session in mock-auth.ts. Session moved to sessionStorage
+ * (per-tab, not shared across tabs) — see the "trelink-gate" commit history.
+ * Must run after the page has navigated to the app's origin at least once.
+ */
+export async function seedSession(
+  page: Page,
+  personnr: string,
+  fornamn: string,
+  efternamn: string,
+) {
+  await page.evaluate(
+    ({ personnr, fornamn, efternamn }) => {
+      const userId = `u_${personnr.replace(/\D/g, "")}`;
+      sessionStorage.setItem(
+        "trelink-session",
+        JSON.stringify({
+          userId,
+          bankid: { personnr, fornamn, efternamn, verifieradAt: Date.now() },
+          createdAt: Date.now(),
+        }),
+      );
+    },
+    { personnr, fornamn, efternamn },
+  );
+}
