@@ -112,8 +112,9 @@ function AdminAffarDetail() {
         <WireBox label="Avslutad — nekad av hyresvärden" className="mb-6">
           <Annotation>
             <span className="mt-2 block">
-              Hyresvärden nekade överlåtelsen. Handpenningen återbetalas (simulerat) och annonsen är
-              åter publik.
+              {annons
+                ? "Hyresvärden nekade överlåtelsen. Handpenningen återbetalas (simulerat) och annonsen är åter publik."
+                : "Hyresvärden nekade överlåtelsen. Handpenningen återbetalas (simulerat)."}
             </span>
           </Annotation>
         </WireBox>

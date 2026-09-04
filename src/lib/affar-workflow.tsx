@@ -222,11 +222,14 @@ export function hyresvardBesked(interestId: string, annonsId: string, besked: Hy
       "Hyresvärden godkände överlåtelsen. Nästa steg: signering av överenskommelse.",
     );
   } else {
+    const annonsFinns = getAnnons(annonsId) !== undefined;
     avreserveraAnnons(annonsId);
     logBoth(
       interestId,
       "TreLink",
-      "Hyresvärden nekade överlåtelsen. Affären avslutas och handpenningen återbetalas. Annonsen är åter publik.",
+      annonsFinns
+        ? "Hyresvärden nekade överlåtelsen. Affären avslutas och handpenningen återbetalas. Annonsen är åter publik."
+        : "Hyresvärden nekade överlåtelsen. Affären avslutas och handpenningen återbetalas.",
     );
   }
   return deal;
