@@ -642,11 +642,12 @@ function AdminAnnonsDetail() {
     if (!item) return;
     setUtkastRubrik((prev) => prev || item.workflow?.utkast?.rubrik || "");
     setUtkastBeskrivning((prev) => prev || item.workflow?.utkast?.beskrivning || "");
-    setUtkastPris((prev) => prev || item.workflow?.utkast?.pris || item.pris || "");
-    // item.pris är formaterat med tusentalsavgränsare (toLocaleString) för visning —
-    // <input type="number"> kräver rena siffror, så vi strippar allt annat. Utan
-    // detta visas fältet tomt varje gång ärendet öppnas igen efter att ha skickats
-    // tillbaka till granskning, trots att ett pris redan godkänts en gång.
+    // Både item.workflow.utkast.pris och item.pris kan vara formaterade med
+    // tusentalsavgränsare (toLocaleString) — <input type="number"> kräver rena
+    // siffror, så vi strippar allt annat. Utan detta visas fältet tomt trots
+    // att ett pris redan finns satt.
+    const utkastPrisKalla = item.workflow?.utkast?.pris || item.pris;
+    setUtkastPris((prev) => prev || (utkastPrisKalla ? String(utkastPrisKalla).replace(/\D/g, "") : ""));
     setPrisInput((prev) => prev || (item.pris ? String(item.pris).replace(/\D/g, "") : ""));
     setValdaBilder(item.draft?.valdaBilderOrdning ?? []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1499,6 +1500,19 @@ function AdminAnnonsDetail() {
                 value={utkastRubrik}
                 onChange={(e) => setUtkastRubrik(e.target.value)}
                 placeholder="T.ex. Välskött café i centrala Stockholm"
+                className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Pris (kr)
+              </span>
+              <input
+                type="number"
+                min="0"
+                value={utkastPris}
+                onChange={(e) => setUtkastPris(e.target.value)}
+                placeholder="1 200 000"
                 className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
               />
             </label>
