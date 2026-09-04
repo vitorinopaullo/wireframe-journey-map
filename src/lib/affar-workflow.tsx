@@ -70,7 +70,7 @@ export type DealState = {
   overenskommelse?: OverenskommelseState;
 };
 
-const DEALS_KEY = "trelink-affarer";
+export const DEALS_KEY = "trelink-affarer";
 
 export function readDeals(): Record<string, DealState> {
   if (typeof window === "undefined") return {};

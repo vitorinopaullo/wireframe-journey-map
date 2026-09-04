@@ -30,7 +30,7 @@ export const Route = createFileRoute("/saljare/skapa-annons")({
 
 
 
-const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
+export const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
 // Antal platshållarbilder som krävs i bild-galleriet, se docsByCat i annons-model.ts.
 const BILD_ANTAL_KRAV = 8;
 const isBildDoc = (name: string) => name.startsWith("Bilder");
