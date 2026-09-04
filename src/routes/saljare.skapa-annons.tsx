@@ -2000,8 +2000,19 @@ function TagToggleGroup({
     return () => window.removeEventListener("resize", measure);
   }, [options]);
 
+  // "Finns inte" och konkreta taggar är ömsesidigt uteslutande inom samma
+  // fältgrupp — att välja "Finns inte" rensar övriga val, och att välja en
+  // konkret tagg rensar "Finns inte" om den var vald.
   function toggle(tag: string) {
-    const next = selected.includes(tag) ? selected.filter((t) => t !== tag) : [...selected, tag];
+    let next: string[];
+    if (tag === FINNS_INTE) {
+      next = selected.includes(FINNS_INTE) ? [] : [FINNS_INTE];
+    } else {
+      const utanFinnsInte = selected.filter((t) => t !== FINNS_INTE);
+      next = utanFinnsInte.includes(tag)
+        ? utanFinnsInte.filter((t) => t !== tag)
+        : [...utanFinnsInte, tag];
+    }
     onChange(next.join(", "));
   }
 
