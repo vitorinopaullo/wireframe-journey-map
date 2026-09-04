@@ -180,17 +180,7 @@ export type Draft = {
   hyresvardTel: string;
   brfKontakt: string;
   // Säljande info till TreLink (används för att skriva annonstexten)
-  verksamhetSedan: string;
-  oppettider: string;
-  anstallda: string;
   omsattning: string;
-  resultat: string;
-  usp: string;
-  kundunderlag: string;
-  laget: string;
-  inventarier: string;
-  anledning: string;
-  potential: string;
   premium: boolean;
   docs: Record<string, DocState>;
   // Platshållarbilder för galleriuppladdningen i Underlag-steget — se docsByCat's bild-dokument.
