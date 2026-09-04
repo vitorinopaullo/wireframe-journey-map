@@ -1344,6 +1344,30 @@ function CreateListing() {
         </>
       )}
 
+      {/* Vad som saknas för att gå vidare — visas bara när knappen nedan faktiskt är
+          inaktiverad. På steg 3 (Skicka) speglar vi canSubmit, som beror på alla
+          tidigare stegs validering, inte bara steg 3:s egen — annars kan knappen
+          vara inaktiverad utan att någon förklaring visas. */}
+      {(() => {
+        const disabled = step < 3 ? !canContinue : !canSubmit;
+        const activeErrors = step === 3
+          ? [...validation[1], ...validation[2], ...validation[3]]
+          : validation[step] ?? [];
+        if (!disabled || activeErrors.length === 0) return null;
+        return (
+          <div className="mb-2 rounded-button border border-destructive/30 bg-destructive/5 px-3 py-2">
+            <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-destructive">
+              Kan inte gå vidare än
+            </p>
+            <ul className="space-y-0.5 text-sm text-destructive">
+              {activeErrors.map((msg) => (
+                <li key={msg}>· {msg}</li>
+              ))}
+            </ul>
+          </div>
+        );
+      })()}
+
       {/* Footer nav */}
       <div className="sticky bottom-0 -mx-4 flex items-center justify-between gap-3 border-t border-foreground/20 bg-card/95 px-4 py-4 backdrop-blur">
         <div className="flex items-center gap-2">
