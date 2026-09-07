@@ -721,7 +721,7 @@ function SellerAnnonsDetail() {
 
         {/* Timeline */}
         <div>
-          <WireBox label="Ärendehistorik · synlig för dig & TreLink">
+          <WireBox label="Ärendehistorik">
             <ul className="mt-1 max-h-[400px] overflow-y-auto space-y-3 pr-1">
               {(wf.timeline ?? []).map((l, i) => {
                 const mail = mailForLogEntry(l.text);

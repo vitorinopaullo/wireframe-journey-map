@@ -1890,7 +1890,7 @@ function AdminAnnonsDetail() {
 
         {/* Sidopanel: logg */}
         <div className="space-y-4">
-          <WireBox label="Beslutslogg · synlig för säljaren" className="sticky top-24">
+          <WireBox label="Beslutslogg" className="sticky top-24">
             <ul className="space-y-3">
               {(item.workflow?.timeline ?? []).map((l: any, i: number) => {
                 const mail = mailForLogEntry(l.text);
@@ -1905,9 +1905,6 @@ function AdminAnnonsDetail() {
                 );
               })}
             </ul>
-            <Annotation>
-              <span className="mt-3 block">↳ Inget hemligt här. Säljaren ser exakt samma logg i sin vy.</span>
-            </Annotation>
           </WireBox>
         </div>
       </div>

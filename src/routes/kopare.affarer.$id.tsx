@@ -244,7 +244,7 @@ function BuyerCaseDetail() {
         </WireBox>
       )}
 
-      <WireBox label="Ärendehistorik · synlig för dig & TreLink">
+      <WireBox label="Ärendehistorik">
         <ul className="mt-1 space-y-3">
           {(interest.timeline ?? []).map((l, i) => (
             <li key={i} className="border-l-2 border-foreground/20 pl-3">
