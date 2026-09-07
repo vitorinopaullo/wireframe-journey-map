@@ -398,13 +398,6 @@ function TagsField({
   );
 }
 
-const kompletteringsMallar = [
-  "Hyresavtalet saknar undertecknad sista sida — ladda upp på nytt med signatursida.",
-  "Resultaträkningen är för 2023, vi behöver 2024 års siffror.",
-  "Inventarielistan saknar uppskattat värde per post.",
-  "Bilderna är för låg upplösning — minst 1600px bredd.",
-];
-
 const PROCESS_STEPS: { label: string; states: WorkflowState[] }[] = [
   { label: "Granskning", states: ["granskas", "komplettering"] },
   { label: "Uppdragsavtal", states: ["avtal-vantar-signering"] },
@@ -1855,20 +1848,6 @@ function AdminAnnonsDetail() {
 
                   {activeDoc === d.name && (
                     <div className="mt-4 border-t border-foreground/10 pt-3">
-                      <span className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                        Snabbmallar
-                      </span>
-                      <div className="mb-3 flex flex-wrap gap-2">
-                        {kompletteringsMallar.map((m) => (
-                          <button
-                            key={m}
-                            onClick={() => setDocKomplText(m)}
-                            className="rounded-button border border-foreground/15 px-2 py-1 text-left font-mono text-[10px] text-muted-foreground transition-colors duration-150 hover:border-foreground/30 hover:text-foreground"
-                          >
-                            + {m.slice(0, 40)}…
-                          </button>
-                        ))}
-                      </div>
                       <textarea
                         value={docKomplText}
                         onChange={(e) => setDocKomplText(e.target.value)}
