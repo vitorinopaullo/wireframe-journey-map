@@ -59,7 +59,6 @@ function Dashboard() {
   return (
     <AppLayout mode={mode}>
       <PageHeader
-        eyebrow={`Anpassad start · ${mode === "kopare" ? "köparläge" : "säljarläge"}`}
         title={mode === "kopare" ? "Välkommen tillbaka" : "Säljarpanel"}
         subtitle={
           mode === "kopare"
