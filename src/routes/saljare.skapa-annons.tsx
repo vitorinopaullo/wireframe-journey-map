@@ -459,6 +459,30 @@ const SERVERING_TAGGAR_ANLEDNING_FORSALJNING = [
   "Uppbrytning av partnerskap",
 ];
 const SERVERING_TAGGAR_MYNDIGHETSKRAV = ["Serveringstillstånd", "Uteservering", "Livsmedelsintyg", "Brandskyddsdokumentation"];
+const SERVERING_TAGGAR_KOKSUTRUSTNING = [
+  "Kylskåp/frysskåp ingår",
+  "Diskmaskin (industri) ingår",
+  "Ugnar ingår",
+  "Köksmaskiner ingår",
+  "Porslin & bestick ingår",
+  "Kassasystem ingår",
+];
+const SERVERING_TAGGAR_ALKOHOLTILLSTAND = [
+  "Fullständiga rättigheter",
+  "Vin & starköl",
+  "Öl & vin till mat",
+  "Cateringtillstånd",
+  "Tillfälligt tillstånd",
+  "Tillstånd under prövning",
+];
+const SERVERING_TAGGAR_SKICK_I_LOKAL = [
+  "Nyrenoverat",
+  "Gott skick",
+  "Normalt slitage",
+  "Renoveringsbehov",
+  "Behöver totalrenovering",
+  "Skador/fukt förekommer",
+];
 
 // PDF-uppladdningar specifika för Servering — namn + hjälptext, renderas i en lista.
 export const SERVERING_UPPLADDNINGAR: { namn: string; hint: string }[] = [
@@ -861,8 +885,11 @@ function CreateListing() {
         "planlosning",
         "ekonomi",
         "typAvKok",
+        "koksutrustning",
+        "skickILokal",
         "utvecklingsmojlighet",
         "anledningTillForsaljning",
+        "alkoholtillstand",
         "myndighetskrav",
       ],
       Frisor: ["lage", "interior", "planlosning", "ekonomi"],
@@ -2489,6 +2516,28 @@ function ServeringFaltgrupp({
         </div>
 
         <div className="border-t border-foreground/10 pt-4">
+          <FaltgruppRubrik>Köksutrustning</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <TagToggleGroup
+              options={SERVERING_TAGGAR_KOKSUTRUSTNING}
+              value={falt.koksutrustning}
+              onChange={(v) => onChange("koksutrustning", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-foreground/10 pt-4">
+          <FaltgruppRubrik>Skick i lokalen</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <TagToggleGroup
+              options={SERVERING_TAGGAR_SKICK_I_LOKAL}
+              value={falt.skickILokal}
+              onChange={(v) => onChange("skickILokal", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Utvecklingsmöjlighet</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
             <TagToggleGroup
@@ -2506,6 +2555,17 @@ function ServeringFaltgrupp({
               options={SERVERING_TAGGAR_ANLEDNING_FORSALJNING}
               value={falt.anledningTillForsaljning}
               onChange={(v) => onChange("anledningTillForsaljning", v)}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-foreground/10 pt-4">
+          <FaltgruppRubrik>Alkoholtillstånd</FaltgruppRubrik>
+          <div className="mt-2 space-y-3">
+            <TagToggleGroup
+              options={SERVERING_TAGGAR_ALKOHOLTILLSTAND}
+              value={falt.alkoholtillstand}
+              onChange={(v) => onChange("alkoholtillstand", v)}
             />
           </div>
         </div>
