@@ -12,6 +12,7 @@ import {
 import { getAnnons } from "@/lib/annons-workflow";
 import { markKategoriRead } from "@/lib/admin-notiser";
 import { getAccountByUserId } from "@/lib/mock-auth";
+import { formatDatum } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/kopare")({
   component: AdminKopare,
@@ -25,10 +26,6 @@ const FILTER_LABEL: Record<StatusFilter, string> = {
   "vill-ga-vidare": "Vill köpa",
   avböjt: "Avvisat",
 };
-
-function formatTid(ts: string) {
-  return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
-}
 
 const STATUS_TONE: Record<BuyerInterestStatus, "success" | "danger" | "warn"> = {
   "väntar-pdf": "warn",
@@ -174,7 +171,7 @@ function AdminKopare() {
                         </WireBtn>
                       ))}
                   </td>
-                  <td className="px-3 py-2 font-mono text-xs">{formatTid(i.skapadAt)}</td>
+                  <td className="px-3 py-2 font-mono text-xs">{formatDatum(i.skapadAt)}</td>
                 </tr>
                 );
               })}

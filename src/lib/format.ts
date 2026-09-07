@@ -21,3 +21,10 @@ export function isValidEmail(value: string): boolean {
 export function formatArendeRef(id: string): string {
   return "TRL-" + id.slice(-6).toUpperCase();
 }
+
+/** Datum utan klockslag, sv-SE — klienten vill aldrig se en exakt tid, bara
+ * datumet, i listor, tidslinjer och beslutsloggar. */
+export function formatDatum(ts: string | number): string {
+  if (!ts) return "—";
+  return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short" });
+}

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, Annotation } from "@/components/wire";
 import { readAnnonser, STORAGE_KEY, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
-import { formatArendeRef } from "@/lib/format";
+import { formatArendeRef, formatDatum } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminOversikt,
@@ -43,11 +43,6 @@ function toRows(list: any[]): Row[] {
     status: (item.workflow?.state as WorkflowState) ?? null,
     waitingSince: item.workflow?.timeline?.[0]?.ts || item.skickadAt || "",
   }));
-}
-
-function formatTid(ts: string) {
-  if (!ts) return "—";
-  return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
 }
 
 function queueForStatus(status: WorkflowState | null): QueueId | null {
@@ -108,7 +103,7 @@ function AdminOversikt() {
                   <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                     {r.status ? stateLabel[r.status] : "—"}
                   </div>
-                  <div className="mt-1 text-xs text-muted-foreground">Väntar sedan {formatTid(r.waitingSince)}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">Väntar sedan {formatDatum(r.waitingSince)}</div>
                 </div>
               </WireBox>
             </Link>

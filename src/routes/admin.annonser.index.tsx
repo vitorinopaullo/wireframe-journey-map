@@ -4,7 +4,7 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
 import { readAnnonser, STORAGE_KEY, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
 import { docsByCat, type CatId } from "@/lib/annons-model";
-import { formatArendeRef } from "@/lib/format";
+import { formatArendeRef, formatDatum } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/annonser/")({
   component: AdminAnnonser,
@@ -46,11 +46,6 @@ function toRows(list: any[]): Row[] {
       };
     })
     .sort((a, b) => (b.inkommen || "").localeCompare(a.inkommen || ""));
-}
-
-function formatTid(ts: string) {
-  if (!ts) return "—";
-  return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
 }
 
 const STATUS_TONE: Record<WorkflowState, "neutral" | "warn" | "success" | "danger"> = {
@@ -252,7 +247,7 @@ function AdminAnnonser() {
                   <span>
                     Dokument: {r.docsInlamnade}/{r.docsTotal} inlämnade
                   </span>
-                  <span>Inkommen: {formatTid(r.inkommen)}</span>
+                  <span>Inkommen: {formatDatum(r.inkommen)}</span>
                 </div>
               </div>
             </WireBox>

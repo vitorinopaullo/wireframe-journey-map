@@ -15,6 +15,7 @@ import {
 import { SignicatFlow } from "@/components/SignicatFlow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
+import { formatDatum } from "@/lib/format";
 
 export const Route = createFileRoute("/saljare/affarer/$id")({
   component: SellerCaseDetail,
@@ -176,7 +177,7 @@ function SellerCaseDetail() {
           {(interest.timeline ?? []).map((l, i) => (
             <li key={i} className="border-l-2 border-foreground/20 pl-3">
               <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
+                {formatDatum(l.ts)} · {l.vem}
               </div>
               <div className="text-sm">{l.text}</div>
             </li>

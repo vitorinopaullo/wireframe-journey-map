@@ -16,7 +16,7 @@ import {
   type Affar,
 } from "@/lib/affar-workflow";
 import { readAnnonser, STORAGE_KEY as ANNONS_STORAGE_KEY } from "@/lib/annons-workflow";
-import { formatArendeRef } from "@/lib/format";
+import { formatArendeRef, formatDatum } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/affarer/")({
   component: AdminAffarer,
@@ -62,11 +62,6 @@ function AffarsRad({ a }: { a: Affar }) {
   );
 }
 
-function formatTid(ts: string) {
-  if (!ts) return "—";
-  return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
-}
-
 function PubliceradRad({ item }: { item: any }) {
   const navigate = useNavigate();
   const titel = item.workflow?.utkast?.rubrik || item.titel || "—";
@@ -83,7 +78,7 @@ function PubliceradRad({ item }: { item: any }) {
         <Annotation>
           {item.draft?.adress || "Ingen adress angiven"} ·{" "}
           {item.pris ? `${item.pris} kr` : "Pris ej satt"} · publicerad{" "}
-          {formatTid(item.workflow?.publiceradAt)}
+          {formatDatum(item.workflow?.publiceradAt)}
         </Annotation>
       </WireBox>
     </div>

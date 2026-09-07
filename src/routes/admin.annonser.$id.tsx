@@ -8,7 +8,7 @@ import { readAdminAccounts } from "@/lib/mock-auth";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
 import { GRUPP_MAT_TYPER, GRUPP_SKONHET_TYPER } from "@/lib/nyckeltal";
-import { formatTelefon, isValidEmail, formatArendeRef } from "@/lib/format";
+import { formatTelefon, isValidEmail, formatArendeRef, formatDatum } from "@/lib/format";
 import {
   cats,
   docsByCat,
@@ -1553,7 +1553,7 @@ function AdminAnnonsDetail() {
           <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field
               k="Publicerad"
-              v={item.workflow?.publiceradAt ? new Date(item.workflow.publiceradAt).toLocaleString("sv-SE") : undefined}
+              v={item.workflow?.publiceradAt ? formatDatum(item.workflow.publiceradAt) : undefined}
             />
             <Field k="Slutgiltig rubrik" v={item.workflow?.utkast?.rubrik || item.titel} />
             <Field k="Slutgiltigt pris" v={(item.workflow?.utkast?.pris || item.pris) ? `${item.workflow?.utkast?.pris || item.pris} kr` : undefined} />
@@ -1918,7 +1918,7 @@ function AdminAnnonsDetail() {
                 return (
                   <li key={i} className="border-l-2 border-foreground/20 pl-3">
                     <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {new Date(l.ts).toLocaleString("sv-SE")} · {l.vem}
+                      {formatDatum(l.ts)} · {l.vem}
                     </div>
                     <div className="text-sm">{l.text}</div>
                     {mail && <VisaMailLank onClick={() => setMailPreview(mail)} />}

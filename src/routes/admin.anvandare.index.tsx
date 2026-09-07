@@ -4,14 +4,11 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { PageHeader, Annotation, WireTag } from "@/components/wire";
 import { readAdminAccounts, ADMIN_ACCOUNTS_STORAGE_KEY, type AdminAccountEvent } from "@/lib/mock-auth";
 import { markKategoriRead } from "@/lib/admin-notiser";
+import { formatDatum } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/anvandare/")({
   component: AdminAnvandare,
 });
-
-function formatTid(ts: number) {
-  return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short" });
-}
 
 type AccountStatus = "inloggad" | "roll-vald" | "komplett";
 
@@ -181,7 +178,7 @@ function AdminAnvandare() {
                         <StatusTag status={accountStatus(a)} />
                       </td>
                       <td className="px-3 py-2 font-mono text-xs">
-                        {formatTid(a.createdAt)}
+                        {formatDatum(a.createdAt)}
                         {justUpdatedId === a.id && (
                           <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                             ● nytt

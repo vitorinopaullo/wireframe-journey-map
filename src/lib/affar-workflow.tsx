@@ -7,6 +7,7 @@ import { StatusDot } from "@/components/wire";
 import { getAnnons, patchAnnons } from "@/lib/annons-workflow";
 import { patchBuyerInterest, logBuyerEntry, type BuyerInterest } from "@/lib/kopare-workflow";
 import type { CatId } from "@/lib/annons-model";
+import { formatDatum } from "@/lib/format";
 
 // Samma mönster som KAT_NAMN i admin.annonser.index.tsx/admin.publicerat.tsx
 // — de kortare visningsnamnen som används i affärslistorna.
@@ -345,7 +346,7 @@ export function annonsInfo(annonsId: string) {
 
 export function senasteUppdatering(interest: BuyerInterest): string {
   const ts = interest.timeline?.[0]?.ts ?? interest.skapadAt;
-  return new Date(ts).toLocaleString("sv-SE");
+  return formatDatum(ts);
 }
 
 export function buildAffarer(interests: BuyerInterest[]): Affar[] {
