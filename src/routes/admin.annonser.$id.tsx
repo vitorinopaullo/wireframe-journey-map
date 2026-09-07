@@ -31,7 +31,14 @@ export const Route = createFileRoute("/admin/annonser/$id")({
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
 type OnboardingSaljareData = {
-  bolagsuppgifter: { bolag: string; orgnr: string; ort: string; adress: string; presentation?: string };
+  bolagsuppgifter: {
+    bolag: string;
+    orgnr: string;
+    ort: string;
+    adress: string;
+    postnr?: string;
+    presentation?: string;
+  };
   saljaruppgifter: { fornamn: string; efternamn: string; mobil: string; epost: string };
   firmatecknare: { roll: string; fornamn: string; efternamn: string; mail: string; mobil: string } | null;
 };
@@ -1603,6 +1610,15 @@ function AdminAnnonsDetail() {
               }))}
             />
             <Field
+              k="Postnr"
+              v={onboarding?.bolagsuppgifter.postnr}
+              edited={!!item.trelinkEdits?.["onboarding.bolag.postnr"]}
+              onSave={saveOnboardingField("onboarding.bolag.postnr", (d, v) => ({
+                ...d,
+                bolagsuppgifter: { ...d.bolagsuppgifter, postnr: v },
+              }))}
+            />
+            <Field
               k="Adress"
               v={onboarding?.bolagsuppgifter.adress}
               edited={!!item.trelinkEdits?.["onboarding.bolag.adress"]}
@@ -1724,6 +1740,12 @@ function AdminAnnonsDetail() {
               v={draft.ort}
               edited={!!item.trelinkEdits?.["draft.ort"]}
               onSave={saveDraftField("ort")}
+            />
+            <Field
+              k="Postnr"
+              v={draft.postnr}
+              edited={!!item.trelinkEdits?.["draft.postnr"]}
+              onSave={saveDraftField("postnr")}
             />
             <Field
               k="Verksamhetstyp"

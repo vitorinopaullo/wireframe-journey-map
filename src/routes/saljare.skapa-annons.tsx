@@ -1227,6 +1227,7 @@ function CreateListing() {
               <Row k="Paket" v={activeCat.name} onEdit={() => goToStep(0, "steg-paket")} />
               <Row k="Avgift vid affär" v={activeCat.avgift} onEdit={() => goToStep(0, "steg-paket")} />
               <Row k="Försäljningsadress" v={draft.adress || "—"} onEdit={() => goToStep(1, "steg-objektet")} />
+              <Row k="Postnr" v={draft.postnr || "—"} onEdit={() => goToStep(1, "steg-objektet")} />
               <Row k="Verksamhet" v={draft.verksamhet || "—"} onEdit={() => goToStep(1, "steg-objektet")} />
               <Row k="Hyresvärdens namn" v={draft.hyresvardNamn || "—"} onEdit={() => goToStep(2, "steg-hyresvard")} />
               <Row k="Hyresvärd e-post" v={draft.hyresvardEmail || "—"} onEdit={() => goToStep(2, "steg-hyresvard")} />
