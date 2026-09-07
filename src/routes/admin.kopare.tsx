@@ -13,6 +13,7 @@ import { getAnnons } from "@/lib/annons-workflow";
 import { markKategoriRead } from "@/lib/admin-notiser";
 import { getAccountByUserId } from "@/lib/mock-auth";
 import { formatDatum } from "@/lib/format";
+import { AlertTriangle, Check } from "lucide-react";
 
 export const Route = createFileRoute("/admin/kopare")({
   component: AdminKopare,
@@ -147,14 +148,16 @@ function AdminKopare() {
                   <td className="px-3 py-2">
                     <StatusTag status={i.status} />
                     {forsokteKopaUtanBolag && (
-                      <span className="mt-1 block text-xs text-amber-700 dark:text-amber-500">
-                        ⚠ Försökte köpa — väntar på bolagsuppgifter
+                      <span className="mt-1 flex items-center gap-1 text-xs text-amber-700 dark:text-amber-500">
+                        <AlertTriangle className="h-3 w-3" /> Försökte köpa — väntar på bolagsuppgifter
                       </span>
                     )}
                   </td>
                   <td className="px-3 py-2">
                     {i.pdfOppnadAt ? (
-                      <span className="text-sm">✓ Öppnat</span>
+                      <span className="flex items-center gap-1 text-sm">
+                        <Check className="h-3.5 w-3.5" /> Öppnat
+                      </span>
                     ) : (
                       <span className="inline-flex items-center border border-destructive/60 bg-destructive/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-destructive">
                         Ej öppnat — ring säljaren
@@ -164,7 +167,9 @@ function AdminKopare() {
                   <td className="px-3 py-2">
                     {i.status === "avböjt" &&
                       (i.remarketingTag ? (
-                        <span className="text-sm">✓ Märkt</span>
+                        <span className="flex items-center gap-1 text-sm">
+                          <Check className="h-3.5 w-3.5" /> Märkt
+                        </span>
                       ) : (
                         <WireBtn variant="secondary" onClick={() => toggleRemarketing(i.id)}>
                           Märk för ombokning

@@ -17,6 +17,7 @@ import {
   type Affar,
 } from "@/lib/affar-workflow";
 import { formatArendeRef } from "@/lib/format";
+import { Clock } from "lucide-react";
 
 export const Route = createFileRoute("/saljare/affarer/")({
   component: SellerDeals,
@@ -34,7 +35,7 @@ function SlaPill({ sla }: { sla?: Affar["sla"] }) {
           : "border-foreground/20"
       }`}
     >
-      ⏱ {sla.etikett}
+      <Clock className="h-3 w-3" /> {sla.etikett}
     </span>
   );
 }

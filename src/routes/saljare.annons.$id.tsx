@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { X, Lock, Upload, Paperclip, FileText, Mail, CheckCircle2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { X, Lock, Upload, Paperclip, FileText, Mail, CheckCircle2, AlertTriangle, Check, Clock } from "lucide-react";
+import { useEffect, useState, type ComponentType } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
@@ -825,15 +825,19 @@ function Field({ k, v }: { k: string; v?: string }) {
 /** Läsbar dokumentstatus för säljaren — samma ordval som DocStateBadge i
  * admin.annonser.$id.tsx, men utan interaktion (ingen klickbar rad, inga knappar). */
 function SellerDocStatus({ state }: { state: DocState }) {
-  const map: Record<DocState, { label: string; tone: "default" | "filled" | "warning" | "neutral" }> = {
-    "saknas": { label: "⚠️ VÄNTAR PÅ UPPLADDNING", tone: "warning" },
+  const map: Record<
+    DocState,
+    { label: string; icon?: ComponentType<{ className?: string }>; tone: "default" | "filled" | "warning" | "neutral" }
+  > = {
+    "saknas": { label: "VÄNTAR PÅ UPPLADDNING", icon: AlertTriangle, tone: "warning" },
     "uppladdad": { label: "UPPLADDAD · VÄNTAR GRANSKNING", tone: "default" },
     "granskas": { label: "GRANSKAS", tone: "default" },
-    "godkant": { label: "✓ GODKÄNT", tone: "filled" },
-    "komplettera": { label: "⏳ KOMPLETTERING BEGÄRD", tone: "default" },
+    "godkant": { label: "GODKÄNT", icon: Check, tone: "filled" },
+    "komplettera": { label: "KOMPLETTERING BEGÄRD", icon: Clock, tone: "default" },
     "ej-aktuell": { label: "N/A · EJ AKTUELLT", tone: "neutral" },
   };
   const m = map[state];
+  const Icon = m.icon;
   const toneCls =
     m.tone === "filled"
       ? "border-[var(--color-success)] bg-[var(--color-success)] text-white"
@@ -842,5 +846,10 @@ function SellerDocStatus({ state }: { state: DocState }) {
       : m.tone === "neutral"
       ? "border-muted-foreground/40 bg-muted/40 text-muted-foreground"
       : "border-foreground/50 text-foreground";
-  return <span className={`rounded-pill border px-3 py-1 text-sm ${toneCls}`}>{m.label}</span>;
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-pill border px-3 py-1 text-sm ${toneCls}`}>
+      {Icon && <Icon className="h-3 w-3" />}
+      {m.label}
+    </span>
+  );
 }

@@ -10,7 +10,7 @@ export function WireBox({
   variant = "solid",
   id,
 }: {
-  label?: string;
+  label?: ReactNode;
   children?: ReactNode;
   className?: string;
   variant?: "solid" | "dashed" | "ghost";

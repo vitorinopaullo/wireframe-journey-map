@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
+import { Check } from "lucide-react";
 
 export const Route = createFileRoute("/kopare/jamfor")({
   component: Compare,
@@ -131,7 +132,11 @@ function Compare() {
                       </div>
                       <div className="flex items-center gap-2">
                         <WireTag>{a.kat}</WireTag>
-                        {a.verifierad && <WireTag>✓ Verifierad</WireTag>}
+                        {a.verifierad && (
+                          <WireTag>
+                            <Check className="inline-block h-3 w-3 align-middle" /> Verifierad
+                          </WireTag>
+                        )}
                       </div>
                       <Link to="/annons/$id" params={{ id: a.id }} className="block font-medium hover:underline">
                         {a.titel}

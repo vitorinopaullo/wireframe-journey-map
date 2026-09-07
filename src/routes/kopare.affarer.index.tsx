@@ -12,6 +12,7 @@ import {
   type Affar,
 } from "@/lib/affar-workflow";
 import { formatArendeRef } from "@/lib/format";
+import { Clock, Check } from "lucide-react";
 
 export const Route = createFileRoute("/kopare/affarer/")({
   component: BuyerDeals,
@@ -27,7 +28,7 @@ function SlaPill({ sla }: { sla?: Affar["sla"] }) {
         akut ? "border-[var(--color-danger)] bg-[var(--color-danger)] text-white" : "border-foreground/20"
       }`}
     >
-      ⏱ {sla.etikett}
+      <Clock className="h-3 w-3" /> {sla.etikett}
     </span>
   );
 }
@@ -174,8 +175,8 @@ function BuyerDeals() {
         {flik === "dig" &&
           (grupper.dig.length === 0 ? (
             <WireBox variant="dashed">
-              <p className="text-sm text-muted-foreground">
-                Inget kräver din uppmärksamhet just nu. ✓
+              <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                Inget kräver din uppmärksamhet just nu. <Check className="h-3.5 w-3.5" />
               </p>
             </WireBox>
           ) : (

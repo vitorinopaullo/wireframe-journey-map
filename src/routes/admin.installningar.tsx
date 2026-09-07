@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { Check } from "lucide-react";
 import { AdminLayout, AdminComingSoon } from "@/components/layouts/AdminLayout";
 import { PageHeader, WireBox, WireBtn, Annotation } from "@/components/wire";
 import { ADMIN_ACCOUNTS_STORAGE_KEY } from "@/lib/mock-auth";
@@ -73,8 +74,8 @@ function AdminInstallningar() {
         )}
 
         {cleared && (
-          <p className="text-sm font-medium">
-            ✓ Testdata rensad. Konton och annonser är nu borttagna.
+          <p className="flex items-center gap-1.5 text-sm font-medium">
+            <Check className="h-4 w-4" /> Testdata rensad. Konton och annonser är nu borttagna.
           </p>
         )}
 

@@ -120,7 +120,13 @@ function UnderlagsGranskning() {
           >
             Öppna PDF →
           </WireBtn>
-          {pdfOppnad && <Annotation>✓ Underlaget öppnat</Annotation>}
+          {pdfOppnad && (
+            <Annotation>
+              <span className="inline-flex items-center gap-1">
+                <CheckCircle2 className="h-3 w-3" /> Underlaget öppnat
+              </span>
+            </Annotation>
+          )}
         </WireBox>
 
         <WireBox label="Dokument">

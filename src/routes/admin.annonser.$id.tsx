@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { Pencil, Eye, FileCheck } from "lucide-react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
+import { Pencil, Eye, FileCheck, AlertTriangle, Check, CheckCircle2, X, Clock, PartyPopper } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
@@ -269,7 +269,17 @@ function Field({
   const missing = !v;
   const invalidVal = !missing && !!invalid?.(v!);
   const warn = missing || invalidVal;
-  const displayVal = missing ? "⚠️ Ej ifyllt" : invalidVal ? `⚠️ ${v}` : v;
+  const displayVal = missing ? (
+    <span className="inline-flex items-center gap-1">
+      <AlertTriangle className="h-3 w-3" /> Ej ifyllt
+    </span>
+  ) : invalidVal ? (
+    <span className="inline-flex items-center gap-1">
+      <AlertTriangle className="h-3 w-3" /> {v}
+    </span>
+  ) : (
+    v
+  );
 
   useEffect(() => {
     if (!editing) setDraftVal(v ?? "");
@@ -368,7 +378,9 @@ function TagsField({
             </WireTag>
           ))
         ) : (
-          <span className="text-sm text-amber-700 dark:text-amber-500">⚠️ Ej ifyllt</span>
+          <span className="inline-flex items-center gap-1 text-sm text-amber-700 dark:text-amber-500">
+            <AlertTriangle className="h-3 w-3" /> Ej ifyllt
+          </span>
         )}
       </div>
       <div className="mt-2 flex items-center gap-2">
@@ -414,8 +426,8 @@ function stepIndexForState(state: WorkflowState | null): number {
 function StepDot({ status }: { status: "done" | "active" | "pending" }) {
   if (status === "done") {
     return (
-      <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[var(--color-success)] text-[9px] font-bold text-white">
-        ✓
+      <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[var(--color-success)] text-white">
+        <Check className="h-2.5 w-2.5" />
       </span>
     );
   }
@@ -457,8 +469,8 @@ function ProcessStepper({ state }: { state: WorkflowState | null }) {
 function RejectedBanner({ item }: { item: any }) {
   return (
     <div className="mb-6 rounded-card border border-foreground/15 bg-muted/20 px-4 py-3">
-      <div className="font-mono text-xs font-semibold uppercase tracking-wider text-foreground">
-        ✕ Avvisad — ärendet är stängt
+      <div className="flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-foreground">
+        <X className="h-3.5 w-3.5" /> Avvisad — ärendet är stängt
       </div>
       {item.workflow?.avvisadReason && (
         <p className="mt-1 text-sm text-muted-foreground">
@@ -517,7 +529,11 @@ function BilderOversikt({
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   if (uppladdade.length === 0) {
-    return <div className="text-sm text-amber-700 dark:text-amber-500">⚠️ Inga bilder uppladdade ännu.</div>;
+    return (
+      <div className="flex items-center gap-1.5 text-sm text-amber-700 dark:text-amber-500">
+        <AlertTriangle className="h-3.5 w-3.5" /> Inga bilder uppladdade ännu.
+      </div>
+    );
   }
 
   const maxNadd = valda.length >= 8;
@@ -802,7 +818,9 @@ function AdminAnnonsDetail() {
   const verksamhetstypfaltBlock =
     valdaGrupper.length === 0 ? (
       <WireBox label="Verksamhetstypfält" variant="dashed">
-        <div className="text-sm text-amber-700 dark:text-amber-500">⚠️ Ingen verksamhetstyp vald ännu — fält kan inte visas.</div>
+        <div className="flex items-center gap-1.5 text-sm text-amber-700 dark:text-amber-500">
+          <AlertTriangle className="h-3.5 w-3.5" /> Ingen verksamhetstyp vald ännu — fält kan inte visas.
+        </div>
       </WireBox>
     ) : (
       valdaGrupper.map((grupp) => (
@@ -1166,7 +1184,8 @@ function AdminAnnonsDetail() {
                       : "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
                   }`}
                 >
-                  {c.ok ? "✅" : "⚠️"} {c.label}
+                  {c.ok ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertTriangle className="h-3.5 w-3.5" />}{" "}
+                  {c.label}
                 </span>
               ))}
             </div>
@@ -1203,7 +1222,8 @@ function AdminAnnonsDetail() {
                       : "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
                   }`}
                 >
-                  {c.ok ? "✅" : "⚠️"} {c.label}
+                  {c.ok ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertTriangle className="h-3.5 w-3.5" />}{" "}
+                  {c.label}
                 </span>
               ))}
             </div>
@@ -1425,8 +1445,8 @@ function AdminAnnonsDetail() {
 
             {daysSinceAvtalSent !== null && daysSinceAvtalSent >= 5 && (
               <div className="flex flex-wrap items-center justify-between gap-3 border-l-2 border-amber-500/70 bg-amber-50/60 px-3 py-2 dark:bg-amber-500/10">
-                <span className="text-sm font-medium text-amber-700 dark:text-amber-500">
-                  ⚠️ Avtalet har inte signerats — 5 dagar har passerat
+                <span className="flex items-center gap-1.5 text-sm font-medium text-amber-700 dark:text-amber-500">
+                  <AlertTriangle className="h-3.5 w-3.5" /> Avtalet har inte signerats — 5 dagar har passerat
                 </span>
                 <div className="flex items-center gap-2">
                   <WireBtn onClick={resendAvtal}>Skicka om avtal →</WireBtn>
@@ -1464,7 +1484,9 @@ function AdminAnnonsDetail() {
       {st === "hyresvard-notifiering" && (
         <WireBox label="Hyresvärd" className="mb-6">
           <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span>✓ Hyresvärden är automatiskt informerad via Signicat</span>
+            <span className="flex items-center gap-1.5">
+              <Check className="h-3.5 w-3.5" /> Hyresvärden är automatiskt informerad via Signicat
+            </span>
             {(() => {
               const hyresvardMail = (item.workflow?.timeline ?? []).some(
                 (l: any) => l.text === "Informationsmejl skickat till hyresvärden",
@@ -1532,7 +1554,15 @@ function AdminAnnonsDetail() {
       {skrivFasen && verksamhetstypfaltBlock}
 
       {st === "publicerad" && (
-        <WireBox label="🎉 Annonsen är publicerad" className="mb-6" variant="dashed">
+        <WireBox
+          label={
+            <span className="flex items-center gap-1.5">
+              <PartyPopper className="h-4 w-4" /> Annonsen är publicerad
+            </span>
+          }
+          className="mb-6"
+          variant="dashed"
+        >
           <p className="text-sm text-muted-foreground">Klart — inget mer krävs. Annonsen är live på trelink.se.</p>
           <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field
@@ -1921,7 +1951,9 @@ function AdminAnnonsDetail() {
             </div>
 
             <div className="space-y-4 p-6">
-              <WireTag active>✓ TreLink-signatur: Förifylld</WireTag>
+              <WireTag active>
+                <Check className="inline-block h-3 w-3 align-middle" /> TreLink-signatur: Förifylld
+              </WireTag>
 
               <UppdragsavtalDokument
                 bolag={onboarding?.bolagsuppgifter.bolag}
@@ -1988,13 +2020,19 @@ function AdminAnnonsDetail() {
 
 function DocStateBadge({ state }: { state: DocState }) {
   if (state === "uppladdad" || state === "saknas") return null;
-  const map: Partial<Record<DocState, { label: string; tone: "default" | "filled" | "warning" | "neutral" }>> = {
+  const map: Partial<
+    Record<
+      DocState,
+      { label: string; icon?: ComponentType<{ className?: string }>; tone: "default" | "filled" | "warning" | "neutral" }
+    >
+  > = {
     "granskas": { label: "GRANSKAS", tone: "default" },
-    "godkant": { label: "✓ GODKÄNT", tone: "filled" },
-    "komplettera": { label: "⏳ KOMPLETTERING BEGÄRD", tone: "default" },
+    "godkant": { label: "GODKÄNT", icon: Check, tone: "filled" },
+    "komplettera": { label: "KOMPLETTERING BEGÄRD", icon: Clock, tone: "default" },
     "ej-aktuell": { label: "N/A · EJ AKTUELLT", tone: "neutral" },
   };
   const m = map[state]!;
+  const Icon = m.icon;
   const toneCls =
     m.tone === "filled"
       ? "border-[var(--color-success)] bg-[var(--color-success)] text-white"
@@ -2004,7 +2042,8 @@ function DocStateBadge({ state }: { state: DocState }) {
       ? "border-muted-foreground/40 bg-muted/40 text-muted-foreground"
       : "border-foreground/50 text-foreground";
   return (
-    <span className={`rounded-pill border px-3 py-1 text-sm ${toneCls}`}>
+    <span className={`inline-flex items-center gap-1 rounded-pill border px-3 py-1 text-sm ${toneCls}`}>
+      {Icon && <Icon className="h-3 w-3" />}
       {m.label}
     </span>
   );

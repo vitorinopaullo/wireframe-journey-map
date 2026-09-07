@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { Check } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getBuyerInterest, statusLabel } from "@/lib/kopare-workflow";
@@ -366,7 +367,9 @@ function AdminAffarDetail() {
               </WireBtn>
             </div>
             <div className="space-y-4 p-6">
-              <WireTag active>✓ TreLink-signatur: Förifylld</WireTag>
+              <WireTag active>
+                <Check className="inline-block h-3 w-3 align-middle" /> TreLink-signatur: Förifylld
+              </WireTag>
               <KopeavtalDokument
                 saljareBolag={saljareBolag}
                 saljareOrgnr={saljareOrgnr}
@@ -421,7 +424,9 @@ function AdminAffarDetail() {
               </WireBtn>
             </div>
             <div className="space-y-4 p-6">
-              <WireTag active>✓ TreLink-signatur: Förifylld</WireTag>
+              <WireTag active>
+                <Check className="inline-block h-3 w-3 align-middle" /> TreLink-signatur: Förifylld
+              </WireTag>
               <OverenskommelseDokument
                 saljareBolag={saljareBolag}
                 kopareBolag={kopareBolag}

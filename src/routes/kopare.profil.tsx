@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireField, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
 import { getSession, getAccountByUserId, upsertAdminAccount } from "@/lib/mock-auth";
+import { Check } from "lucide-react";
 
 function isSafeNext(v: string | undefined): v is string {
   return !!v && v.startsWith("/") && !v.startsWith("//");
@@ -95,7 +96,9 @@ function Profile() {
         subtitle="Dina uppgifter delas aldrig med säljare innan signering. TreLink ser endast det som behövs för granskning."
         right={
           <div className="flex flex-col items-end gap-2">
-            <WireTag>BankID ✓</WireTag>
+            <WireTag>
+              BankID <Check className="inline-block h-3 w-3 align-middle" />
+            </WireTag>
             <Annotation>Medlem sedan jan 2026</Annotation>
           </div>
         }
@@ -166,7 +169,13 @@ function Profile() {
                 <WireBtn onClick={sparaBolag} disabled={bolagKravsForKop && !bolag.trim()}>
                   {bolagKravsForKop ? "Spara och fortsätt →" : "Spara"}
                 </WireBtn>
-                {bolagSparat && !bolagKravsForKop && <Annotation>✓ Sparat</Annotation>}
+                {bolagSparat && !bolagKravsForKop && (
+                  <Annotation>
+                    <span className="inline-flex items-center gap-1">
+                      <Check className="h-3 w-3" /> Sparat
+                    </span>
+                  </Annotation>
+                )}
               </div>
             </WireBox>
           </aside>
