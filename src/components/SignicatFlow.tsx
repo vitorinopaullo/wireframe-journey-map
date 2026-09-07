@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { X, Globe, Hexagon } from "lucide-react";
+import { X, Globe } from "lucide-react";
 
 type Screen = "doc" | "start-modal" | "bankid" | "done";
 
@@ -143,10 +143,9 @@ function DocViewer({
               className="mx-auto max-w-2xl bg-white p-10"
               style={{ border: "1px solid #E7E5E4", borderRadius: "3px" }}
             >
-              <div className="mb-8 flex items-center gap-2 text-xl font-bold text-black">
-        <Hexagon className="h-5 w-5" />
-        TreLink
-      </div>
+              <div className="mb-8">
+                <img src="/trelink-logo.svg" alt="TreLink" className="h-6 w-auto" />
+              </div>
               <h1 className="mb-8 text-2xl font-bold text-black">{docTitle}</h1>
               {renderDoc()}
             </div>
@@ -194,9 +193,8 @@ function DocumentPage({ seller, docTitle }: { seller: SignicatSellerInfo; docTit
       className="mx-auto max-w-2xl bg-white p-10"
       style={{ border: "1px solid #E7E5E4", borderRadius: "3px" }}
     >
-      <div className="mb-8 flex items-center gap-2 text-xl font-bold text-black">
-        <Hexagon className="h-5 w-5" />
-        TreLink
+      <div className="mb-8">
+        <img src="/trelink-logo.svg" alt="TreLink" className="h-6 w-auto" />
       </div>
 
       <h1 className="mb-8 text-2xl font-bold text-black">{docTitle}</h1>
