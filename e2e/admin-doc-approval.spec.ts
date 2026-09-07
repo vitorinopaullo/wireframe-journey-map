@@ -40,9 +40,10 @@ test("Godkänn stays disabled until the document row has been opened", async ({ 
     .locator('h4:text-is("Hyresavtal")')
     .locator('xpath=ancestor::div[contains(@class,"justify-between")][1]');
   const godkannBtn = docRow.getByRole("button", { name: "Godkänn" });
+  const openIcon = docRow.locator('[title="Öppna dokumentet"]');
 
   await expect(godkannBtn).toBeDisabled();
-  await expect(docRow.getByText("Öppna dokumentet först")).toBeVisible();
+  await expect(openIcon).toBeVisible();
 
   await docRow.getByRole("button", { name: /Hyresavtal/ }).click();
 
@@ -51,5 +52,5 @@ test("Godkänn stays disabled until the document row has been opened", async ({ 
   await expect(page.getByText("Dokumentvy · Hyresavtal")).toBeHidden();
 
   await expect(godkannBtn).toBeEnabled();
-  await expect(docRow.getByText("Öppna dokumentet först")).toBeHidden();
+  await expect(openIcon).toBeHidden();
 });

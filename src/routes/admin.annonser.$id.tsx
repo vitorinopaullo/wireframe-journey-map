@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil, Eye, FileCheck } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
@@ -878,15 +878,6 @@ function AdminAnnonsDetail() {
       ...it,
       draft: { ...it.draft, docs: { ...it.draft?.docs, [docName]: "godkant" } },
       workflow: logEntry(it.workflow, "TreLink", `Godkände dokument: ${docName}`),
-    }));
-    refresh();
-  };
-
-  const markDocNotApplicable = (docName: string) => {
-    patchAnnons(id, (it) => ({
-      ...it,
-      draft: { ...it.draft, docs: { ...it.draft?.docs, [docName]: "ej-aktuell" } },
-      workflow: logEntry(it.workflow, "TreLink", `Markerade dokument som ej aktuellt: ${docName}`),
     }));
     refresh();
   };
@@ -1814,16 +1805,23 @@ function AdminAnnonsDetail() {
                     >
                       <div className="mb-1 flex flex-wrap items-center gap-2">
                         <DocStateBadge state={state} />
-                        {d.required ? <WireTag>obligatorisk</WireTag> : <span className="font-mono text-[10px] text-muted-foreground">valfri</span>}
                       </div>
-                      <h4 className="font-medium">{d.name}</h4>
-                      <Annotation>{d.krav}</Annotation>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="font-medium">{d.name}</h4>
+                        {state !== "saknas" && (
+                          <span title="Uppladdad" className="shrink-0 text-muted-foreground">
+                            <FileCheck className="h-3.5 w-3.5" />
+                          </span>
+                        )}
+                      </div>
                     </button>
                     <div className="flex shrink-0 items-center gap-2">
                       {state !== "godkant" && (
                         <>
                           {!granskad && (
-                            <span className="text-xs text-muted-foreground">Öppna dokumentet först</span>
+                            <span title="Öppna dokumentet" className="text-muted-foreground">
+                              <Eye className="h-4 w-4" />
+                            </span>
                           )}
                           <WireBtn
                             variant="secondary"
@@ -1838,11 +1836,6 @@ function AdminAnnonsDetail() {
                       <WireBtn variant="ghost" onClick={() => setActiveDoc(activeDoc === d.name ? null : d.name)}>
                         Begär komplettering
                       </WireBtn>
-                      {!d.required && state !== "ej-aktuell" && (
-                        <WireBtn variant="ghost" onClick={() => markDocNotApplicable(d.name)}>
-                          Ej mottagen (N/A)
-                        </WireBtn>
-                      )}
                     </div>
                   </div>
 
@@ -1994,9 +1987,8 @@ function AdminAnnonsDetail() {
 }
 
 function DocStateBadge({ state }: { state: DocState }) {
-  if (state === "uppladdad") return null;
+  if (state === "uppladdad" || state === "saknas") return null;
   const map: Partial<Record<DocState, { label: string; tone: "default" | "filled" | "warning" | "neutral" }>> = {
-    "saknas": { label: "⚠️ VÄNTAR PÅ UPPLADDNING", tone: "warning" },
     "granskas": { label: "GRANSKAS", tone: "default" },
     "godkant": { label: "✓ GODKÄNT", tone: "filled" },
     "komplettera": { label: "⏳ KOMPLETTERING BEGÄRD", tone: "default" },
