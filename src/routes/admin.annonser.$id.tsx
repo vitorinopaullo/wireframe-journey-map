@@ -1625,7 +1625,7 @@ function AdminAnnonsDetail() {
           </div>
         </WireBox>
 
-        <WireBox label="Kontaktperson">
+        <WireBox label="Från kontoinställningen">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field
               k="Namn"
