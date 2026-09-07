@@ -8,7 +8,7 @@ import { readAdminAccounts } from "@/lib/mock-auth";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
 import { GRUPP_MAT_TYPER, GRUPP_SKONHET_TYPER } from "@/lib/nyckeltal";
-import { formatTelefon, isValidEmail } from "@/lib/format";
+import { formatTelefon, isValidEmail, formatArendeRef } from "@/lib/format";
 import {
   cats,
   docsByCat,
@@ -1133,7 +1133,7 @@ function AdminAnnonsDetail() {
       </Link>
 
       <PageHeader
-        eyebrow={`TreLink Admin · Annons #${id}`}
+        eyebrow={`TreLink Admin · Annons ${formatArendeRef(id)}`}
         title={item.titel ?? "Okänd annons"}
         subtitle={st ? stateLabel[st] : "Status okänd"}
       />

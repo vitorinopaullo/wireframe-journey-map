@@ -11,6 +11,7 @@ import {
   type Vantar,
   type Affar,
 } from "@/lib/affar-workflow";
+import { formatArendeRef } from "@/lib/format";
 
 export const Route = createFileRoute("/kopare/affarer/")({
   component: BuyerDeals,
@@ -51,7 +52,7 @@ function AffarsKort({ a }: { a: Affar }) {
           <div className="mb-1 flex items-center gap-2">
             <WireTag>{a.kat}</WireTag>
             <span className="text-xs text-muted-foreground">{a.ort}</span>
-            <span className="font-mono text-[10px] text-muted-foreground">#{a.id}</span>
+            <span className="font-mono text-[10px] text-muted-foreground">{formatArendeRef(a.id)}</span>
           </div>
           <h3 className="font-semibold">{a.titel}</h3>
           <Annotation>
@@ -196,7 +197,7 @@ function BuyerDeals() {
               <div>
                 <h3 className="font-medium">{a.titel}</h3>
                 <Annotation>
-                  #{a.id} · {a.pris} · {a.resultat}
+                  {formatArendeRef(a.id)} · {a.pris} · {a.resultat}
                 </Annotation>
               </div>
               <Link

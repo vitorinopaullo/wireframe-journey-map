@@ -16,6 +16,7 @@ import {
   type Affar,
 } from "@/lib/affar-workflow";
 import { readAnnonser, STORAGE_KEY as ANNONS_STORAGE_KEY } from "@/lib/annons-workflow";
+import { formatArendeRef } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/affarer/")({
   component: AdminAffarer,
@@ -45,7 +46,7 @@ function AffarsRad({ a }: { a: Affar }) {
             <div className="mb-1 flex flex-wrap items-center gap-2">
               <WireTag>{a.kat}</WireTag>
               <span className="text-xs text-muted-foreground">{a.ort}</span>
-              <span className="font-mono text-[10px] text-muted-foreground">#{a.id}</span>
+              <span className="font-mono text-[10px] text-muted-foreground">{formatArendeRef(a.id)}</span>
             </div>
             <h3 className="font-medium">{a.titel}</h3>
             <Annotation>
@@ -76,7 +77,7 @@ function PubliceradRad({ item }: { item: any }) {
     >
       <WireBox className="flex flex-col gap-1 transition-colors hover:border-foreground">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="font-mono text-[10px] text-muted-foreground">#{item.id}</span>
+          <span className="font-mono text-[10px] text-muted-foreground">{formatArendeRef(item.id)}</span>
         </div>
         <h3 className="font-medium">{titel}</h3>
         <Annotation>
@@ -155,7 +156,7 @@ function AdminAffarer() {
                       <div>
                         <h3 className="font-medium">{a.titel}</h3>
                         <Annotation>
-                          #{a.id} · {a.pris} · {a.resultat}
+                          {formatArendeRef(a.id)} · {a.pris} · {a.resultat}
                         </Annotation>
                       </div>
                     </WireBox>

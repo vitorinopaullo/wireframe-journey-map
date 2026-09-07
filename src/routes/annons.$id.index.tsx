@@ -19,6 +19,7 @@ import {
 } from "@/lib/kopare-workflow";
 import { addNotis } from "@/lib/admin-notiser";
 import { getSession, getAccountByUserId } from "@/lib/mock-auth";
+import { formatArendeRef } from "@/lib/format";
 
 export const Route = createFileRoute("/annons/$id/")({
   component: ListingDetail,
@@ -276,7 +277,7 @@ function ListingDetail() {
       <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
         <Link to="/" className="hover:underline">← Tillbaka till sök</Link>
         <span>·</span>
-        <span>Annons #{id}</span>
+        <span>Annons {formatArendeRef(id)}</span>
       </div>
 
       {/* Objektkort — bildgalleri, rubrik och nyckeltal */}

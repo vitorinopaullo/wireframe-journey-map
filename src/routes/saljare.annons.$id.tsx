@@ -19,6 +19,7 @@ import { cats, type CatId, type DocState } from "@/lib/annons-model";
 import { buildDocSpecs } from "@/routes/admin.annonser.$id";
 import { getSession } from "@/lib/mock-auth";
 import { addNotis } from "@/lib/admin-notiser";
+import { formatArendeRef } from "@/lib/format";
 
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
@@ -232,7 +233,7 @@ function SellerAnnonsDetail() {
       nwf = logEntry(nwf, "TreLink", "Informationsmejl skickat till hyresvärden");
       addNotis(
         "affarer",
-        `Uppdragsavtal signerat av säljaren — ${it.titel || "Ärende"} (#${id})`,
+        `Uppdragsavtal signerat av säljaren — ${it.titel || "Ärende"} (${formatArendeRef(id)})`,
         `/admin/annonser/${id}`,
       );
       return { ...it, workflow: nwf };

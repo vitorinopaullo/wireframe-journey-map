@@ -7,6 +7,7 @@ import { findOrCreateInterest } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
 import { addNotis } from "@/lib/admin-notiser";
 import { getSession } from "@/lib/mock-auth";
+import { formatArendeRef } from "@/lib/format";
 
 export const Route = createFileRoute("/annons/$id/intresse")({
   component: InterestRedirect,
@@ -26,7 +27,7 @@ function InterestRedirect() {
 
     const { interest, created } = findOrCreateInterest(id, getSession()?.userId);
     if (created) {
-      const annonsTitel = getAnnons(id)?.titel || `Annons #${id}`;
+      const annonsTitel = getAnnons(id)?.titel || `Annons ${formatArendeRef(id)}`;
       addNotis(
         "saljare-intresse",
         `Ny intresseanmälan (${interest.kKod}) på "${annonsTitel}"`,
@@ -40,7 +41,7 @@ function InterestRedirect() {
 
   return (
     <PublicLayout>
-      <PageHeader eyebrow={`Annons #${id}`} title="Skickar dig vidare …" />
+      <PageHeader eyebrow={`Annons ${formatArendeRef(id)}`} title="Skickar dig vidare …" />
     </PublicLayout>
   );
 }

@@ -15,3 +15,9 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function isValidEmail(value: string): boolean {
   return EMAIL_RE.test(value.trim());
 }
+
+/** Mänskligt läsbar ärendereferens för annonser/affärer/ärenden — samma format
+ * överallt så att admin och köpare/säljare pratar om exakt samma referens. */
+export function formatArendeRef(id: string): string {
+  return "TRL-" + id.slice(-6).toUpperCase();
+}

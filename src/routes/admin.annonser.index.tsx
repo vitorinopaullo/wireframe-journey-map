@@ -4,6 +4,7 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
 import { readAnnonser, STORAGE_KEY, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
 import { docsByCat, type CatId } from "@/lib/annons-model";
+import { formatArendeRef } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/annonser/")({
   component: AdminAnnonser,
@@ -238,7 +239,7 @@ function AdminAnnonser() {
                   {r.status === "hyresvard-notifiering" && (
                     <WireTag active>Redo att skriva annonstext</WireTag>
                   )}
-                  <span className="font-mono text-[10px] text-muted-foreground">#{r.id}</span>
+                  <span className="font-mono text-[10px] text-muted-foreground">{formatArendeRef(r.id)}</span>
                   {justUpdatedId === r.id && (
                     <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                       ● nytt

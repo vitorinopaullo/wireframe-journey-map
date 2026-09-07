@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2 } from "lucide-react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
+import { formatArendeRef } from "@/lib/format";
 
 export const Route = createFileRoute("/saljare/annons-inskickad")({
   component: TackPage,
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/saljare/annons-inskickad")({
 
 function TackPage() {
   const { id } = Route.useSearch();
-  const ref = "TRL-" + (id ? id.slice(-6).toUpperCase() : Math.floor(100000 + Math.random() * 900000));
+  const ref = id ? formatArendeRef(id) : "TRL-" + Math.floor(100000 + Math.random() * 900000);
   return (
     <AppLayout mode="saljare">
       <PageHeader

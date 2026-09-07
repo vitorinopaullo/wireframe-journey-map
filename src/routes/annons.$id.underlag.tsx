@@ -8,6 +8,7 @@ import { readBuyerInterests, patchBuyerInterest, logBuyerEntry, type BuyerIntere
 import { getAnnons } from "@/lib/annons-workflow";
 import { addNotis } from "@/lib/admin-notiser";
 import { getSession, getAccountByUserId } from "@/lib/mock-auth";
+import { formatArendeRef } from "@/lib/format";
 import { godkandaDokument, DEMO_DOKUMENT } from "./annons.$id.index";
 
 export const Route = createFileRoute("/annons/$id/underlag")({
@@ -57,7 +58,7 @@ function UnderlagsGranskning() {
       prev ? logBuyerEntry({ ...prev, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText) : prev,
     );
     if (status === "vill-ga-vidare") {
-      const annonsTitel = getAnnons(interest.annonsId)?.titel || `Annons #${interest.annonsId}`;
+      const annonsTitel = getAnnons(interest.annonsId)?.titel || `Annons ${formatArendeRef(interest.annonsId)}`;
       addNotis(
         "kopare",
         `${interest.kKod} vill köpa "${annonsTitel}" — redo för matchning`,
@@ -93,7 +94,7 @@ function UnderlagsGranskning() {
       </div>
 
       <PageHeader
-        eyebrow={`Annons #${id}`}
+        eyebrow={`Annons ${formatArendeRef(id)}`}
         title="Granska underlaget"
         subtitle="Läs igenom informationsmemorandumet innan du bestämmer dig."
       />

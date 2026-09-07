@@ -4,6 +4,7 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
 import { readAnnonser, STORAGE_KEY } from "@/lib/annons-workflow";
 import { type CatId } from "@/lib/annons-model";
+import { formatArendeRef } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/publicerat")({
   component: AdminPublicerat,
@@ -86,7 +87,7 @@ function AdminPublicerat() {
                   <span className="inline-flex items-center rounded-pill border border-[var(--color-success)] bg-[var(--color-success)] px-3 py-1 text-sm text-white">
                     ● LIVE
                   </span>
-                  <span className="font-mono text-[10px] text-muted-foreground">#{r.id}</span>
+                  <span className="font-mono text-[10px] text-muted-foreground">{formatArendeRef(r.id)}</span>
                 </div>
                 <h3 className="font-medium">{r.titel}</h3>
                 <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">

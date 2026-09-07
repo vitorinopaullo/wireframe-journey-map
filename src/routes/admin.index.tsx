@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, Annotation } from "@/components/wire";
 import { readAnnonser, STORAGE_KEY, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import { formatArendeRef } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminOversikt,
@@ -100,7 +101,7 @@ function AdminOversikt() {
             <Link key={r.id} to="/admin/annonser/$id" params={{ id: r.id }} className="block">
               <WireBox className="flex flex-wrap items-center justify-between gap-3 transition-colors hover:border-foreground">
                 <div className="min-w-0">
-                  <div className="mb-1 font-mono text-[10px] text-muted-foreground">#{r.id}</div>
+                  <div className="mb-1 font-mono text-[10px] text-muted-foreground">{formatArendeRef(r.id)}</div>
                   <h3 className="font-medium">{r.titel}</h3>
                 </div>
                 <div className="text-right">
