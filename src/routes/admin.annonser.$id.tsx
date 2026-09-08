@@ -113,7 +113,6 @@ const GRUPP_FALT: Record<string, GruppFalt[]> = {
     { key: "typAvKok", label: "Köksteknik", isTags: true },
     { key: "utvecklingsmojlighet", label: "Utvecklingsmöjlighet", isTags: true },
     { key: "anledningTillForsaljning", label: "Anledning till försäljning", isTags: true },
-    { key: "taggar", label: "Teknisk info", isTags: true },
     { key: "myndighetskrav", label: "Myndighetskrav", isTags: true },
     { key: "ovrigInfo", label: "Övrig info" },
   ],
