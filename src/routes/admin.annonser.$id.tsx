@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
-import { Pencil, Eye, FileCheck, AlertTriangle, Check, CheckCircle2, X, Clock, PartyPopper } from "lucide-react";
+import { Pencil, Eye, FileCheck, AlertTriangle, Check, CheckCircle2, X, Clock, PartyPopper, Download } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
@@ -877,6 +877,21 @@ function AdminAnnonsDetail() {
       trelinkEdits: { ...it.trelinkEdits, "draft.cat": true },
     }));
     refresh();
+  };
+
+  const downloadSimulatedDoc = (docName: string) => {
+    const blob = new Blob(
+      [
+        "Simulerat dokument — TreLink wireframe-prototyp. I produktion innehåller denna fil den uppladdade filen.",
+      ],
+      { type: "text/plain" },
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${docName}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const openDoc = (d: DocSpec) => {
@@ -1845,6 +1860,11 @@ function AdminAnnonsDetail() {
                       </div>
                     </button>
                     <div className="flex shrink-0 items-center gap-2">
+                      {state !== "saknas" && (
+                        <WireBtn variant="ghost" onClick={() => downloadSimulatedDoc(d.name)}>
+                          <Download className="inline-block h-3.5 w-3.5 align-middle" /> Ladda ner
+                        </WireBtn>
+                      )}
                       {state !== "godkant" && (
                         <>
                           {!granskad && (
