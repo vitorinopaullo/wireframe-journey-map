@@ -158,6 +158,11 @@
   /* Display serif for h1/h2 and hero numbers only — see @layer base below. */
   --font-heading: "Instrument Serif", serif;
   --font-body: "Inter", sans-serif;
+  /* Numeric role: all figures (price, valuation, area, inventory, dates,
+     percentages) use the body sans with tabular figures. Monospace is
+     reserved for technical codes (K-123, A-2041), never for amounts. */
+  --font-numeric: "Inter", sans-serif;
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
