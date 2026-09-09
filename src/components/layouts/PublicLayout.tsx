@@ -145,9 +145,13 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
               </div>
             ))}
           </div>
-          <div className="mt-6 text-center text-xs text-muted-foreground md:text-left">
-            © 2026 Trelink AB · Org.nr XXXXXX-XXXX
+          <div className="mt-6 flex flex-col items-center gap-2 text-xs text-muted-foreground md:flex-row md:justify-between md:text-left">
+            <span>© 2026 Trelink AB · Org.nr XXXXXX-XXXX</span>
+            <Link to="/designsystem" className="hover:underline">
+              Designsystem
+            </Link>
           </div>
+
         </div>
       </footer>
     </div>
