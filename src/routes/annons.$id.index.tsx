@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Star, ChevronLeft, ChevronRight, X, Expand, Lock, FileText, CheckCircle2 } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
-import { WireBox, WireBtn, WireTag, Annotation } from "@/components/wire";
+import { WireBox, WireBtn, WireTag, Annotation, PageHeader } from "@/components/wire";
 import { ListingCard, type Listing as CardListing } from "@/components/ListingCard";
 import { useIsAuthed } from "@/hooks/use-session";
 import { nyckeltalFor } from "@/lib/nyckeltal";
@@ -161,6 +161,11 @@ function ListingDetail() {
   const [bild, setBild] = useState(0);
   const [lightbox, setLightbox] = useState<{ src: string; caption?: string } | null>(null);
   const [publishedItem, setPublishedItem] = useState<any | null>(null);
+  // En riktig annons (finns i saljare-annonser) som just nu inte går att visa —
+  // avpublicerad, under förnyad granskning, eller reserverad av en pågående affär.
+  // Skiljs från "ingen träff alls" (t.ex. en demo-id från startsidan), som
+  // fortsatt ska visa exempelAnnons precis som idag.
+  const [unavailableReal, setUnavailableReal] = useState<"reserverad" | "annat" | null>(null);
   const [interest, setInterest] = useState<BuyerInterest | undefined>(() =>
     readBuyerInterests(getSession()?.userId).filter((i) => i.annonsId === id).pop(),
   );
@@ -169,7 +174,9 @@ function ListingDetail() {
 
   useEffect(() => {
     const match = readAnnonser().find((i: any) => i.id === id);
-    setPublishedItem(match && match.workflow?.state === "publicerad" && !match.reserverad ? match : null);
+    const viewable = !!match && match.workflow?.state === "publicerad" && !match.reserverad;
+    setPublishedItem(viewable ? match : null);
+    setUnavailableReal(!match ? null : match.reserverad ? "reserverad" : viewable ? null : "annat");
   }, [id]);
 
   const listing: Listing = useMemo(
@@ -271,6 +278,24 @@ function ListingDetail() {
     setSaved(next.some((f) => f.annonsId === id));
   };
 
+  if (unavailableReal) {
+    return (
+      <PublicLayout>
+        <PageHeader
+          eyebrow="Annons"
+          title="Den här annonsen är inte tillgänglig just nu"
+          subtitle={
+            unavailableReal === "reserverad"
+              ? "Objektet är reserverat i en pågående affär."
+              : "Säljaren har tagit bort annonsen, eller så granskas den på nytt."
+          }
+        />
+        <Link to="/" className="text-sm text-muted-foreground underline">
+          ← Till sökresultat
+        </Link>
+      </PublicLayout>
+    );
+  }
 
   return (
     <PublicLayout>
