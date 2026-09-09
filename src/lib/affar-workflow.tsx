@@ -5,7 +5,7 @@
 
 import { StatusDot } from "@/components/wire";
 import { getAnnons, patchAnnons } from "@/lib/annons-workflow";
-import { patchBuyerInterest, logBuyerEntry, type BuyerInterest } from "@/lib/kopare-workflow";
+import { patchBuyerInterest, logBuyerEntry, readBuyerInterests, type BuyerInterest } from "@/lib/kopare-workflow";
 import type { CatId } from "@/lib/annons-model";
 import { formatDatum } from "@/lib/format";
 
@@ -347,6 +347,15 @@ export function annonsInfo(annonsId: string) {
 export function senasteUppdatering(interest: BuyerInterest): string {
   const ts = interest.timeline?.[0]?.ts ?? interest.skapadAt;
   return formatDatum(ts);
+}
+
+/** Finns det en pågående affär (köparen vill gå vidare, affären inte avvisad)
+ * för denna annons? Används för att spärra redigering/avpublicering — samma
+ * "aktiv affär"-definition som buildAffarer använder för att räkna in en affär. */
+export function harAktivAffar(annonsId: string): boolean {
+  return readBuyerInterests().some(
+    (i) => i.annonsId === annonsId && i.status === "vill-ga-vidare" && !getDeal(i.id).avvisad,
+  );
 }
 
 export function buildAffarer(interests: BuyerInterest[]): Affar[] {

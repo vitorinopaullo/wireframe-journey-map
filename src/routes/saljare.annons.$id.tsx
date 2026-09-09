@@ -20,6 +20,7 @@ import { buildDocSpecs } from "@/routes/admin.annonser.$id";
 import { getSession } from "@/lib/mock-auth";
 import { addNotis } from "@/lib/admin-notiser";
 import { formatArendeRef } from "@/lib/format";
+import { harAktivAffar } from "@/lib/affar-workflow";
 
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
 
@@ -47,6 +48,7 @@ const stateOrder: Record<WorkflowState, number> = {
   "avtal-vantar-signering": 1,
   "hyresvard-notifiering": 2,
   "publicerad": 3,
+  "opublicerad": 3,
 };
 
 // Timeline texts and WorkflowData fields that are introduced at each step order.
@@ -86,6 +88,7 @@ function SellerAnnonsDetail() {
   const [dragOver, setDragOver] = useState(false);
   const [onboarding, setOnboarding] = useState<OnboardingSaljareData | null>(null);
   const [mailPreview, setMailPreview] = useState<MailData | null>(null);
+  const [confirmingUnpublish, setConfirmingUnpublish] = useState(false);
 
   useEffect(() => {
     try {
@@ -240,6 +243,33 @@ function SellerAnnonsDetail() {
     });
     setSignicatOpen(false);
     toast("Uppdragsavtalet är signerat");
+    refresh();
+  };
+
+  const unpublish = () => {
+    patchAnnons(id, (it) => ({
+      ...it,
+      workflow: logEntry(
+        { ...it.workflow, state: "opublicerad" },
+        "Säljare/Överlåtare",
+        "Annonsen avpublicerad",
+      ),
+    }));
+    setConfirmingUnpublish(false);
+    toast("Annonsen är avpublicerad");
+    refresh();
+  };
+
+  const republish = () => {
+    patchAnnons(id, (it) => ({
+      ...it,
+      workflow: logEntry(
+        { ...it.workflow, state: "publicerad" },
+        "Säljare/Överlåtare",
+        "Annonsen publicerad igen",
+      ),
+    }));
+    toast("Annonsen är publicerad igen");
     refresh();
   };
 
@@ -657,9 +687,43 @@ function SellerAnnonsDetail() {
               <WireBox label="Annonsen är publicerad">
                 <p className="text-sm">
                   Trelink har publicerat din annons på trelink.se. Du kan nu följa antalet intressenter via
-                  fliken Intressenter. Kom ihåg att du inte kan redigera annonsen — kontakta Trelink om något
-                  behöver ändras.
+                  fliken Intressenter.
                 </p>
+
+                {harAktivAffar(id) ? (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Det finns en pågående affär för denna annons — den kan inte redigeras eller
+                    avpubliceras just nu.{" "}
+                    <Link to="/saljare/affarer" className="underline">
+                      Visa mina affärer →
+                    </Link>
+                  </p>
+                ) : (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <WireBtn variant="secondary" to={`/saljare/skapa-annons?edit=${id}`}>
+                      Redigera
+                    </WireBtn>
+                    {!confirmingUnpublish ? (
+                      <WireBtn variant="ghost" onClick={() => setConfirmingUnpublish(true)}>
+                        Avpublicera
+                      </WireBtn>
+                    ) : (
+                      <div className="flex items-center gap-2 rounded-card border border-destructive/40 bg-destructive/5 px-3 py-2">
+                        <span className="text-sm">Ta bort annonsen från trelink.se?</span>
+                        <WireBtn
+                          variant="primary"
+                          className="border-destructive bg-destructive text-white"
+                          onClick={unpublish}
+                        >
+                          Ja, avpublicera
+                        </WireBtn>
+                        <WireBtn variant="ghost" onClick={() => setConfirmingUnpublish(false)}>
+                          Avbryt
+                        </WireBtn>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Compact listing preview */}
                 <div className="mt-4 border border-foreground/30 p-4">
@@ -681,6 +745,19 @@ function SellerAnnonsDetail() {
                 </div>
               </WireBox>
             </>
+          )}
+
+          {/* STEG · Opublicerad */}
+          {st === "opublicerad" && (
+            <WireBox label="Annonsen är avpublicerad">
+              <p className="text-sm">
+                Du har tagit bort annonsen från trelink.se. Den syns inte längre för köpare. Du kan
+                publicera den igen när du vill.
+              </p>
+              <div className="mt-3">
+                <WireBtn onClick={republish}>Publicera igen</WireBtn>
+              </div>
+            </WireBox>
           )}
 
           {/* Underlagssammanfattning — visas alltid */}

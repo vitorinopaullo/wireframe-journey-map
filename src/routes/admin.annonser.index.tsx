@@ -55,6 +55,7 @@ const STATUS_TONE: Record<WorkflowState, "neutral" | "warn" | "success" | "dange
   "avtal-vantar-signering": "warn",
   "hyresvard-notifiering": "neutral",
   publicerad: "success",
+  opublicerad: "neutral",
 };
 
 function StatusTag({ status }: { status: WorkflowState | null }) {
@@ -86,6 +87,7 @@ const NEXT_ACTOR: Record<WorkflowState, NextActor> = {
   "avtal-vantar-signering": "saljare",
   publicerad: null,
   avvisad: null,
+  opublicerad: null,
 };
 
 function NextActorTag({ status }: { status: WorkflowState | null }) {

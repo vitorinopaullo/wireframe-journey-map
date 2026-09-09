@@ -27,6 +27,7 @@ const NEXT_ACTOR: Record<WorkflowState, "trelink" | "saljare" | null> = {
   "avtal-vantar-signering": "saljare",
   publicerad: null,
   avvisad: null,
+  opublicerad: null,
 };
 
 type Row = {

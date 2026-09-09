@@ -7,7 +7,8 @@ export type WorkflowState =
   | "avvisad" // TreLink har avvisat annonsen
   | "avtal-vantar-signering" // TreLink har skickat uppdragsavtal till säljaren
   | "hyresvard-notifiering" // Avtal signerat — TreLink ska meddela hyresvärden
-  | "publicerad"; // Annonsen är live
+  | "publicerad" // Annonsen är live
+  | "opublicerad"; // Säljaren har tagit bort annonsen från trelink.se igen
 
 export const stateLabel: Record<WorkflowState, string> = {
   "granskas": "Granskas av TreLink",
@@ -16,6 +17,7 @@ export const stateLabel: Record<WorkflowState, string> = {
   "avtal-vantar-signering": "Uppdragsavtal — väntar på signering",
   "hyresvard-notifiering": "TreLink kontaktar hyresvärden",
   "publicerad": "Publicerad",
+  "opublicerad": "Avpublicerad",
 };
 
 /** Kort statusrad för säljaren. */
@@ -30,6 +32,7 @@ export const stateHint: Record<WorkflowState, string> = {
   "hyresvard-notifiering":
     "TreLink skickar ett informationsmail till hyresvärden om att en överlåtelseprocess påbörjats.",
   "publicerad": "Annonsen är live och synlig för köpare.",
+  "opublicerad": "Annonsen är borttagen från trelink.se. Publicera igen när du vill.",
 };
 
 export type TimelineEntry = {
@@ -93,9 +96,14 @@ export function logEntry(
   };
 }
 
-/** Säljaren får redigera bara vid komplettering eller avvisad. */
-export function canSellerEdit(state: WorkflowState) {
-  return state === "komplettering" || state === "avvisad";
+/** Säljaren får redigera vid komplettering eller avvisad — samt en publicerad
+ * annons, men bara om ingen aktiv affär pågår för den (annars skulle en
+ * redigering ändra villkoren under en köpare som redan gått vidare, eftersom
+ * hela affärspipelinen läser annonsdata live). Anropare som redan vet att en
+ * affär pågår skickar in det via harAktivAffar snarare än att den här filen
+ * importerar affar-workflow.tsx (som redan importerar härifrån). */
+export function canSellerEdit(state: WorkflowState, harAktivAffar = false) {
+  return state === "komplettering" || state === "avvisad" || (state === "publicerad" && !harAktivAffar);
 }
 
 /** Läs & skriv annonslistan i localStorage. */

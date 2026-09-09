@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { ContractExpiryBanner } from "@/components/ContractExpiryBanner";
-import { canSellerEdit, stateHint, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import { canSellerEdit, logEntry, patchAnnons, stateHint, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import { harAktivAffar } from "@/lib/affar-workflow";
 import { getSession } from "@/lib/mock-auth";
 
 export const Route = createFileRoute("/saljare/mina-annonser")({
@@ -46,6 +47,19 @@ function MyListings() {
     localStorage.setItem("saljare-annonser", JSON.stringify(next));
   }
 
+  function republish(id: string) {
+    patchAnnons(id, (it) => ({
+      ...it,
+      workflow: logEntry(
+        { ...it.workflow, state: "publicerad" },
+        "Säljare/Överlåtare",
+        "Annonsen publicerad igen",
+      ),
+    }));
+    const raw = localStorage.getItem("saljare-annonser");
+    if (raw) setUserItems(JSON.parse(raw));
+  }
+
   return (
     <AppLayout mode="saljare">
       <PageHeader
@@ -60,7 +74,7 @@ function MyListings() {
           const st = i.workflow?.state as WorkflowState | undefined;
           const label = st ? stateLabel[st] : i.status;
           const hint = st ? stateHint[st] : `${i.views} visningar · ${i.intresse} intresseanmälningar`;
-          const editable = st ? canSellerEdit(st) : true;
+          const editable = st ? canSellerEdit(st, harAktivAffar(i.id)) : true;
           const avtalSignedAt = i.workflow?.avtalSignedAt;
           return (
             <div key={i.id}>
@@ -77,6 +91,7 @@ function MyListings() {
                     {i.premium && <WireTag>Premium</WireTag>}
                     {st === "komplettering" && <WireTag>Åtgärd krävs</WireTag>}
                     {st === "avtal-vantar-signering" && <WireTag>Signera</WireTag>}
+                    {st === "opublicerad" && <WireTag>Ej publik</WireTag>}
                   </div>
                   {isNew ? (
                     <Link to="/saljare/annons/$id" params={{ id: i.id }} className="font-medium hover:underline">
@@ -107,6 +122,11 @@ function MyListings() {
                       {editable && (
                         <WireBtn variant="secondary" to={`/saljare/skapa-annons?edit=${i.id}`}>
                           Redigera
+                        </WireBtn>
+                      )}
+                      {st === "opublicerad" && (
+                        <WireBtn variant="secondary" onClick={() => republish(i.id)}>
+                          Publicera igen
                         </WireBtn>
                       )}
                       {st === "avvisad" && (

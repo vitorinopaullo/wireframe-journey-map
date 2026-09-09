@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { initialWorkflow, logEntry, canSellerEdit } from "@/lib/annons-workflow";
+import { harAktivAffar } from "@/lib/affar-workflow";
 import { getSession } from "@/lib/mock-auth";
 import { formatTelefon, isValidEmail } from "@/lib/format";
 import {
@@ -697,9 +698,9 @@ function CreateListing() {
               navigate({ to: "/saljare/mina-annonser", replace: true });
               return;
             }
-            // Låst för säljaren om den granskas / avtal / publicerad — skicka till detaljvyn
+            // Låst för säljaren om den granskas / avtal / publicerad med aktiv affär — skicka till detaljvyn
             const wfState = item?.workflow?.state ?? "granskas";
-            if (!canSellerEdit(wfState)) {
+            if (!canSellerEdit(wfState, harAktivAffar(editId))) {
               navigate({ to: "/saljare/annons/$id", params: { id: editId }, replace: true });
               return;
             }
