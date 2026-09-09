@@ -190,8 +190,12 @@
   --color-text: var(--text);
   --color-text-muted: var(--text-muted);
   --color-success: var(--success);
+  --color-success-wash: var(--success-wash);
   --color-warning: var(--warning);
+  --color-warning-wash: var(--warning-wash);
   --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+
   --color-black: var(--black);
   --color-white: var(--white);
   --color-purple-50: var(--purple-50);
