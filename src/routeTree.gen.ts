@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DesignsystemRouteImport } from './routes/designsystem'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as HurDetFunkarRouteImport } from './routes/hur-det-funkar'
 import { Route as IntegritetspolicyRouteImport } from './routes/integritetspolicy'
@@ -22,6 +23,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as OmOssRouteImport } from './routes/om-oss'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OversiktRouteImport } from './routes/oversikt'
+import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as RegistreraRouteImport } from './routes/registrera'
 import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
 import { Route as UnlockRouteImport } from './routes/unlock'
@@ -77,6 +79,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DesignsystemRoute = DesignsystemRouteImport.update({
+  id: '/designsystem',
+  path: '/designsystem',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
@@ -125,6 +132,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const OversiktRoute = OversiktRouteImport.update({
   id: '/oversikt',
   path: '/oversikt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartnerRoute = PartnerRouteImport.update({
+  id: '/partner',
+  path: '/partner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegistreraRoute = RegistreraRouteImport.update({
@@ -330,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/dashboard': typeof DashboardRoute
+  '/designsystem': typeof DesignsystemRoute
   '/faq': typeof FaqRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/integritetspolicy': typeof IntegritetspolicyRoute
@@ -340,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
+  '/partner': typeof PartnerRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/unlock': typeof UnlockRoute
@@ -384,6 +398,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/dashboard': typeof DashboardRoute
+  '/designsystem': typeof DesignsystemRoute
   '/faq': typeof FaqRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/integritetspolicy': typeof IntegritetspolicyRoute
@@ -394,6 +409,7 @@ export interface FileRoutesByTo {
   '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
+  '/partner': typeof PartnerRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/unlock': typeof UnlockRoute
@@ -433,6 +449,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/dashboard': typeof DashboardRoute
+  '/designsystem': typeof DesignsystemRoute
   '/faq': typeof FaqRoute
   '/hur-det-funkar': typeof HurDetFunkarRoute
   '/integritetspolicy': typeof IntegritetspolicyRoute
@@ -443,6 +460,7 @@ export interface FileRoutesById {
   '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
+  '/partner': typeof PartnerRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/unlock': typeof UnlockRoute
@@ -489,6 +507,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cookies'
     | '/dashboard'
+    | '/designsystem'
     | '/faq'
     | '/hur-det-funkar'
     | '/integritetspolicy'
@@ -499,6 +518,7 @@ export interface FileRouteTypes {
     | '/om-oss'
     | '/onboarding'
     | '/oversikt'
+    | '/partner'
     | '/registrera'
     | '/tillaggstjanster'
     | '/unlock'
@@ -543,6 +563,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cookies'
     | '/dashboard'
+    | '/designsystem'
     | '/faq'
     | '/hur-det-funkar'
     | '/integritetspolicy'
@@ -553,6 +574,7 @@ export interface FileRouteTypes {
     | '/om-oss'
     | '/onboarding'
     | '/oversikt'
+    | '/partner'
     | '/registrera'
     | '/tillaggstjanster'
     | '/unlock'
@@ -591,6 +613,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cookies'
     | '/dashboard'
+    | '/designsystem'
     | '/faq'
     | '/hur-det-funkar'
     | '/integritetspolicy'
@@ -601,6 +624,7 @@ export interface FileRouteTypes {
     | '/om-oss'
     | '/onboarding'
     | '/oversikt'
+    | '/partner'
     | '/registrera'
     | '/tillaggstjanster'
     | '/unlock'
@@ -646,6 +670,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CookiesRoute: typeof CookiesRoute
   DashboardRoute: typeof DashboardRoute
+  DesignsystemRoute: typeof DesignsystemRoute
   FaqRoute: typeof FaqRoute
   HurDetFunkarRoute: typeof HurDetFunkarRoute
   IntegritetspolicyRoute: typeof IntegritetspolicyRoute
@@ -656,6 +681,7 @@ export interface RootRouteChildren {
   OmOssRoute: typeof OmOssRoute
   OnboardingRoute: typeof OnboardingRoute
   OversiktRoute: typeof OversiktRoute
+  PartnerRoute: typeof PartnerRoute
   RegistreraRoute: typeof RegistreraRoute
   TillaggstjansterRoute: typeof TillaggstjansterRoute
   UnlockRoute: typeof UnlockRoute
@@ -705,6 +731,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/designsystem': {
+      id: '/designsystem'
+      path: '/designsystem'
+      fullPath: '/designsystem'
+      preLoaderRoute: typeof DesignsystemRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -775,6 +808,13 @@ declare module '@tanstack/react-router' {
       path: '/oversikt'
       fullPath: '/oversikt'
       preLoaderRoute: typeof OversiktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/partner': {
+      id: '/partner'
+      path: '/partner'
+      fullPath: '/partner'
+      preLoaderRoute: typeof PartnerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registrera': {
@@ -1143,6 +1183,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
   DashboardRoute: DashboardRoute,
+  DesignsystemRoute: DesignsystemRoute,
   FaqRoute: FaqRoute,
   HurDetFunkarRoute: HurDetFunkarRoute,
   IntegritetspolicyRoute: IntegritetspolicyRoute,
@@ -1153,6 +1194,7 @@ const rootRouteChildren: RootRouteChildren = {
   OmOssRoute: OmOssRoute,
   OnboardingRoute: OnboardingRoute,
   OversiktRoute: OversiktRoute,
+  PartnerRoute: PartnerRoute,
   RegistreraRoute: RegistreraRoute,
   TillaggstjansterRoute: TillaggstjansterRoute,
   UnlockRoute: UnlockRoute,

@@ -121,10 +121,17 @@
   --interactive: var(--purple-600);
   --focus-ring: var(--purple-500);
   --accent-wash: var(--pink-100);
-  --success: oklch(0.70 0.15 140);
-  --warning: oklch(0.70 0.15 90);
-  --danger: oklch(0.63 0.20 25);
+  /* Status colors — warm-toned so they sit with the purple/pink palette
+     instead of reading as default browser green/yellow/red. Each has a
+     wash variant for badge backgrounds. */
+  --success: oklch(0.52 0.09 165);
+  --success-wash: oklch(0.95 0.03 165);
+  --warning: oklch(0.62 0.12 72);
+  --warning-wash: oklch(0.96 0.04 80);
+  --danger: oklch(0.55 0.16 22);
+  --danger-wash: oklch(0.95 0.03 22);
 }
+
 
 /*
  * Design system definition.
@@ -151,6 +158,11 @@
   /* Display serif for h1/h2 and hero numbers only — see @layer base below. */
   --font-heading: "Instrument Serif", serif;
   --font-body: "Inter", sans-serif;
+  /* Numeric role: all figures (price, valuation, area, inventory, dates,
+     percentages) use the body sans with tabular figures. Monospace is
+     reserved for technical codes (K-123, A-2041), never for amounts. */
+  --font-numeric: "Inter", sans-serif;
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -178,8 +190,12 @@
   --color-text: var(--text);
   --color-text-muted: var(--text-muted);
   --color-success: var(--success);
+  --color-success-wash: var(--success-wash);
   --color-warning: var(--warning);
+  --color-warning-wash: var(--warning-wash);
   --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+
   --color-black: var(--black);
   --color-white: var(--white);
   --color-purple-50: var(--purple-50);
@@ -371,5 +387,15 @@
  * implicit default.
  */
 @utility tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * The single numeric role: body sans (Inter) with fixed-width figures.
+ * Use `num` on every amount, area, date, percentage and count. Monospace
+ * stays reserved for technical codes (K-123, A-2041) and token names.
+ */
+@utility num {
+  font-family: var(--font-numeric);
   font-variant-numeric: tabular-nums;
 }

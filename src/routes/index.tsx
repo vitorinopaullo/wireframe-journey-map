@@ -205,11 +205,11 @@ function HomePage() {
         <div className="relative mx-auto max-w-7xl px-6">
           <div className="-mt-[220px] rounded-card bg-card p-6 shadow-lg md:-mt-[320px] md:p-10">
             <h1 className="text-4xl font-semibold text-foreground md:text-5xl">
-              Hitta verksamheter att ta över
+              Hitta din nästa verksamhet eller lokal
             </h1>
             <p className="mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">
-              Lokaler, inkråm och aktiebolag — granskade av TreLink innan publicering. Bläddra fritt, spara med
-              konto, agera med BankID-verifiering.
+              Lokaler, inkråm och aktiebolag, granskade av TreLink. Sök, spara favoriter och anmäl ditt
+              intresse tryggt med BankID.
             </p>
             <div className="mt-6">
               <SearchBox />
