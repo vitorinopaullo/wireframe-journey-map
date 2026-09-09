@@ -22,6 +22,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as OmOssRouteImport } from './routes/om-oss'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OversiktRouteImport } from './routes/oversikt'
+import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as RegistreraRouteImport } from './routes/registrera'
 import { Route as TillaggstjansterRouteImport } from './routes/tillaggstjanster'
 import { Route as UnlockRouteImport } from './routes/unlock'
@@ -125,6 +126,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const OversiktRoute = OversiktRouteImport.update({
   id: '/oversikt',
   path: '/oversikt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartnerRoute = PartnerRouteImport.update({
+  id: '/partner',
+  path: '/partner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegistreraRoute = RegistreraRouteImport.update({
@@ -340,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
+  '/partner': typeof PartnerRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/unlock': typeof UnlockRoute
@@ -394,6 +401,7 @@ export interface FileRoutesByTo {
   '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
+  '/partner': typeof PartnerRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/unlock': typeof UnlockRoute
@@ -443,6 +451,7 @@ export interface FileRoutesById {
   '/om-oss': typeof OmOssRoute
   '/onboarding': typeof OnboardingRoute
   '/oversikt': typeof OversiktRoute
+  '/partner': typeof PartnerRoute
   '/registrera': typeof RegistreraRoute
   '/tillaggstjanster': typeof TillaggstjansterRoute
   '/unlock': typeof UnlockRoute
@@ -499,6 +508,7 @@ export interface FileRouteTypes {
     | '/om-oss'
     | '/onboarding'
     | '/oversikt'
+    | '/partner'
     | '/registrera'
     | '/tillaggstjanster'
     | '/unlock'
@@ -553,6 +563,7 @@ export interface FileRouteTypes {
     | '/om-oss'
     | '/onboarding'
     | '/oversikt'
+    | '/partner'
     | '/registrera'
     | '/tillaggstjanster'
     | '/unlock'
@@ -601,6 +612,7 @@ export interface FileRouteTypes {
     | '/om-oss'
     | '/onboarding'
     | '/oversikt'
+    | '/partner'
     | '/registrera'
     | '/tillaggstjanster'
     | '/unlock'
@@ -656,6 +668,7 @@ export interface RootRouteChildren {
   OmOssRoute: typeof OmOssRoute
   OnboardingRoute: typeof OnboardingRoute
   OversiktRoute: typeof OversiktRoute
+  PartnerRoute: typeof PartnerRoute
   RegistreraRoute: typeof RegistreraRoute
   TillaggstjansterRoute: typeof TillaggstjansterRoute
   UnlockRoute: typeof UnlockRoute
@@ -775,6 +788,13 @@ declare module '@tanstack/react-router' {
       path: '/oversikt'
       fullPath: '/oversikt'
       preLoaderRoute: typeof OversiktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/partner': {
+      id: '/partner'
+      path: '/partner'
+      fullPath: '/partner'
+      preLoaderRoute: typeof PartnerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registrera': {
@@ -1153,6 +1173,7 @@ const rootRouteChildren: RootRouteChildren = {
   OmOssRoute: OmOssRoute,
   OnboardingRoute: OnboardingRoute,
   OversiktRoute: OversiktRoute,
+  PartnerRoute: PartnerRoute,
   RegistreraRoute: RegistreraRoute,
   TillaggstjansterRoute: TillaggstjansterRoute,
   UnlockRoute: UnlockRoute,

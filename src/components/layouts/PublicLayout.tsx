@@ -5,11 +5,13 @@ import { getSession, subscribeSession, signOut, type Session } from "@/lib/mock-
 import { WireBtn } from "@/components/wire";
 
 const navItems = [
-  { to: "/", label: "Sök annonser" },
-  { to: "/hur-det-funkar", label: "Hur det funkar" },
+  { to: "/lokaler", label: "Sök annons" },
+  { to: "/hur-det-funkar", label: "Processen" },
   { to: "/tillaggstjanster", label: "Tilläggstjänster" },
-  { to: "/oversikt", label: "Sitemap" },
+  { to: "/om-oss", label: "Vad vi gör" },
+  { to: "/partner", label: "Bli partner" },
 ];
+
 
 const footerCols: { title: string; links: { to: string; label: string }[]; blurb?: string }[] = [
   {
