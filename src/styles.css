@@ -389,3 +389,13 @@
 @utility tabular-nums {
   font-variant-numeric: tabular-nums;
 }
+
+/*
+ * The single numeric role: body sans (Inter) with fixed-width figures.
+ * Use `num` on every amount, area, date, percentage and count. Monospace
+ * stays reserved for technical codes (K-123, A-2041) and token names.
+ */
+@utility num {
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+}
