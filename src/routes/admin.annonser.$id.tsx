@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
-import { Pencil, Eye, FileCheck, AlertTriangle, Check, CheckCircle2, X, Clock, PartyPopper, Download } from "lucide-react";
+import { Pencil, Eye, FileCheck, AlertTriangle, Check, CheckCircle2, X, Clock, PartyPopper, Download, Phone, Mail } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
@@ -1157,20 +1157,50 @@ function AdminAnnonsDetail() {
       {st === "avvisad" ? <RejectedBanner item={item} /> : <ProcessStepper state={st} />}
 
       {sellerAccount ? (
-        <Link
-          to="/admin/anvandare/$id"
-          params={{ id: sellerAccount.id }}
-          className="mb-6 inline-flex items-center gap-1.5 rounded-button border border-foreground/15 px-3 py-2 text-sm transition-colors duration-150 hover:border-foreground/30"
-        >
-          <span className="text-muted-foreground">Inskickad av</span>
-          <span className="font-medium">
-            {sellerAccount.bankid.fornamn} {sellerAccount.bankid.efternamn}
-          </span>
-          {sellerAccount.profil?.bolag && (
-            <span className="text-muted-foreground">· {sellerAccount.profil.bolag}</span>
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-button border border-foreground/15 px-3 py-2 text-sm">
+          <Link
+            to="/admin/anvandare/$id"
+            params={{ id: sellerAccount.id }}
+            className="inline-flex items-center gap-1.5 transition-colors duration-150 hover:text-foreground"
+          >
+            <span className="text-muted-foreground">Inskickad av</span>
+            <span className="font-medium">
+              {sellerAccount.bankid.fornamn} {sellerAccount.bankid.efternamn}
+            </span>
+            {sellerAccount.profil?.bolag && (
+              <span className="text-muted-foreground">· {sellerAccount.profil.bolag}</span>
+            )}
+            <span aria-hidden>→</span>
+          </Link>
+          {/* Under Granskning behöver admin ofta ringa säljaren för att komma
+              fram till ett pris — visa kontaktvägen direkt här (samma
+              onboarding-data som "Från kontoinställningen" längre ned, inte
+              en dubblett av det redigerbara formuläret) i stället för att
+              admin ska behöva scrolla dit. Länkarna öppnar telefon-/mejlappen
+              — TreLink förmedlar aldrig samtalet självt. */}
+          {(st === "granskas" || st === "komplettering") && (
+            <>
+              {onboarding?.saljaruppgifter.mobil && (
+                <a
+                  href={`tel:${onboarding.saljaruppgifter.mobil}`}
+                  className="inline-flex items-center gap-1.5 border-l border-foreground/15 pl-3 text-muted-foreground transition-colors duration-150 hover:text-foreground"
+                >
+                  <Phone className="h-3.5 w-3.5 shrink-0" />
+                  {formatTelefon(onboarding.saljaruppgifter.mobil)}
+                </a>
+              )}
+              {sellerEpost !== "—" && (
+                <a
+                  href={`mailto:${sellerEpost}`}
+                  className="inline-flex items-center gap-1.5 border-l border-foreground/15 pl-3 text-muted-foreground transition-colors duration-150 hover:text-foreground"
+                >
+                  <Mail className="h-3.5 w-3.5 shrink-0" />
+                  {sellerEpost}
+                </a>
+              )}
+            </>
           )}
-          <span aria-hidden>→</span>
-        </Link>
+        </div>
       ) : (
         <div className="mb-6 inline-block rounded-button border border-foreground/15 px-3 py-2 text-sm text-muted-foreground">
           Inskickad av okänt konto — ingen kontokoppling hittades.
