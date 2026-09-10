@@ -614,6 +614,9 @@ function SellerAnnonsDetail() {
                     ort={onboarding?.bolagsuppgifter.ort}
                     pris={item.pris}
                     avgift={avtalAvgift}
+                    firmatecknareBekraftad={
+                      onboarding?.firmatecknare !== null && !!item.draft?.firmatecknareBekraftad
+                    }
                   />
                 </div>
 

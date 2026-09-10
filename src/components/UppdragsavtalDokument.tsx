@@ -11,6 +11,11 @@ export type UppdragsavtalDokumentProps = {
   ort?: string;
   pris?: string;
   avgift?: string;
+  /** True bara när firmatecknaren är en annan person än kontaktpersonen och
+   * TreLink manuellt har bekräftat uppgifterna (se admin.annonser.$id.tsx) —
+   * lämnas odefinierad/false när kontaktpersonen själv är firmatecknare,
+   * eftersom BankID-autentiseringen redan täcker det fallet. */
+  firmatecknareBekraftad?: boolean;
 };
 
 /** Uppdragsavtalets innehåll — visas för säljaren vid signering och för TreLink
@@ -26,6 +31,7 @@ export function UppdragsavtalDokument({
   ort,
   pris,
   avgift,
+  firmatecknareBekraftad,
 }: UppdragsavtalDokumentProps) {
   return (
     <div className="space-y-4 border border-foreground/30 bg-muted/10 p-4">
@@ -41,6 +47,9 @@ export function UppdragsavtalDokument({
           {orgnr ? ` (org.nr ${orgnr})` : ""} (nedan "Uppdragsgivaren"), företrätt av{" "}
           {firmatecknareNamn || "—"} ({firmatecknareRoll || "Firmatecknare"}).
         </p>
+        {firmatecknareBekraftad && (
+          <p className="mt-1 text-xs text-muted-foreground">Firmatecknare bekräftad av TreLink.</p>
+        )}
       </div>
 
       <div className="border-t border-dashed border-muted-foreground/30 pt-4">

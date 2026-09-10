@@ -728,8 +728,30 @@ function AdminAnnonsDetail() {
   const skrivFasen = st === "hyresvard-notifiering";
   // Kunden har redan godkänt priset i uppdragsavtalet — låst för redigering därefter.
   const prisLocked = st === "avtal-vantar-signering" || st === "hyresvard-notifiering" || st === "publicerad";
+  // Kontaktpersonen är redan BankID-autentiserad, så när hen själv är
+  // firmatecknare (onboarding.firmatecknare === null) finns ingen tredje
+  // parts uppgifter att manuellt kontrollera — då räcker datafullständigheten.
+  // Bara när TreLink hanterar en annan namngiven persons (inskrivna, ej
+  // BankID-verifierade) kontaktuppgifter krävs en explicit mänsklig
+  // bekräftelse innan de får stå som firmatecknare i uppdragsavtalet.
+  const firmatecknareFaltOk =
+    !!onboarding &&
+    (onboarding.firmatecknare === null ||
+      !!(
+        onboarding.firmatecknare.roll &&
+        onboarding.firmatecknare.fornamn &&
+        onboarding.firmatecknare.efternamn &&
+        onboarding.firmatecknare.mail &&
+        onboarding.firmatecknare.mobil
+      ));
+  const firmatecknareOk =
+    firmatecknareFaltOk && (onboarding?.firmatecknare === null || !!draft.firmatecknareBekraftad);
   const canApprove =
-    st === "granskas" && stats.obligatoriskaTotal > 0 && stats.obligatoriskaOk === stats.obligatoriskaTotal && stats.kompl === 0;
+    st === "granskas" &&
+    stats.obligatoriskaTotal > 0 &&
+    stats.obligatoriskaOk === stats.obligatoriskaTotal &&
+    stats.kompl === 0 &&
+    firmatecknareOk;
   const prisValid = prisInput.trim() !== "" && Number(prisInput) > 0;
   const canApproveMedPris = canApprove && prisValid;
 
@@ -740,16 +762,6 @@ function AdminAnnonsDetail() {
     onboarding?.bolagsuppgifter.adress
   );
   const kontaktOk = !!(onboarding?.saljaruppgifter.mobil && onboarding?.saljaruppgifter.epost);
-  const firmatecknareOk =
-    !!onboarding &&
-    (onboarding.firmatecknare === null ||
-      !!(
-        onboarding.firmatecknare.roll &&
-        onboarding.firmatecknare.fornamn &&
-        onboarding.firmatecknare.efternamn &&
-        onboarding.firmatecknare.mail &&
-        onboarding.firmatecknare.mobil
-      ));
   const grundOk = !!(draft.adress && draft.verksamhet);
   const ytaOk = !!draft.yta;
   const typFaltOk =
@@ -910,6 +922,15 @@ function AdminAnnonsDetail() {
       ...it,
       draft: { ...it.draft, docs: { ...it.draft?.docs, [docName]: "godkant" } },
       workflow: logEntry(it.workflow, "TreLink", `Godkände dokument: ${docName}`),
+    }));
+    refresh();
+  };
+
+  const confirmFirmatecknare = () => {
+    patchAnnons(id, (it) => ({
+      ...it,
+      draft: { ...it.draft, firmatecknareBekraftad: true },
+      workflow: logEntry(it.workflow, "TreLink", "Bekräftade firmatecknaren"),
     }));
     refresh();
   };
@@ -1787,6 +1808,22 @@ function AdminAnnonsDetail() {
                   )}
                 />
               </div>
+              <div className="mt-4 border-t border-foreground/10 pt-4">
+                {draft.firmatecknareBekraftad ? (
+                  <div className="flex items-center gap-1.5 text-sm text-[var(--color-success)]">
+                    <CheckCircle2 className="h-4 w-4 shrink-0" />
+                    Bekräftad av TreLink
+                  </div>
+                ) : firmatecknareFaltOk ? (
+                  <WireBtn variant="secondary" onClick={confirmFirmatecknare}>
+                    Bekräfta firmatecknare
+                  </WireBtn>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Fälten ovan måste fyllas i innan firmatecknaren kan bekräftas.
+                  </p>
+                )}
+              </div>
             </>
           )}
         </WireBox>
@@ -2023,6 +2060,9 @@ function AdminAnnonsDetail() {
                 ort={onboarding?.bolagsuppgifter.ort}
                 pris={avtalPrisFormaterat}
                 avgift={avtalAvgift}
+                firmatecknareBekraftad={
+                  onboarding?.firmatecknare !== null && !!draft.firmatecknareBekraftad
+                }
               />
 
               <div className="flex flex-wrap justify-end gap-2 border-t border-foreground/10 pt-4">
