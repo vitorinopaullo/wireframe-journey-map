@@ -60,6 +60,20 @@ export async function seedBuyerInterest(page: Page, interest: Record<string, unk
   }, interest);
 }
 
+/** Same record shape as DealState in affar-workflow.tsx (DEALS_KEY = "trelink-affarer"). */
+export async function seedDeal(page: Page, interestId: string, deal: Record<string, unknown>) {
+  await page.evaluate(
+    ({ interestId, deal }) => {
+      const all: Record<string, unknown> = JSON.parse(
+        localStorage.getItem("trelink-affarer") ?? "{}",
+      );
+      all[interestId] = deal;
+      localStorage.setItem("trelink-affarer", JSON.stringify(all));
+    },
+    { interestId, deal },
+  );
+}
+
 /**
  * Same shape as Session in mock-auth.ts. Session moved to sessionStorage
  * (per-tab, not shared across tabs) — see the "trelink-gate" commit history.
