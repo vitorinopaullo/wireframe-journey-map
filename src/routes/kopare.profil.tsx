@@ -239,39 +239,43 @@ function Profile() {
 
       {tab === "fakturor" && (
         <WireBox label="Fakturahistorik">
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 border-b border-foreground/20 bg-card font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-              <tr>
-                <th className="py-2 text-left">Nr</th>
-                <th className="py-2 text-left">Beskrivning</th>
-                <th className="py-2 text-right">Belopp</th>
-                <th className="py-2 text-left">Datum</th>
-                <th className="py-2 text-left">Status</th>
-                <th className="py-2"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {fakturor.map((f) => (
-                <tr key={f.nr} className="border-b border-foreground/10 transition-colors duration-150 hover:bg-muted/20">
-                  <td className="py-3 font-mono text-xs">{f.nr}</td>
-                  <td className="py-3">{f.titel}</td>
-                  <td className="py-3 text-right font-mono tabular-nums">{f.belopp.toLocaleString("sv-SE")} kr</td>
-                  <td className="py-3 font-mono text-xs">{f.datum}</td>
-                  <td className="py-3"><WireTag>{f.status}</WireTag></td>
-                  <td className="py-3 text-right">
-                    <WireBtn
-                      variant="ghost"
-                      disabled
-                      className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
-                      title="Kommer snart"
-                    >
-                      PDF
-                    </WireBtn>
-                  </td>
+          {fakturor.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Inga fakturor än.</p>
+          ) : (
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 border-b border-foreground/20 bg-card font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                <tr>
+                  <th className="py-2 text-left">Nr</th>
+                  <th className="py-2 text-left">Beskrivning</th>
+                  <th className="py-2 text-right">Belopp</th>
+                  <th className="py-2 text-left">Datum</th>
+                  <th className="py-2 text-left">Status</th>
+                  <th className="py-2"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {fakturor.map((f) => (
+                  <tr key={f.nr} className="border-b border-foreground/10 transition-colors duration-150 hover:bg-muted/20">
+                    <td className="py-3 font-mono text-xs">{f.nr}</td>
+                    <td className="py-3">{f.titel}</td>
+                    <td className="py-3 text-right font-mono tabular-nums">{f.belopp.toLocaleString("sv-SE")} kr</td>
+                    <td className="py-3 font-mono text-xs">{f.datum}</td>
+                    <td className="py-3"><WireTag>{f.status}</WireTag></td>
+                    <td className="py-3 text-right">
+                      <WireBtn
+                        variant="ghost"
+                        disabled
+                        className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+                        title="Kommer snart"
+                      >
+                        PDF
+                      </WireBtn>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
           <Annotation>
             <span className="mt-3 block">
               Handpenning hålls på klientmedelskonto. Trelinks förmedlingsavgift dras vid tillträde.
