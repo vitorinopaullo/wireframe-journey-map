@@ -2,10 +2,10 @@
 // överallt i appen där dessa fält förekommer (onboarding, admins
 // inline-redigering, hyresvärdskontakt), så att reglerna hålls konsekventa.
 
-/** Formaterar mobilnummer medan användaren skriver: 076 12 34 56 — exakt 9 siffror, inte fler eller färre. */
+/** Formaterar mobilnummer medan användaren skriver: 076 12 345 67 — exakt 10 siffror, inte fler eller färre. */
 export function formatTelefon(raw: string): string {
-  const digits = raw.replace(/\D/g, "").slice(0, 9);
-  const grupper = [digits.slice(0, 3), digits.slice(3, 5), digits.slice(5, 7), digits.slice(7, 9)].filter(Boolean);
+  const digits = raw.replace(/\D/g, "").slice(0, 10);
+  const grupper = [digits.slice(0, 3), digits.slice(3, 5), digits.slice(5, 8), digits.slice(8, 10)].filter(Boolean);
   return grupper.join(" ");
 }
 

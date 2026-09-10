@@ -464,7 +464,7 @@ function Step2({
                   value={telefon}
                   onChange={(v) => setTelefon(formatTelefon(v))}
                   onBlur={() => setTelefonTouched(true)}
-                  placeholder="076 12 34 56"
+                  placeholder="076 12 345 67"
                   error={telefonError}
                 />
                 <InputField
@@ -543,7 +543,7 @@ function Step2({
                   value={telefon}
                   onChange={(v) => setTelefon(formatTelefon(v))}
                   onBlur={() => setTelefonTouched(true)}
-                  placeholder="076 12 34 56"
+                  placeholder="076 12 345 67"
                   error={telefonError}
                 />
                 <InputField
@@ -625,7 +625,7 @@ function Step2({
                     value={ftMobil}
                     onChange={(v) => setFtMobil(formatTelefon(v))}
                     onBlur={() => setFtMobilTouched(true)}
-                    placeholder="076 12 34 56"
+                    placeholder="076 12 345 67"
                     error={ftMobilError}
                   />
                 </div>

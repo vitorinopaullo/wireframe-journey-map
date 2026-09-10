@@ -9,7 +9,7 @@ test("invalid email blocks Fortsätt, valid email (non-.se TLD) re-enables it", 
   // roleParam effect), landing on Köparuppgifter with Telefon/E-post fields.
   await page.goto("/onboarding?role=kopare");
 
-  const telefonField = page.getByPlaceholder("076 12 34 56");
+  const telefonField = page.getByPlaceholder("076 12 345 67");
   const epostField = page.locator('input[type="email"]');
   const submitBtn = page.getByRole("button", { name: "Spara & skicka till TreLink →" });
 

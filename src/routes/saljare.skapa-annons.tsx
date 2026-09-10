@@ -1146,7 +1146,7 @@ function CreateListing() {
                 label="Hyresvärdens telefon *"
                 value={draft.hyresvardTel}
                 onChange={(v) => set("hyresvardTel", formatTelefon(v))}
-                placeholder="076 12 34 56"
+                placeholder="076 12 345 67"
               />
               {(() => {
                 const email = draft.hyresvardEmail;
