@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, PageHeader, Annotation, WireTag, WireBtn, StatusDot } from "@/components/wire";
+import { stateLabel, stateHint, type WorkflowState } from "@/lib/annons-workflow";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -107,13 +108,35 @@ const siffror: [string, string, string][] = [
   ["Org.nr", "556677-8899", "text-sm"],
 ];
 
-const annonsstatus: [string, "done" | "active" | "pending", string][] = [
-  ["Publicerad", "done", "Annonsen är live och syns för köpare."],
-  ["Granskas", "active", "TreLink granskar underlaget — svar inom 24 h på vardagar."],
-  ["Uppdragsavtal", "active", "Väntar på signering med BankID."],
-  ["Komplettering krävs", "pending", "Säljaren behöver ladda upp mer underlag."],
-  ["Utkast", "pending", "Inte inskickad än."],
+// Dot-bucket per state, mirroring the real progress logic in
+// saljare.annons.$id.tsx (flowSteps/stateOrder): granskas,
+// avtal-vantar-signering, hyresvard-notifiering and publicerad are the main
+// sequence and are shown "active" when they're the current state; komplettering,
+// avvisad and opublicerad are side-branches off that sequence, shown "pending"
+// there too (never a green "done" dot for a rejection or a takedown).
+const ANNONSSTATUS_DOT: Record<WorkflowState, "done" | "active" | "pending"> = {
+  granskas: "active",
+  komplettering: "pending",
+  avvisad: "pending",
+  "avtal-vantar-signering": "active",
+  "hyresvard-notifiering": "active",
+  publicerad: "active",
+  opublicerad: "pending",
+};
+
+const ANNONSSTATUS_ORDER: WorkflowState[] = [
+  "granskas",
+  "komplettering",
+  "avvisad",
+  "avtal-vantar-signering",
+  "hyresvard-notifiering",
+  "publicerad",
+  "opublicerad",
 ];
+
+const annonsstatus: [string, "done" | "active" | "pending", string][] = ANNONSSTATUS_ORDER.map(
+  (s) => [stateLabel[s], ANNONSSTATUS_DOT[s], stateHint[s]],
+);
 
 const ikoner = [
   { Icon: Search, name: "Search" },
