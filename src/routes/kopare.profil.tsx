@@ -63,6 +63,7 @@ function Profile() {
   const [tab, setTab] = useState<Tab>("uppgifter");
   const session = getSession();
   const account = getAccountByUserId(session?.userId);
+  const fullName = session?.bankid ? `${session.bankid.fornamn} ${session.bankid.efternamn}` : "—";
   const [bolag, setBolag] = useState(() => account?.profil?.bolag ?? "");
   const [orgnr, setOrgnr] = useState(() => account?.profil?.orgnr ?? "");
   const [bolagSparat, setBolagSparat] = useState(false);
@@ -92,7 +93,7 @@ function Profile() {
     <AppLayout mode="kopare">
       <PageHeader
         eyebrow="Köparläge · Profil"
-        title="Anna Andersson"
+        title={fullName}
         subtitle="Dina uppgifter delas aldrig med säljare innan signering. TreLink ser endast det som behövs för granskning."
         right={
           <div className="flex flex-col items-end gap-2">
@@ -126,11 +127,9 @@ function Profile() {
           <div className="lg:col-span-2">
             <WireBox label="Personuppgifter">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <WireField label="Namn" placeholder="Anna Andersson" hint="Hämtat från BankID — ej redigerbart" />
-                <WireField label="E-post" placeholder="anna@exempel.se" />
-                <WireField label="Telefon" placeholder="076 12 34 56" />
-                <WireField label="Adress" placeholder="Storgatan 1, Stockholm" />
-                <WireField label="Postnummer" placeholder="113 27" />
+                <WireField label="Namn" placeholder={fullName} hint="Hämtat från BankID — ej redigerbart" />
+                <WireField label="E-post" placeholder={account?.profil?.epost || "—"} />
+                <WireField label="Telefon" placeholder={account?.profil?.telefon || "—"} />
               </div>
               <div className="mt-4 flex items-center justify-end gap-2">
                 <Annotation>Kommer snart</Annotation>

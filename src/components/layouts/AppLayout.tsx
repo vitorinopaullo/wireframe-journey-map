@@ -18,6 +18,7 @@ const sellerNav = [
   { to: "/saljare/mina-annonser", label: "Mina annonser" },
   { to: "/saljare/intressenter", label: "Intressenter" },
   { to: "/saljare/affarer", label: "Mina affärer" },
+  { to: "/saljare/profil", label: "Profil" },
 ];
 
 function useNotisCount(kategori: AdminNotisKategori) {

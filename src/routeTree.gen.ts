@@ -46,6 +46,7 @@ import { Route as SaljareAffarerRouteImport } from './routes/saljare.affarer'
 import { Route as SaljareAnnonsInskickadRouteImport } from './routes/saljare.annons-inskickad'
 import { Route as SaljareIntressenterRouteImport } from './routes/saljare.intressenter'
 import { Route as SaljareMinaAnnonserRouteImport } from './routes/saljare.mina-annonser'
+import { Route as SaljareProfilRouteImport } from './routes/saljare.profil'
 import { Route as SaljareSkapaAnnonsRouteImport } from './routes/saljare.skapa-annons'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
@@ -251,6 +252,11 @@ const SaljareMinaAnnonserRoute = SaljareMinaAnnonserRouteImport.update({
   path: '/saljare/mina-annonser',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SaljareProfilRoute = SaljareProfilRouteImport.update({
+  id: '/saljare/profil',
+  path: '/saljare/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SaljareSkapaAnnonsRoute = SaljareSkapaAnnonsRouteImport.update({
   id: '/saljare/skapa-annons',
   path: '/saljare/skapa-annons',
@@ -375,6 +381,7 @@ export interface FileRoutesByFullPath {
   '/saljare/annons-inskickad': typeof SaljareAnnonsInskickadRoute
   '/saljare/intressenter': typeof SaljareIntressenterRoute
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
+  '/saljare/profil': typeof SaljareProfilRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
   '/admin/': typeof AdminIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -425,6 +432,7 @@ export interface FileRoutesByTo {
   '/saljare/annons-inskickad': typeof SaljareAnnonsInskickadRoute
   '/saljare/intressenter': typeof SaljareIntressenterRoute
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
+  '/saljare/profil': typeof SaljareProfilRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
   '/admin': typeof AdminIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -482,6 +490,7 @@ export interface FileRoutesById {
   '/saljare/annons-inskickad': typeof SaljareAnnonsInskickadRoute
   '/saljare/intressenter': typeof SaljareIntressenterRoute
   '/saljare/mina-annonser': typeof SaljareMinaAnnonserRoute
+  '/saljare/profil': typeof SaljareProfilRoute
   '/saljare/skapa-annons': typeof SaljareSkapaAnnonsRoute
   '/admin/': typeof AdminIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -540,6 +549,7 @@ export interface FileRouteTypes {
     | '/saljare/annons-inskickad'
     | '/saljare/intressenter'
     | '/saljare/mina-annonser'
+    | '/saljare/profil'
     | '/saljare/skapa-annons'
     | '/admin/'
     | '/.lovable/oauth/consent'
@@ -590,6 +600,7 @@ export interface FileRouteTypes {
     | '/saljare/annons-inskickad'
     | '/saljare/intressenter'
     | '/saljare/mina-annonser'
+    | '/saljare/profil'
     | '/saljare/skapa-annons'
     | '/admin'
     | '/.lovable/oauth/consent'
@@ -646,6 +657,7 @@ export interface FileRouteTypes {
     | '/saljare/annons-inskickad'
     | '/saljare/intressenter'
     | '/saljare/mina-annonser'
+    | '/saljare/profil'
     | '/saljare/skapa-annons'
     | '/admin/'
     | '/.lovable/oauth/consent'
@@ -703,6 +715,7 @@ export interface RootRouteChildren {
   SaljareAnnonsInskickadRoute: typeof SaljareAnnonsInskickadRoute
   SaljareIntressenterRoute: typeof SaljareIntressenterRoute
   SaljareMinaAnnonserRoute: typeof SaljareMinaAnnonserRoute
+  SaljareProfilRoute: typeof SaljareProfilRoute
   SaljareSkapaAnnonsRoute: typeof SaljareSkapaAnnonsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -971,6 +984,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SaljareMinaAnnonserRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/saljare/profil': {
+      id: '/saljare/profil'
+      path: '/saljare/profil'
+      fullPath: '/saljare/profil'
+      preLoaderRoute: typeof SaljareProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/saljare/skapa-annons': {
       id: '/saljare/skapa-annons'
       path: '/saljare/skapa-annons'
@@ -1217,6 +1237,7 @@ const rootRouteChildren: RootRouteChildren = {
   SaljareAnnonsInskickadRoute: SaljareAnnonsInskickadRoute,
   SaljareIntressenterRoute: SaljareIntressenterRoute,
   SaljareMinaAnnonserRoute: SaljareMinaAnnonserRoute,
+  SaljareProfilRoute: SaljareProfilRoute,
   SaljareSkapaAnnonsRoute: SaljareSkapaAnnonsRoute,
   AdminIndexRoute: AdminIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
