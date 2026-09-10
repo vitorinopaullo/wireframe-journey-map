@@ -173,16 +173,20 @@ function SellerCaseDetail() {
       )}
 
       <WireBox label="Ärendehistorik">
-        <ul className="mt-1 space-y-3">
-          {(interest.timeline ?? []).map((l, i) => (
-            <li key={i} className="border-l-2 border-foreground/20 pl-3">
-              <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                {formatDatum(l.ts)} · {l.vem}
-              </div>
-              <div className="text-sm">{l.text}</div>
-            </li>
-          ))}
-        </ul>
+        {(interest.timeline ?? []).length === 0 ? (
+          <p className="text-sm text-muted-foreground">Ingen historik än.</p>
+        ) : (
+          <ul className="mt-1 space-y-3">
+            {(interest.timeline ?? []).map((l, i) => (
+              <li key={i} className="border-l-2 border-foreground/20 pl-3">
+                <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {formatDatum(l.ts)} · {l.vem}
+                </div>
+                <div className="text-sm">{l.text}</div>
+              </li>
+            ))}
+          </ul>
+        )}
       </WireBox>
 
       <SignicatFlow
