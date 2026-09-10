@@ -1180,24 +1180,32 @@ function AdminAnnonsDetail() {
               — TreLink förmedlar aldrig samtalet självt. */}
           {(st === "granskas" || st === "komplettering") && (
             <>
-              {onboarding?.saljaruppgifter.mobil && (
-                <a
-                  href={`tel:${onboarding.saljaruppgifter.mobil}`}
-                  className="inline-flex items-center gap-1.5 border-l border-foreground/15 pl-3 text-muted-foreground transition-colors duration-150 hover:text-foreground"
-                >
-                  <Phone className="h-3.5 w-3.5 shrink-0" />
-                  {formatTelefon(onboarding.saljaruppgifter.mobil)}
-                </a>
-              )}
-              {sellerEpost !== "—" && (
-                <a
-                  href={`mailto:${sellerEpost}`}
-                  className="inline-flex items-center gap-1.5 border-l border-foreground/15 pl-3 text-muted-foreground transition-colors duration-150 hover:text-foreground"
-                >
-                  <Mail className="h-3.5 w-3.5 shrink-0" />
-                  {sellerEpost}
-                </a>
-              )}
+              <span className="flex items-center gap-1.5 border-l border-foreground/15 pl-3">
+                <Phone className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                {onboarding?.saljaruppgifter.mobil ? (
+                  <a
+                    href={`tel:${onboarding.saljaruppgifter.mobil}`}
+                    className="text-muted-foreground transition-colors duration-150 hover:text-foreground"
+                  >
+                    {formatTelefon(onboarding.saljaruppgifter.mobil)}
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted-foreground">Ej ifyllt</span>
+                )}
+              </span>
+              <span className="flex items-center gap-1.5 border-l border-foreground/15 pl-3">
+                <Mail className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                {sellerEpost !== "—" ? (
+                  <a
+                    href={`mailto:${sellerEpost}`}
+                    className="text-muted-foreground transition-colors duration-150 hover:text-foreground"
+                  >
+                    {sellerEpost}
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted-foreground">Ej ifyllt</span>
+                )}
+              </span>
             </>
           )}
         </div>
