@@ -131,7 +131,19 @@ function AdminAnvandare() {
           </div>
 
           {filteredAccounts.length === 0 ? (
-            <Annotation>Inga användare matchar filtren</Annotation>
+            <Annotation>
+              Inga användare matchar filtren
+              <button
+                type="button"
+                onClick={() => {
+                  setRollFilter("alla");
+                  setStatusFilter("alla");
+                }}
+                className="ml-2 text-[var(--color-interactive)] underline underline-offset-2 hover:opacity-80"
+              >
+                Rensa filter
+              </button>
+            </Annotation>
           ) : (
             <div className="overflow-x-auto border border-foreground/30 bg-background">
               <table className="w-full text-sm">
