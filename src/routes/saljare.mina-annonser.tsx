@@ -69,6 +69,16 @@ function MyListings() {
         right={<WireBtn to="/saljare/skapa-annons">+ Ny annons</WireBtn>}
       />
       <div className="space-y-3">
+        {items.length === 0 && (
+          <WireBox variant="dashed">
+            <p className="text-sm text-muted-foreground">
+              Du har inga annonser än. Skapa din första annons för att komma igång.
+            </p>
+            <WireBtn to="/saljare/skapa-annons" className="mt-3">
+              + Ny annons
+            </WireBtn>
+          </WireBox>
+        )}
         {items.map((i) => {
           const isNew = i.id.startsWith("n");
           const st = i.workflow?.state as WorkflowState | undefined;
