@@ -137,15 +137,18 @@ export function WireTag({
   children,
   onClick,
   active,
+  className = "",
 }: {
   children: ReactNode;
   onClick?: () => void;
   active?: boolean;
+  className?: string;
 }) {
   const cls = `inline-flex items-center rounded-pill border px-4 py-2 text-sm transition-colors duration-150 ${
-    active
+    className ||
+    (active
       ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-white)]"
-      : `border-transparent bg-muted text-foreground ${onClick ? "hover:bg-muted-foreground/15" : ""}`
+      : `border-transparent bg-muted text-foreground ${onClick ? "hover:bg-muted-foreground/15" : ""}`)
   } ${onClick ? "cursor-pointer" : ""}`;
 
   if (onClick) {

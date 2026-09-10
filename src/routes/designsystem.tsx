@@ -157,19 +157,15 @@ function Swatch({ varName, label }: { varName: string; label: string }) {
   );
 }
 
-function Badge({ tone, children }: { tone: "success" | "warning" | "danger" | "neutral"; children: React.ReactNode }) {
-  const map = {
-    success: "bg-success-wash text-success",
-    warning: "bg-warning-wash text-warning",
-    danger: "bg-danger-wash text-danger",
-    neutral: "bg-muted text-muted-foreground",
-  } as const;
-  return (
-    <span className={`inline-flex items-center rounded-pill px-3 py-1 text-xs font-medium ${map[tone]}`}>
-      {children}
-    </span>
-  );
-}
+// Samma tone→klass-mappning som StatusTag i admin.annonser.index.tsx använder
+// för riktiga annonsstatusar — så att Etiketter-sektionen visar exakt de
+// färger appen faktiskt renderar, inte en påhittad variant.
+const TAG_TONE_CLASS = {
+  success: "border-[var(--color-success)] bg-[var(--color-success)] text-white",
+  warning: "border-amber-500/70 text-amber-700 bg-amber-50/60 dark:text-amber-500 dark:bg-amber-500/10",
+  danger: "border-destructive text-destructive bg-destructive/10",
+  neutral: "border-foreground/20 text-muted-foreground",
+} as const;
 
 /* ---------- sidan ---------- */
 
@@ -362,7 +358,9 @@ function DesignSystem() {
                   <li key={token} className="flex flex-wrap items-center gap-4 border-b border-border py-3 last:border-0">
                     <span className="h-6 w-6 shrink-0 rounded-button border border-border" style={{ background: `var(${token})` }} />
                     <span className="w-56 shrink-0 font-mono text-[11px]">{token}</span>
-                    <Badge tone={tone as "success" | "warning" | "danger"}>{use}</Badge>
+                    <WireTag className={TAG_TONE_CLASS[tone as "success" | "warning" | "danger"]}>
+                      {use}
+                    </WireTag>
                   </li>
                 ))}
               </ul>
@@ -599,10 +597,10 @@ function DesignSystem() {
             </WireBox>
             <WireBox label="Etiketter">
               <div className="flex flex-wrap items-center gap-3">
-                <Badge tone="success">Publicerad</Badge>
-                <Badge tone="warning">Komplettering krävs</Badge>
-                <Badge tone="danger">Avslagen</Badge>
-                <Badge tone="neutral">Utkast</Badge>
+                <WireTag className={TAG_TONE_CLASS.success}>Publicerad</WireTag>
+                <WireTag className={TAG_TONE_CLASS.warning}>Komplettering krävs</WireTag>
+                <WireTag className={TAG_TONE_CLASS.danger}>Avslagen</WireTag>
+                <WireTag className={TAG_TONE_CLASS.neutral}>Utkast</WireTag>
                 <WireTag>Lokal</WireTag>
                 <WireTag active>Inkråm</WireTag>
               </div>
