@@ -105,6 +105,14 @@ function AdminAffarDetail() {
         subtitle={`${info.pris} kr · ${info.ort} · köpare ${statusLabel[interest.status]}`}
       />
 
+      {!annons && (
+        <WireBox className="mb-6 border-amber-500/70 bg-amber-50/60 dark:bg-amber-500/10">
+          <p className="text-sm text-amber-700 dark:text-amber-500">
+            Annonsen för denna affär har tagits bort, men affärsdatan finns kvar.
+          </p>
+        </WireBox>
+      )}
+
       <WireBox className="mb-6">
         <Progress steg={deal.steg} />
       </WireBox>
