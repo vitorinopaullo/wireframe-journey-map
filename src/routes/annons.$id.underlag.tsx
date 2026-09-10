@@ -4,12 +4,17 @@ import { CheckCircle2, FileText } from "lucide-react";
 import { PublicLayout } from "@/components/layouts/PublicLayout";
 import { WireBox, WireBtn, Annotation, PageHeader } from "@/components/wire";
 import { useIsAuthed } from "@/hooks/use-session";
-import { readBuyerInterests, patchBuyerInterest, logBuyerEntry, type BuyerInterest } from "@/lib/kopare-workflow";
+import {
+  readBuyerInterests,
+  patchBuyerInterest,
+  logBuyerEntry,
+  type BuyerInterest,
+} from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
 import { addNotis } from "@/lib/admin-notiser";
 import { getSession, getAccountByUserId } from "@/lib/mock-auth";
 import { formatArendeRef } from "@/lib/format";
-import { godkandaDokument, DEMO_DOKUMENT } from "./annons.$id.index";
+import { godkandaDokument } from "./annons.$id.index";
 
 export const Route = createFileRoute("/annons/$id/underlag")({
   component: UnderlagsGranskning,
@@ -46,8 +51,7 @@ function UnderlagsGranskning() {
   }
 
   const annonsItem = getAnnons(interest.annonsId) as any;
-  const godkanda = godkandaDokument(annonsItem?.draft?.docs);
-  const dokument = godkanda.length ? godkanda : DEMO_DOKUMENT;
+  const dokument = godkandaDokument(annonsItem?.draft?.docs);
 
   const besluta = (status: "vill-ga-vidare" | "avböjt") => {
     const beslutText = status === "vill-ga-vidare" ? "Vill köpa objektet" : "Avvisade objektet";
@@ -55,10 +59,17 @@ function UnderlagsGranskning() {
       logBuyerEntry({ ...item, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText),
     );
     setInterest((prev) =>
-      prev ? logBuyerEntry({ ...prev, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText) : prev,
+      prev
+        ? logBuyerEntry(
+            { ...prev, status, beslutAt: new Date().toISOString() },
+            "Köpare",
+            beslutText,
+          )
+        : prev,
     );
     if (status === "vill-ga-vidare") {
-      const annonsTitel = getAnnons(interest.annonsId)?.titel || `Annons ${formatArendeRef(interest.annonsId)}`;
+      const annonsTitel =
+        getAnnons(interest.annonsId)?.titel || `Annons ${formatArendeRef(interest.annonsId)}`;
       addNotis(
         "kopare",
         `${interest.kKod} vill köpa "${annonsTitel}" — redo för matchning`,
@@ -99,7 +110,9 @@ function UnderlagsGranskning() {
         subtitle="Läs igenom informationsmemorandumet innan du bestämmer dig."
       />
 
-      <div className={`mx-auto max-w-2xl space-y-6 ${pdfOppnad && interest.status === "väntar-pdf" ? "pb-24" : ""}`}>
+      <div
+        className={`mx-auto max-w-2xl space-y-6 ${pdfOppnad && interest.status === "väntar-pdf" ? "pb-24" : ""}`}
+      >
         <WireBox label="Informationsmemorandum">
           <p className="text-sm text-muted-foreground">
             Detaljerat underlag om verksamheten — ekonomi, avtal och nyckeltal.
@@ -111,10 +124,20 @@ function UnderlagsGranskning() {
               setPdfOppnad(true);
               const pdfOppnadAt = new Date().toISOString();
               patchBuyerInterest(interest.id, (item) =>
-                logBuyerEntry({ ...item, pdfOppnadAt }, "Köpare", "Öppnade informationsmemorandumet"),
+                logBuyerEntry(
+                  { ...item, pdfOppnadAt },
+                  "Köpare",
+                  "Öppnade informationsmemorandumet",
+                ),
               );
               setInterest((prev) =>
-                prev ? logBuyerEntry({ ...prev, pdfOppnadAt }, "Köpare", "Öppnade informationsmemorandumet") : prev,
+                prev
+                  ? logBuyerEntry(
+                      { ...prev, pdfOppnadAt },
+                      "Köpare",
+                      "Öppnade informationsmemorandumet",
+                    )
+                  : prev,
               );
             }}
           >
@@ -133,27 +156,31 @@ function UnderlagsGranskning() {
           <p className="text-sm text-muted-foreground">
             Din intresseanmälan är registrerad — dokumenten nedan är nu upplåsta.
           </p>
-          <ul className="mt-3 divide-y divide-foreground/10 text-sm">
-            {dokument.map((namn) => (
-              <li key={namn} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                <span className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  {namn}
-                </span>
-                <WireBtn
-                  variant="secondary"
-                  onClick={() => {
-                    window.open("about:blank", "_blank");
-                    patchBuyerInterest(interest.id, (item) =>
-                      logBuyerEntry({ ...item }, "Köpare", `Öppnade ${namn}`),
-                    );
-                  }}
-                >
-                  Öppna →
-                </WireBtn>
-              </li>
-            ))}
-          </ul>
+          {dokument.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">Inga dokument godkända än.</p>
+          ) : (
+            <ul className="mt-3 divide-y divide-foreground/10 text-sm">
+              {dokument.map((namn) => (
+                <li key={namn} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                  <span className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    {namn}
+                  </span>
+                  <WireBtn
+                    variant="secondary"
+                    onClick={() => {
+                      window.open("about:blank", "_blank");
+                      patchBuyerInterest(interest.id, (item) =>
+                        logBuyerEntry({ ...item }, "Köpare", `Öppnade ${namn}`),
+                      );
+                    }}
+                  >
+                    Öppna →
+                  </WireBtn>
+                </li>
+              ))}
+            </ul>
+          )}
         </WireBox>
 
         {interest.status === "vill-ga-vidare" && (
@@ -163,7 +190,12 @@ function UnderlagsGranskning() {
               Din K-kod <span className="font-mono font-medium">{interest.kKod}</span> är
               registrerad. TreLink kontaktar dig när nästa steg är klart.
             </p>
-            <WireBtn variant="secondary" to="/kopare/affarer/$id" params={{ id: interest.id }} className="mt-4">
+            <WireBtn
+              variant="secondary"
+              to="/kopare/affarer/$id"
+              params={{ id: interest.id }}
+              className="mt-4"
+            >
               Följ ärendet →
             </WireBtn>
           </WireBox>
@@ -174,7 +206,12 @@ function UnderlagsGranskning() {
             <p className="text-sm text-muted-foreground">
               Ditt intresse för denna annons har avslutats. Tack för att du tittade!
             </p>
-            <WireBtn variant="secondary" to="/kopare/affarer/$id" params={{ id: interest.id }} className="mt-4">
+            <WireBtn
+              variant="secondary"
+              to="/kopare/affarer/$id"
+              params={{ id: interest.id }}
+              className="mt-4"
+            >
               Följ ärendet →
             </WireBtn>
           </WireBox>
