@@ -193,22 +193,28 @@ function BuyerDeals() {
           ))}
 
         {flik === "klar" &&
-          avslutade.map((a) => (
-            <WireBox key={a.id} className="flex items-center justify-between">
-              <div>
-                <h3 className="font-medium">{a.titel}</h3>
-                <Annotation>
-                  {formatArendeRef(a.id)} · {a.pris} · {a.resultat}
-                </Annotation>
-              </div>
-              <Link
-                to="/kopare/affarer/$id"
-                params={{ id: a.id }}
-                className="text-xs text-muted-foreground hover:underline"
-              >
-                Visa kvitto →
-              </Link>
+          (avslutade.length === 0 ? (
+            <WireBox variant="dashed">
+              <p className="text-sm text-muted-foreground">Inga avslutade affärer än.</p>
             </WireBox>
+          ) : (
+            avslutade.map((a) => (
+              <WireBox key={a.id} className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium">{a.titel}</h3>
+                  <Annotation>
+                    {formatArendeRef(a.id)} · {a.pris} · {a.resultat}
+                  </Annotation>
+                </div>
+                <Link
+                  to="/kopare/affarer/$id"
+                  params={{ id: a.id }}
+                  className="text-xs text-muted-foreground hover:underline"
+                >
+                  Visa kvitto →
+                </Link>
+              </WireBox>
+            ))
           ))}
       </div>
     </AppLayout>
