@@ -40,7 +40,6 @@ function StatusTag({ status }: { status: AccountStatus }) {
 }
 
 type RollFilter = "alla" | "kopare" | "saljare";
-type StatusFilter = "alla" | AccountStatus;
 
 const ROLL_FILTER_LABEL: Record<RollFilter, string> = {
   alla: "Alla",
@@ -48,17 +47,11 @@ const ROLL_FILTER_LABEL: Record<RollFilter, string> = {
   saljare: "Säljare/Överlåtare",
 };
 
-const STATUS_FILTER_LABEL: Record<StatusFilter, string> = {
-  alla: "Alla",
-  ...STATUS_LABEL,
-};
-
 function AdminAnvandare() {
   const navigate = useNavigate();
   const [accounts, setAccounts] = useState<AdminAccountEvent[]>(() => readAdminAccounts());
   const [justUpdatedId, setJustUpdatedId] = useState<string | null>(null);
   const [rollFilter, setRollFilter] = useState<RollFilter>("alla");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("alla");
 
   useEffect(() => {
     markKategoriRead("anvandare");
@@ -86,7 +79,6 @@ function AdminAnvandare() {
 
   const filteredAccounts = accounts.filter((a) => {
     if (rollFilter !== "alla" && a.role !== rollFilter) return false;
-    if (statusFilter !== "alla" && accountStatus(a) !== statusFilter) return false;
     return true;
   });
 
@@ -114,16 +106,6 @@ function AdminAnvandare() {
                   ))}
                 </div>
               </div>
-              <div>
-                <div className="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Status</div>
-                <div className="flex gap-1.5">
-                  {(Object.keys(STATUS_FILTER_LABEL) as StatusFilter[]).map((s) => (
-                    <WireTag key={s} active={statusFilter === s} onClick={() => setStatusFilter(s)}>
-                      {STATUS_FILTER_LABEL[s]}
-                    </WireTag>
-                  ))}
-                </div>
-              </div>
             </div>
             <Annotation>
               {filteredAccounts.length} av {accounts.length} användare
@@ -135,10 +117,7 @@ function AdminAnvandare() {
               Inga användare matchar filtren
               <button
                 type="button"
-                onClick={() => {
-                  setRollFilter("alla");
-                  setStatusFilter("alla");
-                }}
+                onClick={() => setRollFilter("alla")}
                 className="ml-2 text-[var(--color-interactive)] underline underline-offset-2 hover:opacity-80"
               >
                 Rensa filter
