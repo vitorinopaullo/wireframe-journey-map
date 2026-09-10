@@ -34,7 +34,7 @@ const STATUS_TONE: Record<BuyerInterestStatus, "success" | "danger" | "warn"> = 
   avböjt: "danger",
 };
 
-function StatusTag({ status }: { status: BuyerInterestStatus }) {
+export function StatusTag({ status }: { status: BuyerInterestStatus }) {
   const tone = STATUS_TONE[status];
   const cls =
     tone === "success"
