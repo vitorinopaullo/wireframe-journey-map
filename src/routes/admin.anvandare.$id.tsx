@@ -132,7 +132,9 @@ function AdminAnvandareDetail() {
           )}
 
           {harSaljaruppgifter && (
-            <WireBox label="Säljar-/Överlåtaruppgifter">
+            <WireBox
+              label={account.role === "saljare" ? "Säljar-/Överlåtaruppgifter" : "Köparuppgifter"}
+            >
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field k="Förnamn" v={account.bankid.fornamn} />
                 <Field k="Efternamn" v={account.bankid.efternamn} />
