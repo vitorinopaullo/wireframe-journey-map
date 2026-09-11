@@ -2,6 +2,7 @@
 // Prototype only — data lives in the browser. Mirrors the pattern in kopare-workflow.ts.
 
 import { getOrCreateBuyerKod } from "@/lib/mock-auth";
+import { loggaHandelse } from "@/lib/sparade-historik";
 
 export type Favorit = {
   userId: string;
@@ -43,9 +44,14 @@ export function isFavorit(annonsId: string, userId?: string): boolean {
 export function toggleFavorit(entry: Favorit): Favorit[] {
   const all = readAllFavoriter();
   const idx = all.findIndex((f) => f.annonsId === entry.annonsId && f.userId === entry.userId);
-  // Ett köpar-ID ska finnas redan från första sparade favoriten, inte bara
-  // från och med en intresseanmälan — se getOrCreateBuyerKod i mock-auth.ts.
-  if (idx < 0) getOrCreateBuyerKod(entry.userId);
+  if (idx < 0) {
+    // Ett köpar-ID ska finnas redan från första sparade favoriten, inte bara
+    // från och med en intresseanmälan — se getOrCreateBuyerKod i mock-auth.ts.
+    getOrCreateBuyerKod(entry.userId);
+    loggaHandelse(entry.userId, entry.annonsId, "sparad");
+  } else {
+    loggaHandelse(entry.userId, entry.annonsId, "borttagen");
+  }
   const next = idx >= 0 ? all.filter((_, i) => i !== idx) : [...all, entry];
   writeFavoriter(next);
   return next.filter((f) => f.userId === entry.userId);

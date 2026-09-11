@@ -6,6 +6,7 @@ import { getAnnons } from "@/lib/annons-workflow";
 import { addNotis } from "@/lib/admin-notiser";
 import { formatArendeRef } from "@/lib/format";
 import { getOrCreateBuyerKod } from "@/lib/mock-auth";
+import { loggaHandelse } from "@/lib/sparade-historik";
 
 export type BuyerInterestStatus = "väntar-pdf" | "vill-ga-vidare" | "avböjt";
 
@@ -98,7 +99,10 @@ export function findOrCreateInterest(
   // uteslutande — en intresseanmälan (ny eller redan befintlig) innebär att
   // objektet inte längre bara är "sparat", så favoriten tas bort här,
   // oavsett om anropet skapade ett nytt intresse eller hittade ett gammalt.
-  if (userId !== undefined) removeFavorit(annonsId, userId);
+  if (userId !== undefined) {
+    removeFavorit(annonsId, userId);
+    loggaHandelse(userId, annonsId, "omvandlad-till-intresse");
+  }
   if (existing) return { interest: existing, created: false };
   const interest: BuyerInterest = {
     id: `bi-${Date.now()}`,
@@ -135,7 +139,10 @@ export function besluta(
   );
   const interest = getBuyerInterest(interestId);
   if (status === "vill-ga-vidare" && interest) {
-    if (interest.userId !== undefined) removeFavorit(interest.annonsId, interest.userId);
+    if (interest.userId !== undefined) {
+      removeFavorit(interest.annonsId, interest.userId);
+      loggaHandelse(interest.userId, interest.annonsId, "omvandlad-till-intresse");
+    }
     const annonsTitel =
       getAnnons(interest.annonsId)?.titel || `Annons ${formatArendeRef(interest.annonsId)}`;
     addNotis(
