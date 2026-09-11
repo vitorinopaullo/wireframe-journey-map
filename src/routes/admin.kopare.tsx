@@ -41,6 +41,141 @@ export function StatusTag({ status }: { status: BuyerInterestStatus }) {
 
 type SortOrder = "nyast" | "aldst";
 
+type AnnonsGrupp = {
+  annonsId: string;
+  titel: string;
+  interests: BuyerInterest[];
+};
+
+/** Grupperar intresseanmälningar per annons — en annons med flera kandidater
+ * ska gå att jämföra i ett svep, inte spridas ut som platta, orelaterade rader. */
+function groupByAnnons(rows: BuyerInterest[], sortOrder: SortOrder): AnnonsGrupp[] {
+  const map = new Map<string, BuyerInterest[]>();
+  for (const i of rows) {
+    const list = map.get(i.annonsId) ?? [];
+    list.push(i);
+    map.set(i.annonsId, list);
+  }
+  const grupper = [...map.entries()].map(([annonsId, interests]) => ({
+    annonsId,
+    titel: getAnnons(annonsId)?.titel || `Annons #${annonsId}`,
+    interests,
+  }));
+  const nyckel = (g: AnnonsGrupp) =>
+    g.interests.reduce(
+      (nyast, i) => (i.skapadAt > nyast ? i.skapadAt : nyast),
+      g.interests[0]?.skapadAt ?? "",
+    );
+  grupper.sort((a, b) =>
+    sortOrder === "nyast" ? nyckel(b).localeCompare(nyckel(a)) : nyckel(a).localeCompare(nyckel(b)),
+  );
+  return grupper;
+}
+
+function KandidatRad({ i }: { i: BuyerInterest }) {
+  const account = getAccountByUserId(i.userId);
+  const bolag = account?.profil?.bolag;
+  const forsokteKopaUtanBolag = !bolag && i.timeline?.some((t) => t.text.includes("Försökte köpa"));
+  return (
+    <tr className="transition-colors duration-150 hover:bg-muted/20">
+      <td className="px-3 py-2">
+        {account ? (
+          <Link
+            to="/admin/anvandare/$id"
+            params={{ id: account.id }}
+            className="text-sm underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+          >
+            {account.bankid.fornamn} {account.bankid.efternamn}
+          </Link>
+        ) : (
+          <span className="text-xs text-muted-foreground">Okänt konto</span>
+        )}
+      </td>
+      <td className="px-3 py-2 font-mono">{i.kKod}</td>
+      <td className="px-3 py-2">
+        {bolag ? (
+          <span className="text-sm">{bolag}</span>
+        ) : (
+          <span className="text-xs text-muted-foreground">Ej ifyllt</span>
+        )}
+        {forsokteKopaUtanBolag && (
+          <span className="mt-1 flex items-center gap-1 text-xs text-amber-700 dark:text-amber-500">
+            <AlertTriangle className="h-3 w-3" /> Försökte köpa — väntar på bolagsuppgifter
+          </span>
+        )}
+      </td>
+      <td className="px-3 py-2">
+        {i.pdfOppnadAt ? (
+          <span className="flex items-center gap-1 text-sm">
+            <Check className="h-3.5 w-3.5" /> Öppnat
+          </span>
+        ) : (
+          <span className="inline-flex items-center border border-destructive/60 bg-destructive/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-destructive">
+            Ej öppnat — ring säljaren
+          </span>
+        )}
+      </td>
+      <td className="px-3 py-2 font-mono text-xs">{formatDatum(i.skapadAt)}</td>
+    </tr>
+  );
+}
+
+function AnnonsGruppKort({ grupp }: { grupp: AnnonsGrupp }) {
+  return (
+    <details className="group border border-foreground/30 bg-background">
+      <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-3 px-4 py-3">
+        <div>
+          <Link
+            to="/admin/annonser/$id"
+            params={{ id: grupp.annonsId }}
+            onClick={(e) => e.stopPropagation()}
+            className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+          >
+            {grupp.titel}
+          </Link>
+          <div className="font-mono text-[10px] text-muted-foreground">
+            {formatArendeRef(grupp.annonsId)}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <WireTag>{grupp.interests.length} intresserade</WireTag>
+          <span className="font-mono text-xs text-muted-foreground transition group-open:rotate-45">
+            +
+          </span>
+        </div>
+      </summary>
+      <div className="overflow-x-auto border-t border-foreground/30">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-foreground/30 bg-muted/30">
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Köpare
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Köpar-ID
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Bolag
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                PDF
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Datum
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-dashed divide-muted-foreground/30">
+            {grupp.interests.map((i) => (
+              <KandidatRad key={i.id} i={i} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  );
+}
+
 function AdminKopare() {
   const [interests] = useState<BuyerInterest[]>(() => readBuyerInterests());
   const [sortOrder, setSortOrder] = useState<SortOrder>("nyast");
@@ -49,13 +184,8 @@ function AdminKopare() {
     markKategoriRead("kopare");
   }, []);
 
-  const rows = interests
-    .filter((i) => i.status === "väntar-pdf")
-    .sort((a, b) =>
-      sortOrder === "nyast"
-        ? (b.skapadAt || "").localeCompare(a.skapadAt || "")
-        : (a.skapadAt || "").localeCompare(b.skapadAt || ""),
-    );
+  const rows = interests.filter((i) => i.status === "väntar-pdf");
+  const grupper = groupByAnnons(rows, sortOrder);
 
   return (
     <AdminLayout>
@@ -72,89 +202,13 @@ function AdminKopare() {
         </WireTag>
       </div>
 
-      {rows.length === 0 ? (
+      {grupper.length === 0 ? (
         <Annotation>Inga väntande lead just nu</Annotation>
       ) : (
-        <div className="overflow-x-auto border border-foreground/30 bg-background">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="sticky top-0 border-b border-foreground/30 bg-muted/30">
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  Annons
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  Köpar-ID
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  Bolag
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  Status
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  PDF
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  Datum
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-dashed divide-muted-foreground/30">
-              {rows.map((i) => {
-                const account = getAccountByUserId(i.userId);
-                const bolag = account?.profil?.bolag;
-                const forsokteKopaUtanBolag =
-                  i.status === "väntar-pdf" &&
-                  !bolag &&
-                  i.timeline?.some((t) => t.text.includes("Försökte köpa"));
-                return (
-                  <tr key={i.id} className="transition-colors duration-150 hover:bg-muted/20">
-                    <td className="px-3 py-2">
-                      <Link
-                        to="/admin/annonser/$id"
-                        params={{ id: i.annonsId }}
-                        className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
-                      >
-                        {getAnnons(i.annonsId)?.titel || `Annons #${i.annonsId}`}
-                      </Link>
-                      <div className="font-mono text-[10px] text-muted-foreground">
-                        {formatArendeRef(i.annonsId)}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 font-mono">{i.kKod}</td>
-                    <td className="px-3 py-2">
-                      {bolag ? (
-                        <span className="text-sm">{bolag}</span>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">Ej ifyllt</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2">
-                      <StatusTag status={i.status} />
-                      {forsokteKopaUtanBolag && (
-                        <span className="mt-1 flex items-center gap-1 text-xs text-amber-700 dark:text-amber-500">
-                          <AlertTriangle className="h-3 w-3" /> Försökte köpa — väntar på
-                          bolagsuppgifter
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2">
-                      {i.pdfOppnadAt ? (
-                        <span className="flex items-center gap-1 text-sm">
-                          <Check className="h-3.5 w-3.5" /> Öppnat
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center border border-destructive/60 bg-destructive/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-destructive">
-                          Ej öppnat — ring säljaren
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2 font-mono text-xs">{formatDatum(i.skapadAt)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="space-y-3">
+          {grupper.map((grupp) => (
+            <AnnonsGruppKort key={grupp.annonsId} grupp={grupp} />
+          ))}
         </div>
       )}
     </AdminLayout>

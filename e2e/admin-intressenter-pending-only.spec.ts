@@ -53,8 +53,16 @@ test("Intressenter page only ever shows vantar-pdf leads and has no Avvisa butto
 
   await page.goto("/admin/kopare");
 
+  // Rows are grouped per annons behind a <details> disclosure — expand the
+  // one group that should exist (the väntar-pdf annons) before asserting on
+  // its candidate row.
+  await page
+    .locator("details", { has: page.getByText("E2E väntande lokal") })
+    .locator("summary")
+    .click();
+
   await expect(page.getByText("K-e2e-waiting")).toBeVisible();
-  await expect(page.getByText("K-e2e-wants")).toBeHidden();
-  await expect(page.getByText("K-e2e-declined")).toBeHidden();
+  await expect(page.getByText("K-e2e-wants")).toHaveCount(0);
+  await expect(page.getByText("K-e2e-declined")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Avvisa" })).toHaveCount(0);
 });
