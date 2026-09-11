@@ -2,6 +2,9 @@
 // Prototype only — data lives in the browser. Mirrors the pattern in annons-workflow.ts.
 
 import { removeFavorit } from "@/lib/favoriter";
+import { getAnnons } from "@/lib/annons-workflow";
+import { addNotis } from "@/lib/admin-notiser";
+import { formatArendeRef } from "@/lib/format";
 
 export type BuyerInterestStatus = "väntar-pdf" | "vill-ga-vidare" | "avböjt";
 
@@ -107,6 +110,34 @@ export function findOrCreateInterest(
   };
   writeBuyerInterests([...interests, interest]);
   return { interest, created: true };
+}
+
+/** Köparens beslut om ett objekt (köp eller avböj) — delas mellan
+ * annons.$id.index.tsx och annons.$id.underlag.tsx, som tidigare höll varsin
+ * kopia av exakt samma logik synkad bara via en kommentar. Patchar intresset
+ * med beslutet, loggar det i tidslinjen, och vid "vill-ga-vidare": tar bort
+ * en ev. sparad favorit för samma annons (se findOrCreateInterest ovan för
+ * samma invariant) och notifierar TreLink admin. */
+export function besluta(
+  interestId: string,
+  status: "vill-ga-vidare" | "avböjt",
+): BuyerInterest | undefined {
+  const beslutText = status === "vill-ga-vidare" ? "Vill köpa objektet" : "Avvisade objektet";
+  patchBuyerInterest(interestId, (item) =>
+    logBuyerEntry({ ...item, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText),
+  );
+  const interest = getBuyerInterest(interestId);
+  if (status === "vill-ga-vidare" && interest) {
+    if (interest.userId !== undefined) removeFavorit(interest.annonsId, interest.userId);
+    const annonsTitel =
+      getAnnons(interest.annonsId)?.titel || `Annons ${formatArendeRef(interest.annonsId)}`;
+    addNotis(
+      "kopare",
+      `${interest.kKod} vill köpa "${annonsTitel}" — redo för matchning`,
+      "/admin/kopare",
+    );
+  }
+  return interest;
 }
 
 /** "K-" + 4 slumpsiffror, unik mot befintliga poster. */

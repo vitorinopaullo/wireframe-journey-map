@@ -8,10 +8,10 @@ import {
   readBuyerInterests,
   patchBuyerInterest,
   logBuyerEntry,
+  besluta as beslutaShared,
   type BuyerInterest,
 } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
-import { addNotis } from "@/lib/admin-notiser";
 import { getSession, getAccountByUserId } from "@/lib/mock-auth";
 import { formatArendeRef } from "@/lib/format";
 import { godkandaDokument } from "./annons.$id.index";
@@ -54,28 +54,8 @@ function UnderlagsGranskning() {
   const dokument = godkandaDokument(annonsItem?.draft?.docs);
 
   const besluta = (status: "vill-ga-vidare" | "avböjt") => {
-    const beslutText = status === "vill-ga-vidare" ? "Vill köpa objektet" : "Avvisade objektet";
-    patchBuyerInterest(interest.id, (item) =>
-      logBuyerEntry({ ...item, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText),
-    );
-    setInterest((prev) =>
-      prev
-        ? logBuyerEntry(
-            { ...prev, status, beslutAt: new Date().toISOString() },
-            "Köpare",
-            beslutText,
-          )
-        : prev,
-    );
-    if (status === "vill-ga-vidare") {
-      const annonsTitel =
-        getAnnons(interest.annonsId)?.titel || `Annons ${formatArendeRef(interest.annonsId)}`;
-      addNotis(
-        "kopare",
-        `${interest.kKod} vill köpa "${annonsTitel}" — redo för matchning`,
-        "/admin/kopare",
-      );
-    }
+    const updated = beslutaShared(interest.id, status);
+    if (updated) setInterest(updated);
   };
 
   // Köp kräver bolagsuppgifter (TreLink upprättar avtal mot ett bolag). Saknas de

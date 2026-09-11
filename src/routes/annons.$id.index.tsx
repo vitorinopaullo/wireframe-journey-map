@@ -24,6 +24,7 @@ import {
   findOrCreateInterest,
   patchBuyerInterest,
   logBuyerEntry,
+  besluta as beslutaShared,
   type BuyerInterest,
 } from "@/lib/kopare-workflow";
 import { addNotis } from "@/lib/admin-notiser";
@@ -315,26 +316,8 @@ function ListingDetail() {
 
   const besluta = (status: "vill-ga-vidare" | "avböjt") => {
     if (!interest) return;
-    const beslutText = status === "vill-ga-vidare" ? "Vill köpa objektet" : "Avvisade objektet";
-    patchBuyerInterest(interest.id, (item) =>
-      logBuyerEntry({ ...item, status, beslutAt: new Date().toISOString() }, "Köpare", beslutText),
-    );
-    setInterest((prev) =>
-      prev
-        ? logBuyerEntry(
-            { ...prev, status, beslutAt: new Date().toISOString() },
-            "Köpare",
-            beslutText,
-          )
-        : prev,
-    );
-    if (status === "vill-ga-vidare") {
-      addNotis(
-        "kopare",
-        `${interest.kKod} vill köpa "${listing.titel}" — redo för matchning`,
-        "/admin/kopare",
-      );
-    }
+    const updated = beslutaShared(interest.id, status);
+    if (updated) setInterest(updated);
   };
 
   // Köp kräver bolagsuppgifter (TreLink upprättar avtal mot ett bolag). Saknas de
