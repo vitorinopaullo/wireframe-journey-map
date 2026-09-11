@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
-import { PageHeader, Annotation, WireTag, WireBtn } from "@/components/wire";
+import { PageHeader, Annotation, WireBtn } from "@/components/wire";
 import {
   readBuyerInterests,
   patchBuyerInterest,
@@ -18,15 +18,6 @@ import { AlertTriangle, Check } from "lucide-react";
 export const Route = createFileRoute("/admin/kopare")({
   component: AdminKopare,
 });
-
-type StatusFilter = "alla" | BuyerInterestStatus;
-
-const FILTER_LABEL: Record<StatusFilter, string> = {
-  alla: "Alla",
-  "väntar-pdf": "Väntar på köparen",
-  "vill-ga-vidare": "Vill köpa",
-  avböjt: "Avvisat",
-};
 
 const STATUS_TONE: Record<BuyerInterestStatus, "success" | "danger" | "warn"> = {
   "väntar-pdf": "warn",
@@ -51,16 +42,14 @@ export function StatusTag({ status }: { status: BuyerInterestStatus }) {
 
 function AdminKopare() {
   const [interests, setInterests] = useState<BuyerInterest[]>(() => readBuyerInterests());
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("alla");
 
   useEffect(() => {
     markKategoriRead("kopare");
   }, []);
 
   const rows = interests
-    .slice()
-    .sort((a, b) => (b.skapadAt || "").localeCompare(a.skapadAt || ""))
-    .filter((i) => statusFilter === "alla" || i.status === statusFilter);
+    .filter((i) => i.status === "väntar-pdf")
+    .sort((a, b) => (b.skapadAt || "").localeCompare(a.skapadAt || ""));
 
   function toggleRemarketing(id: string) {
     patchBuyerInterest(id, (item) => ({ ...item, remarketingTag: !item.remarketingTag }));
@@ -82,25 +71,11 @@ function AdminKopare() {
       />
 
       <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <div className="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-            Status
-          </div>
-          <div className="flex gap-1.5">
-            {(Object.keys(FILTER_LABEL) as StatusFilter[]).map((s) => (
-              <WireTag key={s} active={statusFilter === s} onClick={() => setStatusFilter(s)}>
-                {FILTER_LABEL[s]}
-              </WireTag>
-            ))}
-          </div>
-        </div>
-        <Annotation>
-          {rows.length} av {interests.length} lead
-        </Annotation>
+        <Annotation>{rows.length} väntande lead</Annotation>
       </div>
 
       {rows.length === 0 ? (
-        <Annotation>Inga intresseanmälningar än</Annotation>
+        <Annotation>Inga väntande lead just nu</Annotation>
       ) : (
         <div className="overflow-x-auto border border-foreground/30 bg-background">
           <table className="w-full text-sm">
