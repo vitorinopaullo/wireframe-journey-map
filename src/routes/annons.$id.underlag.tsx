@@ -187,8 +187,8 @@ function UnderlagsGranskning() {
           <WireBox label="Intresse registrerat" variant="dashed">
             <p className="flex items-center gap-2 text-sm">
               <CheckCircle2 className="h-5 w-5 shrink-0" />
-              Din K-kod <span className="font-mono font-medium">{interest.kKod}</span> är
-              registrerad. TreLink kontaktar dig när nästa steg är klart.
+              Ditt Köpar-ID <span className="font-mono font-medium">{interest.kKod}</span> är
+              registrerat. TreLink kontaktar dig när nästa steg är klart.
             </p>
             <WireBtn
               variant="secondary"
@@ -218,7 +218,7 @@ function UnderlagsGranskning() {
         )}
 
         <Annotation>
-          K-koden ({interest.kKod}) är den identifierare TreLink/säljaren ser — ditt namn visas
+          Köpar-ID:et ({interest.kKod}) är den identifierare TreLink/säljaren ser — ditt namn visas
           aldrig för säljaren i detta steg.
         </Annotation>
       </div>

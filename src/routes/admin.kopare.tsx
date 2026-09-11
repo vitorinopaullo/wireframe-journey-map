@@ -83,7 +83,7 @@ function AdminKopare() {
                   Annons
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  K-kod
+                  Köpar-ID
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                   Bolag
