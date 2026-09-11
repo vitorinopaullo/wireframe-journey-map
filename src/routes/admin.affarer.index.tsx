@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireTag, WireBtn, Annotation } from "@/components/wire";
@@ -13,11 +13,13 @@ import {
 import {
   buildAffarer,
   buildAvslutade,
+  granskningKandidater,
   STEG_LABEL,
   type Vantar,
   type Affar,
 } from "@/lib/affar-workflow";
 import { readAnnonser, STORAGE_KEY as ANNONS_STORAGE_KEY } from "@/lib/annons-workflow";
+import { getAccountByUserId } from "@/lib/mock-auth";
 import { formatArendeRef, formatDatum } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/affarer/")({
@@ -76,6 +78,134 @@ function AffarsRad({ a }: { a: Affar }) {
   );
 }
 
+type GranskningGrupp = {
+  annonsId: string;
+  titel: string;
+  ort: string;
+  kat: string;
+};
+
+/** Grupperar granskningssteget per annons — flera köpare kan konkurrera om
+ * samma objekt, och de behöver gå att jämföra i ett svep. Övriga steg har
+ * per definition bara en aktiv kandidat och förblir platta rader. */
+function groupGranskning(affarer: Affar[]): { grupper: GranskningGrupp[]; ovriga: Affar[] } {
+  const granskning = affarer.filter((a) => a.steg === "granskning");
+  const ovriga = affarer.filter((a) => a.steg !== "granskning");
+  const map = new Map<string, Affar>();
+  for (const a of granskning) {
+    if (!map.has(a.annonsId)) map.set(a.annonsId, a);
+  }
+  const grupper = [...map.values()].map((a) => ({
+    annonsId: a.annonsId,
+    titel: a.titel,
+    ort: a.ort,
+    kat: a.kat,
+  }));
+  return { grupper, ovriga };
+}
+
+function GranskningKandidatRad({ annonsId, interestId }: { annonsId: string; interestId: string }) {
+  const kandidat = granskningKandidater(annonsId).find((k) => k.interestId === interestId);
+  if (!kandidat) return null;
+  const account = getAccountByUserId(kandidat.userId);
+  const bolag = account?.profil?.bolag;
+  const orgnr = account?.profil?.orgnr;
+  return (
+    <tr className="transition-colors duration-150 hover:bg-muted/20">
+      <td className="px-3 py-2">
+        {account ? (
+          <Link
+            to="/admin/anvandare/$id"
+            params={{ id: account.id }}
+            className="text-sm underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+          >
+            {account.bankid.fornamn} {account.bankid.efternamn}
+          </Link>
+        ) : (
+          <span className="text-xs text-muted-foreground">Okänt konto</span>
+        )}
+      </td>
+      <td className="px-3 py-2 font-mono">{kandidat.kKod}</td>
+      <td className="px-3 py-2">
+        {bolag ? (
+          <span className="text-sm">
+            {bolag}
+            {orgnr && <span className="text-muted-foreground"> · {orgnr}</span>}
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground">Ej ifyllt</span>
+        )}
+      </td>
+      <td className="px-3 py-2">
+        {kandidat.foretagspresentation ? (
+          <span className="flex items-center gap-1 text-sm">
+            <Check className="h-3.5 w-3.5" /> Uppladdad
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground">Väntar på uppladdning</span>
+        )}
+      </td>
+    </tr>
+  );
+}
+
+function GranskningGruppKort({ grupp }: { grupp: GranskningGrupp }) {
+  const kandidater = granskningKandidater(grupp.annonsId);
+  return (
+    <details className="group border border-foreground/30 bg-background">
+      <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-3 px-4 py-3">
+        <div>
+          <div className="mb-1 flex flex-wrap items-center gap-2">
+            <WireTag>{grupp.kat}</WireTag>
+            <span className="text-xs text-muted-foreground">{grupp.ort}</span>
+            <span className="font-mono text-[10px] text-muted-foreground">
+              {formatArendeRef(grupp.annonsId)}
+            </span>
+          </div>
+          <h3 className="font-medium">{grupp.titel}</h3>
+        </div>
+        <div className="flex items-center gap-2">
+          <WireTag>
+            {kandidater.length} kandidat{kandidater.length === 1 ? "" : "er"}
+          </WireTag>
+          <span className="font-mono text-xs text-muted-foreground transition group-open:rotate-45">
+            +
+          </span>
+        </div>
+      </summary>
+      <div className="overflow-x-auto border-t border-foreground/30">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-foreground/30 bg-muted/30">
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Köpare
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Köpar-ID
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Bolag
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Företagspresentation
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-dashed divide-muted-foreground/30">
+            {kandidater.map((k) => (
+              <GranskningKandidatRad
+                key={k.interestId}
+                annonsId={grupp.annonsId}
+                interestId={k.interestId}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  );
+}
+
 function PubliceradRad({ item }: { item: any }) {
   const navigate = useNavigate();
   const titel = item.workflow?.utkast?.rubrik || item.titel || "—";
@@ -119,6 +249,7 @@ function AdminAffarer() {
 
   const affarer = useMemo(() => buildAffarer(interests), [interests]);
   const avslutade = useMemo(() => buildAvslutade(interests, "admin"), [interests]);
+  const { grupper, ovriga } = useMemo(() => groupGranskning(affarer), [affarer]);
 
   function toggleRemarketing(id: string) {
     patchBuyerInterest(id, (item) => ({ ...item, remarketingTag: !item.remarketingTag }));
@@ -153,9 +284,12 @@ function AdminAffarer() {
           </WireBox>
         ) : (
           <div className="space-y-6">
-            {affarer.length > 0 && (
+            {(grupper.length > 0 || ovriga.length > 0) && (
               <div className="space-y-3">
-                {affarer.map((a) => (
+                {grupper.map((grupp) => (
+                  <GranskningGruppKort key={grupp.annonsId} grupp={grupp} />
+                ))}
+                {ovriga.map((a) => (
                   <AffarsRad key={a.id} a={a} />
                 ))}
               </div>

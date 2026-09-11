@@ -18,6 +18,7 @@ import {
   skapaOverenskommelse,
   skickaOverenskommelseForSignering,
   bekraftaTilltrade,
+  granskningKandidater,
   Progress,
 } from "@/lib/affar-workflow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
@@ -89,6 +90,12 @@ function AdminAffarDetail() {
   const saljareOrgnr = seller?.orgnr;
   const verksamhet = annons?.draft?.verksamhet;
   const adress = annons?.draft?.adress;
+  // Andra köpare som fortfarande konkurrerar om samma annons i
+  // granskningssteget — samma gruppering som listvyn (admin.affarer.index.tsx)
+  // använder, så TreLink kan jämföra kandidater innan matchning.
+  const ovrigaKandidater = granskningKandidater(interest.annonsId).filter(
+    (k) => k.interestId !== id,
+  );
 
   return (
     <AdminLayout>
@@ -143,6 +150,82 @@ function AdminAffarDetail() {
           >
             Matcha köpare →
           </WireBtn>
+
+          {ovrigaKandidater.length > 0 && (
+            <div className="mt-6 border-t border-foreground/10 pt-4">
+              <Annotation>
+                {ovrigaKandidater.length} andra kandidat
+                {ovrigaKandidater.length === 1 ? "" : "er"} för samma annons — matchning påverkar
+                bara den här köparen, övriga lämnas orörda.
+              </Annotation>
+              <div className="mt-3 overflow-x-auto border border-foreground/30 bg-background">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-foreground/30 bg-muted/30">
+                      <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                        Köpare
+                      </th>
+                      <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                        Köpar-ID
+                      </th>
+                      <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                        Bolag
+                      </th>
+                      <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                        Företagspresentation
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-dashed divide-muted-foreground/30">
+                    {ovrigaKandidater.map((k) => {
+                      const account = getAccountByUserId(k.userId);
+                      const bolag = account?.profil?.bolag;
+                      const orgnr = account?.profil?.orgnr;
+                      return (
+                        <tr key={k.interestId}>
+                          <td className="px-3 py-2">
+                            {account ? (
+                              <Link
+                                to="/admin/anvandare/$id"
+                                params={{ id: account.id }}
+                                className="text-sm underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+                              >
+                                {account.bankid.fornamn} {account.bankid.efternamn}
+                              </Link>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">Okänt konto</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2 font-mono">{k.kKod}</td>
+                          <td className="px-3 py-2">
+                            {bolag ? (
+                              <span className="text-sm">
+                                {bolag}
+                                {orgnr && <span className="text-muted-foreground"> · {orgnr}</span>}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">Ej ifyllt</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2">
+                            {k.foretagspresentation ? (
+                              <span className="flex items-center gap-1 text-sm">
+                                <Check className="h-3.5 w-3.5" /> Uppladdad
+                              </span>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">
+                                Väntar på uppladdning
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </WireBox>
       )}
 

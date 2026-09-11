@@ -344,6 +344,34 @@ export const STEG_LABEL: Record<Steg, string> = {
   klar: "Klar",
 };
 
+export type GranskningKandidat = {
+  interestId: string;
+  userId?: string;
+  kKod: string;
+  foretagspresentation?: string;
+};
+
+/** Alla köpare som fortfarande konkurrerar om samma annons i
+ * granskningssteget — delas mellan listvyn (admin.affarer.index.tsx) och
+ * en enskild affärs detaljvy (admin.affarer.$id.tsx) så att TreLink kan
+ * jämföra kandidater innan matchning, med samma definition på båda ställena. */
+export function granskningKandidater(annonsId: string): GranskningKandidat[] {
+  return readBuyerInterests()
+    .filter(
+      (i) =>
+        i.annonsId === annonsId &&
+        i.status === "vill-ga-vidare" &&
+        !getDeal(i.id).avvisad &&
+        getDeal(i.id).steg === "granskning",
+    )
+    .map((i) => ({
+      interestId: i.id,
+      userId: i.userId,
+      kKod: i.kKod,
+      foretagspresentation: getDeal(i.id).granskning?.foretagspresentation,
+    }));
+}
+
 export function annonsInfo(annonsId: string) {
   const annons = getAnnons(annonsId);
   return {
