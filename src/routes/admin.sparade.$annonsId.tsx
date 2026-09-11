@@ -6,7 +6,8 @@ import { getAnnons } from "@/lib/annons-workflow";
 import { readBuyerInterests } from "@/lib/kopare-workflow";
 import { getDeal } from "@/lib/affar-workflow";
 import { getAccountByUserId, getOrCreateBuyerKod } from "@/lib/mock-auth";
-import { formatArendeRef } from "@/lib/format";
+import { historikForAnnons, HANDELSE_LABEL } from "@/lib/sparade-historik";
+import { formatArendeRef, formatDatum } from "@/lib/format";
 import { Check } from "lucide-react";
 
 export const Route = createFileRoute("/admin/sparade/$annonsId")({
@@ -41,6 +42,9 @@ function AdminSparadeDetail() {
   const annons = getAnnons(annonsId);
   const titel = annons?.titel || `Annons #${annonsId}`;
   const favoriter = readFavoriter().filter((f) => f.annonsId === annonsId);
+  const historik = historikForAnnons(annonsId)
+    .slice()
+    .sort((a, b) => b.ts.localeCompare(a.ts));
 
   return (
     <AdminLayout>
@@ -121,6 +125,39 @@ function AdminSparadeDetail() {
                   </tr>
                 );
               })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <h2 className="mb-3 mt-8 text-lg font-medium">Historik</h2>
+
+      {historik.length === 0 ? (
+        <Annotation>Ingen historik för den här annonsen än.</Annotation>
+      ) : (
+        <div className="overflow-x-auto border border-foreground/30 bg-background">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-foreground/30 bg-muted/30">
+                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                  Köpar-ID
+                </th>
+                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                  Händelse
+                </th>
+                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                  Datum
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-dashed divide-muted-foreground/30">
+              {historik.map((h) => (
+                <tr key={h.id} className="transition-colors duration-150 hover:bg-muted/20">
+                  <td className="px-3 py-2 font-mono">{getOrCreateBuyerKod(h.userId)}</td>
+                  <td className="px-3 py-2">{HANDELSE_LABEL[h.handelse]}</td>
+                  <td className="px-3 py-2 font-mono text-xs">{formatDatum(h.ts)}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
