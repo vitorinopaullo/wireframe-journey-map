@@ -30,3 +30,5 @@ Playwright smoke tests live in `e2e/` (config at `playwright.config.ts`, baseURL
 
 ## Reporting
 The human only sees chat replies, never raw tool-call results. Any command output referenced in a reply — `git show` diffs, `npm run test:e2e` results, `grep` matches, or anything similar — must be pasted as raw text directly in that same reply. Never refer to it as "see above", "pasted above", or "shown above", even if the same output already appeared in a tool-call result panel the human doesn't have access to.
+
+Before sending any reply that mentions git show, npm run test:e2e, or grep output: if the reply does not contain the actual output text character-for-character, do not send it — go back and paste it in. The phrase "pasted above" or "shown above" referring to a tool result the human cannot see is the specific failure mode to watch for.
