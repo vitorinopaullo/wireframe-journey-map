@@ -5,12 +5,12 @@ import { WireBox, PageHeader, Annotation, WireTag, WireBtn } from "@/components/
 import { readAdminAccounts } from "@/lib/mock-auth";
 import { readAnnonser, getAnnons, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
 import { type CatId } from "@/lib/annons-model";
-import { readBuyerInterests, type BuyerInterestStatus } from "@/lib/kopare-workflow";
-import { StatusTag as IntresseStatusTag } from "@/routes/admin.kopare";
+import { readBuyerInterests } from "@/lib/kopare-workflow";
+import { getDeal } from "@/lib/affar-workflow";
 import { readFavoriter } from "@/lib/favoriter";
 import { readNoteringar, addNotering } from "@/lib/admin-noteringar";
 import { historikForKopare, HANDELSE_LABEL } from "@/lib/sparade-historik";
-import { formatDatum } from "@/lib/format";
+import { formatDatum, formatArendeRef } from "@/lib/format";
 import { Star } from "lucide-react";
 
 export const Route = createFileRoute("/admin/anvandare/$id")({
@@ -28,7 +28,7 @@ const KAT_NAMN: Record<CatId, "Lokal" | "Inkråm" | "Bolag"> = {
 // samma lista nedan.
 type LinkatObjekt =
   | { kind: "annons"; id: string; titel: string; kategori: string; status: string }
-  | { kind: "intresse"; id: string; titel: string; kKod: string; status: BuyerInterestStatus }
+  | { kind: "intresse"; id: string; annonsId: string; titel: string; kKod: string; status: string }
   | { kind: "favorit"; id: string; titel: string; status: string };
 
 function linkadeAnnonser(personnr: string | undefined): LinkatObjekt[] {
@@ -51,14 +51,25 @@ function linkadeAnnonser(personnr: string | undefined): LinkatObjekt[] {
 // BuyerInterest är kopplad via userId (t.ex. "u_198001019876"), inte
 // personnr — annonser matchas via sellerPersonnr ovan, men det är en annan
 // nyckel än den köparintresset faktiskt lagras under.
+// Admin behöver se hela köpprocessens livscykel, inte bara den råa
+// BuyerInterestStatus — statusLabel/IntresseStatusTag i admin.kopare.tsx är
+// skrivna ur köparens eget perspektiv ("Du vill köpa", "Väntar på ditt
+// beslut") och passar inte här.
+function intresseAdminLabel(status: string, dealSteg: string): string {
+  if (status === "avböjt") return "Avvisat";
+  if (status === "väntar-pdf") return "Intresseanmälan";
+  return dealSteg === "klar" ? "Köpt" : "Köpprocess pågår";
+}
+
 function linkadeIntressen(userId: string | undefined): LinkatObjekt[] {
   if (!userId) return [];
   return readBuyerInterests(userId).map((i) => ({
     kind: "intresse" as const,
     id: i.id,
+    annonsId: i.annonsId,
     titel: getAnnons(i.annonsId)?.titel || `Annons ${i.annonsId}`,
     kKod: i.kKod,
-    status: i.status,
+    status: intresseAdminLabel(i.status, getDeal(i.id).steg),
   }));
 }
 
@@ -260,15 +271,18 @@ function AdminAnvandareDetail() {
                   o.kind === "favorit" ? (
                     <Link
                       key={`favorit-${o.id}`}
-                      to="/admin/annonser/$id"
+                      to="/annons/$id"
                       params={{ id: o.id }}
                       className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-foreground/15 bg-background p-3 transition-colors duration-150 hover:border-foreground/30"
                     >
                       <div className="flex items-center gap-2">
                         <WireTag>
-                          <Star className="mr-1 inline-block h-3 w-3 align-middle" /> Favorit
+                          <Star className="mr-1 inline-block h-3 w-3 align-middle" /> Sparad
                         </WireTag>
                         <span className="text-sm font-medium">{o.titel}</span>
+                        <span className="font-mono text-[10px] text-muted-foreground">
+                          {formatArendeRef(o.id)}
+                        </span>
                       </div>
                       <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                         {o.status}
@@ -284,6 +298,9 @@ function AdminAnvandareDetail() {
                       <div className="flex items-center gap-2">
                         <WireTag>{o.kategori}</WireTag>
                         <span className="text-sm font-medium">{o.titel}</span>
+                        <span className="font-mono text-[10px] text-muted-foreground">
+                          {formatArendeRef(o.id)}
+                        </span>
                       </div>
                       <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                         {o.status}
@@ -292,14 +309,20 @@ function AdminAnvandareDetail() {
                   ) : (
                     <Link
                       key={o.id}
-                      to="/admin/kopare"
+                      to="/annons/$id"
+                      params={{ id: o.annonsId }}
                       className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-foreground/15 bg-background p-3 transition-colors duration-150 hover:border-foreground/30"
                     >
                       <div className="flex items-center gap-2">
                         <WireTag>Intresse · {o.kKod}</WireTag>
                         <span className="text-sm font-medium">{o.titel}</span>
+                        <span className="font-mono text-[10px] text-muted-foreground">
+                          {formatArendeRef(o.annonsId)}
+                        </span>
                       </div>
-                      <IntresseStatusTag status={o.status} />
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {o.status}
+                      </span>
                     </Link>
                   ),
                 )}
