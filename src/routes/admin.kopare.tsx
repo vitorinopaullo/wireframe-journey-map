@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
-import { PageHeader, Annotation } from "@/components/wire";
+import { PageHeader, Annotation, WireTag } from "@/components/wire";
 import {
   readBuyerInterests,
   statusLabel,
@@ -11,7 +11,7 @@ import {
 import { getAnnons } from "@/lib/annons-workflow";
 import { markKategoriRead } from "@/lib/admin-notiser";
 import { getAccountByUserId } from "@/lib/mock-auth";
-import { formatDatum } from "@/lib/format";
+import { formatDatum, formatArendeRef } from "@/lib/format";
 import { AlertTriangle, Check } from "lucide-react";
 
 export const Route = createFileRoute("/admin/kopare")({
@@ -39,8 +39,11 @@ export function StatusTag({ status }: { status: BuyerInterestStatus }) {
   );
 }
 
+type SortOrder = "nyast" | "aldst";
+
 function AdminKopare() {
   const [interests] = useState<BuyerInterest[]>(() => readBuyerInterests());
+  const [sortOrder, setSortOrder] = useState<SortOrder>("nyast");
 
   useEffect(() => {
     markKategoriRead("kopare");
@@ -48,7 +51,11 @@ function AdminKopare() {
 
   const rows = interests
     .filter((i) => i.status === "väntar-pdf")
-    .sort((a, b) => (b.skapadAt || "").localeCompare(a.skapadAt || ""));
+    .sort((a, b) =>
+      sortOrder === "nyast"
+        ? (b.skapadAt || "").localeCompare(a.skapadAt || "")
+        : (a.skapadAt || "").localeCompare(b.skapadAt || ""),
+    );
 
   return (
     <AdminLayout>
@@ -60,6 +67,9 @@ function AdminKopare() {
 
       <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
         <Annotation>{rows.length} väntande lead</Annotation>
+        <WireTag onClick={() => setSortOrder((s) => (s === "nyast" ? "aldst" : "nyast"))}>
+          Sortera: {sortOrder === "nyast" ? "Nyast" : "Äldst"}
+        </WireTag>
       </div>
 
       {rows.length === 0 ? (
@@ -107,6 +117,9 @@ function AdminKopare() {
                       >
                         {getAnnons(i.annonsId)?.titel || `Annons #${i.annonsId}`}
                       </Link>
+                      <div className="font-mono text-[10px] text-muted-foreground">
+                        {formatArendeRef(i.annonsId)}
+                      </div>
                     </td>
                     <td className="px-3 py-2 font-mono">{i.kKod}</td>
                     <td className="px-3 py-2">
