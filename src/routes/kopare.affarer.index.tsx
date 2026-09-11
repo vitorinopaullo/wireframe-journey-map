@@ -7,7 +7,7 @@ import { getSession } from "@/lib/mock-auth";
 import {
   buildAffarer,
   buildAvslutade,
-  Progress,
+  STEG_LABEL,
   type Vantar,
   type Affar,
 } from "@/lib/affar-workflow";
@@ -41,7 +41,20 @@ function VantarTag({ v }: { v: Vantar }) {
     hyresvard: "Väntar på hyresvärd",
     ingen: "—",
   };
-  return <WireTag>{map[v]}</WireTag>;
+  if (v === "dig") {
+    return (
+      <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground">
+        <span className="inline-block h-2 w-2 rounded-full bg-[var(--color-primary)]" />
+        {map[v]}
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+      <span className="inline-block h-2 w-2 rounded-full border border-foreground/50 bg-background" />
+      {map[v]}
+    </span>
+  );
 }
 
 function AffarsKort({ a }: { a: Affar }) {
@@ -56,17 +69,18 @@ function AffarsKort({ a }: { a: Affar }) {
             <span className="font-mono text-[10px] text-muted-foreground">{formatArendeRef(a.id)}</span>
           </div>
           <h3 className="font-semibold">{a.titel}</h3>
-          <Annotation>
-            {a.pris} · uppdaterad {a.uppdaterad}
-          </Annotation>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+            <span>
+              {a.pris} · uppdaterad {a.uppdaterad}
+            </span>
+            <span>Steg: {STEG_LABEL[a.steg]}</span>
+          </div>
         </div>
         <div className="flex flex-col items-end gap-2">
           <VantarTag v={a.vantar} />
           <SlaPill sla={a.sla} />
         </div>
       </div>
-
-      <Progress steg={a.steg} />
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-foreground/10 pt-3">
         <div className="flex-1 min-w-0">
