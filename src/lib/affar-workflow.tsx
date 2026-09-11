@@ -65,6 +65,7 @@ export type DealState = {
   interestId: string;
   steg: Steg;
   avvisad?: boolean; // hyresvärden nekade — affären avslutas, annonsen läggs tillbaka live
+  granskning?: { foretagspresentation?: string };
   kopeavtal?: KopeavtalState;
   handpenning?: HandpenningState;
   hyresvard?: HyresvardState;
@@ -156,6 +157,15 @@ export function signeraKopeavtal(interestId: string, part: "kopare" | "saljare")
       "Köpeavtalet är signerat av båda parter. Nästa steg: handpenning.",
     );
   }
+  return deal;
+}
+
+export function laddaUppForetagspresentation(interestId: string, filnamn: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    granskning: { ...d.granskning, foretagspresentation: filnamn },
+  }));
+  logBoth(interestId, "Köpare", `Laddade upp företagspresentation: ${filnamn}`);
   return deal;
 }
 
