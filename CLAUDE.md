@@ -27,3 +27,6 @@ main → Lovable auto-sync → preview at preview--wireframe-journey-map.lovable
 
 ## Testing
 Playwright smoke tests live in `e2e/` (config at `playwright.config.ts`, baseURL `http://localhost:8080` — the dev server must already be running, Playwright does not start it). New UI behavior involving conditional enable/disable states or click-through navigation should get a Playwright smoke test in `e2e/` rather than relying on manual clicking alone. Run `npm run test:e2e` and report its actual output before claiming such a change is verified — this supplements, not replaces, visually checking localhost:8080 for general layout/design regressions.
+
+## Reporting
+The human only sees chat replies, never raw tool-call results. Any command output referenced in a reply — `git show` diffs, `npm run test:e2e` results, `grep` matches, or anything similar — must be pasted as raw text directly in that same reply. Never refer to it as "see above", "pasted above", or "shown above", even if the same output already appeared in a tool-call result panel the human doesn't have access to.
