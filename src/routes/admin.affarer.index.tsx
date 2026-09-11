@@ -104,7 +104,7 @@ function AdminAffarer() {
   }, []);
 
   const affarer = useMemo(() => buildAffarer(interests), [interests]);
-  const avslutade = useMemo(() => buildAvslutade(interests), [interests]);
+  const avslutade = useMemo(() => buildAvslutade(interests, "admin"), [interests]);
   const publicerade = useMemo(
     () => annonser.filter((a) => a.workflow?.state === "publicerad" && !a.reserverad),
     [annonser],

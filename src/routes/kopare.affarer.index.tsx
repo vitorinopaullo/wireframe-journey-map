@@ -102,7 +102,7 @@ function BuyerDeals() {
   }, []);
 
   const affarer = useMemo(() => buildAffarer(interests), [interests]);
-  const avslutade = useMemo(() => buildAvslutade(interests), [interests]);
+  const avslutade = useMemo(() => buildAvslutade(interests, "kopare"), [interests]);
 
   const grupper = useMemo(
     () => ({

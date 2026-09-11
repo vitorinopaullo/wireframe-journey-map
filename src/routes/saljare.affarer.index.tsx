@@ -106,7 +106,7 @@ function SellerDeals() {
   }, [interests]);
 
   const affarer = useMemo(() => buildAffarer(egna), [egna]);
-  const avslutade = useMemo(() => buildAvslutade(egna), [egna]);
+  const avslutade = useMemo(() => buildAvslutade(egna, "saljare"), [egna]);
 
   return (
     <AppLayout mode="saljare">
