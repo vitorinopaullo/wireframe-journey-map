@@ -357,7 +357,11 @@ function ListingDetail() {
       kategori: listing.kategori,
       savedAt: new Date().toISOString(),
     });
-    setSaved(next.some((f) => f.annonsId === id));
+    const nuSparad = next.some((f) => f.annonsId === id);
+    setSaved(nuSparad);
+    if (nuSparad && !saved) {
+      addNotis("sparade", `"${listing.titel}" sparades av en köpare`, "/admin/sparade");
+    }
   };
 
   if (unavailableReal) {

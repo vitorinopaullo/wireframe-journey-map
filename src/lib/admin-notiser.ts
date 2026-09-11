@@ -3,7 +3,8 @@
 // sig senare utan omskrivning av strukturen (se AdminLayout.tsx för hur
 // Användare redan är kopplad).
 
-export type AdminNotisKategori = "anvandare" | "kopare" | "affarer" | "saljare-intresse";
+export type AdminNotisKategori =
+  "anvandare" | "kopare" | "affarer" | "saljare-intresse" | "sparade";
 
 export type AdminNotis = {
   id: string;
