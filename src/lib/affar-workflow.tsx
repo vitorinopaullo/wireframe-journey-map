@@ -449,19 +449,28 @@ function vantarFor(deal: DealState): { vantar: Vantar; nastaSteg: string } {
   }
 }
 
-export function buildAvslutade(interests: BuyerInterest[]) {
+export function buildAvslutade(
+  interests: BuyerInterest[],
+  viewer: "kopare" | "saljare" | "admin" = "kopare",
+) {
   return interests
     .filter((i) => i.status === "avböjt" || getDeal(i.id).avvisad)
     .map((i) => {
       const info = annonsInfo(i.annonsId);
       const deal = getDeal(i.id);
+      const typ: "avbojt" | "hyresvard-nekad" =
+        i.status === "avböjt" && !deal.avvisad ? "avbojt" : "hyresvard-nekad";
       return {
         id: i.id,
         titel: info.titel,
         pris: info.pris,
+        typ,
+        remarketingTag: i.remarketingTag ?? false,
         resultat: deal.avvisad
           ? "Nekad av hyresvärden — handpenning återbetalas"
-          : "Avvisat av dig",
+          : viewer === "kopare"
+            ? "Avvisat av dig"
+            : "Köparen tackade nej",
       };
     });
 }
