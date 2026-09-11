@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
-import { PageHeader, Annotation, WireBtn } from "@/components/wire";
+import { PageHeader, Annotation } from "@/components/wire";
 import {
   readBuyerInterests,
-  patchBuyerInterest,
   statusLabel,
   type BuyerInterest,
   type BuyerInterestStatus,
@@ -41,7 +40,7 @@ export function StatusTag({ status }: { status: BuyerInterestStatus }) {
 }
 
 function AdminKopare() {
-  const [interests, setInterests] = useState<BuyerInterest[]>(() => readBuyerInterests());
+  const [interests] = useState<BuyerInterest[]>(() => readBuyerInterests());
 
   useEffect(() => {
     markKategoriRead("kopare");
@@ -50,17 +49,6 @@ function AdminKopare() {
   const rows = interests
     .filter((i) => i.status === "väntar-pdf")
     .sort((a, b) => (b.skapadAt || "").localeCompare(a.skapadAt || ""));
-
-  function toggleRemarketing(id: string) {
-    patchBuyerInterest(id, (item) => ({ ...item, remarketingTag: !item.remarketingTag }));
-    setInterests(readBuyerInterests());
-  }
-
-  function avvisaLead(id: string) {
-    if (!window.confirm("Avvisa det här leadet? Köparen ser det som avvisat.")) return;
-    patchBuyerInterest(id, (item) => ({ ...item, status: "avböjt" }));
-    setInterests(readBuyerInterests());
-  }
 
   return (
     <AdminLayout>
@@ -88,9 +76,6 @@ function AdminKopare() {
                   K-kod
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                  Köpare
-                </th>
-                <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                   Bolag
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
@@ -98,12 +83,6 @@ function AdminKopare() {
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                   PDF
-                </th>
-                <th
-                  className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground"
-                  title="Endast relevant för avvisade leads"
-                >
-                  Ombokning
                 </th>
                 <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                   Datum
@@ -131,19 +110,6 @@ function AdminKopare() {
                     </td>
                     <td className="px-3 py-2 font-mono">{i.kKod}</td>
                     <td className="px-3 py-2">
-                      {account ? (
-                        <Link
-                          to="/admin/anvandare/$id"
-                          params={{ id: account.id }}
-                          className="text-sm underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
-                        >
-                          {account.bankid.fornamn} {account.bankid.efternamn}
-                        </Link>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">Okänt konto</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2">
                       {bolag ? (
                         <span className="text-sm">{bolag}</span>
                       ) : (
@@ -151,14 +117,7 @@ function AdminKopare() {
                       )}
                     </td>
                     <td className="px-3 py-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <StatusTag status={i.status} />
-                        {i.status !== "avböjt" && (
-                          <WireBtn variant="secondary" onClick={() => avvisaLead(i.id)}>
-                            Avvisa
-                          </WireBtn>
-                        )}
-                      </div>
+                      <StatusTag status={i.status} />
                       {forsokteKopaUtanBolag && (
                         <span className="mt-1 flex items-center gap-1 text-xs text-amber-700 dark:text-amber-500">
                           <AlertTriangle className="h-3 w-3" /> Försökte köpa — väntar på
@@ -175,19 +134,6 @@ function AdminKopare() {
                         <span className="inline-flex items-center border border-destructive/60 bg-destructive/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-destructive">
                           Ej öppnat — ring säljaren
                         </span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2">
-                      {i.status !== "avböjt" ? (
-                        <span className="text-xs text-muted-foreground">–</span>
-                      ) : i.remarketingTag ? (
-                        <span className="flex items-center gap-1 text-sm">
-                          <Check className="h-3.5 w-3.5" /> Märkt
-                        </span>
-                      ) : (
-                        <WireBtn variant="secondary" onClick={() => toggleRemarketing(i.id)}>
-                          Märk för ombokning
-                        </WireBtn>
                       )}
                     </td>
                     <td className="px-3 py-2 font-mono text-xs">{formatDatum(i.skapadAt)}</td>
