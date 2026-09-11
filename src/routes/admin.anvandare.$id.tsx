@@ -6,6 +6,8 @@ import { readAnnonser, getAnnons, stateLabel, type WorkflowState } from "@/lib/a
 import { type CatId } from "@/lib/annons-model";
 import { readBuyerInterests, type BuyerInterestStatus } from "@/lib/kopare-workflow";
 import { StatusTag as IntresseStatusTag } from "@/routes/admin.kopare";
+import { readFavoriter } from "@/lib/favoriter";
+import { Star } from "lucide-react";
 
 export const Route = createFileRoute("/admin/anvandare/$id")({
   component: AdminAnvandareDetail,
@@ -17,11 +19,13 @@ const KAT_NAMN: Record<CatId, "Lokal" | "Inkråm" | "Bolag"> = {
   aktie: "Bolag",
 };
 
-// Ett konto kan ha objekt kopplade som säljare (egna annonser) och/eller som
-// köpare (intresseanmälningar) — båda visas i samma lista nedan.
+// Ett konto kan ha objekt kopplade som säljare (egna annonser), som köpare
+// (intresseanmälningar) och/eller sparade favoriter — alla tre visas i
+// samma lista nedan.
 type LinkatObjekt =
   | { kind: "annons"; id: string; titel: string; kategori: string; status: string }
-  | { kind: "intresse"; id: string; titel: string; kKod: string; status: BuyerInterestStatus };
+  | { kind: "intresse"; id: string; titel: string; kKod: string; status: BuyerInterestStatus }
+  | { kind: "favorit"; id: string; titel: string; status: string };
 
 function linkadeAnnonser(personnr: string | undefined): LinkatObjekt[] {
   if (!personnr) return [];
@@ -54,6 +58,16 @@ function linkadeIntressen(userId: string | undefined): LinkatObjekt[] {
   }));
 }
 
+function linkadeFavoriter(userId: string | undefined): LinkatObjekt[] {
+  if (!userId) return [];
+  return readFavoriter(userId).map((f) => ({
+    kind: "favorit" as const,
+    id: f.annonsId,
+    titel: f.titel,
+    status: "Sparad",
+  }));
+}
+
 function Field({ k, v }: { k: string; v?: string }) {
   return (
     <div className="border-b border-foreground/10 pb-2">
@@ -70,6 +84,7 @@ function AdminAnvandareDetail() {
   const objekt: LinkatObjekt[] = [
     ...linkadeAnnonser(account?.bankid.personnr),
     ...linkadeIntressen(account?.userId),
+    ...linkadeFavoriter(account?.userId),
   ];
 
   const harBolagsuppgifter =
@@ -155,7 +170,24 @@ function AdminAnvandareDetail() {
             ) : (
               <div className="space-y-2">
                 {objekt.map((o) =>
-                  o.kind === "annons" ? (
+                  o.kind === "favorit" ? (
+                    <Link
+                      key={`favorit-${o.id}`}
+                      to="/admin/annonser/$id"
+                      params={{ id: o.id }}
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-foreground/15 bg-background p-3 transition-colors duration-150 hover:border-foreground/30"
+                    >
+                      <div className="flex items-center gap-2">
+                        <WireTag>
+                          <Star className="mr-1 inline-block h-3 w-3 align-middle" /> Favorit
+                        </WireTag>
+                        <span className="text-sm font-medium">{o.titel}</span>
+                      </div>
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {o.status}
+                      </span>
+                    </Link>
+                  ) : o.kind === "annons" ? (
                     <Link
                       key={o.id}
                       to="/admin/annonser/$id"
