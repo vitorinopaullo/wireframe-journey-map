@@ -1,12 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
-import { WireBox, PageHeader, Annotation, WireTag } from "@/components/wire";
+import { WireBox, PageHeader, Annotation, WireTag, WireBtn } from "@/components/wire";
 import { readAdminAccounts } from "@/lib/mock-auth";
 import { readAnnonser, getAnnons, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
 import { type CatId } from "@/lib/annons-model";
 import { readBuyerInterests, type BuyerInterestStatus } from "@/lib/kopare-workflow";
 import { StatusTag as IntresseStatusTag } from "@/routes/admin.kopare";
 import { readFavoriter } from "@/lib/favoriter";
+import { readNoteringar, addNotering } from "@/lib/admin-noteringar";
+import { formatDatum } from "@/lib/format";
 import { Star } from "lucide-react";
 
 export const Route = createFileRoute("/admin/anvandare/$id")({
@@ -66,6 +69,52 @@ function linkadeFavoriter(userId: string | undefined): LinkatObjekt[] {
     titel: f.titel,
     status: "Sparad",
   }));
+}
+
+function Anteckningar({ userId }: { userId: string }) {
+  const [text, setText] = useState("");
+  const [, forceRerender] = useState(0);
+  const noteringar = readNoteringar(userId);
+
+  const loggaNotering = () => {
+    const trimmad = text.trim();
+    if (!trimmad) return;
+    addNotering(userId, trimmad);
+    setText("");
+    forceRerender((n) => n + 1);
+  };
+
+  return (
+    <WireBox label="Anteckningar">
+      <div className="flex flex-wrap gap-2">
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="T.ex. Ringde 2026-09-11, ville tänka en vecka till"
+          className="h-11 min-w-0 flex-1 rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+        />
+        <WireBtn onClick={loggaNotering}>Logga</WireBtn>
+      </div>
+
+      {noteringar.length === 0 ? (
+        <Annotation>
+          <span className="mt-3 block">Inga anteckningar än.</span>
+        </Annotation>
+      ) : (
+        <ul className="mt-4 space-y-3">
+          {noteringar.map((n) => (
+            <li key={n.id} className="border-l-2 border-foreground/20 pl-3">
+              <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                {formatDatum(n.ts)}
+              </div>
+              <div className="text-sm">{n.text}</div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </WireBox>
+  );
 }
 
 function Field({ k, v }: { k: string; v?: string }) {
@@ -221,6 +270,8 @@ function AdminAnvandareDetail() {
               </div>
             )}
           </WireBox>
+
+          <Anteckningar userId={account.userId} />
         </div>
       )}
     </AdminLayout>
