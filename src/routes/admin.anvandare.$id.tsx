@@ -9,6 +9,7 @@ import { readBuyerInterests, type BuyerInterestStatus } from "@/lib/kopare-workf
 import { StatusTag as IntresseStatusTag } from "@/routes/admin.kopare";
 import { readFavoriter } from "@/lib/favoriter";
 import { readNoteringar, addNotering } from "@/lib/admin-noteringar";
+import { historikForKopare, HANDELSE_LABEL } from "@/lib/sparade-historik";
 import { formatDatum } from "@/lib/format";
 import { Star } from "lucide-react";
 
@@ -109,6 +110,41 @@ function Anteckningar({ userId }: { userId: string }) {
                 {formatDatum(n.ts)}
               </div>
               <div className="text-sm">{n.text}</div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </WireBox>
+  );
+}
+
+function Sparhistorik({ userId }: { userId: string }) {
+  const historik = historikForKopare(userId)
+    .slice()
+    .sort((a, b) => b.ts.localeCompare(a.ts));
+
+  return (
+    <WireBox label="Sparhistorik">
+      {historik.length === 0 ? (
+        <Annotation>Ingen sparhistorik än.</Annotation>
+      ) : (
+        <ul className="space-y-3">
+          {historik.map((h) => (
+            <li key={h.id} className="border-l-2 border-foreground/20 pl-3">
+              <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                {formatDatum(h.ts)}
+              </div>
+              <div className="text-sm">
+                <Link
+                  to="/admin/sparade/$annonsId"
+                  params={{ annonsId: h.annonsId }}
+                  className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+                >
+                  {getAnnons(h.annonsId)?.titel || `Annons #${h.annonsId}`}
+                </Link>
+                {" — "}
+                {HANDELSE_LABEL[h.handelse]}
+              </div>
             </li>
           ))}
         </ul>
@@ -270,6 +306,8 @@ function AdminAnvandareDetail() {
               </div>
             )}
           </WireBox>
+
+          <Sparhistorik userId={account.userId} />
 
           <Anteckningar userId={account.userId} />
         </div>
