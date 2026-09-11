@@ -112,8 +112,8 @@ test("a buyer's Köpar-ID stays the same across a favorit on one listing and an 
   // Save listing A as a favorit through the real UI — this is the first
   // point a Köpar-ID should ever get minted for this buyer.
   await page.goto("/annons/e2e-samekod-annons-a");
-  await page.getByRole("button", { name: "Spara som favorit" }).click();
-  await expect(page.getByRole("button", { name: "Sparad i favoriter" })).toBeVisible();
+  await page.getByRole("button", { name: "Spara" }).first().click();
+  await expect(page.getByRole("button", { name: "Sparad" }).first()).toBeVisible();
 
   await page.goto("/admin/sparade/e2e-samekod-annons-a");
   const kodFranFavorit = await page.locator("tbody tr td:first-child").first().textContent();

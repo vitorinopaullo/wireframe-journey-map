@@ -126,7 +126,7 @@ function Compare() {
             to="/kopare/favoriter"
             className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
           >
-            ← Tillbaka till favoriter
+            ← Tillbaka till sparade
           </Link>
         }
       />
@@ -151,16 +151,16 @@ function Compare() {
       {favoriter.length === 0 ? (
         <WireBox variant="dashed">
           <p className="text-sm text-muted-foreground">
-            Du har inga sparade favoriter än. Gå till Favoriter för att spara objekt att jämföra.
+            Du har inga sparade objekt än. Gå till Sparade för att spara objekt att jämföra.
           </p>
           <WireBtn to="/kopare/favoriter" className="mt-3">
-            Till Favoriter →
+            Till Sparade →
           </WireBtn>
         </WireBox>
       ) : annonser.length === 0 ? (
         <WireBox>
           <p className="text-sm text-muted-foreground">
-            Inga objekt valda. Gå till favoriter och välj något att jämföra.
+            Inga objekt valda. Gå till Sparade och välj något att jämföra.
           </p>
         </WireBox>
       ) : (

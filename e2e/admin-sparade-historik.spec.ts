@@ -26,8 +26,8 @@ test("converting a saved favorit to an interest still shows the buyer under Hist
   });
 
   await page.goto("/annons/e2e-histconvert-annons");
-  await page.getByRole("button", { name: "Spara som favorit" }).click();
-  await expect(page.getByRole("button", { name: "Sparad i favoriter" })).toBeVisible();
+  await page.getByRole("button", { name: "Spara" }).first().click();
+  await expect(page.getByRole("button", { name: "Sparad" }).first()).toBeVisible();
 
   await page.getByRole("button", { name: "Interesserad →" }).first().click();
 
@@ -66,11 +66,11 @@ test("an annons with zero current favoriter but existing history still appears o
   });
 
   await page.goto("/annons/e2e-histgone-annons");
-  await page.getByRole("button", { name: "Spara som favorit" }).click();
-  await expect(page.getByRole("button", { name: "Sparad i favoriter" })).toBeVisible();
+  await page.getByRole("button", { name: "Spara" }).first().click();
+  await expect(page.getByRole("button", { name: "Sparad" }).first()).toBeVisible();
   // Unsave it again — no current favorit remains, only history.
-  await page.getByRole("button", { name: "Sparad i favoriter" }).click();
-  await expect(page.getByRole("button", { name: "Spara som favorit" })).toBeVisible();
+  await page.getByRole("button", { name: "Sparad" }).first().click();
+  await expect(page.getByRole("button", { name: "Spara" }).first()).toBeVisible();
 
   await page.goto("/admin/sparade");
   const rad = page.locator("tr", { has: page.getByText("E2E historik utan aktiva favoriter") });

@@ -169,8 +169,8 @@ test("saving a listing increments the Sparade nav badge, which clears on visit",
   });
 
   await page.goto("/annons/e2e-save-badge-annons");
-  await page.getByRole("button", { name: "Spara som favorit" }).click();
-  await expect(page.getByRole("button", { name: "Sparad i favoriter" })).toBeVisible();
+  await page.getByRole("button", { name: "Spara" }).first().click();
+  await expect(page.getByRole("button", { name: "Sparad" }).first()).toBeVisible();
 
   await page.goto("/admin");
   await expect(page.getByRole("link", { name: /Sparade\s*\d+/ })).toBeVisible();

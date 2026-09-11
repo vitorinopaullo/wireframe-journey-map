@@ -208,7 +208,7 @@ function HomePage() {
               Hitta din nästa verksamhet eller lokal
             </h1>
             <p className="mt-3 max-w-2xl text-sm text-muted-foreground md:text-base">
-              Lokaler, inkråm och aktiebolag, granskade av TreLink. Sök, spara favoriter och anmäl ditt
+              Lokaler, inkråm och aktiebolag, granskade av TreLink. Sök, spara objekt och anmäl ditt
               intresse tryggt med BankID.
             </p>
             <div className="mt-6">
@@ -237,7 +237,7 @@ function HomePage() {
           </div>
           <div>
             <Annotation>Spara</Annotation>
-            <p className="mt-1 text-sm">Kräver konto + BankID. Favoriter, intresse.</p>
+            <p className="mt-1 text-sm">Kräver konto + BankID. Sparade objekt, intresse.</p>
           </div>
           <div>
             <Annotation>Affär</Annotation>

@@ -606,12 +606,12 @@ function ListingDetail() {
                 {saved ? (
                   <>
                     <Star className="h-4 w-4 mr-1 fill-current" />
-                    Sparad i favoriter
+                    Sparad
                   </>
                 ) : (
                   <>
                     <Star className="h-4 w-4 mr-1" />
-                    Spara som favorit
+                    Spara
                   </>
                 )}
               </WireBtn>

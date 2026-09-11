@@ -69,7 +69,7 @@ function Dashboard() {
 
       {mode === "kopare" ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <DashCard title="Sparade objekt" value="7" link="/kopare/favoriter" hint="Favoriter att jämföra" />
+          <DashCard title="Sparade objekt" value="7" link="/kopare/favoriter" hint="Spara och jämför" />
           <DashCard title="Mina affärer" value="1" link="/kopare/affarer" hint="Pågående" />
         </div>
       ) : (
@@ -93,7 +93,7 @@ function Dashboard() {
       <WireBox label={mode === "kopare" ? "Inga pågående? Börja söka." : "Skapa din nästa annons"} className="mt-8">
         <p className="text-sm text-muted-foreground">
           {mode === "kopare"
-            ? "Hitta objekt och spara favoriter — vi hör av oss vid relevanta nyheter."
+            ? "Hitta objekt och spara dem — vi hör av oss vid relevanta nyheter."
             : "Gratis att annonsera. Avgiften (29 500 – 79 500 kr) tas ut först vid genomförd affär."}
         </p>
         <div className="mt-4">

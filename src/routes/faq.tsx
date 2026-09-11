@@ -29,7 +29,7 @@ const categories: { title: string; questions: { q: string; a: string }[] }[] = [
       { q: "Varför får jag inte kontakta säljaren direkt?", a: "Alla dialoger går via Trelink för att skydda båda parter och säkerställa korrekt process." },
       { q: "Vem genomför visningen?", a: "Trelink samordnar visningen tillsammans med säljaren efter godkänd intresseanmälan." },
       { q: "Vad kostar det att anmäla intresse?", a: "Inget. Att anmäla intresse är kostnadsfritt." },
-      { q: "Krävs BankID?", a: "Ja, för att anmäla intresse, spara favoriter och signera avtal." },
+      { q: "Krävs BankID?", a: "Ja, för att anmäla intresse, spara objekt och signera avtal." },
     ],
   },
   {

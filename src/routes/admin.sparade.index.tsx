@@ -74,7 +74,7 @@ function AdminSparade() {
       <PageHeader
         eyebrow="TreLink Admin"
         title="Sparade"
-        subtitle="Objekt köpare har sparat som favorit — utan att (ännu) ha anmält intresse."
+        subtitle="Objekt köpare har sparat — utan att (ännu) ha anmält intresse."
       />
 
       {grupper.length === 0 ? (
