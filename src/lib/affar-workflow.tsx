@@ -323,7 +323,7 @@ const STEG_ORDNING: Steg[] = [
   "tilltrade",
   "klar",
 ];
-const STEG_LABEL: Record<Steg, string> = {
+export const STEG_LABEL: Record<Steg, string> = {
   "intresse-inskickat": "Intresse inskickat",
   granskning: "Granskning",
   matchad: "Matchad",
