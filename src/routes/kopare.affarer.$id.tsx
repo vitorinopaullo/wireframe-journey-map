@@ -9,6 +9,7 @@ import { getAccountByUserId, getSession } from "@/lib/mock-auth";
 import {
   annonsInfo,
   getDeal,
+  laddaUppForetagspresentation,
   laddaUppHandpenningKvitto,
   laddaUppUcUtdrag,
   signeraKopeavtal,
@@ -137,6 +138,25 @@ function BuyerCaseDetail() {
               Hyresvärden nekade överlåtelsen. Din handpenning återbetalas (simulerat).
             </span>
           </Annotation>
+        </WireBox>
+      )}
+
+      {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "granskning" && (
+        <WireBox label="Granskning" className="mb-6">
+          <Annotation>
+            TreLink granskar de köpare som visat intresse för det här objektet. En
+            företagspresentation hjälper TreLink att bedöma din förfrågan.
+          </Annotation>
+          <div className="mt-3">
+            <FileUploadRow
+              label="Företagspresentation"
+              fileName={deal.granskning?.foretagspresentation}
+              onUpload={(filnamn) => {
+                laddaUppForetagspresentation(id, filnamn);
+                refresh();
+              }}
+            />
+          </div>
         </WireBox>
       )}
 
