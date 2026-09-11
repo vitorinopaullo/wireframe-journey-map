@@ -74,6 +74,20 @@ export async function seedDeal(page: Page, interestId: string, deal: Record<stri
   );
 }
 
+/** Same record shape as AdminAccountEvent in mock-auth.ts (STORAGE_KEY =
+ * "trelink-admin-nya-konton"). Needed whenever a flow reads
+ * getAccountByUserId(...)?.profil?.bolag, e.g. the buy-decision "bolag" gate. */
+export async function seedAccount(page: Page, account: Record<string, unknown>) {
+  await page.evaluate((item) => {
+    const list: { id: unknown }[] = JSON.parse(
+      localStorage.getItem("trelink-admin-nya-konton") ?? "[]",
+    );
+    const next = list.filter((a) => a.id !== item.id);
+    next.push(item);
+    localStorage.setItem("trelink-admin-nya-konton", JSON.stringify(next));
+  }, account);
+}
+
 /**
  * Same shape as Session in mock-auth.ts. Session moved to sessionStorage
  * (per-tab, not shared across tabs) — see the "trelink-gate" commit history.
