@@ -77,7 +77,7 @@ function AdminKopare() {
     <AdminLayout>
       <PageHeader
         eyebrow="TreLink Admin"
-        title="Köpare/Intressenter"
+        title="Intressenter"
         subtitle="Alla lead — från klick till PDF-öppning till beslut. Ring säljaren om underlaget inte öppnats."
       />
 
