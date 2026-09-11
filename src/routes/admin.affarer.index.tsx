@@ -1,10 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
-import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
+import { WireBox, PageHeader, WireTag, WireBtn, Annotation } from "@/components/wire";
 import { markKategoriRead } from "@/lib/admin-notiser";
+import { Check } from "lucide-react";
 import {
   readBuyerInterests,
+  patchBuyerInterest,
   STORAGE_KEY as KOPARE_STORAGE_KEY,
   type BuyerInterest,
 } from "@/lib/kopare-workflow";
@@ -105,6 +107,11 @@ function AdminAffarer() {
 
   const affarer = useMemo(() => buildAffarer(interests), [interests]);
   const avslutade = useMemo(() => buildAvslutade(interests, "admin"), [interests]);
+
+  function toggleRemarketing(id: string) {
+    patchBuyerInterest(id, (item) => ({ ...item, remarketingTag: !item.remarketingTag }));
+    setInterests(readBuyerInterests());
+  }
   const publicerade = useMemo(
     () => annonser.filter((a) => a.workflow?.state === "publicerad" && !a.reserverad),
     [annonser],
@@ -147,13 +154,23 @@ function AdminAffarer() {
                 <Annotation>Avslutade</Annotation>
                 <div className="mt-3 space-y-3">
                   {avslutade.map((a) => (
-                    <WireBox key={a.id} className="flex items-center justify-between">
+                    <WireBox key={a.id} className="flex items-center justify-between gap-3">
                       <div>
                         <h3 className="font-medium">{a.titel}</h3>
                         <Annotation>
                           {formatArendeRef(a.id)} · {a.pris} · {a.resultat}
                         </Annotation>
                       </div>
+                      {a.typ === "avbojt" &&
+                        (a.remarketingTag ? (
+                          <span className="flex shrink-0 items-center gap-1 text-sm">
+                            <Check className="h-3.5 w-3.5" /> Märkt
+                          </span>
+                        ) : (
+                          <WireBtn variant="secondary" onClick={() => toggleRemarketing(a.id)}>
+                            Märk för ombokning
+                          </WireBtn>
+                        ))}
                     </WireBox>
                   ))}
                 </div>
