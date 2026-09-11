@@ -95,12 +95,18 @@ export type AdminAccountEvent = {
   updatedAt: number;
   role?: "kopare" | "saljare";
   profil?: Record<string, string>;
+  kKod?: string;
 };
 
 /** Skapar kontot vid första inloggning, uppdaterar samma post vid roll-val och onboarding-slut. */
 export function upsertAdminAccount(
   userId: string,
-  patch: { bankid?: BankIdPayload; role?: "kopare" | "saljare"; profil?: Record<string, string> },
+  patch: {
+    bankid?: BankIdPayload;
+    role?: "kopare" | "saljare";
+    profil?: Record<string, string>;
+    kKod?: string;
+  },
 ) {
   if (typeof window === "undefined") return;
   const raw = window.localStorage.getItem(ADMIN_QUEUE_KEY);
@@ -128,6 +134,7 @@ export function upsertAdminAccount(
       updatedAt: now,
       role: patch.role,
       profil: patch.profil,
+      kKod: patch.kKod,
     });
     addNotis(
       "anvandare",
@@ -151,4 +158,31 @@ export function readAdminAccounts(): AdminAccountEvent[] {
 export function getAccountByUserId(userId: string | undefined): AdminAccountEvent | undefined {
   if (!userId) return undefined;
   return readAdminAccounts().find((a) => a.userId === userId);
+}
+
+/** "K-" + 4 slumpsiffror, unik mot befintliga köpar-ID:n. */
+function genereraKKod(existing: Set<string>): string {
+  let kod: string;
+  do {
+    kod = `K-${Math.floor(1000 + Math.random() * 9000)}`;
+  } while (existing.has(kod));
+  return kod;
+}
+
+/** Köpar-ID är per köpare (konto), inte per intresseanmälan — en köpare ska
+ * behålla samma kod oavsett hur många objekt hen sparar eller anmäler
+ * intresse för. Delas mellan findOrCreateInterest (kopare-workflow.ts) och
+ * toggleFavorit (favoriter.ts) så båda anropsställena använder samma
+ * generator och unikhetskontroll istället för varsin kopia. */
+export function getOrCreateBuyerKod(userId: string): string {
+  const account = getAccountByUserId(userId);
+  if (account?.kKod) return account.kKod;
+  const usedCodes = new Set(
+    readAdminAccounts()
+      .map((a) => a.kKod)
+      .filter((k): k is string => !!k),
+  );
+  const kKod = genereraKKod(usedCodes);
+  if (account) upsertAdminAccount(userId, { kKod });
+  return kKod;
 }

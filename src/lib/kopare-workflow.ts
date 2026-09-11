@@ -5,6 +5,7 @@ import { removeFavorit } from "@/lib/favoriter";
 import { getAnnons } from "@/lib/annons-workflow";
 import { addNotis } from "@/lib/admin-notiser";
 import { formatArendeRef } from "@/lib/format";
+import { getOrCreateBuyerKod } from "@/lib/mock-auth";
 
 export type BuyerInterestStatus = "väntar-pdf" | "vill-ga-vidare" | "avböjt";
 
@@ -102,7 +103,13 @@ export function findOrCreateInterest(
   const interest: BuyerInterest = {
     id: `bi-${Date.now()}`,
     annonsId,
-    kKod: genereraKKod(),
+    // Köpar-ID:t är knutet till kontot (se getOrCreateBuyerKod i mock-auth.ts),
+    // inte slumpat per intresseanmälan, så samma köpare håller samma kod över
+    // flera annonser. userId saknas bara i det (i praktiken ouppnåeliga)
+    // fallet att den här anropas utan inloggad session — se anropsställena i
+    // annons.$id.index.tsx/annons.$id.intresse.tsx, som redan spärrar på
+    // isAuthed innan de kallar hit.
+    kKod: userId ? getOrCreateBuyerKod(userId) : `K-${Math.floor(1000 + Math.random() * 9000)}`,
     status: "väntar-pdf",
     skapadAt: new Date().toISOString(),
     timeline: [{ ts: new Date().toISOString(), vem: "Köpare", text: "Skickade intresseanmälan" }],
@@ -138,14 +145,4 @@ export function besluta(
     );
   }
   return interest;
-}
-
-/** "K-" + 4 slumpsiffror, unik mot befintliga poster. */
-export function genereraKKod(): string {
-  const existing = new Set(readBuyerInterests().map((i) => i.kKod));
-  let kod: string;
-  do {
-    kod = `K-${Math.floor(1000 + Math.random() * 9000)}`;
-  } while (existing.has(kod));
-  return kod;
 }
