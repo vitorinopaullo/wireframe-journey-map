@@ -10,6 +10,7 @@ const adminNav = [
   { to: "/admin/annonser", label: "Granskning" },
   { to: "/admin/publicerat", label: "Publicerat" },
   { to: "/admin/kopare", label: "Köpare/Intressenter" },
+  { to: "/admin/sparade", label: "Sparade" },
   { to: "/admin/affarer", label: "Affärer/Uppdrag" },
   { to: "/admin/anvandare", label: "Användare" },
   { to: "/admin/installningar", label: "Inställningar" },
