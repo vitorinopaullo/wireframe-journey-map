@@ -1,6 +1,8 @@
 // Simple buyer-side interest/decision state + localStorage helpers.
 // Prototype only — data lives in the browser. Mirrors the pattern in annons-workflow.ts.
 
+import { removeFavorit } from "@/lib/favoriter";
+
 export type BuyerInterestStatus = "väntar-pdf" | "vill-ga-vidare" | "avböjt";
 
 export type BuyerTimelineEntry = { ts: string; vem: "Köpare" | "TreLink" | "System"; text: string };
@@ -88,6 +90,11 @@ export function findOrCreateInterest(
 ): { interest: BuyerInterest; created: boolean } {
   const interests = readBuyerInterests();
   const existing = interests.find((i) => i.annonsId === annonsId && i.userId === userId);
+  // En sparad favorit och ett aktivt intresse för samma annons är ömsesidigt
+  // uteslutande — en intresseanmälan (ny eller redan befintlig) innebär att
+  // objektet inte längre bara är "sparat", så favoriten tas bort här,
+  // oavsett om anropet skapade ett nytt intresse eller hittade ett gammalt.
+  if (userId !== undefined) removeFavorit(annonsId, userId);
   if (existing) return { interest: existing, created: false };
   const interest: BuyerInterest = {
     id: `bi-${Date.now()}`,
