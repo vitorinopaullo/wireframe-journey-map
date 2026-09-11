@@ -1,16 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { PageHeader, Annotation } from "@/components/wire";
 import { readFavoriter } from "@/lib/favoriter";
 import { getAnnons } from "@/lib/annons-workflow";
 import { getAccountByUserId } from "@/lib/mock-auth";
 import { formatDatum } from "@/lib/format";
+import { markKategoriRead } from "@/lib/admin-notiser";
 
 export const Route = createFileRoute("/admin/sparade")({
   component: AdminSparade,
 });
 
 function AdminSparade() {
+  useEffect(() => {
+    markKategoriRead("sparade");
+  }, []);
+
   const rows = readFavoriter()
     .slice()
     .sort((a, b) => (b.savedAt || "").localeCompare(a.savedAt || ""));
