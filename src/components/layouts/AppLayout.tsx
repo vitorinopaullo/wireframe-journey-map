@@ -62,7 +62,7 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
                 search={{ mode: "saljare" }}
                 className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${mode === "saljare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
               >
-                Säljare/Överlåtare
+                Säljare
               </Link>
             </div>
             <Link to="/logga-in" className="text-xs text-muted-foreground hover:text-foreground">

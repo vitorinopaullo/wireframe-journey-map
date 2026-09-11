@@ -24,7 +24,7 @@ test("Godkänn stays disabled until the document row has been opened", async ({ 
       timeline: [
         {
           ts: new Date().toISOString(),
-          vem: "Säljare/Överlåtare",
+          vem: "Säljare",
           text: "Skickade in underlag för granskning",
         },
       ],

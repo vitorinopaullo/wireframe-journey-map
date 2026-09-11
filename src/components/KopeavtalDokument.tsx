@@ -31,7 +31,7 @@ export function KopeavtalDokument({
       </div>
 
       <div className="border-t border-dashed border-muted-foreground/30 pt-4">
-        <Annotation>Säljare/Överlåtare</Annotation>
+        <Annotation>Säljare</Annotation>
         <p className="mt-1 text-sm">
           {saljareBolag || "—"}
           {saljareOrgnr ? ` (org.nr ${saljareOrgnr})` : ""}

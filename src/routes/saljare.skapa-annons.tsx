@@ -1437,7 +1437,7 @@ function CreateListing() {
                       const prev = list[idx];
                       const wf = logEntry(
                         prev.workflow ?? initialWorkflow(now),
-                        "Säljare/Överlåtare",
+                        "Säljare",
                         "Uppdaterade underlaget efter komplettering · ärendet är tillbaka på granskning",
                       );
                       list[idx] = { ...prev, ...base, workflow: { ...wf, state: "granskas" } };

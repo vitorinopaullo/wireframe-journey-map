@@ -44,7 +44,7 @@ type RollFilter = "alla" | "kopare" | "saljare";
 const ROLL_FILTER_LABEL: Record<RollFilter, string> = {
   alla: "Alla",
   kopare: "Köpare",
-  saljare: "Säljare/Överlåtare",
+  saljare: "Säljare",
 };
 
 function AdminAnvandare() {
@@ -161,7 +161,7 @@ function AdminAnvandare() {
                         {a.bankid.fornamn} {a.bankid.efternamn}
                       </td>
                       <td className="px-3 py-2">
-                        <WireTag>{a.role === "saljare" ? "Säljare/Överlåtare" : a.role === "kopare" ? "Köpare" : "—"}</WireTag>
+                        <WireTag>{a.role === "saljare" ? "Säljare" : a.role === "kopare" ? "Köpare" : "—"}</WireTag>
                       </td>
                       <td className="px-3 py-2">{a.role === "saljare" ? a.profil?.bolag ?? "—" : "—"}</td>
                       <td className="px-3 py-2">{a.role === "saljare" ? a.profil?.orgnr ?? "—" : "—"}</td>

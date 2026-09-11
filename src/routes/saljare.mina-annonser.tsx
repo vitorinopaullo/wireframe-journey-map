@@ -52,7 +52,7 @@ function MyListings() {
       ...it,
       workflow: logEntry(
         { ...it.workflow, state: "publicerad" },
-        "Säljare/Överlåtare",
+        "Säljare",
         "Annonsen publicerad igen",
       ),
     }));

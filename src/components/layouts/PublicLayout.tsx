@@ -102,7 +102,7 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
                     search={{ mode: "saljare" }}
                     className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${session.role === "saljare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
                   >
-                    Säljare/Överlåtare
+                    Säljare
                   </Link>
                 </div>
                 <button onClick={handleLogout} className="text-xs text-muted-foreground hover:text-foreground">

@@ -32,7 +32,7 @@ export function OverenskommelseDokument({
       <div className="border-t border-dashed border-muted-foreground/30 pt-4">
         <Annotation>Parter</Annotation>
         <p className="mt-1 text-sm">
-          {saljareBolag || "—"} (Säljare/Överlåtare) och {kopareBolag || "—"} (Köpare), genom
+          {saljareBolag || "—"} (Säljare) och {kopareBolag || "—"} (Köpare), genom
           TreLink AB.
         </p>
       </div>
