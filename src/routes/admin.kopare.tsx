@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { PageHeader, Annotation, WireTag } from "@/components/wire";
@@ -73,20 +73,22 @@ function groupByAnnons(rows: BuyerInterest[], sortOrder: SortOrder): AnnonsGrupp
 }
 
 function KandidatRad({ i }: { i: BuyerInterest }) {
+  const navigate = useNavigate();
   const account = getAccountByUserId(i.userId);
   const bolag = account?.profil?.bolag;
   const forsokteKopaUtanBolag = !bolag && i.timeline?.some((t) => t.text.includes("Försökte köpa"));
   return (
-    <tr className="transition-colors duration-150 hover:bg-muted/20">
-      <td className="px-3 py-2">
+    <tr
+      onClick={
+        account
+          ? () => navigate({ to: "/admin/anvandare/$id", params: { id: account.id } })
+          : undefined
+      }
+      className={`transition-colors duration-150 hover:bg-muted/20 ${account ? "cursor-pointer" : ""}`}
+    >
+      <td className="px-3 py-2 text-sm">
         {account ? (
-          <Link
-            to="/admin/anvandare/$id"
-            params={{ id: account.id }}
-            className="text-sm underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
-          >
-            {account.bankid.fornamn} {account.bankid.efternamn}
-          </Link>
+          `${account.bankid.fornamn} ${account.bankid.efternamn}`
         ) : (
           <span className="text-xs text-muted-foreground">Okänt konto</span>
         )}

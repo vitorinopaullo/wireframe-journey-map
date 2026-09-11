@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { PageHeader, Annotation } from "@/components/wire";
 import { readFavoriter } from "@/lib/favoriter";
@@ -38,6 +38,7 @@ function ForetagspresentationStatus({ userId, annonsId }: { userId?: string; ann
 }
 
 function AdminSparadeDetail() {
+  const navigate = useNavigate();
   const { annonsId } = Route.useParams();
   const annons = getAnnons(annonsId);
   const titel = annons?.titel || `Annons #${annonsId}`;
@@ -89,34 +90,26 @@ function AdminSparadeDetail() {
                 const account = getAccountByUserId(f.userId);
                 const kKod = getOrCreateBuyerKod(f.userId);
                 return (
-                  <tr key={f.userId} className="transition-colors duration-150 hover:bg-muted/20">
+                  <tr
+                    key={f.userId}
+                    onClick={
+                      account
+                        ? () => navigate({ to: "/admin/anvandare/$id", params: { id: account.id } })
+                        : undefined
+                    }
+                    className={`transition-colors duration-150 hover:bg-muted/20 ${
+                      account ? "cursor-pointer" : ""
+                    }`}
+                  >
                     <td className="px-3 py-2 font-mono">{kKod}</td>
                     <td className="px-3 py-2">
                       {account ? (
-                        <Link
-                          to="/admin/anvandare/$id"
-                          params={{ id: account.id }}
-                          className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
-                        >
-                          {account.bankid.fornamn}
-                        </Link>
+                        account.bankid.fornamn
                       ) : (
                         <span className="text-xs text-muted-foreground">Okänt konto</span>
                       )}
                     </td>
-                    <td className="px-3 py-2">
-                      {account ? (
-                        <Link
-                          to="/admin/anvandare/$id"
-                          params={{ id: account.id }}
-                          className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
-                        >
-                          {account.bankid.efternamn}
-                        </Link>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
+                    <td className="px-3 py-2">{account ? account.bankid.efternamn : "—"}</td>
                     <td className="px-3 py-2">{account?.profil?.telefon || "—"}</td>
                     <td className="px-3 py-2">{account?.profil?.epost || "—"}</td>
                     <td className="px-3 py-2">

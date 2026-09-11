@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireTag, WireBtn, Annotation } from "@/components/wire";
@@ -105,22 +105,24 @@ function groupGranskning(affarer: Affar[]): { grupper: GranskningGrupp[]; ovriga
 }
 
 function GranskningKandidatRad({ annonsId, interestId }: { annonsId: string; interestId: string }) {
+  const navigate = useNavigate();
   const kandidat = granskningKandidater(annonsId).find((k) => k.interestId === interestId);
   if (!kandidat) return null;
   const account = getAccountByUserId(kandidat.userId);
   const bolag = account?.profil?.bolag;
   const orgnr = account?.profil?.orgnr;
   return (
-    <tr className="transition-colors duration-150 hover:bg-muted/20">
-      <td className="px-3 py-2">
+    <tr
+      onClick={
+        account
+          ? () => navigate({ to: "/admin/anvandare/$id", params: { id: account.id } })
+          : undefined
+      }
+      className={`transition-colors duration-150 hover:bg-muted/20 ${account ? "cursor-pointer" : ""}`}
+    >
+      <td className="px-3 py-2 text-sm">
         {account ? (
-          <Link
-            to="/admin/anvandare/$id"
-            params={{ id: account.id }}
-            className="text-sm underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
-          >
-            {account.bankid.fornamn} {account.bankid.efternamn}
-          </Link>
+          `${account.bankid.fornamn} ${account.bankid.efternamn}`
         ) : (
           <span className="text-xs text-muted-foreground">Okänt konto</span>
         )}
