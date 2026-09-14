@@ -11,6 +11,9 @@ import {
   getDeal,
   laddaUppForetagspresentation,
   laddaUppKycDokument,
+  angeHarBolag,
+  valjBolagsVag,
+  bekraftaBolagKlart,
   bekraftaFirmatecknare,
   laddaUppHandpenningKvitto,
   laddaUppUcUtdrag,
@@ -190,6 +193,11 @@ function BuyerCaseDetail() {
       !!deal.granskning?.ftMail &&
       !!deal.granskning?.ftMobil);
   const foretagspresentationOk = !!deal.granskning?.foretagspresentation;
+  // Ett bolag som inte finns kan inte ha en firmatecknare — frågan döljs
+  // helt tills köparens bolagsval är klart (se GranskningState).
+  const showFirmatecknare = !(
+    deal.granskning?.harBolag === false && !deal.granskning?.bolagKlartAt
+  );
 
   const ftRollSaknas = arFirmatecknare === false && ftRoll.trim() === "";
   const ftFornamnSaknas = arFirmatecknare === false && ftFornamn.trim() === "";
@@ -328,82 +336,185 @@ function BuyerCaseDetail() {
           </div>
 
           <div className="mt-6 border-t border-foreground/10 pt-6">
-            <Annotation>Är du firmatecknare för bolaget?</Annotation>
+            <Annotation>Har du ett bolag som ska stå som köpare?</Annotation>
             <div className="mt-3 flex flex-wrap gap-4">
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="radio"
-                  name="kopare-firmatecknare"
-                  checked={arFirmatecknare === true}
-                  onChange={() => setArFirmatecknare(true)}
+                  name="kopare-harbolag"
+                  checked={deal.granskning?.harBolag === true}
+                  onChange={() => {
+                    angeHarBolag(id, true);
+                    refresh();
+                  }}
                   className="h-4 w-4 accent-[var(--color-interactive)]"
                 />
-                Ja, jag är firmatecknare
+                Ja, jag har ett bolag
               </label>
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="radio"
-                  name="kopare-firmatecknare"
-                  checked={arFirmatecknare === false}
-                  onChange={() => setArFirmatecknare(false)}
+                  name="kopare-harbolag"
+                  checked={deal.granskning?.harBolag === false}
+                  onChange={() => {
+                    angeHarBolag(id, false);
+                    refresh();
+                  }}
                   className="h-4 w-4 accent-[var(--color-interactive)]"
                 />
-                Nej, jag är inte firmatecknare
+                Nej, inte än
               </label>
             </div>
 
-            {arFirmatecknare === false && (
-              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FtField
-                  label="Roll *"
-                  value={ftRoll}
-                  onChange={setFtRoll}
-                  onBlur={() => setFtRollTouched(true)}
-                  placeholder="VD / Styrelseordförande"
-                  error={ftRollError}
-                />
-                <FtField
-                  label="Förnamn *"
-                  value={ftFornamn}
-                  onChange={setFtFornamn}
-                  onBlur={() => setFtFornamnTouched(true)}
-                  placeholder="Förnamn"
-                  error={ftFornamnError}
-                />
-                <FtField
-                  label="Efternamn *"
-                  value={ftEfternamn}
-                  onChange={setFtEfternamn}
-                  onBlur={() => setFtEfternamnTouched(true)}
-                  placeholder="Efternamn"
-                  error={ftEfternamnError}
-                />
-                <FtField
-                  label="Mail *"
-                  value={ftMail}
-                  onChange={setFtMail}
-                  onBlur={() => setFtMailTouched(true)}
-                  placeholder="namn@exempel.se"
-                  type="email"
-                  error={ftMailError}
-                />
-                <FtField
-                  label="Mobil *"
-                  value={ftMobil}
-                  onChange={(v) => setFtMobil(formatTelefon(v))}
-                  onBlur={() => setFtMobilTouched(true)}
-                  placeholder="076 12 345 67"
-                  error={ftMobilError}
-                />
+            {deal.granskning?.harBolag === false && !deal.granskning?.bolagsVal && (
+              <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+                <button
+                  onClick={() => {
+                    valjBolagsVag(id, "hyllbolag");
+                    refresh();
+                  }}
+                  className="rounded-card border border-foreground/15 bg-card p-4 text-left transition-colors duration-150 hover:border-foreground/40"
+                >
+                  <div className="text-sm font-medium">Jag köper ett hyllbolag</div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    Klart direkt — ingen väntetid för registrering.
+                  </div>
+                </button>
+                <button
+                  onClick={() => {
+                    valjBolagsVag(id, "starta-bolag");
+                    refresh();
+                  }}
+                  className="rounded-card border border-foreground/15 bg-card p-4 text-left transition-colors duration-150 hover:border-foreground/40"
+                >
+                  <div className="text-sm font-medium">Jag startar ett bolag</div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    Fortsätt tillsvidare som privatperson tills bolaget är registrerat.
+                  </div>
+                </button>
               </div>
             )}
 
-            {arFirmatecknare !== null && (
-              <WireBtn className="mt-4" onClick={submitFirmatecknare}>
-                Spara uppgifter →
-              </WireBtn>
+            {deal.granskning?.harBolag === false && deal.granskning?.bolagsVal === "hyllbolag" && (
+              <Annotation>
+                <span className="mt-2 block">
+                  Klart — TreLink har informerats och uppgraderar din ansökan.
+                </span>
+              </Annotation>
             )}
+
+            {deal.granskning?.harBolag === false &&
+              deal.granskning?.bolagsVal === "starta-bolag" &&
+              !deal.granskning?.bolagKlartAt && (
+                <>
+                  <Annotation>
+                    <span className="mt-2 block">
+                      Fortsätt tillsvidare som privatperson — säg till TreLink när bolaget är
+                      registrerat.
+                    </span>
+                  </Annotation>
+                  <WireBtn
+                    className="mt-3"
+                    onClick={() => {
+                      bekraftaBolagKlart(id);
+                      refresh();
+                    }}
+                  >
+                    Bolaget är registrerat →
+                  </WireBtn>
+                </>
+              )}
+
+            {deal.granskning?.harBolag === false &&
+              deal.granskning?.bolagsVal === "starta-bolag" &&
+              deal.granskning?.bolagKlartAt && (
+                <Annotation>
+                  <span className="mt-2 block">
+                    Bolaget är registrerat — TreLink har informerats.
+                  </span>
+                </Annotation>
+              )}
           </div>
+
+          {showFirmatecknare && (
+            <div className="mt-6 border-t border-foreground/10 pt-6">
+              <Annotation>Är du firmatecknare för bolaget?</Annotation>
+              <div className="mt-3 flex flex-wrap gap-4">
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="radio"
+                    name="kopare-firmatecknare"
+                    checked={arFirmatecknare === true}
+                    onChange={() => setArFirmatecknare(true)}
+                    className="h-4 w-4 accent-[var(--color-interactive)]"
+                  />
+                  Ja, jag är firmatecknare
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="radio"
+                    name="kopare-firmatecknare"
+                    checked={arFirmatecknare === false}
+                    onChange={() => setArFirmatecknare(false)}
+                    className="h-4 w-4 accent-[var(--color-interactive)]"
+                  />
+                  Nej, jag är inte firmatecknare
+                </label>
+              </div>
+
+              {arFirmatecknare === false && (
+                <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <FtField
+                    label="Roll *"
+                    value={ftRoll}
+                    onChange={setFtRoll}
+                    onBlur={() => setFtRollTouched(true)}
+                    placeholder="VD / Styrelseordförande"
+                    error={ftRollError}
+                  />
+                  <FtField
+                    label="Förnamn *"
+                    value={ftFornamn}
+                    onChange={setFtFornamn}
+                    onBlur={() => setFtFornamnTouched(true)}
+                    placeholder="Förnamn"
+                    error={ftFornamnError}
+                  />
+                  <FtField
+                    label="Efternamn *"
+                    value={ftEfternamn}
+                    onChange={setFtEfternamn}
+                    onBlur={() => setFtEfternamnTouched(true)}
+                    placeholder="Efternamn"
+                    error={ftEfternamnError}
+                  />
+                  <FtField
+                    label="Mail *"
+                    value={ftMail}
+                    onChange={setFtMail}
+                    onBlur={() => setFtMailTouched(true)}
+                    placeholder="namn@exempel.se"
+                    type="email"
+                    error={ftMailError}
+                  />
+                  <FtField
+                    label="Mobil *"
+                    value={ftMobil}
+                    onChange={(v) => setFtMobil(formatTelefon(v))}
+                    onBlur={() => setFtMobilTouched(true)}
+                    placeholder="076 12 345 67"
+                    error={ftMobilError}
+                  />
+                </div>
+              )}
+
+              {arFirmatecknare !== null && (
+                <WireBtn className="mt-4" onClick={submitFirmatecknare}>
+                  Spara uppgifter →
+                </WireBtn>
+              )}
+            </div>
+          )}
         </WireBox>
       )}
 
