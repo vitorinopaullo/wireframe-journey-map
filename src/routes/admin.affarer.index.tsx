@@ -18,7 +18,7 @@ import {
   type Vantar,
   type Affar,
 } from "@/lib/affar-workflow";
-import { readAnnonser, STORAGE_KEY as ANNONS_STORAGE_KEY } from "@/lib/annons-workflow";
+import { readAnnonser, getAnnons, STORAGE_KEY as ANNONS_STORAGE_KEY } from "@/lib/annons-workflow";
 import { getAccountByUserId } from "@/lib/mock-auth";
 import { formatArendeRef, formatDatum } from "@/lib/format";
 
@@ -83,11 +83,15 @@ type GranskningGrupp = {
   titel: string;
   ort: string;
   kat: string;
+  adress: string;
+  pris: string;
 };
 
 /** Grupperar granskningssteget per annons — flera köpare kan konkurrera om
  * samma objekt, och de behöver gå att jämföra i ett svep. Övriga steg har
- * per definition bara en aktiv kandidat och förblir platta rader. */
+ * per definition bara en aktiv kandidat och förblir platta rader. Samma
+ * korthuvud (titel, TRL-ref, adress, pris, antal) som Sparade
+ * (admin.sparade.tsx) och Intressenter (admin.kopare.tsx). */
 function groupGranskning(affarer: Affar[]): { grupper: GranskningGrupp[]; ovriga: Affar[] } {
   const granskning = affarer.filter((a) => a.steg === "granskning");
   const ovriga = affarer.filter((a) => a.steg !== "granskning");
@@ -100,6 +104,8 @@ function groupGranskning(affarer: Affar[]): { grupper: GranskningGrupp[]; ovriga
     titel: a.titel,
     ort: a.ort,
     kat: a.kat,
+    adress: getAnnons(a.annonsId)?.draft?.adress || "Ingen adress angiven",
+    pris: a.pris,
   }));
   return { grupper, ovriga };
 }
@@ -165,6 +171,10 @@ function GranskningGruppKort({ grupp }: { grupp: GranskningGrupp }) {
             </span>
           </div>
           <h3 className="font-medium">{grupp.titel}</h3>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+            <span>{grupp.adress}</span>
+            <span>{grupp.pris}</span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <WireTag>

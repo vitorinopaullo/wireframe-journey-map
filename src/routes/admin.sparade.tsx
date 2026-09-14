@@ -5,7 +5,7 @@ import { PageHeader, Annotation, WireTag } from "@/components/wire";
 import { readFavoriter, type Favorit } from "@/lib/favoriter";
 import { getAnnons } from "@/lib/annons-workflow";
 import { readBuyerInterests } from "@/lib/kopare-workflow";
-import { getDeal } from "@/lib/affar-workflow";
+import { getDeal, annonsInfo } from "@/lib/affar-workflow";
 import { getAccountByUserId, getOrCreateBuyerKod } from "@/lib/mock-auth";
 import { formatArendeRef } from "@/lib/format";
 import { markKategoriRead } from "@/lib/admin-notiser";
@@ -20,14 +20,18 @@ type AnnonsGrupp = {
   titel: string;
   ort: string;
   kategori: string;
+  adress: string;
+  pris: string;
   favoriter: Favorit[];
 };
 
 /** Grupperar favoriter per annons — flera köpare kan spara samma objekt (t.ex.
  * flera restauranglokaler i Södermalm delar titel), och TreLink behöver se
  * alla i ett svep istället för utspridda, orelaterade rader. Samma
- * gruppering/expand-mönster som Intressenter (admin.kopare.tsx) och
- * Affärer/Uppdrags granskningsgrupper (admin.affarer.index.tsx). */
+ * gruppering/expand-mönster och samma korthuvud (titel, TRL-ref, adress,
+ * pris, antal) som Intressenter (admin.kopare.tsx) och Affärer/Uppdrags
+ * granskningsgrupper (admin.affarer.index.tsx) — se annonsInfo i
+ * affar-workflow.tsx, samma källa som de använder. */
 function groupByAnnons(rows: Favorit[]): AnnonsGrupp[] {
   const map = new Map<string, Favorit[]>();
   for (const f of rows) {
@@ -35,13 +39,18 @@ function groupByAnnons(rows: Favorit[]): AnnonsGrupp[] {
     list.push(f);
     map.set(f.annonsId, list);
   }
-  const grupper = [...map.entries()].map(([annonsId, favoriter]) => ({
-    annonsId,
-    titel: getAnnons(annonsId)?.titel || favoriter[0]?.titel || `Annons #${annonsId}`,
-    ort: favoriter[0]?.ort || "—",
-    kategori: favoriter[0]?.kategori || "—",
-    favoriter,
-  }));
+  const grupper = [...map.entries()].map(([annonsId, favoriter]) => {
+    const info = annonsInfo(annonsId);
+    return {
+      annonsId,
+      titel: info.titel,
+      ort: info.ort,
+      kategori: info.kat,
+      adress: getAnnons(annonsId)?.draft?.adress || "Ingen adress angiven",
+      pris: info.pris,
+      favoriter,
+    };
+  });
   const nyckel = (g: AnnonsGrupp) =>
     g.favoriter.reduce(
       (nyast, f) => (f.savedAt > nyast ? f.savedAt : nyast),
@@ -123,6 +132,10 @@ function AnnonsGruppKort({ grupp }: { grupp: AnnonsGrupp }) {
           </Link>
           <div className="font-mono text-[10px] text-muted-foreground">
             {formatArendeRef(grupp.annonsId)}
+          </div>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+            <span>{grupp.adress}</span>
+            <span>{grupp.pris}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">

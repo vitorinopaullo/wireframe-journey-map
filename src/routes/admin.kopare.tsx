@@ -9,6 +9,7 @@ import {
   type BuyerInterestStatus,
 } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
+import { annonsInfo } from "@/lib/affar-workflow";
 import { markKategoriRead } from "@/lib/admin-notiser";
 import { getAccountByUserId } from "@/lib/mock-auth";
 import { formatDatum, formatArendeRef } from "@/lib/format";
@@ -44,11 +45,18 @@ type SortOrder = "nyast" | "aldst";
 type AnnonsGrupp = {
   annonsId: string;
   titel: string;
+  ort: string;
+  kategori: string;
+  adress: string;
+  pris: string;
   interests: BuyerInterest[];
 };
 
 /** Grupperar intresseanmälningar per annons — en annons med flera kandidater
- * ska gå att jämföra i ett svep, inte spridas ut som platta, orelaterade rader. */
+ * ska gå att jämföra i ett svep, inte spridas ut som platta, orelaterade
+ * rader. Samma korthuvud (titel, TRL-ref, adress, pris, antal) som Sparade
+ * (admin.sparade.tsx) och Affärer/Uppdrags granskningsgrupper
+ * (admin.affarer.index.tsx) — se annonsInfo i affar-workflow.tsx. */
 function groupByAnnons(rows: BuyerInterest[], sortOrder: SortOrder): AnnonsGrupp[] {
   const map = new Map<string, BuyerInterest[]>();
   for (const i of rows) {
@@ -56,11 +64,18 @@ function groupByAnnons(rows: BuyerInterest[], sortOrder: SortOrder): AnnonsGrupp
     list.push(i);
     map.set(i.annonsId, list);
   }
-  const grupper = [...map.entries()].map(([annonsId, interests]) => ({
-    annonsId,
-    titel: getAnnons(annonsId)?.titel || `Annons #${annonsId}`,
-    interests,
-  }));
+  const grupper = [...map.entries()].map(([annonsId, interests]) => {
+    const info = annonsInfo(annonsId);
+    return {
+      annonsId,
+      titel: info.titel,
+      ort: info.ort,
+      kategori: info.kat,
+      adress: getAnnons(annonsId)?.draft?.adress || "Ingen adress angiven",
+      pris: info.pris,
+      interests,
+    };
+  });
   const nyckel = (g: AnnonsGrupp) =>
     g.interests.reduce(
       (nyast, i) => (i.skapadAt > nyast ? i.skapadAt : nyast),
@@ -127,6 +142,10 @@ function AnnonsGruppKort({ grupp }: { grupp: AnnonsGrupp }) {
     <details className="group border border-foreground/30 bg-background">
       <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-3 px-4 py-3">
         <div>
+          <div className="mb-1 flex flex-wrap items-center gap-2">
+            <WireTag>{grupp.kategori}</WireTag>
+            <span className="text-xs text-muted-foreground">{grupp.ort}</span>
+          </div>
           <Link
             to="/admin/annonser/$id"
             params={{ id: grupp.annonsId }}
@@ -137,6 +156,10 @@ function AnnonsGruppKort({ grupp }: { grupp: AnnonsGrupp }) {
           </Link>
           <div className="font-mono text-[10px] text-muted-foreground">
             {formatArendeRef(grupp.annonsId)}
+          </div>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+            <span>{grupp.adress}</span>
+            <span>{grupp.pris}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
