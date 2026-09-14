@@ -4,7 +4,11 @@ import { Check, CheckCircle2, AlertTriangle } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getBuyerInterest, statusLabel } from "@/lib/kopare-workflow";
-import { getAnnons } from "@/lib/annons-workflow";
+import {
+  getAnnons,
+  uppgraderaKategori,
+  begarKomplettering as begarAnnonsKomplettering,
+} from "@/lib/annons-workflow";
 import { getAccountByUserId, upsertAdminAccount } from "@/lib/mock-auth";
 import {
   annonsInfo,
@@ -168,6 +172,16 @@ function AdminAffarDetail() {
     refresh();
   };
 
+  const uppgraderaTillAktie = () => {
+    if (!annons) return;
+    uppgraderaKategori(annons.id, "aktie");
+    begarAnnonsKomplettering(
+      annons.id,
+      "Köparens bolag ändrades under processen — affären har uppgraderats till Aktieöverlåtelse. Vi behöver kompletterande underlag: registreringsbevis, bolagsordning, aktiebok och bolagspärm.",
+    );
+    refresh();
+  };
+
   const submitKompletteringKop = () => {
     if (!kompletteringText.trim()) return;
     begarKompletteringKop(id, kompletteringText);
@@ -284,6 +298,50 @@ function AdminAffarDetail() {
               </div>
             </div>
           </WireBox>
+
+          {deal.granskning?.harBolag === false && (
+            <WireBox label="Köparens bolagsstatus" className="mb-6">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
+                  <span>Väg</span>
+                  <WireTag>
+                    {deal.granskning.bolagsVal === "hyllbolag"
+                      ? "Hyllbolag"
+                      : deal.granskning.bolagsVal === "starta-bolag"
+                        ? "Startar nytt bolag"
+                        : "Ej valt än"}
+                  </WireTag>
+                </div>
+                <div className="flex items-center justify-between py-1.5 text-sm">
+                  <span>Bolag klart</span>
+                  <WireTag active={!!deal.granskning.bolagKlartAt}>
+                    {deal.granskning.bolagKlartAt
+                      ? formatDatum(deal.granskning.bolagKlartAt)
+                      : "Väntar"}
+                  </WireTag>
+                </div>
+              </div>
+
+              {deal.granskning.bolagKlartAt &&
+                (annons?.cat === "aktie" ? (
+                  <Annotation>
+                    <span className="mt-2 block">
+                      Uppgraderad till Aktieöverlåtelse — komplettering begärd från säljaren.
+                    </span>
+                  </Annotation>
+                ) : (
+                  <>
+                    <Annotation>
+                      Köparens bolag ändrades under processen. Uppgradera annonsen till
+                      Aktieöverlåtelse och begär de kompletterande dokument som krävs av säljaren.
+                    </Annotation>
+                    <WireBtn className="mt-4" onClick={uppgraderaTillAktie}>
+                      Uppgradera till Aktieöverlåtelse →
+                    </WireBtn>
+                  </>
+                ))}
+            </WireBox>
+          )}
 
           <WireBox label="Bolagsuppgifter" className="mb-6">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
