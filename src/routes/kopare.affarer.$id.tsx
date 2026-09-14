@@ -194,10 +194,11 @@ function BuyerCaseDetail() {
       !!deal.granskning?.ftMobil);
   const foretagspresentationOk = !!deal.granskning?.foretagspresentation;
   // Ett bolag som inte finns kan inte ha en firmatecknare — frågan döljs
-  // helt tills köparens bolagsval är klart (se GranskningState).
-  const showFirmatecknare = !(
-    deal.granskning?.harBolag === false && !deal.granskning?.bolagKlartAt
-  );
+  // helt tills köparens bolagsval är klart (se GranskningState), och
+  // checklistan visar "Bolag klart" istället för "Firmatecknare".
+  const harBolagFalse = deal.granskning?.harBolag === false;
+  const bolagKlartOk = !!deal.granskning?.bolagKlartAt;
+  const showFirmatecknare = !(harBolagFalse && !bolagKlartOk);
 
   const ftRollSaknas = arFirmatecknare === false && ftRoll.trim() === "";
   const ftFornamnSaknas = arFirmatecknare === false && ftFornamn.trim() === "";
@@ -301,7 +302,11 @@ function BuyerCaseDetail() {
 
           <div className="mt-4 flex flex-wrap gap-1.5">
             <ChecklistPill label="KYC-dokument" ok={kycOk} />
-            <ChecklistPill label="Firmatecknare" ok={firmatecknareOk} />
+            {harBolagFalse ? (
+              <ChecklistPill label="Bolag klart" ok={bolagKlartOk} />
+            ) : (
+              <ChecklistPill label="Firmatecknare" ok={firmatecknareOk} />
+            )}
             <ChecklistPill label="Företagspresentation" ok={foretagspresentationOk} />
           </div>
 

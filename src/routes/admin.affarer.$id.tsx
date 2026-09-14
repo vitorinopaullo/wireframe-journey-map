@@ -157,12 +157,21 @@ function AdminAffarDetail() {
       !!deal.granskning?.ftMail &&
       !!deal.granskning?.ftMobil);
   const foretagspresentationOk = !!deal.granskning?.foretagspresentation;
+  // Ett bolag som inte finns kan inte ha en firmatecknare — när köparen
+  // uppgett att den saknar bolag ersätts firmatecknare-kravet med att
+  // bolaget är klart (bolagKlartAt satt), i checklistan och i matchnings-
+  // spärren.
+  const harBolagFalse = deal.granskning?.harBolag === false;
+  const bolagKlartOk = !!deal.granskning?.bolagKlartAt;
+  const firmatecknareEllerBolagOk = harBolagFalse ? bolagKlartOk : firmatecknareOk;
   const granskningChecklist = [
     { label: "KYC-dokument uppladdat", ok: kycOk },
-    { label: "Firmatecknare bekräftad eller kontaktuppgifter ifyllda", ok: firmatecknareOk },
+    harBolagFalse
+      ? { label: "Bolag klart", ok: bolagKlartOk }
+      : { label: "Firmatecknare bekräftad eller kontaktuppgifter ifyllda", ok: firmatecknareOk },
     { label: "Företagspresentation uppladdad", ok: foretagspresentationOk },
   ];
-  const kanMatcha = kycOk && firmatecknareOk && foretagspresentationOk;
+  const kanMatcha = kycOk && firmatecknareEllerBolagOk && foretagspresentationOk;
 
   const saveBolag = () => {
     if (!buyerAccount) return;
