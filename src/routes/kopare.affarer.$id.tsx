@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Upload, FileText } from "lucide-react";
+import { Upload, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getBuyerInterest, statusLabel, statusHint } from "@/lib/kopare-workflow";
@@ -10,6 +10,8 @@ import {
   annonsInfo,
   getDeal,
   laddaUppForetagspresentation,
+  laddaUppKycDokument,
+  bekraftaFirmatecknare,
   laddaUppHandpenningKvitto,
   laddaUppUcUtdrag,
   signeraKopeavtal,
@@ -19,7 +21,7 @@ import {
 import { SignicatFlow } from "@/components/SignicatFlow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
-import { formatDatum } from "@/lib/format";
+import { formatDatum, formatTelefon, isValidEmail } from "@/lib/format";
 
 export const Route = createFileRoute("/kopare/affarer/$id")({
   component: BuyerCaseDetail,
@@ -60,6 +62,7 @@ function FileUploadRow({
         <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-button border border-foreground/15 bg-card px-3 text-sm text-muted-foreground transition-colors duration-150 hover:border-foreground/40">
           <input
             type="file"
+            aria-label={label}
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];
@@ -74,6 +77,60 @@ function FileUploadRow({
   );
 }
 
+function FtField({
+  label,
+  value,
+  onChange,
+  onBlur,
+  placeholder,
+  type = "text",
+  error,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  onBlur: () => void;
+  placeholder?: string;
+  type?: string;
+  error?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        placeholder={placeholder}
+        className={`h-11 w-full rounded-button border bg-card px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
+          error
+            ? "border-destructive focus:border-destructive focus:ring-destructive/40"
+            : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
+        }`}
+      />
+      {error && <span className="mt-1 block font-mono text-[10px] text-destructive">{error}</span>}
+    </label>
+  );
+}
+
+function ChecklistPill({ label, ok }: { label: string; ok: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-pill border px-3 py-1 text-sm ${
+        ok
+          ? "border-foreground/30 text-muted-foreground"
+          : "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
+      }`}
+    >
+      {ok ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertTriangle className="h-3.5 w-3.5" />}{" "}
+      {label}
+    </span>
+  );
+}
+
 function BuyerCaseDetail() {
   const { id } = Route.useParams();
   const [, forceRerender] = useState(0);
@@ -81,6 +138,22 @@ function BuyerCaseDetail() {
   const [signOpen, setSignOpen] = useState<"kopeavtal" | "overenskommelse" | null>(null);
 
   const interest = getBuyerInterest(id);
+  const deal = getDeal(id);
+
+  const [arFirmatecknare, setArFirmatecknare] = useState<boolean | null>(
+    deal.granskning?.firmatecknare ?? null,
+  );
+  const [ftRoll, setFtRoll] = useState(deal.granskning?.ftRoll ?? "");
+  const [ftFornamn, setFtFornamn] = useState(deal.granskning?.ftFornamn ?? "");
+  const [ftEfternamn, setFtEfternamn] = useState(deal.granskning?.ftEfternamn ?? "");
+  const [ftMail, setFtMail] = useState(deal.granskning?.ftMail ?? "");
+  const [ftMobil, setFtMobil] = useState(deal.granskning?.ftMobil ?? "");
+  const [ftRollTouched, setFtRollTouched] = useState(false);
+  const [ftFornamnTouched, setFtFornamnTouched] = useState(false);
+  const [ftEfternamnTouched, setFtEfternamnTouched] = useState(false);
+  const [ftMailTouched, setFtMailTouched] = useState(false);
+  const [ftMobilTouched, setFtMobilTouched] = useState(false);
+  const [ftSubmitAttempted, setFtSubmitAttempted] = useState(false);
 
   if (!interest || interest.userId !== getSession()?.userId) {
     return (
@@ -95,12 +168,68 @@ function BuyerCaseDetail() {
 
   const annons = getAnnons(interest.annonsId);
   const annonsTitel = annons?.titel ?? `Annons #${interest.annonsId}`;
-  const deal = getDeal(id);
   const info = annonsInfo(interest.annonsId);
   const buyerAccount = getAccountByUserId(getSession()?.userId);
   const kopareBolag = buyerAccount?.profil?.bolag;
   const kopareOrgnr = buyerAccount?.profil?.orgnr;
   const saljareBolag = readSaljareBolag(annons?.agarUserId);
+  const avslutad = !!deal.avvisad || !!deal.avvisadAvTrelink;
+
+  const kycOk = !!deal.granskning?.kycDokument;
+  const firmatecknareOk =
+    deal.granskning?.firmatecknare === true ||
+    (deal.granskning?.firmatecknare === false &&
+      !!deal.granskning?.ftRoll &&
+      !!deal.granskning?.ftFornamn &&
+      !!deal.granskning?.ftEfternamn &&
+      !!deal.granskning?.ftMail &&
+      !!deal.granskning?.ftMobil);
+  const foretagspresentationOk = !!deal.granskning?.foretagspresentation;
+
+  const ftRollSaknas = arFirmatecknare === false && ftRoll.trim() === "";
+  const ftFornamnSaknas = arFirmatecknare === false && ftFornamn.trim() === "";
+  const ftEfternamnSaknas = arFirmatecknare === false && ftEfternamn.trim() === "";
+  const ftMailSaknas = arFirmatecknare === false && ftMail.trim() === "";
+  const ftMailFelFormat = !ftMailSaknas && ftMail.trim() !== "" && !isValidEmail(ftMail);
+  const ftMobilSaknas = arFirmatecknare === false && ftMobil.trim() === "";
+  const ftRollError =
+    (ftRollTouched || ftSubmitAttempted) && ftRollSaknas ? "Roll krävs." : undefined;
+  const ftFornamnError =
+    (ftFornamnTouched || ftSubmitAttempted) && ftFornamnSaknas ? "Förnamn krävs." : undefined;
+  const ftEfternamnError =
+    (ftEfternamnTouched || ftSubmitAttempted) && ftEfternamnSaknas ? "Efternamn krävs." : undefined;
+  const ftMailError =
+    ftMailTouched || ftSubmitAttempted
+      ? ftMailSaknas
+        ? "Mail krävs."
+        : ftMailFelFormat
+          ? "Ogiltig mailadress."
+          : undefined
+      : undefined;
+  const ftMobilError =
+    (ftMobilTouched || ftSubmitAttempted) && ftMobilSaknas ? "Mobilnummer krävs." : undefined;
+  const kanSparaFirmatecknare =
+    arFirmatecknare === true ||
+    (arFirmatecknare === false &&
+      !ftRollSaknas &&
+      !ftFornamnSaknas &&
+      !ftEfternamnSaknas &&
+      !ftMailSaknas &&
+      !ftMailFelFormat &&
+      !ftMobilSaknas);
+
+  const submitFirmatecknare = () => {
+    setFtSubmitAttempted(true);
+    if (arFirmatecknare === null || !kanSparaFirmatecknare) return;
+    bekraftaFirmatecknare(
+      id,
+      arFirmatecknare
+        ? { firmatecknare: true }
+        : { firmatecknare: false, ftRoll, ftFornamn, ftEfternamn, ftMail, ftMobil },
+    );
+    setFtSubmitAttempted(false);
+    refresh();
+  };
 
   return (
     <AppLayout mode="kopare">
@@ -125,7 +254,7 @@ function BuyerCaseDetail() {
         )}
       </WireBox>
 
-      {interest.status === "vill-ga-vidare" && !deal.avvisad && (
+      {interest.status === "vill-ga-vidare" && !avslutad && (
         <WireBox className="mb-6">
           <Progress steg={deal.steg} />
         </WireBox>
@@ -141,13 +270,48 @@ function BuyerCaseDetail() {
         </WireBox>
       )}
 
-      {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "granskning" && (
+      {deal.avvisadAvTrelink && (
+        <WireBox label="Affären avslutad" className="mb-6">
+          <Annotation>
+            <span className="mt-2 block">TreLink valde en annan köpare för det här objektet.</span>
+          </Annotation>
+        </WireBox>
+      )}
+
+      {interest.status === "vill-ga-vidare" && !avslutad && deal.steg === "granskning" && (
         <WireBox label="Granskning" className="mb-6">
           <Annotation>
-            TreLink granskar de köpare som visat intresse för det här objektet. En
-            företagspresentation hjälper TreLink att bedöma din förfrågan.
+            TreLink granskar de köpare som visat intresse för det här objektet. Ett KYC-dokument,
+            firmatecknarens uppgifter och en företagspresentation hjälper TreLink att bedöma din
+            förfrågan.
           </Annotation>
+
+          <div className="mt-4 flex flex-wrap gap-1.5">
+            <ChecklistPill label="KYC-dokument" ok={kycOk} />
+            <ChecklistPill label="Firmatecknare" ok={firmatecknareOk} />
+            <ChecklistPill label="Företagspresentation" ok={foretagspresentationOk} />
+          </div>
+
+          {deal.granskning?.komplettering && (
+            <div className="mt-4 border-l-2 border-amber-500/70 bg-amber-50/60 px-4 py-3 dark:bg-amber-500/5">
+              <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                {formatDatum(deal.granskning.komplettering.at)} · TRELINK
+              </div>
+              <p className="mt-2 text-sm leading-relaxed">
+                {deal.granskning.komplettering.message}
+              </p>
+            </div>
+          )}
+
           <div className="mt-3">
+            <FileUploadRow
+              label="KYC-dokument"
+              fileName={deal.granskning?.kycDokument}
+              onUpload={(filnamn) => {
+                laddaUppKycDokument(id, filnamn);
+                refresh();
+              }}
+            />
             <FileUploadRow
               label="Företagspresentation"
               fileName={deal.granskning?.foretagspresentation}
@@ -157,10 +321,88 @@ function BuyerCaseDetail() {
               }}
             />
           </div>
+
+          <div className="mt-6 border-t border-foreground/10 pt-6">
+            <Annotation>Är du firmatecknare för bolaget?</Annotation>
+            <div className="mt-3 flex flex-wrap gap-4">
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="kopare-firmatecknare"
+                  checked={arFirmatecknare === true}
+                  onChange={() => setArFirmatecknare(true)}
+                  className="h-4 w-4 accent-[var(--color-interactive)]"
+                />
+                Ja, jag är firmatecknare
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="kopare-firmatecknare"
+                  checked={arFirmatecknare === false}
+                  onChange={() => setArFirmatecknare(false)}
+                  className="h-4 w-4 accent-[var(--color-interactive)]"
+                />
+                Nej, jag är inte firmatecknare
+              </label>
+            </div>
+
+            {arFirmatecknare === false && (
+              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                <FtField
+                  label="Roll *"
+                  value={ftRoll}
+                  onChange={setFtRoll}
+                  onBlur={() => setFtRollTouched(true)}
+                  placeholder="VD / Styrelseordförande"
+                  error={ftRollError}
+                />
+                <FtField
+                  label="Förnamn *"
+                  value={ftFornamn}
+                  onChange={setFtFornamn}
+                  onBlur={() => setFtFornamnTouched(true)}
+                  placeholder="Förnamn"
+                  error={ftFornamnError}
+                />
+                <FtField
+                  label="Efternamn *"
+                  value={ftEfternamn}
+                  onChange={setFtEfternamn}
+                  onBlur={() => setFtEfternamnTouched(true)}
+                  placeholder="Efternamn"
+                  error={ftEfternamnError}
+                />
+                <FtField
+                  label="Mail *"
+                  value={ftMail}
+                  onChange={setFtMail}
+                  onBlur={() => setFtMailTouched(true)}
+                  placeholder="namn@exempel.se"
+                  type="email"
+                  error={ftMailError}
+                />
+                <FtField
+                  label="Mobil *"
+                  value={ftMobil}
+                  onChange={(v) => setFtMobil(formatTelefon(v))}
+                  onBlur={() => setFtMobilTouched(true)}
+                  placeholder="076 12 345 67"
+                  error={ftMobilError}
+                />
+              </div>
+            )}
+
+            {arFirmatecknare !== null && (
+              <WireBtn className="mt-4" onClick={submitFirmatecknare}>
+                Spara uppgifter →
+              </WireBtn>
+            )}
+          </div>
         </WireBox>
       )}
 
-      {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "matchad" && (
+      {interest.status === "vill-ga-vidare" && !avslutad && deal.steg === "matchad" && (
         <WireBox label="Köpeavtal" className="mb-6">
           {!deal.kopeavtal?.skickadAt ? (
             <Annotation>
@@ -181,7 +423,7 @@ function BuyerCaseDetail() {
         </WireBox>
       )}
 
-      {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "handpenning" && (
+      {interest.status === "vill-ga-vidare" && !avslutad && deal.steg === "handpenning" && (
         <WireBox label="Handpenning" className="mb-6">
           <Annotation>
             Betala handpenningen till TreLinks klientmedelskonto och ladda upp kvittens samt ditt
@@ -215,7 +457,7 @@ function BuyerCaseDetail() {
         </WireBox>
       )}
 
-      {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "hyresvard" && (
+      {interest.status === "vill-ga-vidare" && !avslutad && deal.steg === "hyresvard" && (
         <WireBox label="Hyresvärd" className="mb-6">
           <Annotation>
             <span className="mt-2 block">
@@ -225,7 +467,7 @@ function BuyerCaseDetail() {
         </WireBox>
       )}
 
-      {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "signering" && (
+      {interest.status === "vill-ga-vidare" && !avslutad && deal.steg === "signering" && (
         <WireBox label="Överenskommelse om överlåtelse" className="mb-6">
           {!deal.overenskommelse?.skickadAt ? (
             <Annotation>
@@ -246,7 +488,7 @@ function BuyerCaseDetail() {
         </WireBox>
       )}
 
-      {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "tilltrade" && (
+      {interest.status === "vill-ga-vidare" && !avslutad && deal.steg === "tilltrade" && (
         <WireBox label="Tillträde" className="mb-6">
           <Annotation>
             <span className="mt-2 block">
@@ -256,7 +498,7 @@ function BuyerCaseDetail() {
         </WireBox>
       )}
 
-      {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "klar" && (
+      {interest.status === "vill-ga-vidare" && !avslutad && deal.steg === "klar" && (
         <WireBox label="Klar" className="mb-6">
           <Annotation>
             <span className="mt-2 block">Affären är genomförd. Grattis!</span>
