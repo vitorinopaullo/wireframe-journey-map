@@ -79,6 +79,14 @@ test("admin.affarer.index.tsx groups granskning candidates and matching one leav
     skapadAt: new Date().toISOString(),
     userId: "u_e2e_mg2",
   });
+  // "Matcha köpare" is now gated on the granskning requirements checklist
+  // (KYC-dokument, firmatecknare, företagspresentation) — satisfy it so the
+  // matching step under test isn't blocked by unrelated requirement UI.
+  await seedDeal(page, "e2e-multi-granskning-1", {
+    interestId: "e2e-multi-granskning-1",
+    steg: "granskning",
+    granskning: { kycDokument: "kyc.pdf", foretagspresentation: "pres.pdf", firmatecknare: true },
+  });
 
   await page.goto("/admin/affarer");
 
@@ -145,9 +153,9 @@ test("buyer's company-presentation upload at granskning is visible as Uppladdad 
   await page.goto("/kopare/affarer/e2e-fp-interest");
   await expect(page.getByText("TreLink granskar de köpare")).toBeVisible();
 
-  // Only one file input exists on the page at the granskning step (the
-  // Företagspresentation row), so a bare type selector is unambiguous.
-  await page.locator('input[type="file"]').setInputFiles({
+  // Granskning now has two upload rows (KYC-dokument + Företagspresentation),
+  // so target the Företagspresentation input by its aria-label.
+  await page.getByLabel("Företagspresentation").setInputFiles({
     name: "foretagspresentation.pdf",
     mimeType: "application/pdf",
     buffer: Buffer.from("e2e test file"),
