@@ -16,11 +16,13 @@ import {
   laddaUppUcUtdrag,
   signeraKopeavtal,
   signeraOverenskommelse,
+  signeraHandpenningKvittens,
   Progress,
 } from "@/lib/affar-workflow";
 import { SignicatFlow } from "@/components/SignicatFlow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
+import { HandpenningKvittensDokument } from "@/components/HandpenningKvittensDokument";
 import { formatDatum, formatTelefon, isValidEmail } from "@/lib/format";
 
 export const Route = createFileRoute("/kopare/affarer/$id")({
@@ -447,15 +449,59 @@ function BuyerCaseDetail() {
               }}
             />
           </div>
-          {deal.handpenning?.kvitto && deal.handpenning?.ucUtdrag && (
-            <Annotation>
-              <span className="mt-2 block">
-                Väntar på att TreLink bekräftar mottagen handpenning.
-              </span>
-            </Annotation>
-          )}
+          {deal.handpenning?.kvitto &&
+            deal.handpenning?.ucUtdrag &&
+            !deal.handpenning?.kvittensSkickadAt && (
+              <Annotation>
+                <span className="mt-2 block">
+                  Väntar på att TreLink bekräftar mottagen handpenning.
+                </span>
+              </Annotation>
+            )}
         </WireBox>
       )}
+
+      {interest.status === "vill-ga-vidare" &&
+        !avslutad &&
+        deal.steg === "handpenning" &&
+        deal.handpenning?.kvittensSkickadAt && (
+          <WireBox label="Kvittens handpenning" className="mb-6">
+            {!deal.handpenning.kvittensSigneradAt ? (
+              <>
+                <Annotation>
+                  TreLink har upprättat en kvittens för din handpenning. Signera den nedan.
+                </Annotation>
+                <div className="mt-3">
+                  <HandpenningKvittensDokument
+                    interestId={id}
+                    annonsId={interest.annonsId}
+                    titel={info.titel}
+                    adress={annons?.draft?.adress}
+                    ort={info.ort}
+                    pris={info.pris}
+                    kopareBolag={kopareBolag}
+                  />
+                </div>
+                <WireBtn
+                  className="mt-4"
+                  onClick={() => {
+                    if (!window.confirm("Signera kvittensen för handpenningen?")) return;
+                    signeraHandpenningKvittens(id);
+                    refresh();
+                  }}
+                >
+                  Signera kvittens →
+                </WireBtn>
+              </>
+            ) : (
+              <Annotation>
+                <span className="mt-2 block">
+                  Du har signerat kvittensen. Den är skickad till säljaren.
+                </span>
+              </Annotation>
+            )}
+          </WireBox>
+        )}
 
       {interest.status === "vill-ga-vidare" && !avslutad && deal.steg === "hyresvard" && (
         <WireBox label="Hyresvärd" className="mb-6">

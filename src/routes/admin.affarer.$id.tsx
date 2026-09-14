@@ -13,6 +13,8 @@ import {
   skapaKopeavtal,
   skickaKopeavtalForSignering,
   bekraftaHandpenningMottagen,
+  skapaHandpenningKvittens,
+  skickaHandpenningKvittensForSignering,
   skickaTillHyresvard,
   hyresvardBesked,
   skapaOverenskommelse,
@@ -25,6 +27,8 @@ import {
 } from "@/lib/affar-workflow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
+import { HandpenningKvittensDokument } from "@/components/HandpenningKvittensDokument";
+import { formatDatum } from "@/lib/format";
 import { MailPreview, type MailData } from "@/components/MailPreview";
 
 export const Route = createFileRoute("/admin/affarer/$id")({
@@ -72,6 +76,7 @@ function AdminAffarDetail() {
 
   const [kopeavtalPreviewOpen, setKopeavtalPreviewOpen] = useState(false);
   const [overenskommelsePreviewOpen, setOverenskommelsePreviewOpen] = useState(false);
+  const [kvittensPreviewOpen, setKvittensPreviewOpen] = useState(false);
   const [mailPreview, setMailPreview] = useState<MailData | null>(null);
   const [kompletteringOpen, setKompletteringOpen] = useState(false);
   const [kompletteringText, setKompletteringText] = useState("");
@@ -480,6 +485,50 @@ function AdminAffarDetail() {
         </WireBox>
       )}
 
+      {!avslutad && deal.steg === "handpenning" && (
+        <WireBox label="TreLinks handpenningskvittens" className="mb-6">
+          {!deal.handpenning?.kvittensSkapadAt ? (
+            deal.handpenning?.kvitto && deal.handpenning?.ucUtdrag ? (
+              <>
+                <Annotation>
+                  Upprätta TreLinks kvittens för den mottagna handpenningen och skicka den till
+                  köparen för signering.
+                </Annotation>
+                <WireBtn className="mt-4" onClick={() => setKvittensPreviewOpen(true)}>
+                  Skapa kvittens →
+                </WireBtn>
+              </>
+            ) : (
+              <Annotation>
+                <span className="mt-2 block">
+                  Väntar på att köparen laddar upp kvittens och UC-utdrag innan TreLinks egen
+                  kvittens kan upprättas.
+                </span>
+              </Annotation>
+            )
+          ) : !deal.handpenning?.kvittensSigneradAt ? (
+            <Annotation>
+              <span className="mt-2 block">Väntar på att köparen signerar kvittensen.</span>
+            </Annotation>
+          ) : (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
+                <span>Signerad av köparen</span>
+                <span className="font-mono text-xs text-muted-foreground">
+                  {formatDatum(deal.handpenning.kvittensSigneradAt)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-1.5 text-sm">
+                <span>Skickad till säljaren</span>
+                <span className="font-mono text-xs text-muted-foreground">
+                  {formatDatum(deal.handpenning.kvittensSkickadTillSaljareAt ?? "")}
+                </span>
+              </div>
+            </div>
+          )}
+        </WireBox>
+      )}
+
       {!avslutad && deal.steg === "hyresvard" && (
         <WireBox label="Hyresvärd" className="mb-6">
           {!deal.hyresvard?.skickadAt ? (
@@ -722,6 +771,62 @@ function AdminAffarDetail() {
                   }}
                 >
                   Skicka till parterna →
+                </WireBtn>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {kvittensPreviewOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setKvittensPreviewOpen(false)}
+        >
+          <div
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-foreground bg-background"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 flex items-center justify-between border-b border-foreground/30 bg-background px-4 py-3">
+              <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                Förhandsgranskning · Kvittens handpenning
+              </div>
+              <WireBtn variant="ghost" onClick={() => setKvittensPreviewOpen(false)}>
+                Stäng
+              </WireBtn>
+            </div>
+            <div className="space-y-4 p-6">
+              <WireTag active>
+                <Check className="inline-block h-3 w-3 align-middle" /> TreLink-signatur: Förifylld
+              </WireTag>
+              <HandpenningKvittensDokument
+                interestId={id}
+                annonsId={interest.annonsId}
+                titel={info.titel}
+                adress={adress}
+                ort={info.ort}
+                pris={info.pris}
+                kopareBolag={kopareBolag}
+              />
+              <div className="flex flex-wrap justify-end gap-2 border-t border-foreground/10 pt-4">
+                <WireBtn variant="ghost" onClick={() => setKvittensPreviewOpen(false)}>
+                  Redigera
+                </WireBtn>
+                <WireBtn
+                  onClick={() => {
+                    skapaHandpenningKvittens(id);
+                    skickaHandpenningKvittensForSignering(id);
+                    setMailPreview({
+                      fran: "TreLink <noreply@trelink.se>",
+                      till: kopareBolag || "Köparen",
+                      amne: "Kvittens för handpenning redo för signering",
+                      brodtext: `Kvittensen för handpenningen avseende ${info.titel} är klar för signering. Logga in på TreLink för att signera med BankID.`,
+                    });
+                    setKvittensPreviewOpen(false);
+                    refresh();
+                  }}
+                >
+                  Skicka till köparen för signering →
                 </WireBtn>
               </div>
             </div>
