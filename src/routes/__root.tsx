@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { redirect } from "@tanstack/react-router";
 import { isUnlocked } from "@/lib/gate.functions";
+import { seedDummyAnnonser } from "@/lib/annons-seed";
 
 function NotFoundComponent() {
   return (
@@ -142,6 +143,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    seedDummyAnnonser();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

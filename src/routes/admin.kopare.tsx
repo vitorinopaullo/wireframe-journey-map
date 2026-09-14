@@ -13,6 +13,7 @@ import { annonsInfo } from "@/lib/affar-workflow";
 import { markKategoriRead } from "@/lib/admin-notiser";
 import { getAccountByUserId } from "@/lib/mock-auth";
 import { formatDatum, formatArendeRef } from "@/lib/format";
+import { AnnonsBildPlaceholder } from "@/components/AnnonsBild";
 import { AlertTriangle, Check } from "lucide-react";
 
 export const Route = createFileRoute("/admin/kopare")({
@@ -141,25 +142,28 @@ function AnnonsGruppKort({ grupp }: { grupp: AnnonsGrupp }) {
   return (
     <details className="group border border-foreground/30 bg-background">
       <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <div>
-          <div className="mb-1 flex flex-wrap items-center gap-2">
-            <WireTag>{grupp.kategori}</WireTag>
-            <span className="text-xs text-muted-foreground">{grupp.ort}</span>
-          </div>
-          <Link
-            to="/admin/annonser/$id"
-            params={{ id: grupp.annonsId }}
-            onClick={(e) => e.stopPropagation()}
-            className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
-          >
-            {grupp.titel}
-          </Link>
-          <div className="font-mono text-[10px] text-muted-foreground">
-            {formatArendeRef(grupp.annonsId)}
-          </div>
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
-            <span>{grupp.adress}</span>
-            <span>{grupp.pris}</span>
+        <div className="flex min-w-0 items-start gap-3">
+          <AnnonsBildPlaceholder kategori={grupp.kategori} />
+          <div className="min-w-0">
+            <div className="mb-1 flex flex-wrap items-center gap-2">
+              <WireTag>{grupp.kategori}</WireTag>
+              <span className="text-xs text-muted-foreground">{grupp.ort}</span>
+            </div>
+            <Link
+              to="/admin/annonser/$id"
+              params={{ id: grupp.annonsId }}
+              onClick={(e) => e.stopPropagation()}
+              className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+            >
+              {grupp.titel}
+            </Link>
+            <div className="font-mono text-[10px] text-muted-foreground">
+              {formatArendeRef(grupp.annonsId)}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+              <span>{grupp.adress}</span>
+              <span>{grupp.pris} kr</span>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
