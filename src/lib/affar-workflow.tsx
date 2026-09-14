@@ -379,6 +379,59 @@ export function hyresvardBesked(interestId: string, annonsId: string, besked: Hy
   return deal;
 }
 
+export function begarLikvid(interestId: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    likvid: { ...d.likvid, begartAt: new Date().toISOString() },
+  }));
+  logBoth(interestId, "TreLink", "TreLink bad om resterande likvid.");
+  return deal;
+}
+
+export function lamnaLikvid(interestId: string, belopp: number) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    likvid: { ...d.likvid, belopp, inlamnadAt: new Date().toISOString() },
+  }));
+  logBoth(
+    interestId,
+    "Köpare",
+    `Lämnade uppgift om betald likvid: ${belopp.toLocaleString("sv-SE")} kr`,
+  );
+  return deal;
+}
+
+export function verifieraLikvid(interestId: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    likvid: { ...d.likvid, verifieratAt: new Date().toISOString() },
+  }));
+  logBoth(interestId, "TreLink", "TreLink verifierade att likvidbeloppet stämmer.");
+  return deal;
+}
+
+export function skapaLikvidKvittens(interestId: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    likvid: { ...d.likvid, kvittensSkapadAt: new Date().toISOString() },
+  }));
+  logBoth(interestId, "TreLink", "TreLink upprättade kvittens för likvid.");
+  return deal;
+}
+
+/** Skickar (mejlar) kvittensen till köparen och avancerar samtidigt till
+ * signering — till skillnad från handpenningskvittensen finns inget separat
+ * signeringssteg här, dokumentet är informationellt. */
+export function skickaLikvidKvittens(interestId: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    likvid: { ...d.likvid, kvittensSkickadAt: new Date().toISOString() },
+    steg: "signering",
+  }));
+  logBoth(interestId, "TreLink", "Kvittens för likvid mejlad till köparen.");
+  return deal;
+}
+
 export function skapaOverenskommelse(interestId: string) {
   return patchDeal(interestId, (d) => ({
     ...d,
