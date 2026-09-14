@@ -23,6 +23,7 @@ export type Steg =
   | "matchad"
   | "handpenning"
   | "hyresvard"
+  | "likvid"
   | "signering"
   | "tilltrade"
   | "klar";
@@ -68,6 +69,23 @@ export type OverenskommelseState = {
   signerat: PartSign;
 };
 
+export type LikvidState = {
+  begartAt?: string;
+  belopp?: number;
+  inlamnadAt?: string;
+  verifieratAt?: string;
+  // TreLinks kvittens för den resterande likviden — mejlas till köparen,
+  // kräver ingen signering (till skillnad från handpenningskvittensen).
+  kvittensSkapadAt?: string;
+  kvittensSkickadAt?: string;
+};
+
+export type ArvodeState = {
+  belopp?: number;
+  lyftAt?: string;
+  kvittensSkapadAt?: string;
+};
+
 export type GranskningState = {
   foretagspresentation?: string;
   kycDokument?: string;
@@ -91,7 +109,9 @@ export type DealState = {
   kopeavtal?: KopeavtalState;
   handpenning?: HandpenningState;
   hyresvard?: HyresvardState;
+  likvid?: LikvidState;
   overenskommelse?: OverenskommelseState;
+  arvode?: ArvodeState;
 };
 
 export const DEALS_KEY = "trelink-affarer";
@@ -336,14 +356,14 @@ export function hyresvardBesked(interestId: string, annonsId: string, besked: Hy
   const deal = patchDeal(interestId, (d) => ({
     ...d,
     hyresvard: { ...d.hyresvard, besked, beskedAt: new Date().toISOString() },
-    steg: besked === "godkand" ? "signering" : d.steg,
+    steg: besked === "godkand" ? "likvid" : d.steg,
     avvisad: besked === "nekad" ? true : d.avvisad,
   }));
   if (besked === "godkand") {
     logBoth(
       interestId,
       "TreLink",
-      "Hyresvärden godkände överlåtelsen. Nästa steg: signering av överenskommelse.",
+      "Hyresvärden godkände överlåtelsen. Nästa steg: resterande likvid.",
     );
   } else {
     const annonsFinns = getAnnons(annonsId) !== undefined;
@@ -442,6 +462,7 @@ const STEG_ORDNING: Steg[] = [
   "matchad",
   "handpenning",
   "hyresvard",
+  "likvid",
   "signering",
   "tilltrade",
   "klar",
@@ -452,6 +473,7 @@ export const STEG_LABEL: Record<Steg, string> = {
   matchad: "Matchad",
   handpenning: "Handpenning",
   hyresvard: "Hyresvärd",
+  likvid: "Likvid",
   signering: "Signering",
   tilltrade: "Tillträde",
   klar: "Klar",
@@ -585,6 +607,18 @@ function vantarFor(deal: DealState): { vantar: Vantar; nastaSteg: string } {
         return { vantar: "george", nastaSteg: "TreLink skickar underlag till hyresvärden." };
       }
       return { vantar: "hyresvard", nastaSteg: "Väntar på hyresvärdens svar." };
+    }
+    case "likvid": {
+      if (!deal.likvid?.begartAt) {
+        return { vantar: "george", nastaSteg: "TreLink begär resterande likvid." };
+      }
+      if (!deal.likvid?.inlamnadAt) {
+        return { vantar: "dig", nastaSteg: "Betala resterande likvid." };
+      }
+      if (!deal.likvid?.kvittensSkickadAt) {
+        return { vantar: "george", nastaSteg: "TreLink verifierar beloppet och skickar kvittens." };
+      }
+      return { vantar: "george", nastaSteg: "—" };
     }
     case "signering": {
       if (!deal.overenskommelse?.skickadAt) {

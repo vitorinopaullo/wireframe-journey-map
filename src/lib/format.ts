@@ -29,6 +29,17 @@ export function formatDatum(ts: string | number): string {
   return new Date(ts).toLocaleString("sv-SE", { dateStyle: "short" });
 }
 
+/** Ett belopp som en given procentandel av ett formaterat prisvärde (t.ex.
+ * "2 400 000") — delad mellan HandpenningKvittensDokument/
+ * LikvidKvittensDokument/ArvodeKvittensDokument och admin-vyer som behöver
+ * räkna fram samma belopp för visning (t.ex. förväntad likvid). */
+export function beloppProcentAvPris(pris: string | undefined, procent: number): number | undefined {
+  if (!pris) return undefined;
+  const num = Number(pris.replace(/\s/g, ""));
+  if (!Number.isFinite(num) || num <= 0) return undefined;
+  return Math.round(num * (procent / 100));
+}
+
 const ONES = [
   "",
   "ett",
