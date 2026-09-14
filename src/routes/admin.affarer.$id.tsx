@@ -1,11 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, CheckCircle2, AlertTriangle } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getBuyerInterest, statusLabel } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
-import { getAccountByUserId } from "@/lib/mock-auth";
+import { getAccountByUserId, upsertAdminAccount } from "@/lib/mock-auth";
 import {
   annonsInfo,
   getDeal,
@@ -19,6 +19,8 @@ import {
   skickaOverenskommelseForSignering,
   bekraftaTilltrade,
   granskningKandidater,
+  begarKompletteringKop,
+  avvisaKandidat,
   Progress,
 } from "@/lib/affar-workflow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
@@ -71,8 +73,13 @@ function AdminAffarDetail() {
   const [kopeavtalPreviewOpen, setKopeavtalPreviewOpen] = useState(false);
   const [overenskommelsePreviewOpen, setOverenskommelsePreviewOpen] = useState(false);
   const [mailPreview, setMailPreview] = useState<MailData | null>(null);
+  const [kompletteringOpen, setKompletteringOpen] = useState(false);
+  const [kompletteringText, setKompletteringText] = useState("");
 
   const { interest, annons, deal, buyerAccount, seller, info } = useAffarData(id);
+
+  const [bolagVarde, setBolagVarde] = useState(buyerAccount?.profil?.bolag ?? "");
+  const [orgnrVarde, setOrgnrVarde] = useState(buyerAccount?.profil?.orgnr ?? "");
 
   if (!interest || !info) {
     return (
@@ -97,6 +104,52 @@ function AdminAffarDetail() {
   const ovrigaKandidater = granskningKandidater(interest.annonsId).filter(
     (k) => k.interestId !== id,
   );
+
+  // avvisad = hyresvärden nekade; avvisadAvTrelink = TreLink valde en annan
+  // kandidat i granskningen — två skilda, ömsesidigt uteslutande skäl till
+  // att affären är avslutad (se STEG_LABEL/buildAvslutade i affar-workflow.tsx).
+  const avslutad = !!deal.avvisad || !!deal.avvisadAvTrelink;
+
+  const kycOk = !!deal.granskning?.kycDokument;
+  const firmatecknareOk =
+    deal.granskning?.firmatecknare === true ||
+    (deal.granskning?.firmatecknare === false &&
+      !!deal.granskning?.ftRoll &&
+      !!deal.granskning?.ftFornamn &&
+      !!deal.granskning?.ftEfternamn &&
+      !!deal.granskning?.ftMail &&
+      !!deal.granskning?.ftMobil);
+  const foretagspresentationOk = !!deal.granskning?.foretagspresentation;
+  const granskningChecklist = [
+    { label: "KYC-dokument uppladdat", ok: kycOk },
+    { label: "Firmatecknare bekräftad eller kontaktuppgifter ifyllda", ok: firmatecknareOk },
+    { label: "Företagspresentation uppladdad", ok: foretagspresentationOk },
+  ];
+  const kanMatcha = kycOk && firmatecknareOk && foretagspresentationOk;
+
+  const saveBolag = () => {
+    if (!buyerAccount) return;
+    upsertAdminAccount(buyerAccount.userId, {
+      profil: { ...buyerAccount.profil, bolag: bolagVarde, orgnr: orgnrVarde },
+    });
+    refresh();
+  };
+
+  const submitKompletteringKop = () => {
+    if (!kompletteringText.trim()) return;
+    begarKompletteringKop(id, kompletteringText);
+    setKompletteringText("");
+    setKompletteringOpen(false);
+    refresh();
+  };
+
+  const avvisaDennaKandidat = () => {
+    if (!window.confirm("Avvisa den här kandidaten? Köparen ser affären som avslutad.")) return;
+    avvisaKandidat(id);
+    refresh();
+  };
+
+  const allabolagUrl = `https://www.allabolag.se/what/${encodeURIComponent(orgnrVarde || bolagVarde || "")}`;
 
   return (
     <AdminLayout>
@@ -137,23 +190,118 @@ function AdminAffarDetail() {
         </WireBox>
       )}
 
-      {!deal.avvisad && deal.steg === "granskning" && (
-        <WireBox label="Matchning" className="mb-6">
+      {deal.avvisadAvTrelink && (
+        <WireBox label="Avslutad — TreLink valde en annan köpare" className="mb-6">
           <Annotation>
-            Köparen har uttryckt intresse. Bekräfta matchningen för att gå vidare med köpeavtalet.
+            <span className="mt-2 block">
+              TreLink gick vidare med en annan kandidat för det här objektet. Denna affär är stängd.
+            </span>
           </Annotation>
-          <WireBtn
-            className="mt-4"
-            onClick={() => {
-              matchaAffar(id);
-              refresh();
-            }}
-          >
-            Matcha köpare →
-          </WireBtn>
+        </WireBox>
+      )}
+
+      {!avslutad && deal.steg === "granskning" && (
+        <>
+          <WireBox label="Matchning" className="mb-6">
+            <Annotation>
+              Köparen har uttryckt intresse. Kraven nedan måste vara uppfyllda innan matchning — se
+              åtgärdsraden längst ned.
+            </Annotation>
+          </WireBox>
+
+          <WireBox label="Granskningsunderlag" className="mb-6">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
+                <span>KYC-dokument</span>
+                <WireTag active={kycOk}>{deal.granskning?.kycDokument || "Ej uppladdat"}</WireTag>
+              </div>
+              <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
+                <span>Firmatecknare</span>
+                {deal.granskning?.firmatecknare === undefined ? (
+                  <WireTag>Ej besvarat</WireTag>
+                ) : deal.granskning.firmatecknare ? (
+                  <WireTag active>Bekräftad av köparen</WireTag>
+                ) : (
+                  <WireTag active={firmatecknareOk}>
+                    {firmatecknareOk ? "Kontaktuppgifter ifyllda" : "Ej ifyllt"}
+                  </WireTag>
+                )}
+              </div>
+              {deal.granskning?.firmatecknare === false && (
+                <div className="grid grid-cols-1 gap-1 border-b border-foreground/10 py-1.5 text-sm text-muted-foreground md:grid-cols-2">
+                  <span>{deal.granskning.ftRoll || "—"}</span>
+                  <span>
+                    {deal.granskning.ftFornamn || deal.granskning.ftEfternamn
+                      ? `${deal.granskning.ftFornamn ?? ""} ${deal.granskning.ftEfternamn ?? ""}`.trim()
+                      : "—"}
+                  </span>
+                  <span>{deal.granskning.ftMail || "—"}</span>
+                  <span>{deal.granskning.ftMobil || "—"}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between py-1.5 text-sm">
+                <span>Företagspresentation</span>
+                <WireTag active={foretagspresentationOk}>
+                  {deal.granskning?.foretagspresentation || "Ej uppladdad"}
+                </WireTag>
+              </div>
+            </div>
+          </WireBox>
+
+          <WireBox label="Bolagsuppgifter" className="mb-6">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <label className="block">
+                <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Bolag
+                </span>
+                <input
+                  type="text"
+                  value={bolagVarde}
+                  onChange={(e) => setBolagVarde(e.target.value)}
+                  className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Org.nr
+                </span>
+                <input
+                  type="text"
+                  value={orgnrVarde}
+                  onChange={(e) => setOrgnrVarde(e.target.value)}
+                  className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                />
+              </label>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <WireBtn variant="secondary" onClick={saveBolag}>
+                Spara bolagsuppgifter
+              </WireBtn>
+              <a
+                href={allabolagUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-muted-foreground underline hover:text-foreground"
+              >
+                Sök på allabolag.se ↗
+              </a>
+            </div>
+          </WireBox>
+
+          {buyerAccount && (
+            <div className="mb-6">
+              <Link
+                to="/admin/anvandare/$id"
+                params={{ id: buyerAccount.id }}
+                className="text-sm text-muted-foreground underline hover:text-foreground"
+              >
+                Se/lägg anteckningar om köparen →
+              </Link>
+            </div>
+          )}
 
           {ovrigaKandidater.length > 0 && (
-            <div className="mt-6 border-t border-foreground/10 pt-4">
+            <WireBox label="Andra kandidater" className="mb-6">
               <Annotation>
                 {ovrigaKandidater.length} andra kandidat
                 {ovrigaKandidater.length === 1 ? "" : "er"} för samma annons — matchning påverkar
@@ -233,12 +381,12 @@ function AdminAffarDetail() {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </WireBox>
           )}
-        </WireBox>
+        </>
       )}
 
-      {!deal.avvisad && deal.steg === "matchad" && (
+      {!avslutad && deal.steg === "matchad" && (
         <WireBox label="Köpeavtal" className="mb-6">
           {!deal.kopeavtal ? (
             <>
@@ -278,7 +426,7 @@ function AdminAffarDetail() {
         </WireBox>
       )}
 
-      {!deal.avvisad && deal.steg === "handpenning" && (
+      {!avslutad && deal.steg === "handpenning" && (
         <WireBox label="Handpenning" className="mb-6">
           <div className="space-y-1.5">
             <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
@@ -314,7 +462,7 @@ function AdminAffarDetail() {
         </WireBox>
       )}
 
-      {!deal.avvisad && deal.steg === "hyresvard" && (
+      {!avslutad && deal.steg === "hyresvard" && (
         <WireBox label="Hyresvärd" className="mb-6">
           {!deal.hyresvard?.skickadAt ? (
             <>
@@ -378,7 +526,7 @@ function AdminAffarDetail() {
         </WireBox>
       )}
 
-      {!deal.avvisad && deal.steg === "signering" && (
+      {!avslutad && deal.steg === "signering" && (
         <WireBox label="Överenskommelse om överlåtelse" className="mb-6">
           {!deal.overenskommelse ? (
             <>
@@ -425,7 +573,7 @@ function AdminAffarDetail() {
         </WireBox>
       )}
 
-      {!deal.avvisad && deal.steg === "tilltrade" && (
+      {!avslutad && deal.steg === "tilltrade" && (
         <WireBox label="Tillträde" className="mb-6">
           <Annotation>
             Överenskommelsen är signerad av samtliga parter. Bekräfta tillträdet för att avsluta
@@ -443,7 +591,7 @@ function AdminAffarDetail() {
         </WireBox>
       )}
 
-      {!deal.avvisad && deal.steg === "klar" && (
+      {!avslutad && deal.steg === "klar" && (
         <WireBox label="Klar" className="mb-6">
           <Annotation>Affären är genomförd.</Annotation>
         </WireBox>
@@ -556,6 +704,93 @@ function AdminAffarDetail() {
                   Skicka till parterna →
                 </WireBtn>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {kompletteringOpen && (
+        <WireBox label="Begär komplettering · köparen" className="mb-6">
+          <textarea
+            value={kompletteringText}
+            onChange={(e) => setKompletteringText(e.target.value)}
+            rows={3}
+            placeholder="Vad behöver köparen komplettera?"
+            className="w-full border border-foreground/50 bg-card px-3 py-2 text-sm"
+          />
+          <div className="mt-2 flex justify-end gap-2">
+            <WireBtn
+              variant="ghost"
+              onClick={() => {
+                setKompletteringOpen(false);
+                setKompletteringText("");
+              }}
+            >
+              Avbryt
+            </WireBtn>
+            <WireBtn
+              variant="secondary"
+              disabled={!kompletteringText.trim()}
+              onClick={submitKompletteringKop}
+              className={
+                !kompletteringText.trim()
+                  ? "cursor-not-allowed border-muted-foreground/30 text-muted-foreground hover:opacity-100"
+                  : ""
+              }
+            >
+              Skicka begäran →
+            </WireBtn>
+          </div>
+        </WireBox>
+      )}
+
+      {/* Fast åtgärdsrad längst ned — samma mönster (fixed inte sticky) som
+          admin.annonser.$id.tsx, se kommentaren där för varför. Bara synlig
+          under granskningssteget, innan affären är avslutad. */}
+      {!avslutad && deal.steg === "granskning" && (
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-foreground/30 bg-background px-4 py-3 shadow-sm">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {granskningChecklist.map((c) => (
+                <span
+                  key={c.label}
+                  className={`inline-flex items-center gap-1 rounded-pill border px-3 py-1 text-sm ${
+                    c.ok
+                      ? "border-foreground/30 text-muted-foreground"
+                      : "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
+                  }`}
+                >
+                  {c.ok ? (
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  ) : (
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                  )}{" "}
+                  {c.label}
+                </span>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <WireBtn variant="ghost" onClick={() => setKompletteringOpen((v) => !v)}>
+                Begär komplettering
+              </WireBtn>
+              <WireBtn variant="ghost" onClick={avvisaDennaKandidat}>
+                Avvisa
+              </WireBtn>
+              <WireBtn
+                variant="primary"
+                disabled={!kanMatcha}
+                onClick={() => {
+                  matchaAffar(id);
+                  refresh();
+                }}
+                className={
+                  !kanMatcha
+                    ? "cursor-not-allowed border-muted-foreground/30 bg-muted/30 text-muted-foreground hover:opacity-100"
+                    : ""
+                }
+              >
+                {kanMatcha ? "Matcha köpare →" : "Matcha köpare (krav saknas)"}
+              </WireBtn>
             </div>
           </div>
         </div>
