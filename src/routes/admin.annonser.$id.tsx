@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Pencil, Eye, FileCheck, AlertTriangle, Check, CheckCircle2, X, Clock, PartyPopper, Download, Phone, Mail } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
-import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
+import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, begarKomplettering, type WorkflowState } from "@/lib/annons-workflow";
 import { readAdminAccounts } from "@/lib/mock-auth";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
@@ -1027,18 +1027,7 @@ function AdminAnnonsDetail() {
 
   const submitKomplettering = () => {
     if (!komplText.trim()) return;
-    patchAnnons(id, (it) => ({
-      ...it,
-      workflow: logEntry(
-        {
-          ...it.workflow,
-          state: "komplettering",
-          komplettering: { message: komplText, at: new Date().toISOString() },
-        },
-        "TreLink",
-        `Begärde komplettering: "${komplText.slice(0, 80)}${komplText.length > 80 ? "…" : ""}"`,
-      ),
-    }));
+    begarKomplettering(id, komplText);
     setKomplText("");
     setKomplOpen(false);
     refresh();

@@ -1,6 +1,8 @@
 // Simple workflow state machine + localStorage helpers for the
 // seller/TreLink annons flow. Prototype only — data lives in the browser.
 
+import type { CatId } from "@/lib/annons-model";
+
 export type WorkflowState =
   | "granskas" // TreLink granskar underlaget
   | "komplettering" // TreLink har begärt info av säljaren
@@ -128,4 +130,40 @@ export function patchAnnons(id: string, patch: (item: any) => any) {
 
 export function getAnnons(id: string): any | undefined {
   return readAnnonser().find((i: any) => i.id === id);
+}
+
+/** Begär komplettering av en annons — samma logik som tidigare var inline i
+ * admin.annonser.$id.tsx's submitKomplettering, nu delad så att både den
+ * knappen och t.ex. en kategori-uppgradering (uppgraderaKategori nedan) kan
+ * återanvända den istället för att duplicera patch-koden. */
+export function begarKomplettering(annonsId: string, message: string) {
+  patchAnnons(annonsId, (it) => ({
+    ...it,
+    workflow: logEntry(
+      {
+        ...it.workflow,
+        state: "komplettering",
+        komplettering: { message, at: new Date().toISOString() },
+      },
+      "TreLink",
+      `Begärde komplettering: "${message.slice(0, 80)}${message.length > 80 ? "…" : ""}"`,
+    ),
+  }));
+}
+
+/** Uppgraderar en annons kategori (t.ex. Inkråm → Aktieöverlåtelse när
+ * köparens bolagsval ändrar affärens karaktär under granskningen) — patchar
+ * både cat och draft.cat så att prissättnings-/dokumentlogiken (docsByCat/
+ * avgift i admin.annonser.$id.tsx) transparent följer den nya kategorin. */
+export function uppgraderaKategori(annonsId: string, nyCat: CatId) {
+  patchAnnons(annonsId, (it) => ({
+    ...it,
+    cat: nyCat,
+    draft: { ...it.draft, cat: nyCat },
+    workflow: logEntry(
+      it.workflow,
+      "TreLink",
+      "TreLink uppgraderade annonsen till Aktieöverlåtelse — köparens bolag ändrades under processen",
+    ),
+  }));
 }
