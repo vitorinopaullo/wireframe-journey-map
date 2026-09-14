@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { PageHeader, Annotation } from "@/components/wire";
@@ -50,6 +50,8 @@ function groupByAnnons(rows: Favorit[]): AnnonsGrupp[] {
 }
 
 function AdminSparade() {
+  const navigate = useNavigate();
+
   useEffect(() => {
     markKategoriRead("sparade");
   }, []);
@@ -90,17 +92,15 @@ function AdminSparade() {
             </thead>
             <tbody className="divide-y divide-dashed divide-muted-foreground/30">
               {grupper.map((g) => (
-                <tr key={g.annonsId} className="transition-colors duration-150 hover:bg-muted/20">
+                <tr
+                  key={g.annonsId}
+                  onClick={() =>
+                    navigate({ to: "/admin/sparade/$annonsId", params: { annonsId: g.annonsId } })
+                  }
+                  className="cursor-pointer transition-colors duration-150 hover:bg-muted/20"
+                >
                   <td className="px-3 py-2 font-mono text-xs">{formatArendeRef(g.annonsId)}</td>
-                  <td className="px-3 py-2">
-                    <Link
-                      to="/admin/sparade/$annonsId"
-                      params={{ annonsId: g.annonsId }}
-                      className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
-                    >
-                      {g.titel}
-                    </Link>
-                  </td>
+                  <td className="px-3 py-2">{g.titel}</td>
                   <td className="px-3 py-2">{g.antal} sparade</td>
                   <td className="px-3 py-2">{g.ort}</td>
                   <td className="px-3 py-2 font-mono">

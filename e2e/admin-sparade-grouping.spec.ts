@@ -59,7 +59,7 @@ test("admin.sparade groups favoriter by annons and links through to the per-anno
   await expect(rad.getByText("TRL-")).toBeVisible();
   await expect(page.getByText("Datum sparad")).toHaveCount(0);
 
-  await page.getByRole("link", { name: "E2E flera sparade" }).click();
+  await rad.click();
   await page.waitForURL(/\/admin\/sparade\/e2e-sparade-multi-annons/);
 
   await expect(page.getByText("Ettson")).toBeVisible();
