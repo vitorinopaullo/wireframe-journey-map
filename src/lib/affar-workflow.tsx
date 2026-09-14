@@ -5,9 +5,15 @@
 
 import { StatusDot } from "@/components/wire";
 import { getAnnons, patchAnnons } from "@/lib/annons-workflow";
-import { patchBuyerInterest, logBuyerEntry, readBuyerInterests, type BuyerInterest } from "@/lib/kopare-workflow";
+import {
+  patchBuyerInterest,
+  logBuyerEntry,
+  readBuyerInterests,
+  getBuyerInterest,
+  type BuyerInterest,
+} from "@/lib/kopare-workflow";
 import type { CatId } from "@/lib/annons-model";
-import { formatDatum } from "@/lib/format";
+import { formatDatum, beloppProcentAvPris } from "@/lib/format";
 
 // Samma mönster som KAT_NAMN i admin.annonser.index.tsx/admin.publicerat.tsx
 // — de kortare visningsnamnen som används i affärslistorna.
@@ -491,6 +497,22 @@ export function signeraOverenskommelse(interestId: string, part: "kopare" | "sal
 export function bekraftaTilltrade(interestId: string) {
   const deal = patchDeal(interestId, (d) => ({ ...d, steg: "klar" }));
   logBoth(interestId, "TreLink", "Tillträde genomfört. Affären är klar.");
+  return deal;
+}
+
+/** Bara meningsfullt när deal.steg === "klar" (styrs av admin-vyn, inte
+ * spärrat här) — TreLink lyfter sitt arvode, 10 % av full köpeskilling, och
+ * upprättar samtidigt arvodeskvittensen som mejlas till säljaren. */
+export function lyftArvode(interestId: string) {
+  const interest = getBuyerInterest(interestId);
+  const pris = interest ? annonsInfo(interest.annonsId).pris : undefined;
+  const belopp = beloppProcentAvPris(pris, 10);
+  const now = new Date().toISOString();
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    arvode: { ...d.arvode, belopp, lyftAt: now, kvittensSkapadAt: now },
+  }));
+  logBoth(interestId, "TreLink", "TreLink lyfte arvode och skickade arvodeskvittens till säljaren.");
   return deal;
 }
 
