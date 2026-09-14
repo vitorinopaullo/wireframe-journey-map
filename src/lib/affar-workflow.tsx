@@ -104,6 +104,14 @@ export type GranskningState = {
   ftMail?: string;
   ftMobil?: string;
   komplettering?: { message: string; at: string };
+  // "Inget bolag än"-spåret: köparen kan sakna ett köpande bolag vid
+  // granskningsstart. harBolag === false spärrar firmatecknare-frågan (ett
+  // bolag som inte finns kan inte ha en firmatecknare) tills bolagKlartAt är
+  // satt — omedelbart för hyllbolag, efter bekraftaBolagKlart för
+  // starta-bolag. Se angeHarBolag/valjBolagsVag/bekraftaBolagKlart.
+  harBolag?: boolean;
+  bolagsVal?: "hyllbolag" | "starta-bolag";
+  bolagKlartAt?: string;
 };
 
 export type DealState = {
@@ -223,6 +231,48 @@ export function laddaUppKycDokument(interestId: string, filnamn: string) {
     granskning: { ...d.granskning, kycDokument: filnamn },
   }));
   logBoth(interestId, "Köpare", `Laddade upp KYC-dokument: ${filnamn}`);
+  return deal;
+}
+
+export function angeHarBolag(interestId: string, harBolag: boolean) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    granskning: { ...d.granskning, harBolag },
+  }));
+  logBoth(
+    interestId,
+    "Köpare",
+    harBolag ? "Bekräftade att du har ett köpande bolag." : "Uppgav att du inte har ett bolag än.",
+  );
+  return deal;
+}
+
+/** Väljer väg för köpare utan bolag. Ett hyllbolag är klart direkt —
+ * bolagKlartAt sätts i samma steg. Att starta ett nytt bolag kräver en
+ * separat bekräftelse (bekraftaBolagKlart) när det faktiskt är registrerat. */
+export function valjBolagsVag(interestId: string, val: "hyllbolag" | "starta-bolag") {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    granskning: {
+      ...d.granskning,
+      bolagsVal: val,
+      bolagKlartAt: val === "hyllbolag" ? new Date().toISOString() : d.granskning?.bolagKlartAt,
+    },
+  }));
+  logBoth(
+    interestId,
+    "Köpare",
+    val === "hyllbolag" ? "Valde att köpa ett hyllbolag." : "Valde att starta ett nytt bolag.",
+  );
+  return deal;
+}
+
+export function bekraftaBolagKlart(interestId: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    granskning: { ...d.granskning, bolagKlartAt: new Date().toISOString() },
+  }));
+  logBoth(interestId, "Köpare", "Bekräftade att det nya bolaget är registrerat.");
   return deal;
 }
 
