@@ -567,23 +567,28 @@ export function buildAvslutade(
   viewer: "kopare" | "saljare" | "admin" = "kopare",
 ) {
   return interests
-    .filter((i) => i.status === "avböjt" || getDeal(i.id).avvisad)
+    .filter((i) => i.status === "avböjt" || getDeal(i.id).avvisad || getDeal(i.id).avvisadAvTrelink)
     .map((i) => {
       const info = annonsInfo(i.annonsId);
       const deal = getDeal(i.id);
-      const typ: "avbojt" | "hyresvard-nekad" =
-        i.status === "avböjt" && !deal.avvisad ? "avbojt" : "hyresvard-nekad";
+      const typ: "avbojt" | "hyresvard-nekad" | "trelink-nekad" = deal.avvisadAvTrelink
+        ? "trelink-nekad"
+        : deal.avvisad
+          ? "hyresvard-nekad"
+          : "avbojt";
       return {
         id: i.id,
         titel: info.titel,
         pris: info.pris,
         typ,
         remarketingTag: i.remarketingTag ?? false,
-        resultat: deal.avvisad
-          ? "Nekad av hyresvärden — handpenning återbetalas"
-          : viewer === "kopare"
-            ? "Avvisat av dig"
-            : "Köparen tackade nej",
+        resultat: deal.avvisadAvTrelink
+          ? "TreLink valde en annan köpare"
+          : deal.avvisad
+            ? "Nekad av hyresvärden — handpenning återbetalas"
+            : viewer === "kopare"
+              ? "Avvisat av dig"
+              : "Köparen tackade nej",
       };
     });
 }
