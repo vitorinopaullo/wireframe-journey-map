@@ -61,11 +61,26 @@ export type OverenskommelseState = {
   signerat: PartSign;
 };
 
+export type GranskningState = {
+  foretagspresentation?: string;
+  kycDokument?: string;
+  firmatecknare?: boolean;
+  // Fallback-kontaktuppgifter när köparen inte själv är firmatecknare —
+  // samma fältuppsättning som säljarens firmatecknare-fallback i onboarding.tsx.
+  ftRoll?: string;
+  ftFornamn?: string;
+  ftEfternamn?: string;
+  ftMail?: string;
+  ftMobil?: string;
+  komplettering?: { message: string; at: string };
+};
+
 export type DealState = {
   interestId: string;
   steg: Steg;
   avvisad?: boolean; // hyresvärden nekade — affären avslutas, annonsen läggs tillbaka live
-  granskning?: { foretagspresentation?: string };
+  avvisadAvTrelink?: boolean; // TreLink valde en annan kandidat i granskningssteget
+  granskning?: GranskningState;
   kopeavtal?: KopeavtalState;
   handpenning?: HandpenningState;
   hyresvard?: HyresvardState;
@@ -166,6 +181,59 @@ export function laddaUppForetagspresentation(interestId: string, filnamn: string
     granskning: { ...d.granskning, foretagspresentation: filnamn },
   }));
   logBoth(interestId, "Köpare", `Laddade upp företagspresentation: ${filnamn}`);
+  return deal;
+}
+
+export function laddaUppKycDokument(interestId: string, filnamn: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    granskning: { ...d.granskning, kycDokument: filnamn },
+  }));
+  logBoth(interestId, "Köpare", `Laddade upp KYC-dokument: ${filnamn}`);
+  return deal;
+}
+
+export function bekraftaFirmatecknare(
+  interestId: string,
+  data: {
+    firmatecknare: boolean;
+    ftRoll?: string;
+    ftFornamn?: string;
+    ftEfternamn?: string;
+    ftMail?: string;
+    ftMobil?: string;
+  },
+) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    granskning: { ...d.granskning, ...data },
+  }));
+  logBoth(
+    interestId,
+    "Köpare",
+    data.firmatecknare
+      ? "Bekräftade att du är firmatecknare för bolaget."
+      : `Lämnade kontaktuppgifter för firmatecknare: ${data.ftFornamn} ${data.ftEfternamn}`,
+  );
+  return deal;
+}
+
+export function begarKompletteringKop(interestId: string, message: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    granskning: { ...d.granskning, komplettering: { message, at: new Date().toISOString() } },
+  }));
+  logBoth(
+    interestId,
+    "TreLink",
+    `Begärde komplettering: "${message.slice(0, 80)}${message.length > 80 ? "…" : ""}"`,
+  );
+  return deal;
+}
+
+export function avvisaKandidat(interestId: string) {
+  const deal = patchDeal(interestId, (d) => ({ ...d, avvisadAvTrelink: true }));
+  logBoth(interestId, "TreLink", "TreLink valde en annan köpare för det här objektet.");
   return deal;
 }
 
@@ -362,6 +430,7 @@ export function granskningKandidater(annonsId: string): GranskningKandidat[] {
         i.annonsId === annonsId &&
         i.status === "vill-ga-vidare" &&
         !getDeal(i.id).avvisad &&
+        !getDeal(i.id).avvisadAvTrelink &&
         getDeal(i.id).steg === "granskning",
     )
     .map((i) => ({
@@ -392,14 +461,20 @@ export function senasteUppdatering(interest: BuyerInterest): string {
  * "aktiv affär"-definition som buildAffarer använder för att räkna in en affär. */
 export function harAktivAffar(annonsId: string): boolean {
   return readBuyerInterests().some(
-    (i) => i.annonsId === annonsId && i.status === "vill-ga-vidare" && !getDeal(i.id).avvisad,
+    (i) =>
+      i.annonsId === annonsId &&
+      i.status === "vill-ga-vidare" &&
+      !getDeal(i.id).avvisad &&
+      !getDeal(i.id).avvisadAvTrelink,
   );
 }
 
 export function buildAffarer(interests: BuyerInterest[]): Affar[] {
   return interests
     .filter(
-      (i) => i.status === "väntar-pdf" || (i.status === "vill-ga-vidare" && !getDeal(i.id).avvisad),
+      (i) =>
+        i.status === "väntar-pdf" ||
+        (i.status === "vill-ga-vidare" && !getDeal(i.id).avvisad && !getDeal(i.id).avvisadAvTrelink),
     )
     .map((i) => {
       const info = annonsInfo(i.annonsId);
