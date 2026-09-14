@@ -9,6 +9,12 @@ export type KopeavtalDokumentProps = {
   adress?: string;
   ort?: string;
   pris?: string;
+  /** Namnet på personen som faktiskt signerar för köparens räkning — antingen
+   * köparens egen firmatecknare eller en angiven fallback-kontakt (se
+   * DealState.granskning i affar-workflow.tsx). Sektionen visas bara när
+   * detta är satt. */
+  undertecknareNamn?: string;
+  undertecknareRoll?: string;
 };
 
 /** Köpeavtalets innehåll — visas vid TreLinks förhandsgranskning innan avtalet
@@ -22,6 +28,8 @@ export function KopeavtalDokument({
   adress,
   ort,
   pris,
+  undertecknareNamn,
+  undertecknareRoll,
 }: KopeavtalDokumentProps) {
   return (
     <div className="space-y-4 border border-foreground/30 bg-muted/10 p-4">
@@ -53,6 +61,16 @@ export function KopeavtalDokument({
           {adress && ort ? `, ${ort}` : ""}
         </p>
       </div>
+
+      {undertecknareNamn && (
+        <div className="border-t border-dashed border-muted-foreground/30 pt-4">
+          <Annotation>Undertecknare</Annotation>
+          <p className="mt-1 text-sm">
+            {undertecknareNamn}
+            {undertecknareRoll ? ` (${undertecknareRoll})` : ""}
+          </p>
+        </div>
+      )}
 
       <div className="border-t border-dashed border-muted-foreground/30 pt-4">
         <Annotation>Köpeskilling</Annotation>

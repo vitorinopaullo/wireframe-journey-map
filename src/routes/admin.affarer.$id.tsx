@@ -98,6 +98,24 @@ function AdminAffarDetail() {
   const saljareOrgnr = seller?.orgnr;
   const verksamhet = annons?.draft?.verksamhet;
   const adress = annons?.draft?.adress;
+  // Vem som faktiskt signerar för köparens räkning — köparens egen
+  // firmatecknare (BankID-namnet) eller den angivna fallback-kontakten från
+  // granskningssteget (se GranskningState i affar-workflow.tsx).
+  const undertecknareNamn =
+    deal.granskning?.firmatecknare === true
+      ? buyerAccount
+        ? `${buyerAccount.bankid.fornamn} ${buyerAccount.bankid.efternamn}`
+        : undefined
+      : deal.granskning?.firmatecknare === false
+        ? `${deal.granskning.ftFornamn ?? ""} ${deal.granskning.ftEfternamn ?? ""}`.trim() ||
+          undefined
+        : undefined;
+  const undertecknareRoll =
+    deal.granskning?.firmatecknare === true
+      ? "Firmatecknare"
+      : deal.granskning?.firmatecknare === false
+        ? deal.granskning.ftRoll
+        : undefined;
   // Andra köpare som fortfarande konkurrerar om samma annons i
   // granskningssteget — samma gruppering som listvyn (admin.affarer.index.tsx)
   // använder, så TreLink kan jämföra kandidater innan matchning.
@@ -627,6 +645,8 @@ function AdminAffarDetail() {
                 adress={adress}
                 ort={info.ort}
                 pris={info.pris}
+                undertecknareNamn={undertecknareNamn}
+                undertecknareRoll={undertecknareRoll}
               />
               <div className="flex flex-wrap justify-end gap-2 border-t border-foreground/10 pt-4">
                 <WireBtn variant="ghost" onClick={() => setKopeavtalPreviewOpen(false)}>
