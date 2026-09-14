@@ -57,8 +57,6 @@ import { Route as AdminAnnonserIndexRouteImport } from './routes/admin.annonser.
 import { Route as AdminAnnonserIdRouteImport } from './routes/admin.annonser.$id'
 import { Route as AdminAnvandareIndexRouteImport } from './routes/admin.anvandare.index'
 import { Route as AdminAnvandareIdRouteImport } from './routes/admin.anvandare.$id'
-import { Route as AdminSparadeIndexRouteImport } from './routes/admin.sparade.index'
-import { Route as AdminSparadeAnnonsIdRouteImport } from './routes/admin.sparade.$annonsId'
 import { Route as AnnonsIdIndexRouteImport } from './routes/annons.$id.index'
 import { Route as AnnonsIdIntresseRouteImport } from './routes/annons.$id.intresse'
 import { Route as AnnonsIdUnderlagRouteImport } from './routes/annons.$id.underlag'
@@ -311,16 +309,6 @@ const AdminAnvandareIdRoute = AdminAnvandareIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminAnvandareRoute,
 } as any)
-const AdminSparadeIndexRoute = AdminSparadeIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminSparadeRoute,
-} as any)
-const AdminSparadeAnnonsIdRoute = AdminSparadeAnnonsIdRouteImport.update({
-  id: '/$annonsId',
-  path: '/$annonsId',
-  getParentRoute: () => AdminSparadeRoute,
-} as any)
 const AnnonsIdIndexRoute = AnnonsIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -390,7 +378,7 @@ export interface FileRoutesByFullPath {
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
   '/admin/publicerat': typeof AdminPubliceratRoute
-  '/admin/sparade': typeof AdminSparadeRouteWithChildren
+  '/admin/sparade': typeof AdminSparadeRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/kopare/affarer': typeof KopareAffarerRouteWithChildren
   '/kopare/favoriter': typeof KopareFavoriterRoute
@@ -408,7 +396,6 @@ export interface FileRoutesByFullPath {
   '/admin/affarer/$id': typeof AdminAffarerIdRoute
   '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
-  '/admin/sparade/$annonsId': typeof AdminSparadeAnnonsIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
   '/kopare/affarer/$id': typeof KopareAffarerIdRoute
@@ -417,7 +404,6 @@ export interface FileRoutesByFullPath {
   '/admin/affarer/': typeof AdminAffarerIndexRoute
   '/admin/annonser/': typeof AdminAnnonserIndexRoute
   '/admin/anvandare/': typeof AdminAnvandareIndexRoute
-  '/admin/sparade/': typeof AdminSparadeIndexRoute
   '/annons/$id/': typeof AnnonsIdIndexRoute
   '/kopare/affarer/': typeof KopareAffarerIndexRoute
   '/saljare/affarer/': typeof SaljareAffarerIndexRoute
@@ -447,6 +433,7 @@ export interface FileRoutesByTo {
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
   '/admin/publicerat': typeof AdminPubliceratRoute
+  '/admin/sparade': typeof AdminSparadeRoute
   '/kopare/favoriter': typeof KopareFavoriterRoute
   '/kopare/jamfor': typeof KopareJamforRoute
   '/kopare/profil': typeof KopareProfilRoute
@@ -461,7 +448,6 @@ export interface FileRoutesByTo {
   '/admin/affarer/$id': typeof AdminAffarerIdRoute
   '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
-  '/admin/sparade/$annonsId': typeof AdminSparadeAnnonsIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
   '/kopare/affarer/$id': typeof KopareAffarerIdRoute
@@ -470,7 +456,6 @@ export interface FileRoutesByTo {
   '/admin/affarer': typeof AdminAffarerIndexRoute
   '/admin/annonser': typeof AdminAnnonserIndexRoute
   '/admin/anvandare': typeof AdminAnvandareIndexRoute
-  '/admin/sparade': typeof AdminSparadeIndexRoute
   '/annons/$id': typeof AnnonsIdIndexRoute
   '/kopare/affarer': typeof KopareAffarerIndexRoute
   '/saljare/affarer': typeof SaljareAffarerIndexRoute
@@ -504,7 +489,7 @@ export interface FileRoutesById {
   '/admin/installningar': typeof AdminInstallningarRoute
   '/admin/kopare': typeof AdminKopareRoute
   '/admin/publicerat': typeof AdminPubliceratRoute
-  '/admin/sparade': typeof AdminSparadeRouteWithChildren
+  '/admin/sparade': typeof AdminSparadeRoute
   '/annons/$id': typeof AnnonsIdRouteWithChildren
   '/kopare/affarer': typeof KopareAffarerRouteWithChildren
   '/kopare/favoriter': typeof KopareFavoriterRoute
@@ -522,7 +507,6 @@ export interface FileRoutesById {
   '/admin/affarer/$id': typeof AdminAffarerIdRoute
   '/admin/annonser/$id': typeof AdminAnnonserIdRoute
   '/admin/anvandare/$id': typeof AdminAnvandareIdRoute
-  '/admin/sparade/$annonsId': typeof AdminSparadeAnnonsIdRoute
   '/annons/$id/intresse': typeof AnnonsIdIntresseRoute
   '/annons/$id/underlag': typeof AnnonsIdUnderlagRoute
   '/kopare/affarer/$id': typeof KopareAffarerIdRoute
@@ -531,7 +515,6 @@ export interface FileRoutesById {
   '/admin/affarer/': typeof AdminAffarerIndexRoute
   '/admin/annonser/': typeof AdminAnnonserIndexRoute
   '/admin/anvandare/': typeof AdminAnvandareIndexRoute
-  '/admin/sparade/': typeof AdminSparadeIndexRoute
   '/annons/$id/': typeof AnnonsIdIndexRoute
   '/kopare/affarer/': typeof KopareAffarerIndexRoute
   '/saljare/affarer/': typeof SaljareAffarerIndexRoute
@@ -584,7 +567,6 @@ export interface FileRouteTypes {
     | '/admin/affarer/$id'
     | '/admin/annonser/$id'
     | '/admin/anvandare/$id'
-    | '/admin/sparade/$annonsId'
     | '/annons/$id/intresse'
     | '/annons/$id/underlag'
     | '/kopare/affarer/$id'
@@ -593,7 +575,6 @@ export interface FileRouteTypes {
     | '/admin/affarer/'
     | '/admin/annonser/'
     | '/admin/anvandare/'
-    | '/admin/sparade/'
     | '/annons/$id/'
     | '/kopare/affarer/'
     | '/saljare/affarer/'
@@ -623,6 +604,7 @@ export interface FileRouteTypes {
     | '/admin/installningar'
     | '/admin/kopare'
     | '/admin/publicerat'
+    | '/admin/sparade'
     | '/kopare/favoriter'
     | '/kopare/jamfor'
     | '/kopare/profil'
@@ -637,7 +619,6 @@ export interface FileRouteTypes {
     | '/admin/affarer/$id'
     | '/admin/annonser/$id'
     | '/admin/anvandare/$id'
-    | '/admin/sparade/$annonsId'
     | '/annons/$id/intresse'
     | '/annons/$id/underlag'
     | '/kopare/affarer/$id'
@@ -646,7 +627,6 @@ export interface FileRouteTypes {
     | '/admin/affarer'
     | '/admin/annonser'
     | '/admin/anvandare'
-    | '/admin/sparade'
     | '/annons/$id'
     | '/kopare/affarer'
     | '/saljare/affarer'
@@ -697,7 +677,6 @@ export interface FileRouteTypes {
     | '/admin/affarer/$id'
     | '/admin/annonser/$id'
     | '/admin/anvandare/$id'
-    | '/admin/sparade/$annonsId'
     | '/annons/$id/intresse'
     | '/annons/$id/underlag'
     | '/kopare/affarer/$id'
@@ -706,7 +685,6 @@ export interface FileRouteTypes {
     | '/admin/affarer/'
     | '/admin/annonser/'
     | '/admin/anvandare/'
-    | '/admin/sparade/'
     | '/annons/$id/'
     | '/kopare/affarer/'
     | '/saljare/affarer/'
@@ -740,7 +718,7 @@ export interface RootRouteChildren {
   AdminInstallningarRoute: typeof AdminInstallningarRoute
   AdminKopareRoute: typeof AdminKopareRoute
   AdminPubliceratRoute: typeof AdminPubliceratRoute
-  AdminSparadeRoute: typeof AdminSparadeRouteWithChildren
+  AdminSparadeRoute: typeof AdminSparadeRoute
   AnnonsIdRoute: typeof AnnonsIdRouteWithChildren
   KopareAffarerRoute: typeof KopareAffarerRouteWithChildren
   KopareFavoriterRoute: typeof KopareFavoriterRoute
@@ -1096,20 +1074,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnvandareIdRouteImport
       parentRoute: typeof AdminAnvandareRoute
     }
-    '/admin/sparade/': {
-      id: '/admin/sparade/'
-      path: '/'
-      fullPath: '/admin/sparade/'
-      preLoaderRoute: typeof AdminSparadeIndexRouteImport
-      parentRoute: typeof AdminSparadeRoute
-    }
-    '/admin/sparade/$annonsId': {
-      id: '/admin/sparade/$annonsId'
-      path: '/$annonsId'
-      fullPath: '/admin/sparade/$annonsId'
-      preLoaderRoute: typeof AdminSparadeAnnonsIdRouteImport
-      parentRoute: typeof AdminSparadeRoute
-    }
     '/annons/$id/': {
       id: '/annons/$id/'
       path: '/'
@@ -1211,20 +1175,6 @@ const AdminAnvandareRouteWithChildren = AdminAnvandareRoute._addFileChildren(
   AdminAnvandareRouteChildren,
 )
 
-interface AdminSparadeRouteChildren {
-  AdminSparadeAnnonsIdRoute: typeof AdminSparadeAnnonsIdRoute
-  AdminSparadeIndexRoute: typeof AdminSparadeIndexRoute
-}
-
-const AdminSparadeRouteChildren: AdminSparadeRouteChildren = {
-  AdminSparadeAnnonsIdRoute: AdminSparadeAnnonsIdRoute,
-  AdminSparadeIndexRoute: AdminSparadeIndexRoute,
-}
-
-const AdminSparadeRouteWithChildren = AdminSparadeRoute._addFileChildren(
-  AdminSparadeRouteChildren,
-)
-
 interface AnnonsIdRouteChildren {
   AnnonsIdIntresseRoute: typeof AnnonsIdIntresseRoute
   AnnonsIdUnderlagRoute: typeof AnnonsIdUnderlagRoute
@@ -1298,7 +1248,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminInstallningarRoute: AdminInstallningarRoute,
   AdminKopareRoute: AdminKopareRoute,
   AdminPubliceratRoute: AdminPubliceratRoute,
-  AdminSparadeRoute: AdminSparadeRouteWithChildren,
+  AdminSparadeRoute: AdminSparadeRoute,
   AnnonsIdRoute: AnnonsIdRouteWithChildren,
   KopareAffarerRoute: KopareAffarerRouteWithChildren,
   KopareFavoriterRoute: KopareFavoriterRoute,

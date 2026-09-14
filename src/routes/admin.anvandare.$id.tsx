@@ -147,8 +147,8 @@ function Sparhistorik({ userId }: { userId: string }) {
               </div>
               <div className="text-sm">
                 <Link
-                  to="/admin/sparade/$annonsId"
-                  params={{ annonsId: h.annonsId }}
+                  to="/annons/$id"
+                  params={{ id: h.annonsId }}
                   className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
                 >
                   {getAnnons(h.annonsId)?.titel || `Annons #${h.annonsId}`}

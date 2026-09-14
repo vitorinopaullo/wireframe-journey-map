@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { unlockGate, seedAnnons, seedFavorit, seedAccount, seedSession } from "./helpers";
 
-test("admin.sparade groups favoriter by annons and links through to the per-annons detail page", async ({
+test("admin.sparade groups favoriter by annons into an expandable group, matching Intressenter/Affärer", async ({
   page,
 }) => {
   await unlockGate(page);
@@ -54,22 +54,21 @@ test("admin.sparade groups favoriter by annons and links through to the per-anno
 
   await page.goto("/admin/sparade");
 
-  const rad = page.locator("tr", { has: page.getByText("E2E flera sparade") });
-  await expect(rad.getByText("2 sparade")).toBeVisible();
-  await expect(rad.getByText("TRL-")).toBeVisible();
-  await expect(page.getByText("Datum sparad")).toHaveCount(0);
+  const grupp = page.locator("details", { has: page.getByText("E2E flera sparade") });
+  await expect(grupp.getByText("2 sparade")).toBeVisible();
+  await expect(grupp.getByText("TRL-")).toBeVisible();
+  await expect(grupp.getByText("Ettson")).toBeHidden();
 
-  await rad.click();
-  await page.waitForURL(/\/admin\/sparade\/e2e-sparade-multi-annons/);
+  await grupp.locator("summary").click();
 
-  await expect(page.getByText("Ettson")).toBeVisible();
-  await expect(page.getByText("Tvason")).toBeVisible();
-  await expect(page.getByText("070-1112233")).toBeVisible();
-  await expect(page.getByText("sparade1@example.com")).toBeVisible();
-  await expect(page.getByText("070-4445566")).toBeVisible();
-  await expect(page.getByText("sparade2@example.com")).toBeVisible();
+  await expect(grupp.getByText("Sparade Ettson")).toBeVisible();
+  await expect(grupp.getByText("Sparade Tvason")).toBeVisible();
+  await expect(grupp.getByText("070-1112233")).toBeVisible();
+  await expect(grupp.getByText("sparade1@example.com")).toBeVisible();
+  await expect(grupp.getByText("070-4445566")).toBeVisible();
+  await expect(grupp.getByText("sparade2@example.com")).toBeVisible();
 
-  const kKoder = await page.locator("tbody tr td:first-child").allTextContents();
+  const kKoder = await grupp.locator("tbody tr td:nth-child(2)").allTextContents();
   expect(kKoder).toHaveLength(2);
   expect(new Set(kKoder).size).toBe(2);
   for (const kod of kKoder) expect(kod).toMatch(/^K-\d{4}$/);
@@ -115,8 +114,10 @@ test("a buyer's Köpar-ID stays the same across a favorit on one listing and an 
   await page.getByRole("button", { name: "Spara" }).first().click();
   await expect(page.getByRole("button", { name: "Sparad" }).first()).toBeVisible();
 
-  await page.goto("/admin/sparade/e2e-samekod-annons-a");
-  const kodFranFavorit = await page.locator("tbody tr td:first-child").first().textContent();
+  await page.goto("/admin/sparade");
+  const gruppA = page.locator("details", { has: page.getByText("E2E samma kod A") });
+  await gruppA.locator("summary").click();
+  const kodFranFavorit = await gruppA.locator("tbody tr td:nth-child(2)").first().textContent();
   expect(kodFranFavorit).toMatch(/^K-\d{4}$/);
 
   // Declare interest in a *different* listing — the buyer must keep the
