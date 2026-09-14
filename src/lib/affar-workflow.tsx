@@ -45,6 +45,13 @@ export type HandpenningState = {
   kvitto?: string;
   ucUtdrag?: string;
   bekraftadMottagenAt?: string;
+  // TreLinks egen, av TreLink upprättade kvittens för handpenningen — skilt
+  // från kvitto ovan, som är köparens eget underlag. Se
+  // skapa/skicka/signeraHandpenningKvittens.
+  kvittensSkapadAt?: string;
+  kvittensSkickadAt?: string;
+  kvittensSigneradAt?: string;
+  kvittensSkickadTillSaljareAt?: string;
 };
 
 export type HyresvardBesked = "godkand" | "nekad";
@@ -261,6 +268,44 @@ export function reserveraAnnons(annonsId: string) {
 
 export function avreserveraAnnons(annonsId: string) {
   patchAnnons(annonsId, (item) => ({ ...item, reserverad: false }));
+}
+
+export function skapaHandpenningKvittens(interestId: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    handpenning: { ...d.handpenning, kvittensSkapadAt: new Date().toISOString() },
+  }));
+  logBoth(interestId, "TreLink", "TreLink upprättade kvittens för handpenning.");
+  return deal;
+}
+
+export function skickaHandpenningKvittensForSignering(interestId: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    handpenning: { ...d.handpenning, kvittensSkickadAt: new Date().toISOString() },
+  }));
+  logBoth(interestId, "TreLink", "Kvittens för handpenning skickad till köparen för signering.");
+  return deal;
+}
+
+/** Köparen signerar kvittensen — vidarebefordras i samma steg automatiskt
+ * till säljaren (det finns inget separat "skicka till säljare"-steg; en
+ * signerad handpenningskvittens ska alltid omedelbart vara synlig för
+ * säljaren, samma mönster som att TreLink inte behöver ett extra klick för
+ * att meddela nästa part när en signering slutförs). */
+export function signeraHandpenningKvittens(interestId: string) {
+  const now = new Date().toISOString();
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    handpenning: {
+      ...d.handpenning,
+      kvittensSigneradAt: now,
+      kvittensSkickadTillSaljareAt: now,
+    },
+  }));
+  logBoth(interestId, "Köpare", "Du signerade handpenningskvittensen.");
+  logBoth(interestId, "System", "Kvittensen skickades till säljaren.");
+  return deal;
 }
 
 export function bekraftaHandpenningMottagen(interestId: string, annonsId: string) {
