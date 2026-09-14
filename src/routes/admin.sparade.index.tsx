@@ -4,7 +4,6 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { PageHeader, Annotation } from "@/components/wire";
 import { readFavoriter, type Favorit } from "@/lib/favoriter";
 import { getAnnons } from "@/lib/annons-workflow";
-import { historikForAnnons, annonsIdMedHistorik } from "@/lib/sparade-historik";
 import { formatArendeRef } from "@/lib/format";
 import { markKategoriRead } from "@/lib/admin-notiser";
 
@@ -17,18 +16,14 @@ type AnnonsGrupp = {
   titel: string;
   ort: string;
   pris: number;
-  antalNu: number;
-  antalHistorik: number;
+  antal: number;
   senasteSparad: string;
 };
 
 /** Grupperar favoriter per annons — flera köpare kan spara samma objekt (t.ex.
  * flera restauranglokaler i Södermalm delar titel), och TreLink behöver se
  * alla i ett svep istället för utspridda, orelaterade rader (samma princip
- * som admin.kopare.tsx:s gruppering av intresseanmälningar). Tar även med
- * annonser som saknar aktiva favoriter men har historik (alla favoriter
- * borttagna eller omvandlade till intresse) — TreLink ska aldrig tappa
- * tråden bara för att listan över levande favoriter blev tom. */
+ * som admin.kopare.tsx:s gruppering av intresseanmälningar). */
 function groupByAnnons(rows: Favorit[]): AnnonsGrupp[] {
   const map = new Map<string, Favorit[]>();
   for (const f of rows) {
@@ -36,25 +31,17 @@ function groupByAnnons(rows: Favorit[]): AnnonsGrupp[] {
     list.push(f);
     map.set(f.annonsId, list);
   }
-  for (const annonsId of annonsIdMedHistorik()) {
-    if (!map.has(annonsId)) map.set(annonsId, []);
-  }
   const grupper = [...map.entries()].map(([annonsId, favoriter]) => {
-    const historik = historikForAnnons(annonsId);
-    const senasteSparad =
-      favoriter.length > 0
-        ? favoriter.reduce(
-            (nyast, f) => (f.savedAt > nyast ? f.savedAt : nyast),
-            favoriter[0].savedAt,
-          )
-        : historik.reduce((nyast, h) => (h.ts > nyast ? h.ts : nyast), historik[0]?.ts ?? "");
+    const senasteSparad = favoriter.reduce(
+      (nyast, f) => (f.savedAt > nyast ? f.savedAt : nyast),
+      favoriter[0]?.savedAt ?? "",
+    );
     return {
       annonsId,
       titel: getAnnons(annonsId)?.titel || favoriter[0]?.titel || `Annons #${annonsId}`,
       ort: favoriter[0]?.ort || "—",
       pris: favoriter[0]?.pris ?? 0,
-      antalNu: favoriter.length,
-      antalHistorik: historik.length,
+      antal: favoriter.length,
       senasteSparad,
     };
   });
@@ -114,10 +101,7 @@ function AdminSparade() {
                       {g.titel}
                     </Link>
                   </td>
-                  <td className="px-3 py-2">
-                    {g.antalNu} sparade nu
-                    {g.antalNu === 0 && g.antalHistorik > 0 && ` · ${g.antalHistorik} i historik`}
-                  </td>
+                  <td className="px-3 py-2">{g.antal} sparade</td>
                   <td className="px-3 py-2">{g.ort}</td>
                   <td className="px-3 py-2 font-mono">
                     {g.pris ? `${g.pris.toLocaleString("sv-SE")} kr` : "—"}

@@ -1,7 +1,8 @@
 // Append-only audit trail for favorit-aktivitet — skiljer sig från de "levande"
 // Favorit-posterna i favoriter.ts (som tas bort vid unsave/konvertering): en
-// SparadHandelse raderas aldrig, så TreLink kan se hela sparhistoriken för en
-// annons eller köpare även efter att alla favoriter försvunnit.
+// SparadHandelse raderas aldrig, så TreLink kan se en köpares fulla
+// sparhistorik även efter att favoriten försvunnit. Historiken visas bara
+// per köpare (admin.anvandare.$id.tsx), inte per annons.
 // Prototyp/mock — data lever i webbläsaren, precis som favoriter.ts.
 
 export type SparadHandelse = {
@@ -49,18 +50,6 @@ export function loggaHandelse(
   skrivAlla(list);
 }
 
-export function historikForAnnons(annonsId: string): SparadHandelse[] {
-  return readAlla().filter((h) => h.annonsId === annonsId);
-}
-
 export function historikForKopare(userId: string): SparadHandelse[] {
   return readAlla().filter((h) => h.userId === userId);
-}
-
-/** Alla annons-ID:n som förekommer i historiken, oavsett om de fortfarande
- * har aktiva favoriter — se admin.sparade.index.tsx:s gruppering, som ska
- * visa objekt vars enda spår är historiken (alla favoriter borttagna eller
- * omvandlade till intresse). */
-export function annonsIdMedHistorik(): string[] {
-  return [...new Set(readAlla().map((h) => h.annonsId))];
 }
