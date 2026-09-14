@@ -17,9 +17,15 @@ import {
   skickaHandpenningKvittensForSignering,
   skickaTillHyresvard,
   hyresvardBesked,
+  begarLikvid,
+  lamnaLikvid,
+  verifieraLikvid,
+  skapaLikvidKvittens,
+  skickaLikvidKvittens,
   skapaOverenskommelse,
   skickaOverenskommelseForSignering,
   bekraftaTilltrade,
+  lyftArvode,
   granskningKandidater,
   begarKompletteringKop,
   avvisaKandidat,
@@ -28,7 +34,9 @@ import {
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
 import { HandpenningKvittensDokument } from "@/components/HandpenningKvittensDokument";
-import { formatDatum } from "@/lib/format";
+import { LikvidKvittensDokument } from "@/components/LikvidKvittensDokument";
+import { ArvodeKvittensDokument } from "@/components/ArvodeKvittensDokument";
+import { formatDatum, beloppProcentAvPris } from "@/lib/format";
 import { MailPreview, type MailData } from "@/components/MailPreview";
 
 export const Route = createFileRoute("/admin/affarer/$id")({
@@ -76,7 +84,9 @@ function AdminAffarDetail() {
 
   const [kopeavtalPreviewOpen, setKopeavtalPreviewOpen] = useState(false);
   const [overenskommelsePreviewOpen, setOverenskommelsePreviewOpen] = useState(false);
-  const [kvittensPreviewOpen, setKvittensPreviewOpen] = useState(false);
+  const [handpenningKvittensPreviewOpen, setHandpenningKvittensPreviewOpen] = useState(false);
+  const [likvidKvittensPreviewOpen, setLikvidKvittensPreviewOpen] = useState(false);
+  const [arvodeKvittensPreviewOpen, setArvodeKvittensPreviewOpen] = useState(false);
   const [mailPreview, setMailPreview] = useState<MailData | null>(null);
   const [kompletteringOpen, setKompletteringOpen] = useState(false);
   const [kompletteringText, setKompletteringText] = useState("");
@@ -173,6 +183,10 @@ function AdminAffarDetail() {
   };
 
   const allabolagUrl = `https://www.allabolag.se/what/${encodeURIComponent(orgnrVarde || bolagVarde || "")}`;
+
+  const forvantadLikvid = beloppProcentAvPris(info.pris, 90);
+  const forvantadLikvidText = forvantadLikvid?.toLocaleString("sv-SE");
+  const likvidBeloppMatchar = deal.likvid?.belopp === forvantadLikvid;
 
   return (
     <AdminLayout>
@@ -494,7 +508,7 @@ function AdminAffarDetail() {
                   Upprätta TreLinks kvittens för den mottagna handpenningen och skicka den till
                   köparen för signering.
                 </Annotation>
-                <WireBtn className="mt-4" onClick={() => setKvittensPreviewOpen(true)}>
+                <WireBtn className="mt-4" onClick={() => setHandpenningKvittensPreviewOpen(true)}>
                   Skapa kvittens →
                 </WireBtn>
               </>
@@ -593,6 +607,80 @@ function AdminAffarDetail() {
         </WireBox>
       )}
 
+      {!avslutad && deal.steg === "likvid" && (
+        <WireBox label="Likvid" className="mb-6">
+          {!deal.likvid?.begartAt ? (
+            <>
+              <Annotation>
+                Begär in resterande likvid, 90 % av köpeskillingen, från köparen.
+              </Annotation>
+              <div className="mt-3 flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
+                <span className="text-muted-foreground">Förväntat belopp</span>
+                <span className="tabular-nums">
+                  {forvantadLikvidText ? `${forvantadLikvidText} kr` : "—"}
+                </span>
+              </div>
+              <WireBtn
+                className="mt-4"
+                onClick={() => {
+                  begarLikvid(id);
+                  refresh();
+                }}
+              >
+                Begär likvid →
+              </WireBtn>
+            </>
+          ) : !deal.likvid?.inlamnadAt ? (
+            <Annotation>
+              <span className="mt-2 block">
+                Väntar på att köparen lämnar uppgift om betald likvid.
+              </span>
+            </Annotation>
+          ) : !deal.likvid?.verifieratAt ? (
+            <>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
+                  <span>Inlämnat belopp</span>
+                  <span className="tabular-nums">
+                    {deal.likvid.belopp?.toLocaleString("sv-SE")} kr
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-1.5 text-sm">
+                  <span>Förväntat belopp</span>
+                  <span className="tabular-nums">
+                    {forvantadLikvidText ? `${forvantadLikvidText} kr` : "—"}
+                  </span>
+                </div>
+              </div>
+              {!likvidBeloppMatchar && (
+                <div className="mt-3 flex items-center gap-1.5 text-sm text-amber-700 dark:text-amber-500">
+                  <AlertTriangle className="h-3.5 w-3.5" /> Beloppet stämmer inte överens —
+                  kontrollera innan du bekräftar.
+                </div>
+              )}
+              <WireBtn
+                className="mt-4"
+                onClick={() => {
+                  verifieraLikvid(id);
+                  refresh();
+                }}
+              >
+                Bekräfta rätt belopp →
+              </WireBtn>
+            </>
+          ) : (
+            <>
+              <Annotation>
+                Upprätta kvittens för likviden och skicka den till köparen (mejl).
+              </Annotation>
+              <WireBtn className="mt-4" onClick={() => setLikvidKvittensPreviewOpen(true)}>
+                Skapa kvittens →
+              </WireBtn>
+            </>
+          )}
+        </WireBox>
+      )}
+
       {!avslutad && deal.steg === "signering" && (
         <WireBox label="Överenskommelse om överlåtelse" className="mb-6">
           {!deal.overenskommelse ? (
@@ -659,9 +747,40 @@ function AdminAffarDetail() {
       )}
 
       {!avslutad && deal.steg === "klar" && (
-        <WireBox label="Klar" className="mb-6">
-          <Annotation>Affären är genomförd.</Annotation>
-        </WireBox>
+        <>
+          <WireBox label="Klar" className="mb-6">
+            <Annotation>Affären är genomförd.</Annotation>
+          </WireBox>
+
+          <WireBox label="Arvode" className="mb-6">
+            {!deal.arvode?.lyftAt ? (
+              <>
+                <Annotation>
+                  Lyft TreLinks förmedlingsarvode, 10 % av köpeskillingen, och skicka
+                  arvodeskvittens till säljaren.
+                </Annotation>
+                <WireBtn className="mt-4" onClick={() => setArvodeKvittensPreviewOpen(true)}>
+                  Lyft arvode →
+                </WireBtn>
+              </>
+            ) : (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
+                  <span>Arvode lyft</span>
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {formatDatum(deal.arvode.lyftAt)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-1.5 text-sm">
+                  <span>Belopp</span>
+                  <span className="tabular-nums">
+                    {deal.arvode.belopp?.toLocaleString("sv-SE")} kr
+                  </span>
+                </div>
+              </div>
+            )}
+          </WireBox>
+        </>
       )}
 
       {kopeavtalPreviewOpen && (
@@ -778,10 +897,10 @@ function AdminAffarDetail() {
         </div>
       )}
 
-      {kvittensPreviewOpen && (
+      {handpenningKvittensPreviewOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-          onClick={() => setKvittensPreviewOpen(false)}
+          onClick={() => setHandpenningKvittensPreviewOpen(false)}
         >
           <div
             className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-foreground bg-background"
@@ -791,7 +910,7 @@ function AdminAffarDetail() {
               <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                 Förhandsgranskning · Kvittens handpenning
               </div>
-              <WireBtn variant="ghost" onClick={() => setKvittensPreviewOpen(false)}>
+              <WireBtn variant="ghost" onClick={() => setHandpenningKvittensPreviewOpen(false)}>
                 Stäng
               </WireBtn>
             </div>
@@ -809,7 +928,7 @@ function AdminAffarDetail() {
                 kopareBolag={kopareBolag}
               />
               <div className="flex flex-wrap justify-end gap-2 border-t border-foreground/10 pt-4">
-                <WireBtn variant="ghost" onClick={() => setKvittensPreviewOpen(false)}>
+                <WireBtn variant="ghost" onClick={() => setHandpenningKvittensPreviewOpen(false)}>
                   Redigera
                 </WireBtn>
                 <WireBtn
@@ -822,11 +941,118 @@ function AdminAffarDetail() {
                       amne: "Kvittens för handpenning redo för signering",
                       brodtext: `Kvittensen för handpenningen avseende ${info.titel} är klar för signering. Logga in på TreLink för att signera med BankID.`,
                     });
-                    setKvittensPreviewOpen(false);
+                    setHandpenningKvittensPreviewOpen(false);
                     refresh();
                   }}
                 >
                   Skicka till köparen för signering →
+                </WireBtn>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {likvidKvittensPreviewOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setLikvidKvittensPreviewOpen(false)}
+        >
+          <div
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-foreground bg-background"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 flex items-center justify-between border-b border-foreground/30 bg-background px-4 py-3">
+              <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                Förhandsgranskning · Kvittens likvid
+              </div>
+              <WireBtn variant="ghost" onClick={() => setLikvidKvittensPreviewOpen(false)}>
+                Stäng
+              </WireBtn>
+            </div>
+            <div className="space-y-4 p-6">
+              <Annotation>Dokumentet mejlas till köparen och kräver ingen signering.</Annotation>
+              <LikvidKvittensDokument
+                interestId={id}
+                annonsId={interest.annonsId}
+                titel={info.titel}
+                adress={adress}
+                ort={info.ort}
+                pris={info.pris}
+                kopareBolag={kopareBolag}
+              />
+              <div className="flex flex-wrap justify-end gap-2 border-t border-foreground/10 pt-4">
+                <WireBtn variant="ghost" onClick={() => setLikvidKvittensPreviewOpen(false)}>
+                  Redigera
+                </WireBtn>
+                <WireBtn
+                  onClick={() => {
+                    skapaLikvidKvittens(id);
+                    skickaLikvidKvittens(id);
+                    setMailPreview({
+                      fran: "TreLink <noreply@trelink.se>",
+                      till: kopareBolag || "Köparen",
+                      amne: "Kvittens för likvid",
+                      brodtext: `Kvittensen för resterande likvid avseende ${info.titel} är bifogad. Ingen signering krävs.`,
+                    });
+                    setLikvidKvittensPreviewOpen(false);
+                    refresh();
+                  }}
+                >
+                  Skicka till köparen (mejl) →
+                </WireBtn>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {arvodeKvittensPreviewOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setArvodeKvittensPreviewOpen(false)}
+        >
+          <div
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-foreground bg-background"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 flex items-center justify-between border-b border-foreground/30 bg-background px-4 py-3">
+              <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                Förhandsgranskning · Arvodeskvittens
+              </div>
+              <WireBtn variant="ghost" onClick={() => setArvodeKvittensPreviewOpen(false)}>
+                Stäng
+              </WireBtn>
+            </div>
+            <div className="space-y-4 p-6">
+              <Annotation>Dokumentet mejlas till säljaren och kräver ingen signering.</Annotation>
+              <ArvodeKvittensDokument
+                interestId={id}
+                annonsId={interest.annonsId}
+                titel={info.titel}
+                adress={adress}
+                ort={info.ort}
+                pris={info.pris}
+                saljareBolag={saljareBolag}
+              />
+              <div className="flex flex-wrap justify-end gap-2 border-t border-foreground/10 pt-4">
+                <WireBtn variant="ghost" onClick={() => setArvodeKvittensPreviewOpen(false)}>
+                  Redigera
+                </WireBtn>
+                <WireBtn
+                  onClick={() => {
+                    lyftArvode(id);
+                    setMailPreview({
+                      fran: "TreLink <noreply@trelink.se>",
+                      till: saljareBolag || "Säljaren",
+                      amne: "Arvodeskvittens",
+                      brodtext: `Arvodeskvittensen för affären avseende ${info.titel} är bifogad.`,
+                    });
+                    setArvodeKvittensPreviewOpen(false);
+                    refresh();
+                  }}
+                >
+                  Bekräfta och skicka till säljaren →
                 </WireBtn>
               </div>
             </div>

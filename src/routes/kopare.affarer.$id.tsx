@@ -17,12 +17,14 @@ import {
   signeraKopeavtal,
   signeraOverenskommelse,
   signeraHandpenningKvittens,
+  lamnaLikvid,
   Progress,
 } from "@/lib/affar-workflow";
 import { SignicatFlow } from "@/components/SignicatFlow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
 import { HandpenningKvittensDokument } from "@/components/HandpenningKvittensDokument";
+import { LikvidKvittensDokument } from "@/components/LikvidKvittensDokument";
 import { formatDatum, formatTelefon, isValidEmail } from "@/lib/format";
 
 export const Route = createFileRoute("/kopare/affarer/$id")({
@@ -138,6 +140,7 @@ function BuyerCaseDetail() {
   const [, forceRerender] = useState(0);
   const refresh = () => forceRerender((n) => n + 1);
   const [signOpen, setSignOpen] = useState<"kopeavtal" | "overenskommelse" | null>(null);
+  const [likvidBeloppInput, setLikvidBeloppInput] = useState("");
 
   const interest = getBuyerInterest(id);
   const deal = getDeal(id);
@@ -510,6 +513,75 @@ function BuyerCaseDetail() {
               TreLink har skickat underlaget till hyresvärden. Väntar på svar.
             </span>
           </Annotation>
+        </WireBox>
+      )}
+
+      {interest.status === "vill-ga-vidare" && !avslutad && deal.steg === "likvid" && (
+        <WireBox label="Likvid" className="mb-6">
+          {!deal.likvid?.begartAt ? (
+            <Annotation>
+              <span className="mt-2 block">TreLink förbereder begäran om resterande likvid.</span>
+            </Annotation>
+          ) : !deal.likvid?.inlamnadAt ? (
+            <>
+              <Annotation>
+                TreLink har bett om resterande likvid, 90 % av köpeskillingen. Ange det belopp du
+                betalat.
+              </Annotation>
+              <div className="mt-3 flex flex-wrap items-end gap-2">
+                <label className="block">
+                  <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    Belopp (kr)
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={likvidBeloppInput}
+                    onChange={(e) => setLikvidBeloppInput(e.target.value)}
+                    className="h-11 w-48 rounded-button border border-foreground/15 bg-card px-3 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                  />
+                </label>
+                <WireBtn
+                  disabled={!likvidBeloppInput.trim() || Number(likvidBeloppInput) <= 0}
+                  onClick={() => {
+                    const belopp = Number(likvidBeloppInput);
+                    if (!belopp || belopp <= 0) return;
+                    lamnaLikvid(id, belopp);
+                    setLikvidBeloppInput("");
+                    refresh();
+                  }}
+                  className={
+                    !likvidBeloppInput.trim() || Number(likvidBeloppInput) <= 0
+                      ? "cursor-not-allowed border-muted-foreground/30 text-muted-foreground hover:opacity-100"
+                      : ""
+                  }
+                >
+                  Skicka in →
+                </WireBtn>
+              </div>
+            </>
+          ) : (
+            <Annotation>
+              <span className="mt-2 block">Väntar på att TreLink verifierar beloppet.</span>
+            </Annotation>
+          )}
+        </WireBox>
+      )}
+
+      {interest.status === "vill-ga-vidare" && !avslutad && deal.likvid?.kvittensSkickadAt && (
+        <WireBox label="Kvittens likvid" className="mb-6">
+          <Annotation>TreLink har mejlat kvittens för den resterande likviden.</Annotation>
+          <div className="mt-3">
+            <LikvidKvittensDokument
+              interestId={id}
+              annonsId={interest.annonsId}
+              titel={info.titel}
+              adress={annons?.draft?.adress}
+              ort={info.ort}
+              pris={info.pris}
+              kopareBolag={kopareBolag}
+            />
+          </div>
         </WireBox>
       )}
 
