@@ -4,7 +4,7 @@
 // Användare redan är kopplad).
 
 export type AdminNotisKategori =
-  "anvandare" | "kopare" | "affarer" | "saljare-intresse" | "sparade";
+  "anvandare" | "kopare" | "affarer" | "saljare-intresse" | "saljare-affar" | "sparade";
 
 export type AdminNotis = {
   id: string;
