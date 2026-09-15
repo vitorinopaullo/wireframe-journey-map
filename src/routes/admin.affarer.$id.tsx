@@ -28,6 +28,7 @@ import {
   skickaLikvidKvittens,
   skapaOverenskommelse,
   skickaOverenskommelseForSignering,
+  signeraOverenskommelse,
   bekraftaTilltrade,
   lyftArvode,
   granskningKandidater,
@@ -40,6 +41,7 @@ import {
   Progress,
   type Steg,
 } from "@/lib/affar-workflow";
+import { SignicatFlow } from "@/components/SignicatFlow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
 import { HandpenningKvittensDokument } from "@/components/HandpenningKvittensDokument";
@@ -93,6 +95,7 @@ function AdminAffarDetail() {
 
   const [kopeavtalPreviewOpen, setKopeavtalPreviewOpen] = useState(false);
   const [overenskommelsePreviewOpen, setOverenskommelsePreviewOpen] = useState(false);
+  const [hyresvardSignOpen, setHyresvardSignOpen] = useState(false);
   const [handpenningKvittensPreviewOpen, setHandpenningKvittensPreviewOpen] = useState(false);
   const [likvidKvittensPreviewOpen, setLikvidKvittensPreviewOpen] = useState(false);
   const [arvodeKvittensPreviewOpen, setArvodeKvittensPreviewOpen] = useState(false);
@@ -873,11 +876,31 @@ function AdminAffarDetail() {
                 label="Säljaren har signerat"
                 done={deal.overenskommelse.signerat.saljare}
               />
-              <Annotation>
-                <span className="mt-2 block">
-                  Väntar på signering i köparens och säljarens egna vyer.
-                </span>
-              </Annotation>
+              <SignStatus
+                label="Hyresvärden har signerat"
+                done={deal.overenskommelse.signerat.hyresvard}
+              />
+              {deal.overenskommelse.signerat.kopare &&
+              deal.overenskommelse.signerat.saljare &&
+              !deal.overenskommelse.signerat.hyresvard ? (
+                <>
+                  <Annotation>
+                    <span className="mt-2 block">
+                      Köparen och säljaren har signerat. Hyresvärden saknar inloggning i plattformen
+                      — simulera hens signering nedan.
+                    </span>
+                  </Annotation>
+                  <WireBtn className="mt-4" onClick={() => setHyresvardSignOpen(true)}>
+                    Hyresvärdens signering (simulerad av TreLink) →
+                  </WireBtn>
+                </>
+              ) : (
+                <Annotation>
+                  <span className="mt-2 block">
+                    Väntar på signering i köparens och säljarens egna vyer.
+                  </span>
+                </Annotation>
+              )}
             </>
           )}
         </WireBox>
@@ -1305,6 +1328,30 @@ function AdminAffarDetail() {
           </div>
         </div>
       )}
+
+      <SignicatFlow
+        open={hyresvardSignOpen}
+        seller={{ bolag: saljareBolag }}
+        docTitle="Överenskommelse om överlåtelse"
+        doneHeading="Hyresvärdens signering är registrerad"
+        signerandePart="Hyresvärden"
+        renderDoc={() => (
+          <OverenskommelseDokument
+            saljareBolag={saljareBolag}
+            kopareBolag={kopareBolag}
+            verksamhet={verksamhet}
+            adress={adress}
+            ort={info.ort}
+            pris={info.pris}
+          />
+        )}
+        onCancel={() => setHyresvardSignOpen(false)}
+        onSigned={() => {
+          signeraOverenskommelse(id, "hyresvard");
+          setHyresvardSignOpen(false);
+          refresh();
+        }}
+      />
 
       <MailPreview open={!!mailPreview} mail={mailPreview} onClose={() => setMailPreview(null)} />
     </AdminLayout>
