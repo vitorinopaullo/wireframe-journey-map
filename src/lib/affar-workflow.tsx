@@ -97,6 +97,7 @@ export type ArvodeState = {
   belopp?: number;
   lyftAt?: string;
   kvittensSkapadAt?: string;
+  utbetaldAt?: string;
 };
 
 export type GranskningState = {
@@ -680,6 +681,26 @@ export function lyftArvode(interestId: string) {
     addNotis(
       "saljare-affar",
       `Arvodeskvittens skickad — ${annonsInfo(interest.annonsId).titel}`,
+      `/saljare/affarer/${interestId}`,
+    );
+  }
+  return deal;
+}
+
+/** Bara meningsfullt när deal.arvode?.lyftAt redan är satt (spärras av den
+ * anropande vyn, samma konvention som lyftArvode själv redan använder) —
+ * markerar att nettoutbetalningen till säljaren faktiskt har skett. */
+export function bekraftaUtbetalning(interestId: string) {
+  const deal = patchDeal(interestId, (d) => ({
+    ...d,
+    arvode: { ...d.arvode, utbetaldAt: new Date().toISOString() },
+  }));
+  logBoth(interestId, "TreLink", "TreLink bekräftade utbetalning till säljaren.");
+  const interest = getBuyerInterest(interestId);
+  if (interest) {
+    addNotis(
+      "saljare-affar",
+      `Utbetalning genomförd — ${deal.arvode?.belopp?.toLocaleString("sv-SE")} kr till ${annonsInfo(interest.annonsId).titel}`,
       `/saljare/affarer/${interestId}`,
     );
   }
