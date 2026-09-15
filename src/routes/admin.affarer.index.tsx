@@ -134,6 +134,8 @@ function GranskningKandidatRad({ annonsId, interestId }: { annonsId: string; int
         )}
       </td>
       <td className="px-3 py-2 font-mono">{kandidat.kKod}</td>
+      <td className="px-3 py-2">{account?.profil?.telefon || "—"}</td>
+      <td className="px-3 py-2">{account?.profil?.epost || "—"}</td>
       <td className="px-3 py-2">
         {bolag ? (
           <span className="text-sm">
@@ -194,6 +196,12 @@ function GranskningGruppKort({ grupp }: { grupp: GranskningGrupp }) {
               </th>
               <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                 Köpar-ID
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Mobil
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Mail
               </th>
               <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                 Bolag
