@@ -89,7 +89,9 @@ function BuyerCaseDetail() {
   const { id } = Route.useParams();
   const [, forceRerender] = useState(0);
   const refresh = () => forceRerender((n) => n + 1);
-  const [signOpen, setSignOpen] = useState<"kopeavtal" | "overenskommelse" | null>(null);
+  const [signOpen, setSignOpen] = useState<
+    "kopeavtal" | "overenskommelse" | "handpenning-kvittens" | null
+  >(null);
   const [likvidBeloppInput, setLikvidBeloppInput] = useState("");
 
   const interest = getBuyerInterest(id);
@@ -546,30 +548,12 @@ function BuyerCaseDetail() {
         deal.steg === "handpenning" &&
         deal.handpenning?.kvittensSkickadAt && (
           <WireBox label="Kvittens handpenning" className="mb-6">
-            {!deal.handpenning.kvittensSigneradAt ? (
+            {!deal.handpenning.kvittensSignerat?.kopare ? (
               <>
                 <Annotation>
                   TreLink har upprättat en kvittens för din handpenning. Signera den nedan.
                 </Annotation>
-                <div className="mt-3">
-                  <HandpenningKvittensDokument
-                    interestId={id}
-                    annonsId={interest.annonsId}
-                    titel={info.titel}
-                    adress={annons?.draft?.adress}
-                    ort={info.ort}
-                    pris={info.pris}
-                    kopareBolag={kopareBolag}
-                  />
-                </div>
-                <WireBtn
-                  className="mt-4"
-                  onClick={() => {
-                    if (!window.confirm("Signera kvittensen för handpenningen?")) return;
-                    signeraHandpenningKvittens(id);
-                    refresh();
-                  }}
-                >
+                <WireBtn className="mt-4" onClick={() => setSignOpen("handpenning-kvittens")}>
                   Signera kvittens →
                 </WireBtn>
               </>
@@ -759,6 +743,31 @@ function BuyerCaseDetail() {
         onCancel={() => setSignOpen(null)}
         onSigned={() => {
           signeraOverenskommelse(id, "kopare");
+          setSignOpen(null);
+          refresh();
+        }}
+      />
+
+      <SignicatFlow
+        open={signOpen === "handpenning-kvittens"}
+        seller={{ bolag: saljareBolag }}
+        docTitle="Handpenningskvittens"
+        doneHeading="Handpenningskvittensen är signerad"
+        signerandePart={kopareBolag}
+        renderDoc={() => (
+          <HandpenningKvittensDokument
+            interestId={id}
+            annonsId={interest.annonsId}
+            titel={info.titel}
+            adress={annons?.draft?.adress}
+            ort={info.ort}
+            pris={info.pris}
+            kopareBolag={kopareBolag}
+          />
+        )}
+        onCancel={() => setSignOpen(null)}
+        onSigned={() => {
+          signeraHandpenningKvittens(id, "kopare");
           setSignOpen(null);
           refresh();
         }}
