@@ -41,7 +41,7 @@ import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
 import { HandpenningKvittensDokument } from "@/components/HandpenningKvittensDokument";
 import { LikvidKvittensDokument } from "@/components/LikvidKvittensDokument";
 import { ArvodeKvittensDokument } from "@/components/ArvodeKvittensDokument";
-import { formatDatum, beloppProcentAvPris } from "@/lib/format";
+import { formatDatum, beloppProcentAvPris, formatOrgnr, ORGNR_REGEX } from "@/lib/format";
 import { MailPreview, type MailData } from "@/components/MailPreview";
 
 export const Route = createFileRoute("/admin/affarer/$id")({
@@ -100,6 +100,10 @@ function AdminAffarDetail() {
 
   const [bolagVarde, setBolagVarde] = useState(buyerAccount?.profil?.bolag ?? "");
   const [orgnrVarde, setOrgnrVarde] = useState(buyerAccount?.profil?.orgnr ?? "");
+  const [orgnrTouched, setOrgnrTouched] = useState(false);
+  const orgnrFelFormat = orgnrVarde.trim() !== "" && !ORGNR_REGEX.test(orgnrVarde.trim());
+  const orgnrError =
+    orgnrTouched && orgnrFelFormat ? "Ogiltigt format. Ange som XXXXXX-XXXX." : undefined;
 
   if (!interest || !info) {
     return (
@@ -372,9 +376,19 @@ function AdminAffarDetail() {
                 <input
                   type="text"
                   value={orgnrVarde}
-                  onChange={(e) => setOrgnrVarde(e.target.value)}
-                  className="h-11 w-full rounded-button border border-foreground/15 bg-card px-3 text-sm focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+                  onChange={(e) => setOrgnrVarde(formatOrgnr(e.target.value))}
+                  onBlur={() => setOrgnrTouched(true)}
+                  className={`h-11 w-full rounded-button border bg-card px-3 text-sm focus:outline-none focus:ring-2 ${
+                    orgnrError
+                      ? "border-destructive focus:border-destructive focus:ring-destructive/40"
+                      : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
+                  }`}
                 />
+                {orgnrError && (
+                  <span className="mt-1 block font-mono text-[10px] text-destructive">
+                    {orgnrError}
+                  </span>
+                )}
               </label>
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-3">
