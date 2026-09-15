@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireField, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getSession, getAccountByUserId, upsertAdminAccount } from "@/lib/mock-auth";
+import { FileUploadRow } from "@/components/FileUploadRow";
 import { Check } from "lucide-react";
 
 function isSafeNext(v: string | undefined): v is string {
@@ -51,6 +52,9 @@ function Profile() {
   const fullName = session?.bankid ? `${session.bankid.fornamn} ${session.bankid.efternamn}` : "—";
   const [bolag, setBolag] = useState(() => account?.profil?.bolag ?? "");
   const [orgnr, setOrgnr] = useState(() => account?.profil?.orgnr ?? "");
+  const [foretagspresentation, setForetagspresentation] = useState(
+    () => account?.profil?.foretagspresentation ?? "",
+  );
   const [bolagSparat, setBolagSparat] = useState(false);
   const bolagKravsForKop = isSafeNext(next);
 
@@ -133,6 +137,24 @@ function Profile() {
                   </span>
                 </Annotation>
               )}
+              <div className="border-t border-foreground/10 pt-3">
+                <FileUploadRow
+                  label="Företagspresentation (frivilligt)"
+                  fileName={foretagspresentation}
+                  onUpload={(filnamn) => {
+                    if (!session) return;
+                    upsertAdminAccount(session.userId, {
+                      profil: { ...account?.profil, foretagspresentation: filnamn },
+                    });
+                    setForetagspresentation(filnamn);
+                  }}
+                />
+                <Annotation>
+                  <span className="mt-1 block">
+                    Kan hjälpa till att snabba upp granskningen senare — krävs inte nu.
+                  </span>
+                </Annotation>
+              </div>
             </div>
           </WireBox>
         </aside>
