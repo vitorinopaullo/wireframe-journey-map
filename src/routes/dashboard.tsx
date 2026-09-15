@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, Annotation } from "@/components/wire";
 import { readAnnonser, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib/annons-workflow";
 import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY } from "@/lib/kopare-workflow";
+import { buildAffarer } from "@/lib/affar-workflow";
 import { getSession } from "@/lib/mock-auth";
 
 const searchSchema = z.object({
@@ -56,6 +57,22 @@ function Dashboard() {
     minaAnnonser.some((a) => a.id === i.annonsId),
   );
 
+  // Samma beräkning som respektive roll använder på sin egen
+  // affärslista (kopare.affarer.index.tsx / saljare.affarer.index.tsx),
+  // så korten här alltid speglar samma antal.
+  const minaKopareAffarer = useMemo(
+    () => buildAffarer(buyerInterests.filter((i) => i.userId === userId)),
+    [buyerInterests, userId],
+  );
+  const minaSaljareInteressen = useMemo(
+    () => buyerInterests.filter((i) => minaAnnonser.some((a) => a.id === i.annonsId)),
+    [buyerInterests, minaAnnonser],
+  );
+  const minaSaljareAffarer = useMemo(
+    () => buildAffarer(minaSaljareInteressen),
+    [minaSaljareInteressen],
+  );
+
   return (
     <AppLayout mode={mode}>
       <PageHeader
@@ -70,7 +87,12 @@ function Dashboard() {
       {mode === "kopare" ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <DashCard title="Sparade objekt" value="7" link="/kopare/favoriter" hint="Spara och jämför" />
-          <DashCard title="Mina affärer" value="1" link="/kopare/affarer" hint="Pågående" />
+          <DashCard
+            title="Mina affärer"
+            value={String(minaKopareAffarer.length)}
+            link="/kopare/affarer"
+            hint="Pågående"
+          />
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -86,7 +108,12 @@ function Dashboard() {
             link="/saljare/intressenter"
             hint={intresseanmalningarHint(minaIntresseanmalningar)}
           />
-          <DashCard title="Mina affärer" value="0" link="/saljare/affarer" hint="Inga affärer än" />
+          <DashCard
+            title="Mina affärer"
+            value={String(minaSaljareAffarer.length)}
+            link="/saljare/affarer"
+            hint={minaSaljareAffarer.length === 0 ? "Inga affärer än" : "Pågående"}
+          />
         </div>
       )}
 
