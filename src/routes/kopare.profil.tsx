@@ -109,21 +109,21 @@ function Profile() {
           </WireBox>
         </div>
         <aside>
-          <WireBox label={bolagKravsForKop ? "Företag (krävs för att slutföra köpet)" : "Företag (frivilligt)"}>
-            {bolagKravsForKop && (
-              <p className="mb-3 text-sm text-[var(--color-primary)]">
-                Fyll i bolagsuppgifter för att kunna slutföra ditt köp.
-              </p>
-            )}
+          <WireBox label="Företag (frivilligt)">
+            <p className="mb-3 text-sm text-muted-foreground">
+              Du behöver inget bolag för att komma igång. När du anmäler intresse för ett objekt
+              frågar vi om du redan har ett bolag, vill köpa ett hyllbolag, eller vill starta ett
+              nytt.
+            </p>
             <div className="space-y-3">
               <EditableField label="Företagsnamn" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
               <EditableField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
               <Annotation>
                 <span className="mt-1 block">
-                  Lägg till org.nr om du köper via bolag — sparar tid vid nästa affär.
+                  Lägg till org.nr om du redan har ett bolag — sparar tid vid nästa affär.
                 </span>
               </Annotation>
-              <WireBtn onClick={sparaBolag} disabled={bolagKravsForKop && !bolag.trim()}>
+              <WireBtn onClick={sparaBolag}>
                 {bolagKravsForKop ? "Spara och fortsätt →" : "Spara"}
               </WireBtn>
               {bolagSparat && !bolagKravsForKop && (
