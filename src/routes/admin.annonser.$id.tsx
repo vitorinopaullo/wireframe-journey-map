@@ -1,11 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Pencil, Eye, FileCheck, AlertTriangle, Check, CheckCircle2, X, Clock, PartyPopper, Download, Phone, Mail } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { ProcessStepper } from "@/components/ProcessStepper";
 import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, begarKomplettering, type WorkflowState } from "@/lib/annons-workflow";
-import { readAdminAccounts } from "@/lib/mock-auth";
+import { readAdminAccounts, devLoginAsAccount } from "@/lib/mock-auth";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
 import { GRUPP_MAT_TYPER, GRUPP_SKONHET_TYPER } from "@/lib/nyckeltal";
@@ -566,8 +566,10 @@ function BilderOversikt({
 }
 
 function AdminAnnonsDetail() {
+  const navigate = useNavigate();
   const { id } = Route.useParams();
   const [item, setItem] = useState<any | null>(null);
+  const [devLoginMessage, setDevLoginMessage] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const [activeDoc, setActiveDoc] = useState<string | null>(null);
   const [docKomplText, setDocKomplText] = useState("");
@@ -1097,6 +1099,22 @@ function AdminAnnonsDetail() {
     return null;
   }
 
+  // Dev-only genväg — hoppar in i säljarens session för testning under
+  // Granskning utan att behöva komma ihåg vilken mock-BankID som äger vad.
+  // Om kontot inte finns (t.ex. en seedad demo-annons utan riktigt konto)
+  // visas ett förklarande meddelande istället för att navigera till en tom
+  // sida.
+  const devLoginAsSeller = () => {
+    setDevLoginMessage(null);
+    if (!item.agarUserId || !devLoginAsAccount(item.agarUserId, "saljare")) {
+      setDevLoginMessage(
+        "Den här annonsen har inget riktigt inloggningsbart konto för säljaren (t.ex. en seedad demo-annons).",
+      );
+      return;
+    }
+    navigate({ to: "/saljare/annons/$id", params: { id } });
+  };
+
   return (
     <AdminLayout>
       <Link to="/admin/annonser" className="mb-4 inline-block text-xs text-muted-foreground underline hover:text-foreground">
@@ -1108,6 +1126,20 @@ function AdminAnnonsDetail() {
         title={item.titel ?? "Okänd annons"}
         subtitle={st ? stateLabel[st] : "Status okänd"}
       />
+
+      {import.meta.env.DEV && (
+        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-card border border-foreground/10 bg-muted/20 px-3 py-2">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Dev · logga in som
+          </span>
+          <WireBtn variant="secondary" onClick={devLoginAsSeller}>
+            Logga in som säljaren →
+          </WireBtn>
+          {devLoginMessage && (
+            <span className="w-full text-xs text-destructive">{devLoginMessage}</span>
+          )}
+        </div>
+      )}
 
       <ProcessStepper state={st} />
       {st === "avvisad" && <RejectedBanner item={item} />}
