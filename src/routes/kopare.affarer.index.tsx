@@ -12,6 +12,7 @@ import {
   type Affar,
 } from "@/lib/affar-workflow";
 import { formatArendeRef } from "@/lib/format";
+import { markKategoriRead } from "@/lib/admin-notiser";
 import { Clock, Check } from "lucide-react";
 
 export const Route = createFileRoute("/kopare/affarer/")({
@@ -106,6 +107,10 @@ function AffarsKort({ a }: { a: Affar }) {
 function BuyerDeals() {
   const [flik, setFlik] = useState<"dig" | "andra" | "klar">("dig");
   const [interests, setInterests] = useState<BuyerInterest[]>(() => readBuyerInterests(getSession()?.userId));
+
+  useEffect(() => {
+    markKategoriRead("kopare-affar");
+  }, []);
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
