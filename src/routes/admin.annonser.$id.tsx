@@ -1109,7 +1109,8 @@ function AdminAnnonsDetail() {
         subtitle={st ? stateLabel[st] : "Status okänd"}
       />
 
-      {st === "avvisad" ? <RejectedBanner item={item} /> : <ProcessStepper state={st} />}
+      <ProcessStepper state={st} />
+      {st === "avvisad" && <RejectedBanner item={item} />}
 
       {sellerAccount ? (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-button border border-foreground/15 px-3 py-2 text-sm">

@@ -2,7 +2,7 @@ import { Check } from "lucide-react";
 import { WireBox } from "@/components/wire";
 import type { WorkflowState } from "@/lib/annons-workflow";
 
-const PROCESS_STEPS: { label: string; states: WorkflowState[] }[] = [
+export const PROCESS_STEPS: { label: string; states: WorkflowState[] }[] = [
   { label: "Granskning", states: ["granskas", "komplettering"] },
   { label: "Uppdragsavtal", states: ["avtal-vantar-signering"] },
   { label: "Hyresvärd", states: ["hyresvard-notifiering"] },
@@ -34,31 +34,48 @@ function StepDot({ status }: { status: "done" | "active" | "pending" }) {
 }
 
 /** Dot + label + chevron status row (Granskning → Uppdragsavtal →
- * Annonstext → Publicerad) — the at-a-glance process overview shared
+ * Hyresvärd → Publicerad) — the at-a-glance process overview shared
  * between TreLink's admin view of an annons and the seller's own view of
- * the same annons. Renders nothing for "avvisad" (see RejectedBanner-style
- * handling in admin.annonser.$id.tsx for that state instead). */
+ * the same annons.
+ *
+ * "komplettering" and "avvisad" both sit at step 0 (Granskning) but get
+ * distinct visual treatment there rather than reading as "active":
+ * komplettering shows an amber label plus a note that a resubmission is
+ * expected; avvisad shows a muted label only — the "ärendet är stängt"
+ * explanation itself is left to each page's own avvisad messaging
+ * (RejectedBanner on admin.annonser.$id.tsx, the seller's own
+ * avvisad-status section on saljare.annons.$id.tsx) so it isn't said
+ * twice in two different visual styles. */
 export function ProcessStepper({ state }: { state: WorkflowState | null }) {
-  if (state === "avvisad") {
-    return null;
-  }
+  const isKomplettering = state === "komplettering";
+  const isAvvisad = state === "avvisad";
   const currentStep = stepIndexForState(state);
   return (
     <WireBox className="mb-6" variant="dashed">
       <div className="flex flex-wrap items-center gap-3">
         {PROCESS_STEPS.map((s, i) => {
-          const status: "done" | "active" | "pending" =
-            i < currentStep ? "done" : i === currentStep ? "active" : "pending";
+          const isSpecialStep = (isKomplettering || isAvvisad) && i === 0;
+          const status: "done" | "active" | "pending" = isSpecialStep
+            ? "pending"
+            : i < currentStep
+              ? "done"
+              : i === currentStep
+                ? "active"
+                : "pending";
           return (
             <div key={s.label} className="flex items-center gap-2">
               <StepDot status={status} />
               <span
                 className={`text-xs ${
-                  status === "active"
-                    ? "font-semibold text-foreground"
-                    : status === "done"
-                      ? "text-foreground"
-                      : "text-muted-foreground"
+                  isKomplettering && i === 0
+                    ? "font-semibold text-amber-700 dark:text-amber-500"
+                    : isAvvisad && i === 0
+                      ? "font-semibold text-foreground/70"
+                      : status === "active"
+                        ? "font-semibold text-foreground"
+                        : status === "done"
+                          ? "text-foreground"
+                          : "text-muted-foreground"
                 }`}
               >
                 {s.label}
@@ -68,6 +85,11 @@ export function ProcessStepper({ state }: { state: WorkflowState | null }) {
           );
         })}
       </div>
+      {isKomplettering && (
+        <div className="mt-3 border-t border-amber-500/40 pt-2 text-xs font-medium text-amber-700 dark:text-amber-500">
+          ↩ Komplettering begärd — åtgärda och skicka in på nytt
+        </div>
+      )}
     </WireBox>
   );
 }
