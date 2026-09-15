@@ -17,6 +17,7 @@ import { SignicatFlow } from "@/components/SignicatFlow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
 import { HandpenningKvittensDokument } from "@/components/HandpenningKvittensDokument";
+import { LikvidKvittensDokument } from "@/components/LikvidKvittensDokument";
 import { formatDatum } from "@/lib/format";
 
 export const Route = createFileRoute("/saljare/affarer/$id")({
@@ -151,6 +152,37 @@ function SellerCaseDetail() {
           </Annotation>
         </WireBox>
       )}
+
+      {interest.status === "vill-ga-vidare" &&
+        !deal.avvisad &&
+        (deal.steg === "likvid" || deal.likvid?.kvittensSkickadAt) && (
+          <WireBox label="Likvid" className="mb-6">
+            {!deal.likvid?.kvittensSkickadAt ? (
+              <Annotation>
+                <span className="mt-2 block">
+                  TreLink hanterar den resterande likviden med köparen. Du får en avräkning här när
+                  den är klar.
+                </span>
+              </Annotation>
+            ) : (
+              <>
+                <Annotation>TreLink har mejlat avräkning för den resterande likviden.</Annotation>
+                <div className="mt-3">
+                  <LikvidKvittensDokument
+                    interestId={id}
+                    annonsId={interest.annonsId}
+                    mottagare="saljare"
+                    titel={annonsTitel}
+                    adress={annons?.draft?.adress}
+                    ort={info.ort}
+                    pris={info.pris}
+                    saljareBolag={saljareBolag}
+                  />
+                </div>
+              </>
+            )}
+          </WireBox>
+        )}
 
       {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "signering" && (
         <WireBox label="Överenskommelse om överlåtelse" className="mb-6">
