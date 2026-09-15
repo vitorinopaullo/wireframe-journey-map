@@ -13,7 +13,7 @@ export const Route = createFileRoute("/saljare/intressenter")({
 
 const STATUS_LABEL: Record<BuyerInterestStatus, string> = {
   "väntar-pdf": "Ny",
-  "vill-ga-vidare": "Matchad",
+  "vill-ga-vidare": "Köpavtal",
   avböjt: "Avvisad",
 };
 
