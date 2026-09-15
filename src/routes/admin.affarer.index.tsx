@@ -331,7 +331,7 @@ function AdminAffarer() {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  const affarer = useMemo(() => buildAffarer(interests), [interests]);
+  const affarer = useMemo(() => buildAffarer(interests, "admin"), [interests]);
   const avslutade = useMemo(() => buildAvslutade(interests, "admin"), [interests]);
   const { grupper, ovriga } = useMemo(() => groupGranskning(affarer), [affarer]);
 

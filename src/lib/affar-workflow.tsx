@@ -685,11 +685,14 @@ export function harAktivAffar(annonsId: string): boolean {
   );
 }
 
-export function buildAffarer(interests: BuyerInterest[]): Affar[] {
+export function buildAffarer(
+  interests: BuyerInterest[],
+  viewer: "kopare" | "saljare" | "admin" = "kopare",
+): Affar[] {
   return interests
     .filter(
       (i) =>
-        i.status === "väntar-pdf" ||
+        (i.status === "väntar-pdf" && viewer !== "admin") ||
         (i.status === "vill-ga-vidare" && !getDeal(i.id).avvisad && !getDeal(i.id).avvisadAvTrelink),
     )
     .map((i) => {
