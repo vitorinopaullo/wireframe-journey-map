@@ -58,7 +58,7 @@ export type HandpenningState = {
   // skapa/skicka/signeraHandpenningKvittens.
   kvittensSkapadAt?: string;
   kvittensSkickadAt?: string;
-  kvittensSigneradAt?: string;
+  kvittensSignerat?: PartSign;
   kvittensSkickadTillSaljareAt?: string;
 };
 
@@ -397,30 +397,45 @@ export function skickaHandpenningKvittensForSignering(interestId: string) {
   return deal;
 }
 
-/** Köparen signerar kvittensen — vidarebefordras i samma steg automatiskt
- * till säljaren (det finns inget separat "skicka till säljare"-steg; en
- * signerad handpenningskvittens ska alltid omedelbart vara synlig för
- * säljaren, samma mönster som att TreLink inte behöver ett extra klick för
- * att meddela nästa part när en signering slutförs). */
-export function signeraHandpenningKvittens(interestId: string) {
+/** Både köpare och säljare signerar kvittensen via Signicat, samma mönster
+ * som signeraKopeavtal/signeraOverenskommelse. Till skillnad från dessa två
+ * finns dock ingen "skicka till säljare"-steg för kvittensen — den
+ * vidarebefordras till säljaren automatiskt när köparen signerar (säljaren
+ * kan varken se eller signera den innan dess), så
+ * kvittensSkickadTillSaljareAt sätts bara vid köparens signatur, inte vid
+ * säljarens. */
+export function signeraHandpenningKvittens(interestId: string, part: "kopare" | "saljare") {
   const now = new Date().toISOString();
-  const deal = patchDeal(interestId, (d) => ({
-    ...d,
-    handpenning: {
-      ...d.handpenning,
-      kvittensSigneradAt: now,
-      kvittensSkickadTillSaljareAt: now,
-    },
-  }));
-  logBoth(interestId, "Köpare", "Du signerade handpenningskvittensen.");
-  logBoth(interestId, "System", "Kvittensen skickades till säljaren.");
-  const interest = getBuyerInterest(interestId);
-  if (interest) {
-    addNotis(
-      "saljare-affar",
-      `Handpenningskvittens mottagen — ${annonsInfo(interest.annonsId).titel}`,
-      `/saljare/affarer/${interestId}`,
-    );
+  const deal = patchDeal(interestId, (d) => {
+    const kvittensSignerat = {
+      ...(d.handpenning?.kvittensSignerat ?? { kopare: false, saljare: false }),
+      [part]: true,
+    };
+    return {
+      ...d,
+      handpenning:
+        part === "kopare"
+          ? { ...d.handpenning, kvittensSignerat, kvittensSkickadTillSaljareAt: now }
+          : { ...d.handpenning, kvittensSignerat },
+    };
+  });
+  logBoth(
+    interestId,
+    part === "kopare" ? "Köpare" : "TreLink",
+    part === "kopare"
+      ? "Du signerade handpenningskvittensen."
+      : "Säljaren signerade handpenningskvittensen.",
+  );
+  if (part === "kopare") {
+    logBoth(interestId, "System", "Kvittensen skickades till säljaren.");
+    const interest = getBuyerInterest(interestId);
+    if (interest) {
+      addNotis(
+        "saljare-affar",
+        `Handpenningskvittens väntar på din signering — ${annonsInfo(interest.annonsId).titel}`,
+        `/saljare/affarer/${interestId}`,
+      );
+    }
   }
   return deal;
 }
@@ -663,7 +678,7 @@ export function devJumpToSteg(interestId: string, target: Steg): DealState {
         bekraftadMottagenAt: now,
         kvittensSkapadAt: now,
         kvittensSkickadAt: now,
-        kvittensSigneradAt: now,
+        kvittensSignerat: { kopare: true, saljare: true },
         kvittensSkickadTillSaljareAt: now,
       };
     }
