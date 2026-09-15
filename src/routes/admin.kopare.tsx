@@ -126,11 +126,11 @@ function KandidatRad({ i }: { i: BuyerInterest }) {
       <td className="px-3 py-2">
         {i.pdfOppnadAt ? (
           <span className="flex items-center gap-1 text-sm">
-            <Check className="h-3.5 w-3.5" /> Öppnat
+            <Check className="h-3.5 w-3.5" /> PDF öppnat
           </span>
         ) : (
           <span className="inline-flex items-center border border-destructive/60 bg-destructive/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-destructive">
-            Ej öppnat — ring säljaren
+            Väntar på beslut — ring säljaren
           </span>
         )}
       </td>
@@ -191,7 +191,7 @@ function AnnonsGruppKort({ grupp }: { grupp: AnnonsGrupp }) {
                 Mail
               </th>
               <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                PDF
+                Status
               </th>
               <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                 Datum
