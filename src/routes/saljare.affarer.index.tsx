@@ -17,6 +17,7 @@ import {
   type Affar,
 } from "@/lib/affar-workflow";
 import { formatArendeRef } from "@/lib/format";
+import { markKategoriRead } from "@/lib/admin-notiser";
 import { Clock } from "lucide-react";
 
 export const Route = createFileRoute("/saljare/affarer/")({
@@ -90,6 +91,10 @@ function AffarsKort({ a }: { a: Affar }) {
 /* ---------- sida ---------- */
 function SellerDeals() {
   const [interests, setInterests] = useState<BuyerInterest[]>(() => readBuyerInterests());
+
+  useEffect(() => {
+    markKategoriRead("saljare-affar");
+  }, []);
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
