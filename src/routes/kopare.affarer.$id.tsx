@@ -662,7 +662,16 @@ function BuyerCaseDetail() {
             </>
           ) : (
             <Annotation>
-              <span className="mt-2 block">Du har signerat. Väntar på att säljaren signerar.</span>
+              <span className="mt-2 block">
+                Du har signerat. Väntar på{" "}
+                {[
+                  !deal.overenskommelse.signerat.saljare && "säljaren",
+                  !deal.overenskommelse.signerat.hyresvard && "hyresvärden",
+                ]
+                  .filter(Boolean)
+                  .join(" och ")}
+                .
+              </span>
             </Annotation>
           )}
         </WireBox>
