@@ -9,7 +9,7 @@ import {
   uppgraderaKategori,
   begarKomplettering as begarAnnonsKomplettering,
 } from "@/lib/annons-workflow";
-import { getAccountByUserId, upsertAdminAccount } from "@/lib/mock-auth";
+import { getAccountByUserId, upsertAdminAccount, devLoginAsAccount } from "@/lib/mock-auth";
 import {
   annonsInfo,
   getDeal,
@@ -95,6 +95,7 @@ function AdminAffarDetail() {
   const [mailPreview, setMailPreview] = useState<MailData | null>(null);
   const [kompletteringOpen, setKompletteringOpen] = useState(false);
   const [kompletteringText, setKompletteringText] = useState("");
+  const [devLoginMessage, setDevLoginMessage] = useState<string | null>(null);
 
   const { interest, annons, deal, buyerAccount, seller, info } = useAffarData(id);
 
@@ -115,6 +116,26 @@ function AdminAffarDetail() {
       </AdminLayout>
     );
   }
+
+  // Dev-only genväg — hoppar in i köparens/säljarens session för testning
+  // utan att behöva komma ihåg vilken mock-BankID som äger vad. Om kontot
+  // inte finns (t.ex. en seedad demo-annons utan riktigt konto) visas ett
+  // förklarande meddelande istället för att navigera till en tom sida.
+  const devLoginAs = (
+    userId: string | undefined,
+    role: "kopare" | "saljare",
+    target: "/kopare/affarer/$id" | "/saljare/affarer/$id",
+    aktor: "köparen" | "säljaren",
+  ) => {
+    setDevLoginMessage(null);
+    if (!userId || !devLoginAsAccount(userId, role)) {
+      setDevLoginMessage(
+        `Den här affären har inget riktigt inloggningsbart konto för ${aktor} (t.ex. en seedad demo-annons).`,
+      );
+      return;
+    }
+    navigate({ to: target, params: { id } });
+  };
 
   const kopareBolag = buyerAccount?.profil?.bolag;
   const kopareOrgnr = buyerAccount?.profil?.orgnr;
@@ -229,6 +250,31 @@ function AdminAffarDetail() {
         title={info.titel}
         subtitle={`${info.pris} kr · ${info.ort} · köpare ${statusLabel[interest.status]}`}
       />
+
+      {import.meta.env.DEV && (
+        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-card border border-foreground/10 bg-muted/20 px-3 py-2">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Dev · logga in som
+          </span>
+          <WireBtn
+            variant="secondary"
+            onClick={() => devLoginAs(interest.userId, "kopare", "/kopare/affarer/$id", "köparen")}
+          >
+            Logga in som köparen →
+          </WireBtn>
+          <WireBtn
+            variant="secondary"
+            onClick={() =>
+              devLoginAs(annons?.agarUserId, "saljare", "/saljare/affarer/$id", "säljaren")
+            }
+          >
+            Logga in som säljaren →
+          </WireBtn>
+          {devLoginMessage && (
+            <span className="w-full text-xs text-destructive">{devLoginMessage}</span>
+          )}
+        </div>
+      )}
 
       {!annons && (
         <WireBox className="mb-6 border-amber-500/70 bg-amber-50/60 dark:bg-amber-500/10">
