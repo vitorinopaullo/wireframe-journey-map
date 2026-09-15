@@ -3,11 +3,11 @@ import { X, Lock, Upload, Paperclip, FileText, Mail, CheckCircle2, AlertTriangle
 import { useEffect, useState, type ComponentType } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
+import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { SignicatFlow } from "@/components/SignicatFlow";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
-import { ProcessStepper } from "@/components/ProcessStepper";
+import { ProcessStepper, PROCESS_STEPS } from "@/components/ProcessStepper";
 import {
   getAnnons,
   logEntry,
@@ -34,13 +34,6 @@ type OnboardingSaljareData = {
 export const Route = createFileRoute("/saljare/annons/$id")({
   component: SellerAnnonsDetail,
 });
-
-const flowSteps: { state: WorkflowState; label: string }[] = [
-  { state: "granskas", label: "Granskning" },
-  { state: "avtal-vantar-signering", label: "Uppdragsavtal" },
-  { state: "hyresvard-notifiering", label: "Hyresvärd" },
-  { state: "publicerad", label: "Publicerad" },
-];
 
 const stateOrder: Record<WorkflowState, number> = {
   "granskas": 0,
@@ -128,7 +121,6 @@ function SellerAnnonsDetail() {
 
   const wf: WorkflowData = item.workflow;
   const st: WorkflowState = wf?.state ?? "granskas";
-  const currentStep = stateOrder[st];
   const refresh = () => setTick((t) => t + 1);
 
   const docSpecs = buildDocSpecs((item.cat ?? item.draft?.cat) as CatId | undefined, item.draft?.verksamhet);
@@ -374,60 +366,14 @@ function SellerAnnonsDetail() {
             onChange={(e) => jumpTo(e.target.value as WorkflowState)}
             className="border border-foreground/30 bg-card px-2 py-1 text-xs"
           >
-            {flowSteps.map((s) => (
-              <option key={s.state} value={s.state}>{s.label}</option>
+            {PROCESS_STEPS.map((s) => (
+              <option key={s.label} value={s.states[0]}>{s.label}</option>
             ))}
             <option value="komplettering">Komplettering krävs</option>
             <option value="avvisad">Avvisad</option>
           </select>
         </div>
       )}
-
-      {/* Flödesindikator */}
-      <WireBox className="mb-6" variant="dashed">
-        <div className="flex flex-wrap items-center gap-3">
-          {flowSteps.map((s, i) => {
-            const isKomp = st === "komplettering" && i === 0;
-            const isAvvisad = st === "avvisad" && i === 0;
-            const dotState = isKomp || isAvvisad
-              ? "pending"
-              : i < currentStep
-              ? "done"
-              : i === currentStep
-              ? "active"
-              : "pending";
-            return (
-              <div key={s.state} className="flex items-center gap-2">
-                <StatusDot state={dotState} />
-                <span
-                  className={`text-xs ${
-                    isKomp
-                      ? "font-semibold text-amber-700 dark:text-amber-500"
-                      : isAvvisad
-                      ? "font-semibold text-foreground/70"
-                      : i === currentStep
-                      ? "font-semibold"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {s.label}
-                </span>
-                {i < flowSteps.length - 1 && <span className="text-muted-foreground/40">›</span>}
-              </div>
-            );
-          })}
-        </div>
-        {st === "komplettering" && (
-          <div className="mt-3 border-t border-amber-500/40 pt-2 text-xs font-medium text-amber-700 dark:text-amber-500">
-            ↩ Komplettering begärd — åtgärda och skicka in på nytt
-          </div>
-        )}
-        {st === "avvisad" && (
-          <div className="mt-3 border-t border-foreground/10 pt-2 text-xs font-medium text-foreground/70">
-            <X className="inline-block h-3.5 w-3.5 mr-1 align-middle" />Avvisad — ärendet är stängt
-          </div>
-        )}
-      </WireBox>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-4">
