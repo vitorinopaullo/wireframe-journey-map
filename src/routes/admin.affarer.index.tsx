@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type MouseEventHandler } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireTag, WireBtn, Annotation } from "@/components/wire";
 import { markKategoriRead } from "@/lib/admin-notiser";
@@ -14,6 +14,10 @@ import {
   buildAffarer,
   buildAvslutade,
   granskningKandidater,
+  getDeal,
+  matchaAffar,
+  avvisaKandidat,
+  kanMatchaKandidat,
   STEG_LABEL,
   type Vantar,
   type Affar,
@@ -110,13 +114,36 @@ function groupGranskning(affarer: Affar[]): { grupper: GranskningGrupp[]; ovriga
   return { grupper, ovriga };
 }
 
-function GranskningKandidatRad({ annonsId, interestId }: { annonsId: string; interestId: string }) {
+function GranskningKandidatRad({
+  annonsId,
+  interestId,
+  onAction,
+}: {
+  annonsId: string;
+  interestId: string;
+  onAction: () => void;
+}) {
   const navigate = useNavigate();
   const kandidat = granskningKandidater(annonsId).find((k) => k.interestId === interestId);
   if (!kandidat) return null;
   const account = getAccountByUserId(kandidat.userId);
   const bolag = account?.profil?.bolag;
   const orgnr = account?.profil?.orgnr;
+  const deal = getDeal(interestId);
+  const kanMatcha = kanMatchaKandidat(deal);
+
+  const godkann: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation();
+    matchaAffar(interestId);
+    onAction();
+  };
+  const avvisa: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation();
+    if (!window.confirm("Avvisa den här kandidaten? Köparen ser affären som avslutad.")) return;
+    avvisaKandidat(interestId);
+    onAction();
+  };
+
   return (
     <tr
       onClick={
@@ -155,11 +182,36 @@ function GranskningKandidatRad({ annonsId, interestId }: { annonsId: string; int
           <span className="text-xs text-muted-foreground">Väntar på uppladdning</span>
         )}
       </td>
+      <td className="px-3 py-2">
+        <div className="flex flex-wrap gap-2">
+          <WireBtn variant="ghost" onClick={avvisa}>
+            Avvisa
+          </WireBtn>
+          <WireBtn
+            variant="primary"
+            disabled={!kanMatcha}
+            onClick={godkann}
+            className={
+              !kanMatcha
+                ? "cursor-not-allowed border-muted-foreground/30 bg-muted/30 text-muted-foreground hover:opacity-100"
+                : ""
+            }
+          >
+            {kanMatcha ? "Godkänn →" : "Godkänn (krav saknas)"}
+          </WireBtn>
+        </div>
+      </td>
     </tr>
   );
 }
 
-function GranskningGruppKort({ grupp }: { grupp: GranskningGrupp }) {
+function GranskningGruppKort({
+  grupp,
+  onAction,
+}: {
+  grupp: GranskningGrupp;
+  onAction: () => void;
+}) {
   const kandidater = granskningKandidater(grupp.annonsId);
   return (
     <details className="group border border-foreground/30 bg-background">
@@ -209,6 +261,9 @@ function GranskningGruppKort({ grupp }: { grupp: GranskningGrupp }) {
               <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                 Företagspresentation
               </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Åtgärd
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-dashed divide-muted-foreground/30">
@@ -217,6 +272,7 @@ function GranskningGruppKort({ grupp }: { grupp: GranskningGrupp }) {
                 key={k.interestId}
                 annonsId={grupp.annonsId}
                 interestId={k.interestId}
+                onAction={onAction}
               />
             ))}
           </tbody>
@@ -275,6 +331,9 @@ function AdminAffarer() {
     patchBuyerInterest(id, (item) => ({ ...item, remarketingTag: !item.remarketingTag }));
     setInterests(readBuyerInterests());
   }
+  function refreshInterests() {
+    setInterests(readBuyerInterests());
+  }
   const publicerade = useMemo(
     () => annonser.filter((a) => a.workflow?.state === "publicerad" && !a.reserverad),
     [annonser],
@@ -307,7 +366,11 @@ function AdminAffarer() {
             {(grupper.length > 0 || ovriga.length > 0) && (
               <div className="space-y-3">
                 {grupper.map((grupp) => (
-                  <GranskningGruppKort key={grupp.annonsId} grupp={grupp} />
+                  <GranskningGruppKort
+                    key={grupp.annonsId}
+                    grupp={grupp}
+                    onAction={refreshInterests}
+                  />
                 ))}
                 {ovriga.map((a) => (
                   <AffarsRad key={a.id} a={a} />
