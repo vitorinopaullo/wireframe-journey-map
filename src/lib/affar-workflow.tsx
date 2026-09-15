@@ -551,9 +551,10 @@ export function skapaLikvidKvittens(interestId: string) {
   return deal;
 }
 
-/** Skickar (mejlar) kvittensen till köparen och avancerar samtidigt till
- * signering — till skillnad från handpenningskvittensen finns inget separat
- * signeringssteg här, dokumentet är informationellt. */
+/** Skickar (mejlar) kvittensen till köparen och avräkningen till säljaren —
+ * samma belopp, samma kvittensSkickadAt, en enda åtgärd — och avancerar
+ * samtidigt till signering. Till skillnad från handpenningskvittensen finns
+ * inget separat signeringssteg här, dokumenten är informationella. */
 export function skickaLikvidKvittens(interestId: string) {
   const deal = patchDeal(interestId, (d) => ({
     ...d,
@@ -561,6 +562,20 @@ export function skickaLikvidKvittens(interestId: string) {
     steg: "signering",
   }));
   logBoth(interestId, "TreLink", "Kvittens för likvid mejlad till köparen.");
+  const interest = getBuyerInterest(interestId);
+  if (interest) {
+    const titel = annonsInfo(interest.annonsId).titel;
+    addNotis(
+      "kopare-affar",
+      `Kvittens för likvid mejlad — ${titel}`,
+      `/kopare/affarer/${interestId}`,
+    );
+    addNotis(
+      "saljare-affar",
+      `Avräkning för likvid mejlad — ${titel}`,
+      `/saljare/affarer/${interestId}`,
+    );
+  }
   return deal;
 }
 
