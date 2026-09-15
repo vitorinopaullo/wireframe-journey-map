@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { WireBox, PageHeader, WireField, WireBtn, WireTag, Annotation, StatusDot } from "@/components/wire";
+import { WireBox, PageHeader, WireField, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getSession, getAccountByUserId, upsertAdminAccount } from "@/lib/mock-auth";
 import { Check } from "lucide-react";
 
@@ -15,20 +15,6 @@ export const Route = createFileRoute("/kopare/profil")({
   }),
   component: Profile,
 });
-
-type Tab = "uppgifter" | "verifieringar" | "ekonomi" | "fakturor" | "notiser" | "sakerhet";
-
-const verifieringar = [
-  { label: "BankID-identitet", state: "done" as const, note: "Anna Andersson · verifierad 12 jun 2026" },
-  { label: "E-post bekräftad", state: "done" as const, note: "anna@exempel.se" },
-  { label: "Mobil bekräftad", state: "done" as const, note: "+46 70 123 45 67" },
-  { label: "Företagsuppgifter (frivilligt)", state: "pending" as const, note: "Lägg till org.nr för att snabba upp framtida affärer" },
-];
-
-const fakturor = [
-  { nr: "INV-2041-H", titel: "Handpenning · Hornstull", belopp: 195_000, datum: "2026-06-19", status: "Betald" },
-  { nr: "INV-2041-A", titel: "Trelinks förmedlingsavgift", belopp: 39_000, datum: "Vid tillträde", status: "Kommande" },
-];
 
 function EditableField({
   label,
@@ -60,7 +46,6 @@ function EditableField({
 function Profile() {
   const { next } = Route.useSearch();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<Tab>("uppgifter");
   const session = getSession();
   const account = getAccountByUserId(session?.userId);
   const fullName = session?.bankid ? `${session.bankid.fornamn} ${session.bankid.efternamn}` : "—";
@@ -75,19 +60,10 @@ function Profile() {
       profil: { ...account?.profil, bolag, orgnr },
     });
     setBolagSparat(true);
-    if (bolagKravsForKop && bolag.trim()) {
+    if (bolagKravsForKop) {
       navigate({ to: next });
     }
   };
-
-  const tabs: { id: Tab; label: string }[] = [
-    { id: "uppgifter", label: "Uppgifter" },
-    { id: "verifieringar", label: "Verifieringar" },
-    { id: "ekonomi", label: "Ekonomi" },
-    { id: "fakturor", label: "Fakturor" },
-    { id: "notiser", label: "Notiser" },
-    { id: "sakerhet", label: "Säkerhet" },
-  ];
 
   return (
     <AppLayout mode="kopare">
@@ -105,259 +81,62 @@ function Profile() {
         }
       />
 
-      {/* Tabs */}
-      <div className="mb-6 flex flex-wrap gap-1 border-b border-foreground/20">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={`border-b-2 px-3 py-2 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 ${
-              tab === t.id
-                ? "border-[var(--color-primary)] text-[var(--color-interactive)]"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {tab === "uppgifter" && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <WireBox label="Personuppgifter">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <WireField label="Namn" placeholder={fullName} hint="Hämtat från BankID — ej redigerbart" />
-                <WireField label="E-post" placeholder={account?.profil?.epost || "—"} />
-                <WireField label="Telefon" placeholder={account?.profil?.telefon || "—"} />
-              </div>
-              <div className="mt-4 flex items-center justify-end gap-2">
-                <Annotation>Kommer snart</Annotation>
-                <WireBtn
-                  variant="ghost"
-                  disabled
-                  className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
-                >
-                  Ångra
-                </WireBtn>
-                <WireBtn
-                  variant="secondary"
-                  disabled
-                  className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
-                >
-                  Spara ändringar
-                </WireBtn>
-              </div>
-            </WireBox>
-          </div>
-          <aside>
-            <WireBox label={bolagKravsForKop ? "Företag (krävs för att slutföra köpet)" : "Företag (frivilligt)"}>
-              {bolagKravsForKop && (
-                <p className="mb-3 text-sm text-[var(--color-primary)]">
-                  Fyll i bolagsuppgifter för att kunna slutföra ditt köp.
-                </p>
-              )}
-              <div className="space-y-3">
-                <EditableField label="Företagsnamn" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
-                <EditableField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <WireBox label="Personuppgifter">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <WireField label="Namn" placeholder={fullName} hint="Hämtat från BankID — ej redigerbart" />
+              <WireField label="E-post" placeholder={account?.profil?.epost || "—"} />
+              <WireField label="Telefon" placeholder={account?.profil?.telefon || "—"} />
+            </div>
+            <div className="mt-4 flex items-center justify-end gap-2">
+              <Annotation>Kommer snart</Annotation>
+              <WireBtn
+                variant="ghost"
+                disabled
+                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+              >
+                Ångra
+              </WireBtn>
+              <WireBtn
+                variant="secondary"
+                disabled
+                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
+              >
+                Spara ändringar
+              </WireBtn>
+            </div>
+          </WireBox>
+        </div>
+        <aside>
+          <WireBox label={bolagKravsForKop ? "Företag (krävs för att slutföra köpet)" : "Företag (frivilligt)"}>
+            {bolagKravsForKop && (
+              <p className="mb-3 text-sm text-[var(--color-primary)]">
+                Fyll i bolagsuppgifter för att kunna slutföra ditt köp.
+              </p>
+            )}
+            <div className="space-y-3">
+              <EditableField label="Företagsnamn" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
+              <EditableField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
+              <Annotation>
+                <span className="mt-1 block">
+                  Lägg till org.nr om du köper via bolag — sparar tid vid nästa affär.
+                </span>
+              </Annotation>
+              <WireBtn onClick={sparaBolag} disabled={bolagKravsForKop && !bolag.trim()}>
+                {bolagKravsForKop ? "Spara och fortsätt →" : "Spara"}
+              </WireBtn>
+              {bolagSparat && !bolagKravsForKop && (
                 <Annotation>
-                  <span className="mt-1 block">
-                    Lägg till org.nr om du köper via bolag — sparar tid vid nästa affär.
+                  <span className="inline-flex items-center gap-1">
+                    <Check className="h-3 w-3" /> Sparat
                   </span>
                 </Annotation>
-                <WireBtn onClick={sparaBolag} disabled={bolagKravsForKop && !bolag.trim()}>
-                  {bolagKravsForKop ? "Spara och fortsätt →" : "Spara"}
-                </WireBtn>
-                {bolagSparat && !bolagKravsForKop && (
-                  <Annotation>
-                    <span className="inline-flex items-center gap-1">
-                      <Check className="h-3 w-3" /> Sparat
-                    </span>
-                  </Annotation>
-                )}
-              </div>
-            </WireBox>
-          </aside>
-        </div>
-      )}
-
-      {tab === "verifieringar" && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-3">
-            {verifieringar.map((v) => (
-              <WireBox key={v.label} className="flex items-center gap-4">
-                <StatusDot state={v.state} />
-                <div className="flex-1">
-                  <h4 className="font-medium">{v.label}</h4>
-                  <p className="mt-0.5 text-sm text-muted-foreground">{v.note}</p>
-                </div>
-                <WireTag>
-                  {v.state === "done" ? "Klar" : "Frivilligt"}
-                </WireTag>
-              </WireBox>
-            ))}
-          </div>
-          <aside>
-            <WireBox label="Varför verifieringar?" variant="ghost">
-              <p className="text-sm text-muted-foreground">
-                Verifieringar bygger förtroende med säljare och hyresvärdar. Ju mer verifierat,
-                desto snabbare flöde — och högre chans att bli vald.
-              </p>
-            </WireBox>
-          </aside>
-        </div>
-      )}
-
-      {tab === "ekonomi" && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <WireBox label="Finansiering">
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Lånelöfte</span><span className="font-mono tabular-nums">2 500 000 kr</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Bank</span><span className="font-mono">SEB</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Giltigt t.o.m.</span><span className="font-mono">2026-12-31</span></div>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <WireBtn
-                variant="secondary"
-                disabled
-                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
-              >
-                Ladda upp nytt lånelöfte
-              </WireBtn>
-              <WireBtn
-                variant="ghost"
-                disabled
-                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
-              >
-                Ta bort
-              </WireBtn>
-              <Annotation>Kommer snart</Annotation>
+              )}
             </div>
           </WireBox>
-        </div>
-      )}
-
-      {tab === "fakturor" && (
-        <WireBox label="Fakturahistorik">
-          {fakturor.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Inga fakturor än.</p>
-          ) : (
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 border-b border-foreground/20 bg-card font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
-                <tr>
-                  <th className="py-2 text-left">Nr</th>
-                  <th className="py-2 text-left">Beskrivning</th>
-                  <th className="py-2 text-right">Belopp</th>
-                  <th className="py-2 text-left">Datum</th>
-                  <th className="py-2 text-left">Status</th>
-                  <th className="py-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {fakturor.map((f) => (
-                  <tr key={f.nr} className="border-b border-foreground/10 transition-colors duration-150 hover:bg-muted/20">
-                    <td className="py-3 font-mono text-xs">{f.nr}</td>
-                    <td className="py-3">{f.titel}</td>
-                    <td className="py-3 text-right font-mono tabular-nums">{f.belopp.toLocaleString("sv-SE")} kr</td>
-                    <td className="py-3 font-mono text-xs">{f.datum}</td>
-                    <td className="py-3"><WireTag>{f.status}</WireTag></td>
-                    <td className="py-3 text-right">
-                      <WireBtn
-                        variant="ghost"
-                        disabled
-                        className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
-                        title="Kommer snart"
-                      >
-                        PDF
-                      </WireBtn>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          <Annotation>
-            <span className="mt-3 block">
-              Handpenning hålls på klientmedelskonto. Trelinks förmedlingsavgift dras vid tillträde.
-            </span>
-          </Annotation>
-        </WireBox>
-      )}
-
-      {tab === "notiser" && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <WireBox label="Vad vill du få notiser om?">
-            <ul className="space-y-3 text-sm">
-              {[
-                ["Säljare har valt dig", true],
-                ["Hyresvärd har svarat", true],
-                ["Faktura/handpenning", true],
-                ["Signering redo", true],
-                ["Marknadsföringstips", false],
-              ].map(([label, on]) => (
-                <li key={String(label)} className="flex items-center justify-between border-b border-foreground/10 pb-2">
-                  <span>{label as string}</span>
-                  <input type="checkbox" defaultChecked={Boolean(on)} className="h-4 w-4 accent-[var(--color-primary)]" />
-                </li>
-              ))}
-            </ul>
-          </WireBox>
-          <WireBox label="Kanaler">
-            <ul className="space-y-3 text-sm">
-              {[["E-post", true], ["SMS", true], ["Push (app)", false]].map(([label, on]) => (
-                <li key={String(label)} className="flex items-center justify-between border-b border-foreground/10 pb-2">
-                  <span>{label as string}</span>
-                  <input type="checkbox" defaultChecked={Boolean(on)} className="h-4 w-4 accent-[var(--color-primary)]" />
-                </li>
-              ))}
-            </ul>
-          </WireBox>
-        </div>
-      )}
-
-      {tab === "sakerhet" && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <WireBox label="Inloggning">
-            <ul className="space-y-2 text-sm">
-              <li className="flex items-center gap-2"><StatusDot state="done" /> BankID (primär)</li>
-              <li className="flex items-center gap-2"><StatusDot state="done" /> 2FA via SMS</li>
-            </ul>
-            <div className="mt-4 flex items-center gap-2">
-              <WireBtn
-                variant="secondary"
-                disabled
-                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
-              >
-                Visa aktiva sessioner
-              </WireBtn>
-              <Annotation>Kommer snart</Annotation>
-            </div>
-          </WireBox>
-          <WireBox label="Dataexport & radering" variant="dashed">
-            <p className="text-sm text-muted-foreground">
-              Du kan när som helst exportera all data eller begära radering. Pågående affärer måste
-              avslutas först.
-            </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <WireBtn
-                variant="ghost"
-                disabled
-                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
-              >
-                Exportera data (JSON)
-              </WireBtn>
-              <WireBtn
-                variant="ghost"
-                disabled
-                className="cursor-not-allowed border-muted-foreground/30 text-muted-foreground"
-              >
-                Begär radering
-              </WireBtn>
-              <Annotation>Kommer snart</Annotation>
-            </div>
-          </WireBox>
-        </div>
-      )}
+        </aside>
+      </div>
     </AppLayout>
   );
 }
