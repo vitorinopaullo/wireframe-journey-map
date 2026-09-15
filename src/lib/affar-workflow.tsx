@@ -482,6 +482,11 @@ export function hyresvardBesked(interestId: string, annonsId: string, besked: Hy
       `Hyresvärden godkände — ${annonsInfo(annonsId).titel}`,
       `/saljare/affarer/${interestId}`,
     );
+    addNotis(
+      "kopare-affar",
+      `Hyresvärden godkände — ${annonsInfo(annonsId).titel}`,
+      `/kopare/affarer/${interestId}`,
+    );
   } else {
     const annonsFinns = getAnnons(annonsId) !== undefined;
     avreserveraAnnons(annonsId);
@@ -491,6 +496,16 @@ export function hyresvardBesked(interestId: string, annonsId: string, besked: Hy
       annonsFinns
         ? "Hyresvärden nekade överlåtelsen. Affären avslutas och handpenningen återbetalas. Annonsen är åter publik."
         : "Hyresvärden nekade överlåtelsen. Affären avslutas och handpenningen återbetalas.",
+    );
+    addNotis(
+      "saljare-affar",
+      `Hyresvärden nekade — ${annonsInfo(annonsId).titel}`,
+      `/saljare/affarer/${interestId}`,
+    );
+    addNotis(
+      "kopare-affar",
+      `Hyresvärden nekade — ${annonsInfo(annonsId).titel}`,
+      `/kopare/affarer/${interestId}`,
     );
   }
   return deal;
