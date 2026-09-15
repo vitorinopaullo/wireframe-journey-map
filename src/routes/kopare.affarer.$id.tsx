@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { CheckCircle2, AlertTriangle } from "lucide-react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { FileUploadRow } from "@/components/FileUploadRow";
@@ -83,21 +82,6 @@ function FtField({
       />
       {error && <span className="mt-1 block font-mono text-[10px] text-destructive">{error}</span>}
     </label>
-  );
-}
-
-function ChecklistPill({ label, ok }: { label: string; ok: boolean }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-pill border px-3 py-1 text-sm ${
-        ok
-          ? "border-foreground/30 text-muted-foreground"
-          : "border-amber-500/70 bg-amber-50/60 text-amber-700 dark:bg-amber-500/10 dark:text-amber-500"
-      }`}
-    >
-      {ok ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertTriangle className="h-3.5 w-3.5" />}{" "}
-      {label}
-    </span>
   );
 }
 
@@ -263,15 +247,29 @@ function BuyerCaseDetail() {
             förfrågan.
           </Annotation>
 
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            <ChecklistPill label="KYC-dokument" ok={kycOk} />
-            {harBolagFalse ? (
-              <ChecklistPill label="Bolag klart" ok={bolagKlartOk} />
-            ) : (
-              <ChecklistPill label="Firmatecknare" ok={firmatecknareOk} />
-            )}
-            <ChecklistPill label="Företagspresentation" ok={foretagspresentationOk} />
-          </div>
+          {(() => {
+            const missing: string[] = [];
+            if (!kycOk) missing.push("Ladda upp KYC-dokument");
+            if (harBolagFalse ? !bolagKlartOk : !firmatecknareOk) {
+              missing.push(
+                harBolagFalse ? "Bekräfta att bolaget är klart" : "Bekräfta om du är firmatecknare",
+              );
+            }
+            if (!foretagspresentationOk) missing.push("Ladda upp företagspresentation");
+            if (missing.length === 0) return null;
+            return (
+              <div className="mt-4 rounded-button border border-destructive/30 bg-destructive/5 px-3 py-2">
+                <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-destructive">
+                  Kan inte gå vidare än
+                </p>
+                <ul className="space-y-0.5 text-sm text-destructive">
+                  {missing.map((msg) => (
+                    <li key={msg}>· {msg}</li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })()}
 
           {deal.granskning?.komplettering && (
             <div className="mt-4 border-l-2 border-amber-500/70 bg-amber-50/60 px-4 py-3 dark:bg-amber-500/5">
