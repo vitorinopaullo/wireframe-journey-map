@@ -4,6 +4,7 @@ import { Check, X, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
+import { FileUploadRow } from "@/components/FileUploadRow";
 import { initialWorkflow, logEntry, canSellerEdit } from "@/lib/annons-workflow";
 import { harAktivAffar } from "@/lib/affar-workflow";
 import { getSession } from "@/lib/mock-auth";
@@ -12,6 +13,7 @@ import {
   type CatId,
   cats,
   type DocState,
+  docLabels,
   type DocSpec,
   docsByCat,
   VERKSAMHETSTYP_TAGGAR,
@@ -35,6 +37,11 @@ export const STORAGE_KEY = "saljare-skapa-annons-draft-v2";
 // Antal platshållarbilder som krävs i bild-galleriet, se docsByCat i annons-model.ts.
 const BILD_ANTAL_KRAV = 8;
 const isBildDoc = (name: string) => name.startsWith("Bilder");
+// FileUploadRow's docState mode has no real file picker — clicking its
+// contextual button just toggles the document's status directly (same
+// simulated "instant upload" DocUploadRad always had).
+const nextDocState = (s: DocState): DocState =>
+  s === "saknas" || s === "komplettera" ? "uppladdad" : "saknas";
 
 /** Infogar mellanslag efter 3 siffror medan användaren skriver: 123 45. */
 function formatPostnr(raw: string): string {
@@ -1226,7 +1233,13 @@ function CreateListing() {
                     <Annotation>{d.krav}</Annotation>
                   </div>
                   <div className="flex items-center gap-2">
-                    <DocStatusIndicator state={s} />
+                    {s === "saknas" ? null : s === "uppladdad" ? (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-success)]">
+                        <Check className="h-3.5 w-3.5" /> Uppladdad
+                      </span>
+                    ) : (
+                      <WireTag>{docLabels[s]}</WireTag>
+                    )}
                     {s === "saknas" || s === "komplettera" ? (
                       <WireBtn variant="secondary" onClick={() => setDoc(d.name, "uppladdad")}>
                         Ladda upp
@@ -1295,10 +1308,23 @@ function CreateListing() {
                 return (
                   <li key={d.name} className="flex items-center justify-between text-sm">
                     <span className="flex items-center gap-2">
-                      <DocStatusDot state={s} /> {d.name}
+                      <span
+                        className={`inline-block h-3 w-3 shrink-0 rounded-full ${
+                          s === "godkant"
+                            ? "bg-foreground"
+                            : s === "granskas"
+                              ? "bg-foreground/60 ring-2 ring-foreground/20"
+                              : s === "uppladdad"
+                                ? "bg-foreground/40"
+                                : s === "komplettera"
+                                  ? "bg-card border border-foreground"
+                                  : "bg-card border border-foreground/30"
+                        }`}
+                      />{" "}
+                      {d.name}
                       {d.required ? <span> *</span> : <span className="text-muted-foreground"> (frivilligt)</span>}
                     </span>
-                    <DocStatusTag state={s} />
+                    <WireTag>{docLabels[s]}</WireTag>
                   </li>
                 );
               })}
@@ -1503,7 +1529,13 @@ function BildGalleri({
           <Annotation>{doc.krav}</Annotation>
         </div>
         <div className="flex items-center gap-2">
-          <DocStatusIndicator state={status} />
+          {status === "saknas" ? null : status === "uppladdad" ? (
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-success)]">
+              <Check className="h-3.5 w-3.5" /> Uppladdad
+            </span>
+          ) : (
+            <WireTag>{docLabels[status]}</WireTag>
+          )}
         </div>
       </div>
       <p className="mb-3 text-sm text-muted-foreground">
@@ -2127,6 +2159,7 @@ function KontorFaltgrupp({
   setDoc: (name: string, s: DocState) => void;
 }) {
   const ritningNamn = "Ritning (Kontor)";
+  const ritningStatus = docStatus(ritningNamn);
 
   return (
     <>
@@ -2200,11 +2233,12 @@ function KontorFaltgrupp({
         <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Dokument</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
-            <DocUploadRad
-              namn={ritningNamn}
+            <FileUploadRow
+              label={ritningNamn}
               hint="PDF · planlösning över kontorsytan"
-              docStatus={docStatus}
-              setDoc={setDoc}
+              docState={ritningStatus}
+              docStatusLabel={docLabels[ritningStatus]}
+              onUpload={() => setDoc(ritningNamn, nextDocState(ritningStatus))}
             />
           </div>
         </div>
@@ -2225,6 +2259,7 @@ function ButikFaltgrupp({
   setDoc: (name: string, s: DocState) => void;
 }) {
   const ritningNamn = "Ritning (Butik)";
+  const ritningStatus = docStatus(ritningNamn);
 
   return (
     <>
@@ -2298,11 +2333,12 @@ function ButikFaltgrupp({
         <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Dokument</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
-            <DocUploadRad
-              namn={ritningNamn}
+            <FileUploadRow
+              label={ritningNamn}
               hint="PDF · planlösning över butiksytan"
-              docStatus={docStatus}
-              setDoc={setDoc}
+              docState={ritningStatus}
+              docStatusLabel={docLabels[ritningStatus]}
+              onUpload={() => setDoc(ritningNamn, nextDocState(ritningStatus))}
             />
           </div>
         </div>
@@ -2323,6 +2359,7 @@ function LagerFaltgrupp({
   setDoc: (name: string, s: DocState) => void;
 }) {
   const ritningNamn = "Ritning (Lager)";
+  const ritningStatus = docStatus(ritningNamn);
 
   return (
     <>
@@ -2396,53 +2433,17 @@ function LagerFaltgrupp({
         <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Dokument</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
-            <DocUploadRad
-              namn={ritningNamn}
+            <FileUploadRow
+              label={ritningNamn}
               hint="PDF · planlösning över lagerytan"
-              docStatus={docStatus}
-              setDoc={setDoc}
+              docState={ritningStatus}
+              docStatusLabel={docLabels[ritningStatus]}
+              onUpload={() => setDoc(ritningNamn, nextDocState(ritningStatus))}
             />
           </div>
         </div>
       </div>
     </>
-  );
-}
-
-function DocUploadRad({
-  namn,
-  hint,
-  docStatus,
-  setDoc,
-}: {
-  namn: string;
-  hint: string;
-  docStatus: (name: string) => DocState;
-  setDoc: (name: string, s: DocState) => void;
-}) {
-  const status = docStatus(namn);
-  return (
-    <div className="flex flex-col gap-3 rounded-card border border-foreground/15 bg-card p-3 md:flex-row md:items-center md:justify-between">
-      <div className="flex items-start gap-3">
-        <DocStatusDot state={status} />
-        <div>
-          <div className="text-sm font-medium">{namn}</div>
-          <Annotation>{hint}</Annotation>
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <DocStatusIndicator state={status} />
-        {status === "saknas" || status === "komplettera" ? (
-          <WireBtn variant="secondary" onClick={() => setDoc(namn, "uppladdad")}>
-            Ladda upp
-          </WireBtn>
-        ) : (
-          <WireBtn variant="ghost" onClick={() => setDoc(namn, "saknas")}>
-            Byt fil
-          </WireBtn>
-        )}
-      </div>
-    </div>
   );
 }
 
@@ -2595,15 +2596,31 @@ function ServeringFaltgrupp({
         <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Dokument</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
-            <DocUploadRad
-              namn="Myndighetsdokument (Servering)"
-              hint="JPG/PDF · bifoga tillstånd/protokoll som styrker taggarna ovan"
-              docStatus={docStatus}
-              setDoc={setDoc}
-            />
-            {SERVERING_UPPLADDNINGAR.map((doc) => (
-              <DocUploadRad key={doc.namn} namn={doc.namn} hint={doc.hint} docStatus={docStatus} setDoc={setDoc} />
-            ))}
+            {(() => {
+              const status = docStatus("Myndighetsdokument (Servering)");
+              return (
+                <FileUploadRow
+                  label="Myndighetsdokument (Servering)"
+                  hint="JPG/PDF · bifoga tillstånd/protokoll som styrker taggarna ovan"
+                  docState={status}
+                  docStatusLabel={docLabels[status]}
+                  onUpload={() => setDoc("Myndighetsdokument (Servering)", nextDocState(status))}
+                />
+              );
+            })()}
+            {SERVERING_UPPLADDNINGAR.map((doc) => {
+              const status = docStatus(doc.namn);
+              return (
+                <FileUploadRow
+                  key={doc.namn}
+                  label={doc.namn}
+                  hint={doc.hint}
+                  docState={status}
+                  docStatusLabel={docLabels[status]}
+                  onUpload={() => setDoc(doc.namn, nextDocState(status))}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
@@ -2692,9 +2709,19 @@ function FrisorFaltgrupp({
         <div className="border-t border-foreground/10 pt-4">
           <FaltgruppRubrik>Dokument</FaltgruppRubrik>
           <div className="mt-2 space-y-3">
-            {FRISOR_UPPLADDNINGAR.map((doc) => (
-              <DocUploadRad key={doc.namn} namn={doc.namn} hint={doc.hint} docStatus={docStatus} setDoc={setDoc} />
-            ))}
+            {FRISOR_UPPLADDNINGAR.map((doc) => {
+              const status = docStatus(doc.namn);
+              return (
+                <FileUploadRow
+                  key={doc.namn}
+                  label={doc.namn}
+                  hint={doc.hint}
+                  docState={status}
+                  docStatusLabel={docLabels[status]}
+                  onUpload={() => setDoc(doc.namn, nextDocState(status))}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
@@ -2782,45 +2809,4 @@ function WireArea({
       )}
     </label>
   );
-}
-
-const docLabels: Record<DocState, string> = {
-  saknas: "Saknas",
-  uppladdad: "Uppladdad",
-  granskas: "Granskas av TreLink",
-  godkant: "Godkänt",
-  komplettera: "Behöver kompletteras",
-  "ej-aktuell": "Ej aktuellt",
-};
-
-function DocStatusTag({ state }: { state: DocState }) {
-  return <WireTag>{docLabels[state]}</WireTag>;
-}
-
-// Kompaktare statusindikator för dokumentrader/bildgalleri: ingen tom cirkel,
-// ingen "Saknas"-etikett (tomt läge är underförstått), grön bock för uppladdat.
-function DocStatusIndicator({ state }: { state: DocState }) {
-  if (state === "saknas") return null;
-  if (state === "uppladdad") {
-    return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-success)]">
-        <Check className="h-3.5 w-3.5" /> Uppladdad
-      </span>
-    );
-  }
-  return <DocStatusTag state={state} />;
-}
-
-function DocStatusDot({ state }: { state: DocState }) {
-  const cls =
-    state === "godkant"
-      ? "bg-foreground"
-      : state === "granskas"
-      ? "bg-foreground/60 ring-2 ring-foreground/20"
-      : state === "uppladdad"
-      ? "bg-foreground/40"
-      : state === "komplettera"
-      ? "bg-card border border-foreground"
-      : "bg-card border border-foreground/30";
-  return <span className={`inline-block h-3 w-3 shrink-0 rounded-full ${cls}`} />;
 }
