@@ -673,18 +673,20 @@ function AdminAffarDetail() {
                 </span>
               </Annotation>
             )
-          ) : !deal.handpenning?.kvittensSigneradAt ? (
+          ) : !deal.handpenning?.kvittensSignerat?.kopare ? (
             <Annotation>
               <span className="mt-2 block">Väntar på att köparen signerar kvittensen.</span>
             </Annotation>
           ) : (
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
-                <span>Signerad av köparen</span>
-                <span className="font-mono text-xs text-muted-foreground">
-                  {formatDatum(deal.handpenning.kvittensSigneradAt)}
-                </span>
-              </div>
+              <SignStatus
+                label="Köparen har signerat"
+                done={!!deal.handpenning.kvittensSignerat.kopare}
+              />
+              <SignStatus
+                label="Säljaren har signerat"
+                done={!!deal.handpenning.kvittensSignerat.saljare}
+              />
               <div className="flex items-center justify-between py-1.5 text-sm">
                 <span>Skickad till säljaren</span>
                 <span className="font-mono text-xs text-muted-foreground">
