@@ -86,6 +86,24 @@ export function updateSession(patch: Partial<Session>) {
   setSession({ ...s, ...patch });
 }
 
+/** Dev-only genväg — hoppar direkt in i ett konto som köpare eller säljare
+ * för testning, utan att behöva komma ihåg vilken mock-BankID som äger vad.
+ * Returnerar false (utan att röra sessionen) om kontot inte finns, t.ex. en
+ * seedad demo-annons ägd av "trelink-demo" utan ett riktigt inloggningsbart
+ * konto — anroparen ansvarar för att visa detta tydligt istället för att
+ * navigera till en tom sida. */
+export function devLoginAsAccount(userId: string, role: "kopare" | "saljare"): boolean {
+  const account = getAccountByUserId(userId);
+  if (!account) return false;
+  setSession({
+    userId: account.userId,
+    bankid: account.bankid,
+    role,
+    createdAt: Date.now(),
+  });
+  return true;
+}
+
 /* ---------- Admin-kö: konton skapas vid BankID-inloggning, fylls på successivt ---------- */
 export type AdminAccountEvent = {
   id: string;
