@@ -33,6 +33,7 @@ import {
   granskningKandidater,
   begarKompletteringKop,
   avvisaKandidat,
+  kanMatchaKandidat,
   Progress,
 } from "@/lib/affar-workflow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
@@ -163,7 +164,6 @@ function AdminAffarDetail() {
   // spärren.
   const harBolagFalse = deal.granskning?.harBolag === false;
   const bolagKlartOk = !!deal.granskning?.bolagKlartAt;
-  const firmatecknareEllerBolagOk = harBolagFalse ? bolagKlartOk : firmatecknareOk;
   const granskningChecklist = [
     { label: "KYC-dokument uppladdat", ok: kycOk },
     harBolagFalse
@@ -171,7 +171,7 @@ function AdminAffarDetail() {
       : { label: "Firmatecknare bekräftad eller kontaktuppgifter ifyllda", ok: firmatecknareOk },
     { label: "Företagspresentation uppladdad", ok: foretagspresentationOk },
   ];
-  const kanMatcha = kycOk && firmatecknareEllerBolagOk && foretagspresentationOk;
+  const kanMatcha = kanMatchaKandidat(deal);
 
   const saveBolag = () => {
     if (!buyerAccount) return;
