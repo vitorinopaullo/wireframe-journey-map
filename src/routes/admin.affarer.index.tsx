@@ -21,7 +21,6 @@ import {
 import { readAnnonser, getAnnons, STORAGE_KEY as ANNONS_STORAGE_KEY } from "@/lib/annons-workflow";
 import { getAccountByUserId } from "@/lib/mock-auth";
 import { formatArendeRef, formatDatum } from "@/lib/format";
-import { AnnonsBildPlaceholder } from "@/components/AnnonsBild";
 
 export const Route = createFileRoute("/admin/affarer/")({
   component: AdminAffarer,
@@ -163,21 +162,18 @@ function GranskningGruppKort({ grupp }: { grupp: GranskningGrupp }) {
   return (
     <details className="group border border-foreground/30 bg-background">
       <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <div className="flex min-w-0 items-start gap-3">
-          <AnnonsBildPlaceholder kategori={grupp.kat} />
-          <div className="min-w-0">
-            <div className="mb-1 flex flex-wrap items-center gap-2">
-              <WireTag>{grupp.kat}</WireTag>
-              <span className="text-xs text-muted-foreground">{grupp.ort}</span>
-              <span className="font-mono text-[10px] text-muted-foreground">
-                {formatArendeRef(grupp.annonsId)}
-              </span>
-            </div>
-            <h3 className="font-medium">{grupp.titel}</h3>
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
-              <span>{grupp.adress}</span>
-              <span>{grupp.pris} kr</span>
-            </div>
+        <div className="min-w-0">
+          <div className="mb-1 flex flex-wrap items-center gap-2">
+            <WireTag>{grupp.kat}</WireTag>
+            <span className="text-xs text-muted-foreground">{grupp.ort}</span>
+            <span className="font-mono text-[10px] text-muted-foreground">
+              {formatArendeRef(grupp.annonsId)}
+            </span>
+          </div>
+          <h3 className="font-medium">{grupp.titel}</h3>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+            <span>{grupp.adress}</span>
+            <span>{grupp.pris} kr</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
