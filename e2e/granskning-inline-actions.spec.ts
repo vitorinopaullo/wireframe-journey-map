@@ -172,3 +172,51 @@ test("clicking Godkänn or Avvisa does not trigger the row's own navigate-to-acc
   await radAfter.getByRole("button", { name: "Avvisa" }).click();
   await expect(page).toHaveURL(/\/admin\/affarer\/?$/);
 });
+
+test('"Öppna granskning →" navigates to the candidate\'s deal detail page, not the account page', async ({
+  page,
+}) => {
+  await unlockGate(page);
+
+  await seedAnnons(page, {
+    id: "e2e-inline-detail-link-annons",
+    titel: "E2E inline detaljlänk",
+    agarUserId: "e2e-seller",
+    pris: "",
+    cat: "overlatelse",
+    draft: { cat: "overlatelse", verksamhet: "Restaurang", adress: "E2E-gatan 23" },
+    workflow: { state: "publicerad", timeline: [] },
+  });
+  await seedBuyerInterest(page, {
+    id: "e2e-inline-detail-link-1",
+    annonsId: "e2e-inline-detail-link-annons",
+    kKod: "K-e2e-idl1",
+    status: "vill-ga-vidare",
+    skapadAt: new Date().toISOString(),
+    userId: "u_e2e_idl1",
+  });
+  await seedDeal(page, "e2e-inline-detail-link-1", {
+    interestId: "e2e-inline-detail-link-1",
+    steg: "granskning",
+  });
+  // The row itself navigates to the account page when the candidate has a
+  // matching admin account — seed one so this test also proves "Öppna
+  // granskning →" doesn't fall through to that click.
+  await seedAccount(page, {
+    id: "e2e-acc-idl1",
+    userId: "u_e2e_idl1",
+    bankid: { fornamn: "Idl1", efternamn: "Testsson" },
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    role: "kopare",
+    profil: {},
+  });
+
+  await page.goto("/admin/affarer");
+  const grupp = page.locator("details", { has: page.getByText("E2E inline detaljlänk") });
+  await grupp.locator("summary").click();
+  const rad = grupp.locator("tr", { has: page.getByText("K-e2e-idl1") });
+
+  await rad.getByRole("link", { name: "Öppna granskning →" }).click();
+  await expect(page).toHaveURL(/\/admin\/affarer\/e2e-inline-detail-link-1$/);
+});
