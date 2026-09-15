@@ -137,3 +137,59 @@ test("a komplettering request from TreLink is visible on the buyer's own deal pa
     page.getByText("Vi behöver ett tydligare KYC-dokument, det nuvarande är oläsligt."),
   ).toBeVisible();
 });
+
+test('the buyer\'s "Kan inte gå vidare än" box lists exactly the unmet requirements and disappears once satisfied', async ({
+  page,
+}) => {
+  await unlockGate(page);
+  await seedSession(page, "19850101-6003", "Bertil", "Bevisson");
+
+  await seedAnnons(page, {
+    id: "e2e-buyer-validation-annons",
+    titel: "E2E köparvalidering",
+    agarUserId: "e2e-seller",
+    pris: "",
+    cat: "overlatelse",
+    draft: { cat: "overlatelse", verksamhet: "Restaurang", adress: "E2E-gatan 23" },
+    workflow: { state: "publicerad", timeline: [] },
+  });
+  await seedBuyerInterest(page, {
+    id: "e2e-buyer-validation-interest",
+    annonsId: "e2e-buyer-validation-annons",
+    kKod: "K-e2e-bv",
+    status: "vill-ga-vidare",
+    skapadAt: new Date().toISOString(),
+    userId: "u_198501016003",
+  });
+  await seedDeal(page, "e2e-buyer-validation-interest", {
+    interestId: "e2e-buyer-validation-interest",
+    steg: "granskning",
+  });
+
+  await page.goto("/kopare/affarer/e2e-buyer-validation-interest");
+  await expect(page.getByText("Kan inte gå vidare än")).toBeVisible();
+  await expect(page.getByText("Ladda upp KYC-dokument")).toBeVisible();
+  await expect(page.getByText("Bekräfta om du är firmatecknare")).toBeVisible();
+  await expect(page.getByText("Ladda upp företagspresentation")).toBeVisible();
+
+  // Partially satisfied — KYC done, firmatecknare and företagspresentation
+  // still missing.
+  await seedDeal(page, "e2e-buyer-validation-interest", {
+    interestId: "e2e-buyer-validation-interest",
+    steg: "granskning",
+    granskning: { kycDokument: "kyc.pdf" },
+  });
+  await page.reload();
+  await expect(page.getByText("Ladda upp KYC-dokument")).toHaveCount(0);
+  await expect(page.getByText("Bekräfta om du är firmatecknare")).toBeVisible();
+  await expect(page.getByText("Ladda upp företagspresentation")).toBeVisible();
+
+  // All three satisfied — the box disappears entirely.
+  await seedDeal(page, "e2e-buyer-validation-interest", {
+    interestId: "e2e-buyer-validation-interest",
+    steg: "granskning",
+    granskning: { kycDokument: "kyc.pdf", foretagspresentation: "pres.pdf", firmatecknare: true },
+  });
+  await page.reload();
+  await expect(page.getByText("Kan inte gå vidare än")).toHaveCount(0);
+});
