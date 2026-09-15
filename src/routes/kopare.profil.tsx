@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireField, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getSession, getAccountByUserId, upsertAdminAccount } from "@/lib/mock-auth";
 import { FileUploadRow } from "@/components/FileUploadRow";
+import { formatOrgnr, ORGNR_REGEX } from "@/lib/format";
 import { Check } from "lucide-react";
 
 function isSafeNext(v: string | undefined): v is string {
@@ -21,12 +22,16 @@ function EditableField({
   label,
   value,
   onChange,
+  onBlur,
   placeholder,
+  error,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
+  error?: string;
 }) {
   return (
     <label className="block">
@@ -37,9 +42,15 @@ function EditableField({
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
         placeholder={placeholder}
-        className="flex h-11 w-full items-center rounded-button border border-foreground/15 bg-card px-3 text-sm transition-colors duration-150 focus:border-[var(--color-interactive)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]/40"
+        className={`flex h-11 w-full items-center rounded-button border bg-card px-3 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 ${
+          error
+            ? "border-destructive focus:border-destructive focus:ring-destructive/40"
+            : "border-foreground/15 focus:border-[var(--color-interactive)] focus:ring-[var(--color-focus-ring)]/40"
+        }`}
       />
+      {error && <span className="mt-1 block font-mono text-[10px] text-destructive">{error}</span>}
     </label>
   );
 }
@@ -52,6 +63,12 @@ function Profile() {
   const fullName = session?.bankid ? `${session.bankid.fornamn} ${session.bankid.efternamn}` : "—";
   const [bolag, setBolag] = useState(() => account?.profil?.bolag ?? "");
   const [orgnr, setOrgnr] = useState(() => account?.profil?.orgnr ?? "");
+  const [orgnrTouched, setOrgnrTouched] = useState(false);
+  // Org.nr är frivilligt här (till skillnad från onboardingens säljarflöde) —
+  // ett tomt fält är aldrig ett fel, bara ett ifyllt men felformaterat.
+  const orgnrFelFormat = orgnr.trim() !== "" && !ORGNR_REGEX.test(orgnr.trim());
+  const orgnrError =
+    orgnrTouched && orgnrFelFormat ? "Ogiltigt format. Ange som XXXXXX-XXXX." : undefined;
   const [foretagspresentation, setForetagspresentation] = useState(
     () => account?.profil?.foretagspresentation ?? "",
   );
@@ -121,7 +138,14 @@ function Profile() {
             </p>
             <div className="space-y-3">
               <EditableField label="Företagsnamn" value={bolag} onChange={setBolag} placeholder="Anna Restauranger AB" />
-              <EditableField label="Org.nr" value={orgnr} onChange={setOrgnr} placeholder="556677-8899" />
+              <EditableField
+                label="Org.nr"
+                value={orgnr}
+                onChange={(v) => setOrgnr(formatOrgnr(v))}
+                onBlur={() => setOrgnrTouched(true)}
+                placeholder="556677-8899"
+                error={orgnrError}
+              />
               <Annotation>
                 <span className="mt-1 block">
                   Lägg till org.nr om du redan har ett bolag — sparar tid vid nästa affär.
