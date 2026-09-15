@@ -6,7 +6,12 @@
 // varje köpare som sparat eller anmält intresse för ett av dessa objekt,
 // trots att all information redan finns i dummy-listings.ts.
 import { readAnnonser, writeAnnonser } from "@/lib/annons-workflow";
-import { dummyListings, sodermalamListings, ostermalmListings } from "@/lib/dummy-listings";
+import {
+  dummyListings,
+  sodermalamListings,
+  ostermalmListings,
+  lokalerSodermalmListings,
+} from "@/lib/dummy-listings";
 import { type Listing } from "@/components/ListingCard";
 
 function tillAnnons(l: Listing) {
@@ -45,7 +50,12 @@ function tillAnnons(l: Listing) {
 
 export function seedDummyAnnonser() {
   if (typeof window === "undefined") return;
-  const alla = [...dummyListings, ...sodermalamListings, ...ostermalmListings];
+  const alla = [
+    ...dummyListings,
+    ...sodermalamListings,
+    ...ostermalmListings,
+    ...lokalerSodermalmListings,
+  ];
   const befintliga = readAnnonser();
   const befintligaId = new Set(befintliga.map((a: { id: string }) => a.id));
   const saknade = alla.filter((l) => !befintligaId.has(l.id));
