@@ -232,6 +232,21 @@ function SellerCaseDetail() {
         </WireBox>
       )}
 
+      {interest.status === "vill-ga-vidare" &&
+        !deal.avvisad &&
+        deal.steg === "klar" &&
+        deal.arvode?.lyftAt && (
+          <WireBox label="Arvode" className="mb-6">
+            <Annotation>
+              <span className="mt-2 block">
+                {deal.arvode.utbetaldAt
+                  ? `Utbetalning genomförd, ${formatDatum(deal.arvode.utbetaldAt)}.`
+                  : "Utbetalning väntar."}
+              </span>
+            </Annotation>
+          </WireBox>
+        )}
+
       <WireBox label="Ärendehistorik">
         {(interest.timeline ?? []).length === 0 ? (
           <p className="text-sm text-muted-foreground">Ingen historik än.</p>
