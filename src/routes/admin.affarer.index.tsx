@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type MouseEventHandler } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireTag, WireBtn, Annotation } from "@/components/wire";
@@ -184,6 +184,14 @@ function GranskningKandidatRad({
       </td>
       <td className="px-3 py-2">
         <div className="flex flex-wrap gap-2">
+          <Link
+            to="/admin/affarer/$id"
+            params={{ id: interestId }}
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center justify-center rounded-button border border-dashed border-muted-foreground/50 bg-transparent px-4 py-2.5 text-sm font-medium text-foreground transition-[background-color,border-color,box-shadow,opacity,transform] ease-standard duration-150 hover:opacity-80 active:scale-[0.97]"
+          >
+            Öppna granskning →
+          </Link>
           <WireBtn variant="ghost" onClick={avvisa}>
             Avvisa
           </WireBtn>
