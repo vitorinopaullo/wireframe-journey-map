@@ -619,6 +619,83 @@ export function lyftArvode(interestId: string) {
   return deal;
 }
 
+/** Dev-only genväg — hoppar direkt till ett valfritt steg i affärspipelinen
+ * för testning, och backfyller varje mellanliggande stegs undertillstånd
+ * (kopeavtal.signerat, handpenningens kvittensfält, osv.) med rimliga
+ * dummyvärden. Andra delar av UI:t läser dessa fält direkt, så att bara
+ * sätta `steg` utan att fylla i dem visar trasiga/ofullständiga vyer.
+ * Fyller ingenting för steg efter target (t.ex. ingen handpenning-data om
+ * target är "matchad"). "tilltrade" har inget eget undertillstånd i den
+ * riktiga flödet (bekraftaTilltrade hoppar direkt till "klar"), så både
+ * "tilltrade" och "klar" som target landar på steg "klar" — konsekvent med
+ * det. */
+export function devJumpToSteg(interestId: string, target: Steg): DealState {
+  const now = new Date().toISOString();
+  const targetIdx = STEG_ORDNING.indexOf(target);
+  const atOrBefore = (s: Steg) => STEG_ORDNING.indexOf(s) <= targetIdx;
+
+  const interest = getBuyerInterest(interestId);
+  const pris = interest ? annonsInfo(interest.annonsId).pris : undefined;
+  const likvidBelopp = beloppProcentAvPris(pris, 90);
+
+  const deal = patchDeal(interestId, (d) => {
+    const next: DealState = { ...d };
+
+    if (atOrBefore("granskning")) {
+      next.granskning = {
+        ...next.granskning,
+        kycDokument: "dev-kyc.pdf",
+        firmatecknare: true,
+        foretagspresentation: "dev-presentation.pdf",
+      };
+    }
+    if (atOrBefore("matchad")) {
+      next.kopeavtal = {
+        skapadAt: now,
+        skickadAt: now,
+        signerat: { kopare: true, saljare: true },
+      };
+    }
+    if (atOrBefore("handpenning")) {
+      next.handpenning = {
+        kvitto: "dev-kvitto.pdf",
+        ucUtdrag: "dev-uc.pdf",
+        bekraftadMottagenAt: now,
+        kvittensSkapadAt: now,
+        kvittensSkickadAt: now,
+        kvittensSigneradAt: now,
+        kvittensSkickadTillSaljareAt: now,
+      };
+    }
+    if (atOrBefore("hyresvard")) {
+      next.hyresvard = { skickadAt: now, besked: "godkand", beskedAt: now };
+    }
+    if (atOrBefore("likvid")) {
+      next.likvid = {
+        begartAt: now,
+        belopp: likvidBelopp,
+        inlamnadAt: now,
+        verifieratAt: now,
+        kvittensSkapadAt: now,
+        kvittensSkickadAt: now,
+      };
+    }
+    if (atOrBefore("signering")) {
+      next.overenskommelse = {
+        skapadAt: now,
+        skickadAt: now,
+        signerat: { kopare: true, saljare: true },
+      };
+    }
+
+    next.steg = target === "tilltrade" ? "klar" : target;
+    return next;
+  });
+
+  logBoth(interestId, "TreLink", `TreLink (dev): hoppade till steg ${STEG_LABEL[target]}`);
+  return deal;
+}
+
 export type Affar = {
   id: string;
   annonsId: string;
@@ -634,7 +711,7 @@ export type Affar = {
   uppdaterad: string;
 };
 
-const STEG_ORDNING: Steg[] = [
+export const STEG_ORDNING: Steg[] = [
   "intresse-inskickat",
   "granskning",
   "matchad",
