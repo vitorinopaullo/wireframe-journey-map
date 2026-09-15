@@ -87,8 +87,14 @@ test("signeraHandpenningKvittens fires a saljare-affar badge next to Mina affär
   });
 
   await page.goto("/kopare/affarer/e2e-notis-hpk-interest");
-  page.on("dialog", (d) => d.accept());
   await page.getByRole("button", { name: "Signera kvittens →" }).click();
+  await page.getByRole("button", { name: "Sign documents" }).click();
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(page.getByRole("button", { name: "Tillbaka till min annons" })).toBeVisible({
+    timeout: 5000,
+  });
+  await page.getByRole("button", { name: "Tillbaka till min annons" }).click();
   await expect(
     page.getByText("Du har signerat kvittensen. Den är skickad till säljaren."),
   ).toBeVisible();
