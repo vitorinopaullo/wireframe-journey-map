@@ -92,8 +92,15 @@ test("buyer signing the handpenning-kvittens forwards it to the seller in the sa
   await page.goto("/kopare/affarer/e2e-kv-sign-interest");
   await expect(page.getByText("TreLink har upprättat en kvittens")).toBeVisible();
 
-  page.on("dialog", (d) => d.accept());
+  // Signing goes through the SignicatFlow modal now, not a plain confirm.
   await page.getByRole("button", { name: "Signera kvittens →" }).click();
+  await page.getByRole("button", { name: "Sign documents" }).click();
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(page.getByRole("button", { name: "Tillbaka till min annons" })).toBeVisible({
+    timeout: 5000,
+  });
+  await page.getByRole("button", { name: "Tillbaka till min annons" }).click();
 
   await expect(
     page.getByText("Du har signerat kvittensen. Den är skickad till säljaren."),
@@ -104,7 +111,8 @@ test("buyer signing the handpenning-kvittens forwards it to the seller in the sa
     const all = JSON.parse(localStorage.getItem("trelink-affarer") ?? "{}");
     return all["e2e-kv-sign-interest"];
   });
-  expect(deal.handpenning.kvittensSigneradAt).toBeTruthy();
+  expect(deal.handpenning.kvittensSignerat.kopare).toBe(true);
+  expect(deal.handpenning.kvittensSignerat.saljare).toBeFalsy();
   expect(deal.handpenning.kvittensSkickadTillSaljareAt).toBeTruthy();
 });
 

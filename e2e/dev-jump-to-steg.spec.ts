@@ -39,7 +39,8 @@ test("dev hoppa till steg on signering backfills kopeavtal, handpenning and hyre
   expect(deal.kopeavtal?.signerat.kopare).toBe(true);
   expect(deal.kopeavtal?.signerat.saljare).toBe(true);
   expect(deal.handpenning?.bekraftadMottagenAt).toBeTruthy();
-  expect(deal.handpenning?.kvittensSigneradAt).toBeTruthy();
+  expect(deal.handpenning?.kvittensSignerat?.kopare).toBe(true);
+  expect(deal.handpenning?.kvittensSignerat?.saljare).toBe(true);
   expect(deal.hyresvard?.besked).toBe("godkand");
   expect(deal.overenskommelse?.skapadAt).toBeTruthy();
 });
