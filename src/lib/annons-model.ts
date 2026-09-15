@@ -46,6 +46,15 @@ export const cats: {
 
 export type DocState = "saknas" | "uppladdad" | "granskas" | "godkant" | "komplettera" | "ej-aktuell";
 
+export const docLabels: Record<DocState, string> = {
+  saknas: "Saknas",
+  uppladdad: "Uppladdad",
+  granskas: "Granskas av TreLink",
+  godkant: "Godkänt",
+  komplettera: "Behöver kompletteras",
+  "ej-aktuell": "Ej aktuellt",
+};
+
 export type DocSpec = { name: string; krav: string; required: boolean };
 
 export const docsByCat: Record<CatId, DocSpec[]> = {
