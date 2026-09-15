@@ -5,7 +5,7 @@ import type { WorkflowState } from "@/lib/annons-workflow";
 const PROCESS_STEPS: { label: string; states: WorkflowState[] }[] = [
   { label: "Granskning", states: ["granskas", "komplettering"] },
   { label: "Uppdragsavtal", states: ["avtal-vantar-signering"] },
-  { label: "Annonstext", states: ["hyresvard-notifiering"] },
+  { label: "Hyresvärd", states: ["hyresvard-notifiering"] },
   { label: "Publicerad", states: ["publicerad"] },
 ];
 
