@@ -618,7 +618,7 @@ function AdminAffarDetail() {
               <div className="mt-3 space-y-1.5 text-sm">
                 <div className="flex justify-between border-b border-foreground/10 py-1.5">
                   <span className="text-muted-foreground">Företagspresentation</span>
-                  <span>{buyerAccount?.profil?.presentation || "—"}</span>
+                  <span>{buyerAccount?.profil?.foretagspresentation || "—"}</span>
                 </div>
                 <div className="flex justify-between border-b border-foreground/10 py-1.5">
                   <span className="text-muted-foreground">Bolag</span>
