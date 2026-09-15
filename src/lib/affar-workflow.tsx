@@ -14,6 +14,7 @@ import {
 } from "@/lib/kopare-workflow";
 import type { CatId } from "@/lib/annons-model";
 import { formatDatum, beloppProcentAvPris } from "@/lib/format";
+import { addNotis } from "@/lib/admin-notiser";
 
 // Samma mönster som KAT_NAMN i admin.annonser.index.tsx/admin.publicerat.tsx
 // — de kortare visningsnamnen som används i affärslistorna.
@@ -185,6 +186,14 @@ export function skickaKopeavtalForSignering(interestId: string) {
     },
   }));
   logBoth(interestId, "TreLink", "Köpeavtal skickat till köpare och säljare för signering.");
+  const interest = getBuyerInterest(interestId);
+  if (interest) {
+    addNotis(
+      "saljare-affar",
+      `Köpeavtal redo för signering — ${annonsInfo(interest.annonsId).titel}`,
+      `/saljare/affarer/${interestId}`,
+    );
+  }
   return deal;
 }
 
@@ -405,6 +414,14 @@ export function signeraHandpenningKvittens(interestId: string) {
   }));
   logBoth(interestId, "Köpare", "Du signerade handpenningskvittensen.");
   logBoth(interestId, "System", "Kvittensen skickades till säljaren.");
+  const interest = getBuyerInterest(interestId);
+  if (interest) {
+    addNotis(
+      "saljare-affar",
+      `Handpenningskvittens mottagen — ${annonsInfo(interest.annonsId).titel}`,
+      `/saljare/affarer/${interestId}`,
+    );
+  }
   return deal;
 }
 
@@ -444,6 +461,11 @@ export function hyresvardBesked(interestId: string, annonsId: string, besked: Hy
       interestId,
       "TreLink",
       "Hyresvärden godkände överlåtelsen. Nästa steg: resterande likvid.",
+    );
+    addNotis(
+      "saljare-affar",
+      `Hyresvärden godkände — ${annonsInfo(annonsId).titel}`,
+      `/saljare/affarer/${interestId}`,
     );
   } else {
     const annonsFinns = getAnnons(annonsId) !== undefined;
@@ -587,6 +609,13 @@ export function lyftArvode(interestId: string) {
     arvode: { ...d.arvode, belopp, lyftAt: now, kvittensSkapadAt: now },
   }));
   logBoth(interestId, "TreLink", "TreLink lyfte arvode och skickade arvodeskvittens till säljaren.");
+  if (interest) {
+    addNotis(
+      "saljare-affar",
+      `Arvodeskvittens skickad — ${annonsInfo(interest.annonsId).titel}`,
+      `/saljare/affarer/${interestId}`,
+    );
+  }
   return deal;
 }
 
