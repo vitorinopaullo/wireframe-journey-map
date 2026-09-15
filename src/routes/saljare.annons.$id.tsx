@@ -7,6 +7,7 @@ import { WireBox, PageHeader, WireBtn, WireTag, Annotation, StatusDot } from "@/
 import { SignicatFlow } from "@/components/SignicatFlow";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
+import { ProcessStepper } from "@/components/ProcessStepper";
 import {
   getAnnons,
   logEntry,
@@ -359,6 +360,8 @@ function SellerAnnonsDetail() {
         subtitle={stateLabel[st]}
         right={<WireTag>{stateLabel[st]}</WireTag>}
       />
+
+      <ProcessStepper state={st} />
 
       {/* Dev-only step switcher — bypasser TreLinks granskning, får aldrig visas utanför lokal utveckling. */}
       {import.meta.env.DEV && (
