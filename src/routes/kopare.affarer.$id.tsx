@@ -636,6 +636,7 @@ function BuyerCaseDetail() {
             <LikvidKvittensDokument
               interestId={id}
               annonsId={interest.annonsId}
+              mottagare="kopare"
               titel={info.titel}
               adress={annons?.draft?.adress}
               ort={info.ort}
