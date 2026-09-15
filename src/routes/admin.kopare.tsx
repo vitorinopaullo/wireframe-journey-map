@@ -121,6 +121,8 @@ function KandidatRad({ i }: { i: BuyerInterest }) {
           </span>
         )}
       </td>
+      <td className="px-3 py-2">{account?.profil?.telefon || "—"}</td>
+      <td className="px-3 py-2">{account?.profil?.epost || "—"}</td>
       <td className="px-3 py-2">
         {i.pdfOppnadAt ? (
           <span className="flex items-center gap-1 text-sm">
@@ -181,6 +183,12 @@ function AnnonsGruppKort({ grupp }: { grupp: AnnonsGrupp }) {
               </th>
               <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                 Bolag
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Mobil
+              </th>
+              <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
+                Mail
               </th>
               <th className="px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.02em] text-muted-foreground">
                 PDF
