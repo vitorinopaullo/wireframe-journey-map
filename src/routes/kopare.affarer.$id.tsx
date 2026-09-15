@@ -729,6 +729,7 @@ function BuyerCaseDetail() {
             adress={annons?.draft?.adress}
             ort={info.ort}
             pris={info.pris}
+            cat={annons?.cat}
           />
         )}
         onCancel={() => setSignOpen(null)}

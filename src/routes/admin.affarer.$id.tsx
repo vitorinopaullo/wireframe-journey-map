@@ -882,6 +882,7 @@ function AdminAffarDetail() {
                 pris={info.pris}
                 undertecknareNamn={undertecknareNamn}
                 undertecknareRoll={undertecknareRoll}
+                cat={annons?.cat}
               />
               <div className="flex flex-wrap justify-end gap-2 border-t border-foreground/10 pt-4">
                 <WireBtn variant="ghost" onClick={() => setKopeavtalPreviewOpen(false)}>
