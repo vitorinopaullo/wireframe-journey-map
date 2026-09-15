@@ -16,6 +16,15 @@ export function isValidEmail(value: string): boolean {
   return EMAIL_RE.test(value.trim());
 }
 
+/** Infogar bindestrecket efter 6 siffror medan användaren skriver: 555555-5555. */
+export function formatOrgnr(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 10);
+  return digits.length <= 6 ? digits : `${digits.slice(0, 6)}-${digits.slice(6)}`;
+}
+
+/** Giltigt org.nr-format: exakt 6 siffror, bindestreck, 4 siffror. */
+export const ORGNR_REGEX = /^\d{6}-\d{4}$/;
+
 /** Mänskligt läsbar ärendereferens för annonser/affärer/ärenden — samma format
  * överallt så att admin och köpare/säljare pratar om exakt samma referens. */
 export function formatArendeRef(id: string): string {

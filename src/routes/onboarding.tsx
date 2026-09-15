@@ -12,7 +12,7 @@ import {
   StatusDot,
 } from "@/components/wire";
 import { getSession, upsertAdminAccount, updateSession } from "@/lib/mock-auth";
-import { formatTelefon, isValidEmail } from "@/lib/format";
+import { formatTelefon, isValidEmail, formatOrgnr, ORGNR_REGEX } from "@/lib/format";
 
 function isSafeNext(v: string | undefined): v is string {
   return !!v && v.startsWith("/") && !v.startsWith("//");
@@ -31,12 +31,6 @@ type Step = 1 | 2;
 
 // Läses av Grunduppgifter-sidan i ett senare steg.
 const ONBOARDING_SALJARE_KEY = "trelink-onboarding-saljare-uppgifter";
-
-/** Infogar bindestrecket efter 6 siffror medan användaren skriver: 555555-5555. */
-function formatOrgnr(raw: string): string {
-  const digits = raw.replace(/\D/g, "").slice(0, 10);
-  return digits.length <= 6 ? digits : `${digits.slice(0, 6)}-${digits.slice(6)}`;
-}
 
 /** Infogar mellanslag efter 3 siffror medan användaren skriver: 123 45. */
 function formatPostnr(raw: string): string {
@@ -289,7 +283,6 @@ function Step2({
   const [ftMobilTouched, setFtMobilTouched] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
-  const ORGNR_REGEX = /^\d{6}-\d{4}$/;
   const bolagSaknas = role === "saljare" && bolag.trim() === "";
   const orgnrSaknas = role === "saljare" && orgnr.trim() === "";
   const ortSaknas = role === "saljare" && ort.trim() === "";
