@@ -34,7 +34,11 @@ import {
   begarKompletteringKop,
   avvisaKandidat,
   kanMatchaKandidat,
+  devJumpToSteg,
+  STEG_ORDNING,
+  STEG_LABEL,
   Progress,
+  type Steg,
 } from "@/lib/affar-workflow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
@@ -273,6 +277,28 @@ function AdminAffarDetail() {
           {devLoginMessage && (
             <span className="w-full text-xs text-destructive">{devLoginMessage}</span>
           )}
+        </div>
+      )}
+
+      {import.meta.env.DEV && (
+        <div className="mb-4 flex items-center gap-2 rounded-card border border-foreground/10 bg-muted/20 px-3 py-2">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Dev · hoppa till steg
+          </span>
+          <select
+            value={deal.steg}
+            onChange={(e) => {
+              devJumpToSteg(id, e.target.value as Steg);
+              refresh();
+            }}
+            className="border border-foreground/30 bg-card px-2 py-1 text-xs"
+          >
+            {STEG_ORDNING.map((s) => (
+              <option key={s} value={s}>
+                {STEG_LABEL[s]}
+              </option>
+            ))}
+          </select>
         </div>
       )}
 
