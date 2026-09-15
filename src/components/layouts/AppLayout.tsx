@@ -41,6 +41,7 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
   const location = useLocation();
   const obehandladeIntressen = useNotisCount("saljare-intresse");
   const obehandladeAffarer = useNotisCount("saljare-affar");
+  const obehandladeKopareAffarer = useNotisCount("kopare-affar");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-foreground/20">
@@ -99,6 +100,13 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
                       {obehandladeAffarer}
                     </span>
                   )}
+                  {mode === "kopare" &&
+                    n.label === "Mina affärer" &&
+                    obehandladeKopareAffarer > 0 && (
+                      <span className="ml-2 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 font-mono text-[10px] text-destructive-foreground">
+                        {obehandladeKopareAffarer}
+                      </span>
+                    )}
                 </Link>
               );
             })}
