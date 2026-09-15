@@ -49,7 +49,7 @@ test("Godkänn is disabled until the checklist is satisfied, then advances steg 
   await expect(godkannBtn).toBeEnabled();
   await godkannBtn.click();
 
-  await expect(page.getByText("Steg: Matchad")).toBeVisible();
+  await expect(page.getByText("Steg: Köpavtal")).toBeVisible();
 });
 
 test("Avvisa removes the candidate from the granskning group and it appears in Avslutade", async ({
