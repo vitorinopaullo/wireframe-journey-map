@@ -10,11 +10,13 @@ import {
   getDeal,
   signeraKopeavtal,
   signeraOverenskommelse,
+  signeraHandpenningKvittens,
   Progress,
 } from "@/lib/affar-workflow";
 import { SignicatFlow } from "@/components/SignicatFlow";
 import { KopeavtalDokument } from "@/components/KopeavtalDokument";
 import { OverenskommelseDokument } from "@/components/OverenskommelseDokument";
+import { HandpenningKvittensDokument } from "@/components/HandpenningKvittensDokument";
 import { formatDatum } from "@/lib/format";
 
 export const Route = createFileRoute("/saljare/affarer/$id")({
@@ -37,7 +39,9 @@ function SellerCaseDetail() {
   const { id } = Route.useParams();
   const [, forceRerender] = useState(0);
   const refresh = () => forceRerender((n) => n + 1);
-  const [signOpen, setSignOpen] = useState<"kopeavtal" | "overenskommelse" | null>(null);
+  const [signOpen, setSignOpen] = useState<
+    "kopeavtal" | "overenskommelse" | "handpenning-kvittens" | null
+  >(null);
 
   const interest = getBuyerInterest(id);
   const annons = interest ? getAnnons(interest.annonsId) : undefined;
@@ -115,11 +119,26 @@ function SellerCaseDetail() {
 
       {interest.status === "vill-ga-vidare" && !deal.avvisad && deal.steg === "handpenning" && (
         <WireBox label="Handpenning" className="mb-6">
-          <Annotation>
-            <span className="mt-2 block">
-              Väntar på att köparen betalar handpenningen och att TreLink bekräftar mottagandet.
-            </span>
-          </Annotation>
+          {!deal.handpenning?.kvittensSignerat?.kopare ? (
+            <Annotation>
+              <span className="mt-2 block">
+                Väntar på att köparen betalar handpenningen och att TreLink bekräftar mottagandet.
+              </span>
+            </Annotation>
+          ) : !deal.handpenning.kvittensSignerat.saljare ? (
+            <>
+              <Annotation>
+                Köparen har signerat kvittensen för handpenningen. Signera den nedan.
+              </Annotation>
+              <WireBtn className="mt-4" onClick={() => setSignOpen("handpenning-kvittens")}>
+                Signera kvittens →
+              </WireBtn>
+            </>
+          ) : (
+            <Annotation>
+              <span className="mt-2 block">Du har signerat kvittensen.</span>
+            </Annotation>
+          )}
         </WireBox>
       )}
 
@@ -234,6 +253,31 @@ function SellerCaseDetail() {
         onCancel={() => setSignOpen(null)}
         onSigned={() => {
           signeraOverenskommelse(id, "saljare");
+          setSignOpen(null);
+          refresh();
+        }}
+      />
+
+      <SignicatFlow
+        open={signOpen === "handpenning-kvittens"}
+        seller={{ bolag: saljareBolag }}
+        docTitle="Handpenningskvittens"
+        doneHeading="Handpenningskvittensen är signerad"
+        signerandePart={saljareBolag}
+        renderDoc={() => (
+          <HandpenningKvittensDokument
+            interestId={id}
+            annonsId={interest.annonsId}
+            titel={info.titel}
+            adress={annons?.draft?.adress}
+            ort={info.ort}
+            pris={info.pris}
+            kopareBolag={kopareBolag}
+          />
+        )}
+        onCancel={() => setSignOpen(null)}
+        onSigned={() => {
+          signeraHandpenningKvittens(id, "saljare");
           setSignOpen(null);
           refresh();
         }}
