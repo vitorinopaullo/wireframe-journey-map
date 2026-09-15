@@ -668,7 +668,15 @@ export function devJumpToSteg(interestId: string, target: Steg): DealState {
       };
     }
     if (atOrBefore("hyresvard")) {
-      next.hyresvard = { skickadAt: now, besked: "godkand", beskedAt: now };
+      // Landar man exakt på "hyresvard" ska svaret INTE redan finnas — i
+      // det riktiga flödet hoppar hyresvardBesked direkt vidare till
+      // "likvid" så fort ett besked sätts, så steg="hyresvard" med ett
+      // besked redan ifyllt är ett tillstånd som aldrig kan nås på riktigt
+      // och renderar en tom sektion (den sista grenen i kaskaden är `null`).
+      next.hyresvard =
+        target === "hyresvard"
+          ? { skickadAt: now }
+          : { skickadAt: now, besked: "godkand", beskedAt: now };
     }
     if (atOrBefore("likvid")) {
       next.likvid = {
