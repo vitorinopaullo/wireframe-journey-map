@@ -66,7 +66,10 @@ test('STEG_LABEL and saljare.intressenter.tsx both say "Köpavtal", not "Matchad
   await seedDeal(page, "e2e-batch12-kopavtal-interest", { steg: "matchad" });
 
   await page.goto("/admin/affarer/e2e-batch12-kopavtal-interest");
-  await expect(page.getByText("Köpavtal", { exact: true })).toBeVisible();
+  // Scoped to the progress-stepper span, not the dev-only "hoppa till steg"
+  // dropdown, which also has a "Köpavtal" option and would otherwise make
+  // this a strict-mode violation (two matches).
+  await expect(page.locator("span").filter({ hasText: "Köpavtal" })).toBeVisible();
   await expect(page.getByText("Matchad", { exact: true })).toHaveCount(0);
 
   await seedSession(page, "19850101-9102", "Sanna", "Saljarsson");
