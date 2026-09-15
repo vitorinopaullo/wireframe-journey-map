@@ -70,10 +70,16 @@ export type HyresvardState = {
   beskedAt?: string;
 };
 
+/** Överenskommelsen har en tredje signerande part — hyresvärden — utöver
+ * köpare/säljare, till skillnad från Köpeavtal och Handpenning-kvittens som
+ * bara har två. Egen typ istället för att lägga till hyresvard på PartSign,
+ * som skulle tvinga på ett oanvänt fält på de andra två dokumenten. */
+export type OverenskommelsePartSign = { kopare: boolean; saljare: boolean; hyresvard: boolean };
+
 export type OverenskommelseState = {
   skapadAt?: string;
   skickadAt?: string;
-  signerat: PartSign;
+  signerat: OverenskommelsePartSign;
 };
 
 export type LikvidState = {
@@ -583,7 +589,7 @@ export function skapaOverenskommelse(interestId: string) {
   return patchDeal(interestId, (d) => ({
     ...d,
     overenskommelse: {
-      signerat: { kopare: false, saljare: false },
+      signerat: { kopare: false, saljare: false, hyresvard: false },
       skapadAt: new Date().toISOString(),
     },
   }));
@@ -593,7 +599,9 @@ export function skickaOverenskommelseForSignering(interestId: string) {
   const deal = patchDeal(interestId, (d) => ({
     ...d,
     overenskommelse: {
-      ...(d.overenskommelse ?? { signerat: { kopare: false, saljare: false } }),
+      ...(d.overenskommelse ?? {
+        signerat: { kopare: false, saljare: false, hyresvard: false },
+      }),
       skickadAt: new Date().toISOString(),
     },
   }));
@@ -605,17 +613,25 @@ export function skickaOverenskommelseForSignering(interestId: string) {
   return deal;
 }
 
-export function signeraOverenskommelse(interestId: string, part: "kopare" | "saljare") {
+/** Hyresvärden har ingen inloggning i appen, så TreLink simulerar hens
+ * Signicat-signatur åt dem (admin.affarer.$id.tsx), på samma sätt som
+ * TreLink redan simulerar hyresvärdens ja/nej-besked om själva
+ * överlåtelsen. Alla tre parter — inte bara köpare/säljare — måste ha
+ * signerat innan steg avancerar till tillträde. */
+export function signeraOverenskommelse(
+  interestId: string,
+  part: "kopare" | "saljare" | "hyresvard",
+) {
   const deal = patchDeal(interestId, (d) => {
     const signerat = {
-      ...(d.overenskommelse?.signerat ?? { kopare: false, saljare: false }),
+      ...(d.overenskommelse?.signerat ?? { kopare: false, saljare: false, hyresvard: false }),
       [part]: true,
     };
-    const bada = signerat.kopare && signerat.saljare;
+    const alla = signerat.kopare && signerat.saljare && signerat.hyresvard;
     return {
       ...d,
       overenskommelse: { ...d.overenskommelse, signerat },
-      steg: bada ? "tilltrade" : d.steg,
+      steg: alla ? "tilltrade" : d.steg,
     };
   });
   logBoth(
@@ -623,9 +639,15 @@ export function signeraOverenskommelse(interestId: string, part: "kopare" | "sal
     part === "kopare" ? "Köpare" : "TreLink",
     part === "kopare"
       ? "Du signerade överenskommelsen om överlåtelse."
-      : "Säljaren signerade överenskommelsen om överlåtelse.",
+      : part === "saljare"
+        ? "Säljaren signerade överenskommelsen om överlåtelse."
+        : "Hyresvärdens signering av överenskommelsen om överlåtelse registrerades av TreLink.",
   );
-  if (deal.overenskommelse?.signerat.kopare && deal.overenskommelse?.signerat.saljare) {
+  if (
+    deal.overenskommelse?.signerat.kopare &&
+    deal.overenskommelse?.signerat.saljare &&
+    deal.overenskommelse?.signerat.hyresvard
+  ) {
     logBoth(
       interestId,
       "System",
@@ -734,10 +756,17 @@ export function devJumpToSteg(interestId: string, target: Steg): DealState {
       };
     }
     if (atOrBefore("signering")) {
+      // Precis som hyresvard ovan — att redan stå på steg "signering" med
+      // ALLA tre (inklusive hyresvard) redan signerat är omöjligt i det
+      // riktiga flödet, eftersom signeraOverenskommelse avancerar steg till
+      // "tilltrade" i samma anrop som den tredje signaturen sätts.
       next.overenskommelse = {
         skapadAt: now,
         skickadAt: now,
-        signerat: { kopare: true, saljare: true },
+        signerat:
+          target === "signering"
+            ? { kopare: true, saljare: true, hyresvard: false }
+            : { kopare: true, saljare: true, hyresvard: true },
       };
     }
 
