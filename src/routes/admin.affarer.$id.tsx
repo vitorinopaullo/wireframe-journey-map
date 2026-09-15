@@ -31,6 +31,7 @@ import {
   signeraOverenskommelse,
   bekraftaTilltrade,
   lyftArvode,
+  bekraftaUtbetalning,
   granskningKandidater,
   begarKompletteringKop,
   avvisaKandidat,
@@ -942,20 +943,43 @@ function AdminAffarDetail() {
                 </WireBtn>
               </>
             ) : (
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
-                  <span>Arvode lyft</span>
-                  <span className="font-mono text-xs text-muted-foreground">
-                    {formatDatum(deal.arvode.lyftAt)}
-                  </span>
+              <>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
+                    <span>Arvode lyft</span>
+                    <span className="font-mono text-xs text-muted-foreground">
+                      {formatDatum(deal.arvode.lyftAt)}
+                    </span>
+                  </div>
+                  <div
+                    className={`flex items-center justify-between py-1.5 text-sm ${deal.arvode.utbetaldAt ? "border-b border-foreground/10" : ""}`}
+                  >
+                    <span>Belopp</span>
+                    <span className="tabular-nums">
+                      {deal.arvode.belopp?.toLocaleString("sv-SE")} kr
+                    </span>
+                  </div>
+                  {deal.arvode.utbetaldAt && (
+                    <div className="flex items-center justify-between py-1.5 text-sm">
+                      <span>Utbetald</span>
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {formatDatum(deal.arvode.utbetaldAt)}
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center justify-between py-1.5 text-sm">
-                  <span>Belopp</span>
-                  <span className="tabular-nums">
-                    {deal.arvode.belopp?.toLocaleString("sv-SE")} kr
-                  </span>
-                </div>
-              </div>
+                {!deal.arvode.utbetaldAt && (
+                  <WireBtn
+                    className="mt-4"
+                    onClick={() => {
+                      bekraftaUtbetalning(id);
+                      refresh();
+                    }}
+                  >
+                    Bekräfta utbetalning till säljaren →
+                  </WireBtn>
+                )}
+              </>
             )}
           </WireBox>
         </>
