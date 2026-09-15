@@ -1127,10 +1127,13 @@ function AdminAffarDetail() {
               </WireBtn>
             </div>
             <div className="space-y-4 p-6">
-              <Annotation>Dokumentet mejlas till köparen och kräver ingen signering.</Annotation>
+              <Annotation>
+                Dokumentet mejlas till köparen och säljaren och kräver ingen signering.
+              </Annotation>
               <LikvidKvittensDokument
                 interestId={id}
                 annonsId={interest.annonsId}
+                mottagare="kopare"
                 titel={info.titel}
                 adress={adress}
                 ort={info.ort}
