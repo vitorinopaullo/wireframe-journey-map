@@ -2,7 +2,7 @@ import { Upload, FileText, Check } from "lucide-react";
 import { WireBtn, WireTag, Annotation } from "@/components/wire";
 import type { DocState } from "@/lib/annons-model";
 
-function DocStatusDot({ state }: { state: DocState }) {
+export function DocStatusDot({ state }: { state: DocState }) {
   const cls =
     state === "godkant"
       ? "bg-foreground"
@@ -18,7 +18,7 @@ function DocStatusDot({ state }: { state: DocState }) {
 
 // Kompaktare statusindikator för dokumentrader: ingen tom cirkel, ingen
 // "Saknas"-etikett (tomt läge är underförstått), grön bock för uppladdat.
-function DocStatusIndicator({ state, label }: { state: DocState; label?: string }) {
+export function DocStatusIndicator({ state, label }: { state: DocState; label?: string }) {
   if (state === "saknas") return null;
   if (state === "uppladdad") {
     return (

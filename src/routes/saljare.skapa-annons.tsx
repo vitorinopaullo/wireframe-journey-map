@@ -4,7 +4,7 @@ import { Check, X, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
-import { FileUploadRow } from "@/components/FileUploadRow";
+import { FileUploadRow, DocStatusDot, DocStatusIndicator } from "@/components/FileUploadRow";
 import { initialWorkflow, logEntry, canSellerEdit } from "@/lib/annons-workflow";
 import { harAktivAffar } from "@/lib/affar-workflow";
 import { getSession } from "@/lib/mock-auth";
@@ -1233,13 +1233,7 @@ function CreateListing() {
                     <Annotation>{d.krav}</Annotation>
                   </div>
                   <div className="flex items-center gap-2">
-                    {s === "saknas" ? null : s === "uppladdad" ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-success)]">
-                        <Check className="h-3.5 w-3.5" /> Uppladdad
-                      </span>
-                    ) : (
-                      <WireTag>{docLabels[s]}</WireTag>
-                    )}
+                    <DocStatusIndicator state={s} label={docLabels[s]} />
                     {s === "saknas" || s === "komplettera" ? (
                       <WireBtn variant="secondary" onClick={() => setDoc(d.name, "uppladdad")}>
                         Ladda upp
@@ -1308,20 +1302,7 @@ function CreateListing() {
                 return (
                   <li key={d.name} className="flex items-center justify-between text-sm">
                     <span className="flex items-center gap-2">
-                      <span
-                        className={`inline-block h-3 w-3 shrink-0 rounded-full ${
-                          s === "godkant"
-                            ? "bg-foreground"
-                            : s === "granskas"
-                              ? "bg-foreground/60 ring-2 ring-foreground/20"
-                              : s === "uppladdad"
-                                ? "bg-foreground/40"
-                                : s === "komplettera"
-                                  ? "bg-card border border-foreground"
-                                  : "bg-card border border-foreground/30"
-                        }`}
-                      />{" "}
-                      {d.name}
+                      <DocStatusDot state={s} /> {d.name}
                       {d.required ? <span> *</span> : <span className="text-muted-foreground"> (frivilligt)</span>}
                     </span>
                     <WireTag>{docLabels[s]}</WireTag>
@@ -1529,13 +1510,7 @@ function BildGalleri({
           <Annotation>{doc.krav}</Annotation>
         </div>
         <div className="flex items-center gap-2">
-          {status === "saknas" ? null : status === "uppladdad" ? (
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-success)]">
-              <Check className="h-3.5 w-3.5" /> Uppladdad
-            </span>
-          ) : (
-            <WireTag>{docLabels[status]}</WireTag>
-          )}
+          <DocStatusIndicator state={status} label={docLabels[status]} />
         </div>
       </div>
       <p className="mb-3 text-sm text-muted-foreground">
