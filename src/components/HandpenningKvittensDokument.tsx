@@ -22,9 +22,9 @@ function belopp10Procent(pris?: string): number | undefined {
 }
 
 /** TreLinks kvittens för mottagen handpenning — ett eget, av TreLink upprättat
- * dokument, skilt från köparens egna uppladdade kvitto/UC-utdrag. Generiskt
- * utformat (inte en kopia av något verkligt bolags kvittenslayout), samma
- * visuella språk som KopeavtalDokument/OverenskommelseDokument. */
+ * dokument, skilt från köparens eget uppladdade kvitto. Generiskt utformat
+ * (inte en kopia av något verkligt bolags kvittenslayout), samma visuella
+ * språk som KopeavtalDokument/OverenskommelseDokument. */
 export function HandpenningKvittensDokument({
   interestId,
   annonsId,
