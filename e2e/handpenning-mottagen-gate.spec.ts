@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { unlockGate, seedAnnons, seedBuyerInterest, seedDeal } from "./helpers";
 
-test('"Handpenning mottagen" stays hidden until both kvittens signatures are in place, even with kvitto/UC-utdrag already uploaded', async ({
+test('"Handpenning mottagen" stays hidden until both kvittens signatures are in place, even with kvitto already uploaded', async ({
   page,
 }) => {
   await unlockGate(page);
@@ -24,12 +24,11 @@ test('"Handpenning mottagen" stays hidden until both kvittens signatures are in 
     userId: "u_e2e_hmg",
   });
 
-  // Uploads present, kvittens sent, but neither party has signed yet.
+  // Kvitto uploaded and kvittens sent, but neither party has signed yet.
   await seedDeal(page, "e2e-hmg-interest", {
     steg: "handpenning",
     handpenning: {
       kvitto: "kvitto.pdf",
-      ucUtdrag: "uc.pdf",
       kvittensSkapadAt: new Date().toISOString(),
       kvittensSkickadAt: new Date().toISOString(),
     },
@@ -43,7 +42,6 @@ test('"Handpenning mottagen" stays hidden until both kvittens signatures are in 
     steg: "handpenning",
     handpenning: {
       kvitto: "kvitto.pdf",
-      ucUtdrag: "uc.pdf",
       kvittensSkapadAt: new Date().toISOString(),
       kvittensSkickadAt: new Date().toISOString(),
       kvittensSignerat: { kopare: true, saljare: false },
@@ -57,7 +55,6 @@ test('"Handpenning mottagen" stays hidden until both kvittens signatures are in 
     steg: "handpenning",
     handpenning: {
       kvitto: "kvitto.pdf",
-      ucUtdrag: "uc.pdf",
       kvittensSkapadAt: new Date().toISOString(),
       kvittensSkickadAt: new Date().toISOString(),
       kvittensSignerat: { kopare: true, saljare: true },

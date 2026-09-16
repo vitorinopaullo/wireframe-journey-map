@@ -27,7 +27,6 @@ test("both buyer and seller sign the handpenning-kvittens via Signicat, seller's
     steg: "handpenning",
     handpenning: {
       kvitto: "kvitto.pdf",
-      ucUtdrag: "uc.pdf",
       kvittensSkapadAt: new Date().toISOString(),
       kvittensSkickadAt: new Date().toISOString(),
     },

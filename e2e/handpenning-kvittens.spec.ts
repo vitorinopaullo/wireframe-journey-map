@@ -8,7 +8,7 @@ import {
   seedSession,
 } from "./helpers";
 
-test("TreLink can only create the handpenning-kvittens after both kvitto and UC-utdrag are uploaded", async ({
+test("TreLink can only create the handpenning-kvittens after kvitto is uploaded", async ({
   page,
 }) => {
   await unlockGate(page);
@@ -31,26 +31,16 @@ test("TreLink can only create the handpenning-kvittens after both kvitto and UC-
     userId: "u_e2e_kvgate",
   });
 
-  // Neither upload present yet — no "Skapa kvittens" action.
+  // No upload present yet — no "Skapa kvittens" action.
   await seedDeal(page, "e2e-kv-gate-interest", { steg: "handpenning" });
   await page.goto("/admin/affarer/e2e-kv-gate-interest");
   await expect(page.getByRole("button", { name: "Skapa kvittens →" })).toHaveCount(0);
-  await expect(
-    page.getByText("Väntar på att köparen laddar upp kvittens och UC-utdrag innan"),
-  ).toBeVisible();
+  await expect(page.getByText("Väntar på att köparen laddar upp kvittens innan")).toBeVisible();
 
-  // Only kvitto present — still no action.
+  // Kvitto uploaded — action appears.
   await seedDeal(page, "e2e-kv-gate-interest", {
     steg: "handpenning",
     handpenning: { kvitto: "kvitto.pdf" },
-  });
-  await page.reload();
-  await expect(page.getByRole("button", { name: "Skapa kvittens →" })).toHaveCount(0);
-
-  // Both present — action appears.
-  await seedDeal(page, "e2e-kv-gate-interest", {
-    steg: "handpenning",
-    handpenning: { kvitto: "kvitto.pdf", ucUtdrag: "uc.pdf" },
   });
   await page.reload();
   await expect(page.getByRole("button", { name: "Skapa kvittens →" })).toBeVisible();
@@ -83,7 +73,6 @@ test("buyer signing the handpenning-kvittens forwards it to the seller in the sa
     steg: "handpenning",
     handpenning: {
       kvitto: "kvitto.pdf",
-      ucUtdrag: "uc.pdf",
       kvittensSkapadAt: new Date().toISOString(),
       kvittensSkickadAt: new Date().toISOString(),
     },

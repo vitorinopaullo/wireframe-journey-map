@@ -80,7 +80,6 @@ test("signeraHandpenningKvittens fires a saljare-affar badge next to Mina affär
     steg: "handpenning",
     handpenning: {
       kvitto: "kvitto.pdf",
-      ucUtdrag: "uc.pdf",
       kvittensSkapadAt: new Date().toISOString(),
       kvittensSkickadAt: new Date().toISOString(),
     },
