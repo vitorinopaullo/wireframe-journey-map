@@ -4,11 +4,7 @@ import { Check, CheckCircle2, AlertTriangle } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { getBuyerInterest, statusLabel } from "@/lib/kopare-workflow";
-import {
-  getAnnons,
-  uppgraderaKategori,
-  begarKomplettering as begarAnnonsKomplettering,
-} from "@/lib/annons-workflow";
+import { getAnnons } from "@/lib/annons-workflow";
 import { getAccountByUserId, upsertAdminAccount, devLoginAsAccount } from "@/lib/mock-auth";
 import {
   annonsInfo,
@@ -191,16 +187,15 @@ function AdminAffarDetail() {
       !!deal.granskning?.ftMail &&
       !!deal.granskning?.ftMobil);
   const foretagspresentationOk = !!deal.granskning?.foretagspresentation;
-  // Ett bolag som inte finns kan inte ha en firmatecknare — när köparen
-  // uppgett att den saknar bolag ersätts firmatecknare-kravet med att
-  // bolaget är klart (bolagKlartAt satt), i checklistan och i matchnings-
-  // spärren.
-  const harBolagFalse = deal.granskning?.harBolag === false;
-  const bolagKlartOk = !!deal.granskning?.bolagKlartAt;
+  // En privatperson kan inte ha en firmatecknare — när köparen valt
+  // bolagssituation "privat" ersätts firmatecknare-kravet med att
+  // personnumret är bekräftat, i checklistan och i matchningsspärren.
+  const arPrivat = deal.granskning?.bolagssituation === "privat";
+  const personnummerOk = !!deal.granskning?.personnummerBekraftat;
   const granskningChecklist = [
     { label: "KYC-dokument uppladdat", ok: kycOk },
-    harBolagFalse
-      ? { label: "Bolag klart", ok: bolagKlartOk }
+    arPrivat
+      ? { label: "Personnummer bekräftat", ok: personnummerOk }
       : { label: "Firmatecknare bekräftad eller kontaktuppgifter ifyllda", ok: firmatecknareOk },
     { label: "Företagspresentation uppladdad", ok: foretagspresentationOk },
   ];
@@ -211,16 +206,6 @@ function AdminAffarDetail() {
     upsertAdminAccount(buyerAccount.userId, {
       profil: { ...buyerAccount.profil, bolag: bolagVarde, orgnr: orgnrVarde },
     });
-    refresh();
-  };
-
-  const uppgraderaTillAktie = () => {
-    if (!annons) return;
-    uppgraderaKategori(annons.id, "aktie");
-    begarAnnonsKomplettering(
-      annons.id,
-      "Köparens bolag ändrades under processen — affären har uppgraderats till Aktieöverlåtelse. Vi behöver kompletterande underlag: registreringsbevis, bolagsordning, aktiebok och bolagspärm.",
-    );
     refresh();
   };
 
@@ -356,8 +341,12 @@ function AdminAffarDetail() {
                 <WireTag active={kycOk}>{deal.granskning?.kycDokument || "Ej uppladdat"}</WireTag>
               </div>
               <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
-                <span>Firmatecknare</span>
-                {deal.granskning?.firmatecknare === undefined ? (
+                <span>{arPrivat ? "Personnummer" : "Firmatecknare"}</span>
+                {arPrivat ? (
+                  <WireTag active={personnummerOk}>
+                    {personnummerOk ? "Bekräftat" : "Väntar"}
+                  </WireTag>
+                ) : deal.granskning?.firmatecknare === undefined ? (
                   <WireTag>Ej besvarat</WireTag>
                 ) : deal.granskning.firmatecknare ? (
                   <WireTag active>Bekräftad av köparen</WireTag>
@@ -367,7 +356,7 @@ function AdminAffarDetail() {
                   </WireTag>
                 )}
               </div>
-              {deal.granskning?.firmatecknare === false && (
+              {!arPrivat && deal.granskning?.firmatecknare === false && (
                 <div className="grid grid-cols-1 gap-1 border-b border-foreground/10 py-1.5 text-sm text-muted-foreground md:grid-cols-2">
                   <span>{deal.granskning.ftRoll || "—"}</span>
                   <span>
@@ -388,47 +377,32 @@ function AdminAffarDetail() {
             </div>
           </WireBox>
 
-          {deal.granskning?.harBolag === false && (
-            <WireBox label="Köparens bolagsstatus" className="mb-6">
+          {(deal.granskning?.bolagssituation === "privat" ||
+            deal.granskning?.bolagssituation === "aktieaffar") && (
+            <WireBox label="Köparens bolagssituation" className="mb-6">
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
-                  <span>Väg</span>
-                  <WireTag>
-                    {deal.granskning.bolagsVal === "hyllbolag"
-                      ? "Hyllbolag"
-                      : deal.granskning.bolagsVal === "starta-bolag"
-                        ? "Startar nytt bolag"
-                        : "Ej valt än"}
+                  <span>Situation</span>
+                  <WireTag active>
+                    {deal.granskning.bolagssituation === "privat" ? "Privatperson" : "Aktieaffär"}
                   </WireTag>
                 </div>
-                <div className="flex items-center justify-between py-1.5 text-sm">
-                  <span>Bolag klart</span>
-                  <WireTag active={!!deal.granskning.bolagKlartAt}>
-                    {deal.granskning.bolagKlartAt
-                      ? formatDatum(deal.granskning.bolagKlartAt)
-                      : "Väntar"}
-                  </WireTag>
-                </div>
+                {deal.granskning.bolagssituation === "privat" && (
+                  <div className="flex items-center justify-between py-1.5 text-sm">
+                    <span>Personnummer bekräftat</span>
+                    <WireTag active={personnummerOk}>{personnummerOk ? "Ja" : "Väntar"}</WireTag>
+                  </div>
+                )}
               </div>
 
-              {deal.granskning.bolagKlartAt &&
-                (annons?.cat === "aktie" ? (
-                  <Annotation>
-                    <span className="mt-2 block">
-                      Uppgraderad till Aktieöverlåtelse — komplettering begärd från säljaren.
-                    </span>
-                  </Annotation>
-                ) : (
-                  <>
-                    <Annotation>
-                      Köparens bolag ändrades under processen. Uppgradera annonsen till
-                      Aktieöverlåtelse och begär de kompletterande dokument som krävs av säljaren.
-                    </Annotation>
-                    <WireBtn className="mt-4" onClick={uppgraderaTillAktie}>
-                      Uppgradera till Aktieöverlåtelse →
-                    </WireBtn>
-                  </>
-                ))}
+              {deal.granskning.bolagssituation === "aktieaffar" && (
+                <Annotation>
+                  <span className="mt-2 block">
+                    Köparen uppgraderade själv annonsen till Aktieöverlåtelse — komplettering begärd
+                    från säljaren.
+                  </span>
+                </Annotation>
+              )}
             </WireBox>
           )}
 
