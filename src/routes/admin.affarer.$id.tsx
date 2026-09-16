@@ -629,18 +629,10 @@ function AdminAffarDetail() {
                 {deal.handpenning?.kvitto || "Ej uppladdad"}
               </WireTag>
             </div>
-            <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
-              <span>UC-utdrag</span>
-              <WireTag active={!!deal.handpenning?.ucUtdrag}>
-                {deal.handpenning?.ucUtdrag || "Ej uppladdat"}
-              </WireTag>
-            </div>
           </div>
-          {!deal.handpenning?.kvitto || !deal.handpenning?.ucUtdrag ? (
+          {!deal.handpenning?.kvitto ? (
             <Annotation>
-              <span className="mt-2 block">
-                Väntar på att köparen laddar upp kvittens och UC-utdrag.
-              </span>
+              <span className="mt-2 block">Väntar på att köparen laddar upp kvittens.</span>
             </Annotation>
           ) : !deal.handpenning?.kvittensSignerat?.kopare ||
             !deal.handpenning?.kvittensSignerat?.saljare ? (
@@ -667,7 +659,7 @@ function AdminAffarDetail() {
       {!avslutad && deal.steg === "handpenning" && (
         <WireBox label="TreLinks handpenningskvittens" className="mb-6">
           {!deal.handpenning?.kvittensSkapadAt ? (
-            deal.handpenning?.kvitto && deal.handpenning?.ucUtdrag ? (
+            deal.handpenning?.kvitto ? (
               <>
                 <Annotation>
                   Upprätta TreLinks kvittens för den mottagna handpenningen och skicka den till
@@ -680,8 +672,8 @@ function AdminAffarDetail() {
             ) : (
               <Annotation>
                 <span className="mt-2 block">
-                  Väntar på att köparen laddar upp kvittens och UC-utdrag innan TreLinks egen
-                  kvittens kan upprättas.
+                  Väntar på att köparen laddar upp kvittens innan TreLinks egen kvittens kan
+                  upprättas.
                 </span>
               </Annotation>
             )
@@ -726,10 +718,6 @@ function AdminAffarDetail() {
                     {kopareBolag || "—"} {kopareOrgnr ? `(${kopareOrgnr})` : ""}
                   </span>
                 </div>
-                <div className="flex justify-between border-b border-foreground/10 py-1.5">
-                  <span className="text-muted-foreground">UC-utdrag</span>
-                  <span>{deal.handpenning?.ucUtdrag || "—"}</span>
-                </div>
               </div>
               <WireBtn
                 className="mt-4"
@@ -739,7 +727,7 @@ function AdminAffarDetail() {
                     fran: "TreLink <noreply@trelink.se>",
                     till: "Hyresvärd",
                     amne: `Överlåtelse av hyreskontrakt · ${info.titel}`,
-                    brodtext: `TreLink förmedlar en överlåtelse av hyreskontraktet för ${info.titel}. Bifogat: företagspresentation, bolagsuppgifter och UC-utdrag för ny hyresgäst. Vänligen återkom med besked.`,
+                    brodtext: `TreLink förmedlar en överlåtelse av hyreskontraktet för ${info.titel}. Bifogat: företagspresentation och bolagsuppgifter för ny hyresgäst. Vänligen återkom med besked.`,
                   });
                   refresh();
                 }}
