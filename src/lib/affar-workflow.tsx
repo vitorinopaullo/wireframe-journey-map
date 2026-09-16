@@ -820,8 +820,8 @@ export const STEG_LABEL: Record<Steg, string> = {
   matchad: "Köpavtal",
   handpenning: "Handpenning",
   hyresvard: "Hyresvärd",
-  likvid: "Likvid",
-  signering: "Signering",
+  likvid: "Insättning likvid",
+  signering: "Hyresavtal",
   tilltrade: "Tillträde",
   klar: "Klar",
 };
