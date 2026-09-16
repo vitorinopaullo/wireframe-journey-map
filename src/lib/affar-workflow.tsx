@@ -1022,11 +1022,16 @@ export function buildAvslutade(
     });
 }
 
+// Tillträde och Klar visas inte längre som egna rutor i steppern — en
+// affär på något av dessa två steg ritar istället Signering som det sista,
+// fullt avklarade steget (se Progress nedan).
+const SYNLIGA_STEG = STEG_ORDNING.slice(0, STEG_ORDNING.indexOf("signering") + 1);
+
 export function Progress({ steg }: { steg: Steg }) {
   const idx = STEG_ORDNING.indexOf(steg);
   return (
-    <div className="grid grid-cols-4 gap-1 md:grid-cols-8">
-      {STEG_ORDNING.map((s, i) => (
+    <div className="grid grid-cols-4 gap-1 md:grid-cols-7">
+      {SYNLIGA_STEG.map((s, i) => (
         <div
           key={s}
           className="flex flex-col items-center gap-1 rounded-card border border-foreground/15 bg-background p-2 text-center"
