@@ -4,7 +4,12 @@
 // logik, t.ex. i en framtida detaljvy för en enskild affär.
 
 import { StatusDot } from "@/components/wire";
-import { getAnnons, patchAnnons } from "@/lib/annons-workflow";
+import {
+  getAnnons,
+  patchAnnons,
+  uppgraderaKategori,
+  begarKomplettering,
+} from "@/lib/annons-workflow";
 import {
   patchBuyerInterest,
   logBuyerEntry,
@@ -111,14 +116,13 @@ export type GranskningState = {
   ftMail?: string;
   ftMobil?: string;
   komplettering?: { message: string; at: string };
-  // "Inget bolag än"-spåret: köparen kan sakna ett köpande bolag vid
-  // granskningsstart. harBolag === false spärrar firmatecknare-frågan (ett
-  // bolag som inte finns kan inte ha en firmatecknare) tills bolagKlartAt är
-  // satt — omedelbart för hyllbolag, efter bekraftaBolagKlart för
-  // starta-bolag. Se angeHarBolag/valjBolagsVag/bekraftaBolagKlart.
-  harBolag?: boolean;
-  bolagsVal?: "hyllbolag" | "starta-bolag";
-  bolagKlartAt?: string;
+  // Köparens bolagssituation avgör vilken bekräftelse granskningen kräver
+  // istället för firmatecknare: "privat" (personnummerBekraftat) — ett
+  // bolag som inte finns kan inte ha en firmatecknare. "har-bolag" och
+  // "aktieaffar" kräver firmatecknare precis som idag. Se
+  // valjBolagssituation/bekraftaPersonnummer.
+  bolagssituation?: "har-bolag" | "privat" | "aktieaffar";
+  personnummerBekraftat?: boolean;
 };
 
 export type DealState = {
@@ -249,45 +253,52 @@ export function laddaUppKycDokument(interestId: string, filnamn: string) {
   return deal;
 }
 
-export function angeHarBolag(interestId: string, harBolag: boolean) {
+/** Ingen av de tre situationerna kräver ett separat "vänta tills klart"-steg
+ * — till skillnad från den gamla hyllbolag/starta-bolag-vägen är alla tre
+ * klara i samma anrop som köparen väljer dem. Vid "aktieaffar" uppgraderar
+ * köparen annonsen till Aktieöverlåtelse direkt, samma mekanism som TreLinks
+ * egen manuella uppgradering (se uppgraderaKategori i annons-workflow.ts),
+ * men med loggtext anpassad för att köparen själv triggade det. */
+export function valjBolagssituation(
+  interestId: string,
+  val: "har-bolag" | "privat" | "aktieaffar",
+) {
   const deal = patchDeal(interestId, (d) => ({
     ...d,
-    granskning: { ...d.granskning, harBolag },
+    granskning: { ...d.granskning, bolagssituation: val },
   }));
   logBoth(
     interestId,
     "Köpare",
-    harBolag ? "Bekräftade att du har ett köpande bolag." : "Uppgav att du inte har ett bolag än.",
+    val === "har-bolag"
+      ? "Bekräftade att du har ett köpande bolag."
+      : val === "privat"
+        ? "Valde att gå in som privatperson."
+        : "Valde att göra en aktieaffär.",
   );
+  if (val === "aktieaffar") {
+    const interest = getBuyerInterest(interestId);
+    if (interest) {
+      uppgraderaKategori(
+        interest.annonsId,
+        "aktie",
+        "Köparen valde aktieaffär — annonsen uppgraderades till Aktieöverlåtelse",
+      );
+      begarKomplettering(
+        interest.annonsId,
+        "Köparens bolag ändrades under processen — affären har uppgraderats till Aktieöverlåtelse. Vi behöver kompletterande underlag: registreringsbevis, bolagsordning, aktiebok och bolagspärm.",
+      );
+    }
+  }
   return deal;
 }
 
-/** Väljer väg för köpare utan bolag. Ett hyllbolag är klart direkt —
- * bolagKlartAt sätts i samma steg. Att starta ett nytt bolag kräver en
- * separat bekräftelse (bekraftaBolagKlart) när det faktiskt är registrerat. */
-export function valjBolagsVag(interestId: string, val: "hyllbolag" | "starta-bolag") {
+export function bekraftaPersonnummer(interestId: string) {
   const deal = patchDeal(interestId, (d) => ({
     ...d,
-    granskning: {
-      ...d.granskning,
-      bolagsVal: val,
-      bolagKlartAt: val === "hyllbolag" ? new Date().toISOString() : d.granskning?.bolagKlartAt,
-    },
+    granskning: { ...d.granskning, personnummerBekraftat: true },
   }));
-  logBoth(
-    interestId,
-    "Köpare",
-    val === "hyllbolag" ? "Valde att köpa ett hyllbolag." : "Valde att starta ett nytt bolag.",
-  );
-  return deal;
-}
-
-export function bekraftaBolagKlart(interestId: string) {
-  const deal = patchDeal(interestId, (d) => ({
-    ...d,
-    granskning: { ...d.granskning, bolagKlartAt: new Date().toISOString() },
-  }));
-  logBoth(interestId, "Köpare", "Bekräftade att det nya bolaget är registrerat.");
+  logBoth(interestId, "Köpare", "Bekräftade sitt personnummer.");
   return deal;
 }
 
@@ -353,10 +364,7 @@ export function kanMatchaKandidat(deal: DealState): boolean {
       !!deal.granskning?.ftMail &&
       !!deal.granskning?.ftMobil);
   const foretagspresentationOk = !!deal.granskning?.foretagspresentation;
-  const harBolagFalse = deal.granskning?.harBolag === false;
-  const bolagKlartOk = !!deal.granskning?.bolagKlartAt;
-  const firmatecknareEllerBolagOk = harBolagFalse ? bolagKlartOk : firmatecknareOk;
-  return kycOk && firmatecknareEllerBolagOk && foretagspresentationOk;
+  return kycOk && firmatecknareOk && foretagspresentationOk;
 }
 
 export function laddaUppHandpenningKvitto(interestId: string, filnamn: string) {

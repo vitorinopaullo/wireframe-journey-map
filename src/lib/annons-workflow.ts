@@ -155,15 +155,15 @@ export function begarKomplettering(annonsId: string, message: string) {
  * köparens bolagsval ändrar affärens karaktär under granskningen) — patchar
  * både cat och draft.cat så att prissättnings-/dokumentlogiken (docsByCat/
  * avgift i admin.annonser.$id.tsx) transparent följer den nya kategorin. */
-export function uppgraderaKategori(annonsId: string, nyCat: CatId) {
+export function uppgraderaKategori(
+  annonsId: string,
+  nyCat: CatId,
+  logText: string = "TreLink uppgraderade annonsen till Aktieöverlåtelse — köparens bolag ändrades under processen",
+) {
   patchAnnons(annonsId, (it) => ({
     ...it,
     cat: nyCat,
     draft: { ...it.draft, cat: nyCat },
-    workflow: logEntry(
-      it.workflow,
-      "TreLink",
-      "TreLink uppgraderade annonsen till Aktieöverlåtelse — köparens bolag ändrades under processen",
-    ),
+    workflow: logEntry(it.workflow, "TreLink", logText),
   }));
 }
