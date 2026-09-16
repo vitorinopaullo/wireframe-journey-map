@@ -42,14 +42,30 @@ function SlaPill({ sla }: { sla?: Affar["sla"] }) {
 }
 
 function VantarTag({ v }: { v: Vantar }) {
+  // "dig" i den delade Vantar-typen syftar alltid på köparen, aldrig på
+  // den som tittar — och på den här sidan är det säljaren som tittar, så
+  // "saljare" är den etiketten som betyder "din tur" här.
   const map: Record<Vantar, string> = {
-    dig: "Väntar på dig",
+    dig: "Väntar på köparen",
     george: "Väntar på TreLink",
-    saljare: "Väntar på säljare",
+    saljare: "Väntar på dig",
     hyresvard: "Väntar på hyresvärd",
     ingen: "—",
   };
-  return <WireTag>{map[v]}</WireTag>;
+  if (v === "saljare") {
+    return (
+      <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground">
+        <span className="inline-block h-2 w-2 rounded-full bg-[var(--color-primary)]" />
+        {map[v]}
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+      <span className="inline-block h-2 w-2 rounded-full border border-foreground/50 bg-background" />
+      {map[v]}
+    </span>
+  );
 }
 
 function AffarsKort({ a }: { a: Affar }) {
