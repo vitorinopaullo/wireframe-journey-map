@@ -11,9 +11,8 @@ import {
   getDeal,
   laddaUppForetagspresentation,
   laddaUppKycDokument,
-  angeHarBolag,
-  valjBolagsVag,
-  bekraftaBolagKlart,
+  valjBolagssituation,
+  bekraftaPersonnummer,
   bekraftaFirmatecknare,
   laddaUppHandpenningKvitto,
   signeraKopeavtal,
@@ -141,12 +140,12 @@ function BuyerCaseDetail() {
       !!deal.granskning?.ftMail &&
       !!deal.granskning?.ftMobil);
   const foretagspresentationOk = !!deal.granskning?.foretagspresentation;
-  // Ett bolag som inte finns kan inte ha en firmatecknare — frågan döljs
-  // helt tills köparens bolagsval är klart (se GranskningState), och
-  // checklistan visar "Bolag klart" istället för "Firmatecknare".
-  const harBolagFalse = deal.granskning?.harBolag === false;
-  const bolagKlartOk = !!deal.granskning?.bolagKlartAt;
-  const showFirmatecknare = !(harBolagFalse && !bolagKlartOk);
+  // En privatperson kan inte ha en firmatecknare — frågan döljs helt när
+  // köparen valt "privat" (se GranskningState), och checklistan visar
+  // "Personnummer bekräftat" istället för "Firmatecknare".
+  const arPrivat = deal.granskning?.bolagssituation === "privat";
+  const personnummerOk = !!deal.granskning?.personnummerBekraftat;
+  const showFirmatecknare = !arPrivat;
 
   const ftRollSaknas = arFirmatecknare === false && ftRoll.trim() === "";
   const ftFornamnSaknas = arFirmatecknare === false && ftFornamn.trim() === "";
@@ -251,9 +250,9 @@ function BuyerCaseDetail() {
           {(() => {
             const missing: string[] = [];
             if (!kycOk) missing.push("Ladda upp KYC-dokument");
-            if (harBolagFalse ? !bolagKlartOk : !firmatecknareOk) {
+            if (arPrivat ? !personnummerOk : !firmatecknareOk) {
               missing.push(
-                harBolagFalse ? "Bekräfta att bolaget är klart" : "Bekräfta om du är firmatecknare",
+                arPrivat ? "Bekräfta ditt personnummer" : "Bekräfta om du är firmatecknare",
               );
             }
             if (!foretagspresentationOk) missing.push("Ladda upp företagspresentation");
@@ -303,104 +302,83 @@ function BuyerCaseDetail() {
           </div>
 
           <div className="mt-6 border-t border-foreground/10 pt-6">
-            <Annotation>Har du ett bolag som ska stå som köpare?</Annotation>
+            <Annotation>Hur ser din situation gällande bolag ut?</Annotation>
             <div className="mt-3 flex flex-wrap gap-4">
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="radio"
-                  name="kopare-harbolag"
-                  checked={deal.granskning?.harBolag === true}
+                  name="kopare-bolagssituation"
+                  checked={deal.granskning?.bolagssituation === "har-bolag"}
                   onChange={() => {
-                    angeHarBolag(id, true);
+                    valjBolagssituation(id, "har-bolag");
                     refresh();
                   }}
                   className="h-4 w-4 accent-[var(--color-interactive)]"
                 />
-                Ja, jag har ett bolag
+                Ja, jag har bolag
               </label>
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="radio"
-                  name="kopare-harbolag"
-                  checked={deal.granskning?.harBolag === false}
+                  name="kopare-bolagssituation"
+                  checked={deal.granskning?.bolagssituation === "privat"}
                   onChange={() => {
-                    angeHarBolag(id, false);
+                    valjBolagssituation(id, "privat");
                     refresh();
                   }}
                   className="h-4 w-4 accent-[var(--color-interactive)]"
                 />
                 Nej, inte än
               </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="kopare-bolagssituation"
+                  checked={deal.granskning?.bolagssituation === "aktieaffar"}
+                  onChange={() => {
+                    valjBolagssituation(id, "aktieaffar");
+                    refresh();
+                  }}
+                  className="h-4 w-4 accent-[var(--color-interactive)]"
+                />
+                Vill göra aktieaffär
+              </label>
             </div>
 
-            {deal.granskning?.harBolag === false && !deal.granskning?.bolagsVal && (
-              <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-                <button
-                  onClick={() => {
-                    valjBolagsVag(id, "hyllbolag");
-                    refresh();
-                  }}
-                  className="rounded-card border border-foreground/15 bg-card p-4 text-left transition-colors duration-150 hover:border-foreground/40"
-                >
-                  <div className="text-sm font-medium">Jag köper ett hyllbolag</div>
-                  <div className="mt-1 text-xs text-muted-foreground">
-                    Klart direkt — ingen väntetid för registrering.
-                  </div>
-                </button>
-                <button
-                  onClick={() => {
-                    valjBolagsVag(id, "starta-bolag");
-                    refresh();
-                  }}
-                  className="rounded-card border border-foreground/15 bg-card p-4 text-left transition-colors duration-150 hover:border-foreground/40"
-                >
-                  <div className="text-sm font-medium">Jag startar ett bolag</div>
-                  <div className="mt-1 text-xs text-muted-foreground">
-                    Fortsätt tillsvidare som privatperson tills bolaget är registrerat.
-                  </div>
-                </button>
-              </div>
-            )}
-
-            {deal.granskning?.harBolag === false && deal.granskning?.bolagsVal === "hyllbolag" && (
-              <Annotation>
-                <span className="mt-2 block">
-                  Klart — TreLink har informerats och uppgraderar din ansökan.
-                </span>
-              </Annotation>
-            )}
-
-            {deal.granskning?.harBolag === false &&
-              deal.granskning?.bolagsVal === "starta-bolag" &&
-              !deal.granskning?.bolagKlartAt && (
-                <>
-                  <Annotation>
-                    <span className="mt-2 block">
-                      Fortsätt tillsvidare som privatperson — säg till TreLink när bolaget är
-                      registrerat.
-                    </span>
-                  </Annotation>
+            {arPrivat && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between border-b border-foreground/10 py-1.5 text-sm">
+                  <span className="text-muted-foreground">
+                    Personnummer (från din BankID-inloggning)
+                  </span>
+                  <span className="font-mono">{getSession()?.bankid?.personnr ?? "—"}</span>
+                </div>
+                {!personnummerOk ? (
                   <WireBtn
                     className="mt-3"
                     onClick={() => {
-                      bekraftaBolagKlart(id);
+                      bekraftaPersonnummer(id);
                       refresh();
                     }}
                   >
-                    Bolaget är registrerat →
+                    Bekräfta →
                   </WireBtn>
-                </>
-              )}
+                ) : (
+                  <Annotation>
+                    <span className="mt-2 block">Bekräftat.</span>
+                  </Annotation>
+                )}
+              </div>
+            )}
 
-            {deal.granskning?.harBolag === false &&
-              deal.granskning?.bolagsVal === "starta-bolag" &&
-              deal.granskning?.bolagKlartAt && (
-                <Annotation>
-                  <span className="mt-2 block">
-                    Bolaget är registrerat — TreLink har informerats.
-                  </span>
-                </Annotation>
-              )}
+            {deal.granskning?.bolagssituation === "aktieaffar" && (
+              <Annotation>
+                <span className="mt-2 block">
+                  Annonsen har uppgraderats till Aktieöverlåtelse. TreLink hör av sig om de
+                  kompletterande dokument som krävs.
+                </span>
+              </Annotation>
+            )}
           </div>
 
           {showFirmatecknare && (
