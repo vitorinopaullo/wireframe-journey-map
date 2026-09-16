@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { unlockGate, seedAnnons, seedBuyerInterest, seedDeal } from "./helpers";
 
-const STEPPER_SELECTOR = "div.grid.grid-cols-4.gap-1.md\\:grid-cols-7";
+const STEPPER_SELECTOR = "div.grid.grid-cols-3.gap-1.md\\:grid-cols-6";
 
-test("the Progress stepper renders exactly 7 boxes, not 9", async ({ page }) => {
+test("the Progress stepper renders exactly 6 boxes, not 9", async ({ page }) => {
   await unlockGate(page);
 
   await seedAnnons(page, {
@@ -29,12 +29,13 @@ test("the Progress stepper renders exactly 7 boxes, not 9", async ({ page }) => 
 
   const stepper = page.locator(STEPPER_SELECTOR);
   await expect(stepper).toBeVisible();
-  await expect(stepper.locator("> div")).toHaveCount(7);
+  await expect(stepper.locator("> div")).toHaveCount(6);
+  await expect(stepper.getByText("Intresse inskickat", { exact: true })).toHaveCount(0);
   await expect(stepper.getByText("Tillträde", { exact: true })).toHaveCount(0);
   await expect(stepper.getByText("Klar", { exact: true })).toHaveCount(0);
 });
 
-test('a deal at steg "klar" shows Signering as the completed final state in the Progress stepper', async ({
+test('a deal at steg "klar" shows Hyresavtal as the completed final state in the Progress stepper', async ({
   page,
 }) => {
   await unlockGate(page);
@@ -61,10 +62,10 @@ test('a deal at steg "klar" shows Signering as the completed final state in the 
   await page.goto("/admin/affarer/e2e-stepper-trim-klar-interest");
 
   const stepper = page.locator(STEPPER_SELECTOR);
-  await expect(stepper.locator("> div")).toHaveCount(7);
+  await expect(stepper.locator("> div")).toHaveCount(6);
 
-  const signeringBox = stepper.locator("> div").filter({ hasText: "Signering" });
-  await expect(signeringBox).toBeVisible();
-  const signeringDot = signeringBox.locator("span").first();
-  await expect(signeringDot).toHaveClass(/bg-\[var\(--color-success\)\]/);
+  const hyresavtalBox = stepper.locator("> div").filter({ hasText: "Hyresavtal" });
+  await expect(hyresavtalBox).toBeVisible();
+  const hyresavtalDot = hyresavtalBox.locator("span").first();
+  await expect(hyresavtalDot).toHaveClass(/bg-\[var\(--color-success\)\]/);
 });
