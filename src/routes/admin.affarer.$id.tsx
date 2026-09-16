@@ -636,7 +636,21 @@ function AdminAffarDetail() {
               </WireTag>
             </div>
           </div>
-          {deal.handpenning?.kvitto && deal.handpenning?.ucUtdrag ? (
+          {!deal.handpenning?.kvitto || !deal.handpenning?.ucUtdrag ? (
+            <Annotation>
+              <span className="mt-2 block">
+                Väntar på att köparen laddar upp kvittens och UC-utdrag.
+              </span>
+            </Annotation>
+          ) : !deal.handpenning?.kvittensSignerat?.kopare ||
+            !deal.handpenning?.kvittensSignerat?.saljare ? (
+            <Annotation>
+              <span className="mt-2 block">
+                Väntar på att köparen och säljaren signerar handpenningskvittensen innan
+                handpenningen kan bekräftas mottagen.
+              </span>
+            </Annotation>
+          ) : (
             <WireBtn
               className="mt-4"
               onClick={() => {
@@ -646,12 +660,6 @@ function AdminAffarDetail() {
             >
               Handpenning mottagen →
             </WireBtn>
-          ) : (
-            <Annotation>
-              <span className="mt-2 block">
-                Väntar på att köparen laddar upp kvittens och UC-utdrag.
-              </span>
-            </Annotation>
           )}
         </WireBox>
       )}
