@@ -16,7 +16,6 @@ import {
   bekraftaBolagKlart,
   bekraftaFirmatecknare,
   laddaUppHandpenningKvitto,
-  laddaUppUcUtdrag,
   signeraKopeavtal,
   signeraOverenskommelse,
   signeraHandpenningKvittens,
@@ -510,8 +509,8 @@ function BuyerCaseDetail() {
       {interest.status === "vill-ga-vidare" && !avslutad && deal.steg === "handpenning" && (
         <WireBox label="Handpenning" className="mb-6">
           <Annotation>
-            Betala handpenningen till TreLinks klientmedelskonto och ladda upp kvittens samt ditt
-            UC-utdrag som underlag för hyresvärdens godkännande.
+            Betala handpenningen till TreLinks klientmedelskonto och ladda upp kvittens som underlag
+            för hyresvärdens godkännande.
           </Annotation>
           <div className="mt-3">
             <FileUploadRow
@@ -522,24 +521,14 @@ function BuyerCaseDetail() {
                 refresh();
               }}
             />
-            <FileUploadRow
-              label="UC-utdrag (ditt eget, ej TreLink-kontroll)"
-              fileName={deal.handpenning?.ucUtdrag}
-              onUpload={(filnamn) => {
-                laddaUppUcUtdrag(id, filnamn);
-                refresh();
-              }}
-            />
           </div>
-          {deal.handpenning?.kvitto &&
-            deal.handpenning?.ucUtdrag &&
-            !deal.handpenning?.kvittensSkickadAt && (
-              <Annotation>
-                <span className="mt-2 block">
-                  Väntar på att TreLink bekräftar mottagen handpenning.
-                </span>
-              </Annotation>
-            )}
+          {deal.handpenning?.kvitto && !deal.handpenning?.kvittensSkickadAt && (
+            <Annotation>
+              <span className="mt-2 block">
+                Väntar på att TreLink bekräftar mottagen handpenning.
+              </span>
+            </Annotation>
+          )}
         </WireBox>
       )}
 
