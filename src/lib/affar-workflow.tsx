@@ -1022,26 +1022,41 @@ export function buildAvslutade(
     });
 }
 
-// Tillträde och Klar visas inte längre som egna rutor i steppern — en
-// affär på något av dessa två steg ritar istället Signering som det sista,
-// fullt avklarade steget (se Progress nedan).
-const SYNLIGA_STEG = STEG_ORDNING.slice(0, STEG_ORDNING.indexOf("signering") + 1);
+// Intresse-inskickat, Tillträde och Klar visas inte längre som egna rutor
+// i steppern. En affär före granskning (fortfarande en väntar-pdf-lead)
+// visar helt enkelt inga rutor som klara; en affär på tilltrade/klar
+// ritar istället Signering (nu "Hyresavtal") som det sista, fullt
+// avklarade steget (se Progress nedan). SYNLIGA_STEG_START/-SLUT håller
+// SYNLIGA_STEG i linje med STEG_ORDNING så att offset-uträkningen nedan
+// följer med om ordningen någonsin ändras.
+const SYNLIGA_STEG_START: Steg = "granskning";
+const SYNLIGA_STEG_SLUT: Steg = "signering";
+const SYNLIGA_STEG = STEG_ORDNING.slice(
+  STEG_ORDNING.indexOf(SYNLIGA_STEG_START),
+  STEG_ORDNING.indexOf(SYNLIGA_STEG_SLUT) + 1,
+);
 
 export function Progress({ steg }: { steg: Steg }) {
   const idx = STEG_ORDNING.indexOf(steg);
+  const offset = STEG_ORDNING.indexOf(SYNLIGA_STEG_START);
   return (
-    <div className="grid grid-cols-4 gap-1 md:grid-cols-7">
-      {SYNLIGA_STEG.map((s, i) => (
-        <div
-          key={s}
-          className="flex flex-col items-center gap-1 rounded-card border border-foreground/15 bg-background p-2 text-center"
-        >
-          <StatusDot state={i < idx ? "done" : i === idx ? "active" : "pending"} />
-          <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
-            {STEG_LABEL[s]}
-          </span>
-        </div>
-      ))}
+    <div className="grid grid-cols-3 gap-1 md:grid-cols-6">
+      {SYNLIGA_STEG.map((s, i) => {
+        const globalIdx = i + offset;
+        return (
+          <div
+            key={s}
+            className="flex flex-col items-center gap-1 rounded-card border border-foreground/15 bg-background p-2 text-center"
+          >
+            <StatusDot
+              state={globalIdx < idx ? "done" : globalIdx === idx ? "active" : "pending"}
+            />
+            <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
+              {STEG_LABEL[s]}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
