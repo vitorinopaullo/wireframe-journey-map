@@ -349,10 +349,11 @@ export function avvisaKandidat(interestId: string) {
 /** Är granskningen klar nog för TreLink att matcha den här kandidaten? Samma
  * krav som checklistan på affärens detaljvy: KYC, företagspresentation, och
  * antingen firmatecknare bekräftad/kontaktuppgifter ifyllda eller — om
- * köparen saknar bolag — att bolaget är klart (ett bolag som inte finns kan
- * inte ha en firmatecknare). Delad mellan detaljvyn och de inline
- * Godkänn-knapparna i granskningslistan (admin.affarer.index.tsx) så
- * spärren är exakt densamma på båda ställena. */
+ * köparen går in som privatperson (bolagssituation "privat") — att
+ * personnumret är bekräftat (en privatperson kan inte ha en
+ * firmatecknare). Delad mellan detaljvyn och de inline Godkänn-knapparna
+ * i granskningslistan (admin.affarer.index.tsx) så spärren är exakt
+ * densamma på båda ställena. */
 export function kanMatchaKandidat(deal: DealState): boolean {
   const kycOk = !!deal.granskning?.kycDokument;
   const firmatecknareOk =
@@ -364,7 +365,10 @@ export function kanMatchaKandidat(deal: DealState): boolean {
       !!deal.granskning?.ftMail &&
       !!deal.granskning?.ftMobil);
   const foretagspresentationOk = !!deal.granskning?.foretagspresentation;
-  return kycOk && firmatecknareOk && foretagspresentationOk;
+  const arPrivat = deal.granskning?.bolagssituation === "privat";
+  const personnummerOk = !!deal.granskning?.personnummerBekraftat;
+  const firmatecknareEllerPersonnummerOk = arPrivat ? personnummerOk : firmatecknareOk;
+  return kycOk && firmatecknareEllerPersonnummerOk && foretagspresentationOk;
 }
 
 export function laddaUppHandpenningKvitto(interestId: string, filnamn: string) {
