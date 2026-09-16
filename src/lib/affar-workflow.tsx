@@ -51,7 +51,6 @@ export type KopeavtalState = {
 
 export type HandpenningState = {
   kvitto?: string;
-  ucUtdrag?: string;
   bekraftadMottagenAt?: string;
   // TreLinks egen, av TreLink upprättade kvittens för handpenningen — skilt
   // från kvitto ovan, som är köparens eget underlag. Se
@@ -366,15 +365,6 @@ export function laddaUppHandpenningKvitto(interestId: string, filnamn: string) {
     handpenning: { ...d.handpenning, kvitto: filnamn },
   }));
   logBoth(interestId, "Köpare", `Laddade upp kvittens för handpenning: ${filnamn}`);
-  return deal;
-}
-
-export function laddaUppUcUtdrag(interestId: string, filnamn: string) {
-  const deal = patchDeal(interestId, (d) => ({
-    ...d,
-    handpenning: { ...d.handpenning, ucUtdrag: filnamn },
-  }));
-  logBoth(interestId, "Köpare", `Laddade upp UC-utdrag: ${filnamn}`);
   return deal;
 }
 
@@ -747,7 +737,6 @@ export function devJumpToSteg(interestId: string, target: Steg): DealState {
     if (atOrBefore("handpenning")) {
       next.handpenning = {
         kvitto: "dev-kvitto.pdf",
-        ucUtdrag: "dev-uc.pdf",
         bekraftadMottagenAt: now,
         kvittensSkapadAt: now,
         kvittensSkickadAt: now,
@@ -955,10 +944,10 @@ function vantarFor(deal: DealState): { vantar: Vantar; nastaSteg: string } {
       return { vantar: "saljare", nastaSteg: "Väntar på att säljaren signerar köpeavtalet." };
     }
     case "handpenning": {
-      if (!deal.handpenning?.kvitto || !deal.handpenning?.ucUtdrag) {
+      if (!deal.handpenning?.kvitto) {
         return {
           vantar: "dig",
-          nastaSteg: "Betala handpenning och ladda upp kvittens samt UC-utdrag.",
+          nastaSteg: "Betala handpenning och ladda upp kvittens.",
         };
       }
       return { vantar: "george", nastaSteg: "TreLink bekräftar mottagen handpenning." };
