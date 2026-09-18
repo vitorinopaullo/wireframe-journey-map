@@ -11,8 +11,8 @@
  * Registered under Tailwind's --text-* namespace, so these values drive
  * the existing text-xs..text-6xl utilities directly (no new utility names).
  * Display sizes (30px+) carry a tight negative letter-spacing — intended
- * for headings set in the serif display font (see --font-heading below),
- * not for body copy.
+ * for headings set in the display font (see --font-heading below), not
+ * for body copy.
  */
 @theme {
   --text-xs: 12px;
@@ -155,8 +155,8 @@
 @theme inline {
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", monospace;
-  /* Display serif for h1/h2 and hero numbers only — see @layer base below. */
-  --font-heading: "Instrument Serif", serif;
+  /* Display font for h1/h2 and hero numbers only — see @layer base below. */
+  --font-heading: "Poppins", sans-serif;
   --font-body: "Inter", sans-serif;
   /* Numeric role: all figures (price, valuation, area, inventory, dates,
      percentages) use the body sans with tabular figures. Monospace is
