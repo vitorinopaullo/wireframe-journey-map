@@ -2,6 +2,7 @@ import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { unreadCountByKategori, STORAGE_KEY as NOTISER_STORAGE_KEY, type AdminNotisKategori } from "@/lib/admin-notiser";
+import { AccountMenu } from "@/components/AccountMenu";
 
 type Mode = "kopare" | "saljare";
 
@@ -50,27 +51,7 @@ export function AppLayout({ mode, children }: { mode: Mode; children?: ReactNode
             <img src="/trelink-logo.svg" alt="TreLink" className="h-6 w-auto" />
             <span className="font-mono text-muted-foreground text-xs">/{mode}</span>
           </Link>
-          <div className="flex items-center gap-3">
-            <div className="flex rounded-pill border border-foreground/15 p-0.5">
-              <Link
-                to="/dashboard"
-                search={{ mode: "kopare" }}
-                className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${mode === "kopare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
-              >
-                Köpare
-              </Link>
-              <Link
-                to="/dashboard"
-                search={{ mode: "saljare" }}
-                className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${mode === "saljare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
-              >
-                Säljare
-              </Link>
-            </div>
-            <Link to="/logga-in" className="text-xs text-muted-foreground hover:text-foreground">
-              Logga ut
-            </Link>
-          </div>
+          <AccountMenu role={mode} />
         </div>
       </header>
       <div className="mx-auto flex max-w-7xl gap-8 px-6 py-8">
