@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
-import { getBuyerInterest, statusLabel } from "@/lib/kopare-workflow";
+import { getBuyerInterest, statusLabelThirdPerson } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
 import { getAccountByUserId, getSession } from "@/lib/mock-auth";
 import {
@@ -78,7 +78,7 @@ function SellerCaseDetail() {
       <PageHeader eyebrow={`Säljarläge · ärende ${interest.kKod}`} title={annonsTitel} />
 
       <WireBox label="Status" className="mb-6">
-        <WireTag>{statusLabel[interest.status]}</WireTag>
+        <WireTag>{statusLabelThirdPerson(interest.status)}</WireTag>
       </WireBox>
 
       {interest.status === "vill-ga-vidare" && !deal.avvisad && (

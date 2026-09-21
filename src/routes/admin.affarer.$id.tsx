@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Check, CheckCircle2, AlertTriangle } from "lucide-react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
-import { getBuyerInterest, statusLabel } from "@/lib/kopare-workflow";
+import { getBuyerInterest, statusLabelThirdPerson } from "@/lib/kopare-workflow";
 import { getAnnons } from "@/lib/annons-workflow";
 import { getAccountByUserId, upsertAdminAccount, devLoginAsAccount } from "@/lib/mock-auth";
 import {
@@ -241,7 +241,7 @@ function AdminAffarDetail() {
       <PageHeader
         eyebrow={`Affär · ${interest.kKod}`}
         title={info.titel}
-        subtitle={`${info.pris} kr · ${info.ort} · köpare ${statusLabel[interest.status]}`}
+        subtitle={`${info.pris} kr · ${info.ort} · ${statusLabelThirdPerson(interest.status)}`}
       />
 
       {import.meta.env.DEV && (

@@ -34,6 +34,17 @@ export const statusLabel: Record<BuyerInterestStatus, string> = {
   "avböjt": "Avvisat",
 };
 
+/** Samma etiketter som statusLabel, men ur en tredje parts perspektiv —
+ * "ditt/Du" i statusLabel syftar på köparen, inte på den som tittar, och
+ * både säljarens (saljare.affarer.$id.tsx) och adminens
+ * (admin.affarer.$id.tsx) egna ärendesidor visar de här etiketterna om
+ * köparen, inte till köparen. */
+export function statusLabelThirdPerson(status: BuyerInterestStatus): string {
+  if (status === "väntar-pdf") return "Väntar på köparens beslut";
+  if (status === "vill-ga-vidare") return "Köparen vill köpa";
+  return statusLabel[status];
+}
+
 export const statusHint: Record<BuyerInterestStatus, string> = {
   "väntar-pdf": "Öppna underlaget och ta ställning.",
   "vill-ga-vidare": "TreLink kontaktar dig när nästa steg är klart.",
