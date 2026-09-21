@@ -7,7 +7,7 @@ import { getAnnons } from "@/lib/annons-workflow";
 import { readBuyerInterests } from "@/lib/kopare-workflow";
 import { getDeal, annonsInfo } from "@/lib/affar-workflow";
 import { getAccountByUserId, getOrCreateBuyerKod } from "@/lib/mock-auth";
-import { formatArendeRef } from "@/lib/format";
+import { formatArendeRef, formatTelefon } from "@/lib/format";
 import { markKategoriRead } from "@/lib/admin-notiser";
 import { Check } from "lucide-react";
 
@@ -104,7 +104,9 @@ function KandidatRad({ f }: { f: Favorit }) {
         )}
       </td>
       <td className="px-3 py-2 font-mono">{kKod}</td>
-      <td className="px-3 py-2">{account?.profil?.telefon || "—"}</td>
+      <td className="px-3 py-2">
+        {account?.profil?.telefon ? formatTelefon(account.profil.telefon) : "—"}
+      </td>
       <td className="px-3 py-2">{account?.profil?.epost || "—"}</td>
       <td className="px-3 py-2">
         <ForetagspresentationStatus userId={f.userId} annonsId={f.annonsId} />

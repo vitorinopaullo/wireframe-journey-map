@@ -24,7 +24,7 @@ import {
 } from "@/lib/affar-workflow";
 import { readAnnonser, getAnnons, STORAGE_KEY as ANNONS_STORAGE_KEY } from "@/lib/annons-workflow";
 import { getAccountByUserId } from "@/lib/mock-auth";
-import { formatArendeRef, formatDatum } from "@/lib/format";
+import { formatArendeRef, formatDatum, formatTelefon } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/affarer/")({
   component: AdminAffarer,
@@ -161,7 +161,9 @@ function GranskningKandidatRad({
         )}
       </td>
       <td className="px-3 py-2 font-mono">{kandidat.kKod}</td>
-      <td className="px-3 py-2">{account?.profil?.telefon || "—"}</td>
+      <td className="px-3 py-2">
+        {account?.profil?.telefon ? formatTelefon(account.profil.telefon) : "—"}
+      </td>
       <td className="px-3 py-2">{account?.profil?.epost || "—"}</td>
       <td className="px-3 py-2">
         {bolag ? (

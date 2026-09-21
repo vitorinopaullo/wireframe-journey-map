@@ -10,7 +10,7 @@ import { getDeal } from "@/lib/affar-workflow";
 import { readFavoriter } from "@/lib/favoriter";
 import { readNoteringar, addNotering } from "@/lib/admin-noteringar";
 import { historikForKopare, HANDELSE_LABEL } from "@/lib/sparade-historik";
-import { formatDatum, formatArendeRef } from "@/lib/format";
+import { formatDatum, formatArendeRef, formatTelefon } from "@/lib/format";
 import { Star } from "lucide-react";
 
 export const Route = createFileRoute("/admin/anvandare/$id")({
@@ -234,7 +234,10 @@ function AdminAnvandareDetail() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field k="Förnamn" v={account.bankid.fornamn} />
                 <Field k="Efternamn" v={account.bankid.efternamn} />
-                <Field k="Mobil nr" v={profil?.telefon} />
+                <Field
+                  k="Mobil nr"
+                  v={profil?.telefon ? formatTelefon(profil.telefon) : undefined}
+                />
                 <Field k="E-post" v={profil?.epost} />
               </div>
             </WireBox>

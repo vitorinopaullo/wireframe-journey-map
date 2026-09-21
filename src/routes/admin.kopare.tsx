@@ -12,7 +12,7 @@ import { getAnnons } from "@/lib/annons-workflow";
 import { annonsInfo } from "@/lib/affar-workflow";
 import { markKategoriRead } from "@/lib/admin-notiser";
 import { getAccountByUserId } from "@/lib/mock-auth";
-import { formatDatum, formatArendeRef } from "@/lib/format";
+import { formatDatum, formatArendeRef, formatTelefon } from "@/lib/format";
 import { AlertTriangle, Check } from "lucide-react";
 
 export const Route = createFileRoute("/admin/kopare")({
@@ -121,7 +121,9 @@ function KandidatRad({ i }: { i: BuyerInterest }) {
           </span>
         )}
       </td>
-      <td className="px-3 py-2">{account?.profil?.telefon || "—"}</td>
+      <td className="px-3 py-2">
+        {account?.profil?.telefon ? formatTelefon(account.profil.telefon) : "—"}
+      </td>
       <td className="px-3 py-2">{account?.profil?.epost || "—"}</td>
       <td className="px-3 py-2">
         {i.pdfOppnadAt ? (
