@@ -1,8 +1,9 @@
-import { Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { Link, Outlet } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { getSession, subscribeSession, signOut, type Session } from "@/lib/mock-auth";
+import { getSession, subscribeSession, type Session } from "@/lib/mock-auth";
 import { WireBtn } from "@/components/wire";
+import { AccountMenu } from "@/components/AccountMenu";
 
 const navItems = [
   { to: "/lokaler", label: "Sök annons" },
@@ -50,14 +51,8 @@ const footerCols: { title: string; links: { to: string; label: string }[]; blurb
 
 export function PublicLayout({ children }: { children?: ReactNode }) {
   const [session, setSessionState] = useState<Session | null>(() => getSession());
-  const navigate = useNavigate();
 
   useEffect(() => subscribeSession(() => setSessionState(getSession())), []);
-
-  function handleLogout() {
-    signOut();
-    navigate({ to: "/" });
-  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -88,27 +83,7 @@ export function PublicLayout({ children }: { children?: ReactNode }) {
                 </WireBtn>
               </>
             ) : session.role ? (
-              <>
-                <div className="flex rounded-pill border border-foreground/15 p-0.5">
-                  <Link
-                    to="/dashboard"
-                    search={{ mode: "kopare" }}
-                    className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${session.role === "kopare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
-                  >
-                    Köpare
-                  </Link>
-                  <Link
-                    to="/dashboard"
-                    search={{ mode: "saljare" }}
-                    className={`rounded-pill px-3 py-1 text-xs transition-colors duration-150 ${session.role === "saljare" ? "bg-[var(--color-primary)] text-[var(--color-white)]" : "text-foreground"}`}
-                  >
-                    Säljare
-                  </Link>
-                </div>
-                <button onClick={handleLogout} className="text-xs text-muted-foreground hover:text-foreground">
-                  Logga ut
-                </button>
-              </>
+              <AccountMenu role={session.role} />
             ) : (
               <WireBtn variant="primary" to="/onboarding">
                 Slutför kontosättning →
