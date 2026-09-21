@@ -20,7 +20,7 @@ test("Mobil and Mail render on an Intressenter row from account.profil", async (
     createdAt: Date.now(),
     updatedAt: Date.now(),
     role: "kopare",
-    profil: { bolag: "Parity AB", telefon: "070 555 66 77", epost: "pia@example.com" },
+    profil: { bolag: "Parity AB", telefon: "0705556677", epost: "pia@example.com" },
   });
   await seedBuyerInterest(page, {
     id: "e2e-int-parity-interest",
@@ -38,7 +38,7 @@ test("Mobil and Mail render on an Intressenter row from account.profil", async (
     .click();
 
   const rad = page.locator("tr", { has: page.getByText("K-e2e-parity") });
-  await expect(rad.getByText("070 555 66 77")).toBeVisible();
+  await expect(rad.getByText("070 55 566 77")).toBeVisible();
   await expect(rad.getByText("pia@example.com")).toBeVisible();
 });
 

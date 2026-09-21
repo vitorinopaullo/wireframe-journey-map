@@ -22,7 +22,7 @@ test("admin.sparade groups favoriter by annons into an expandable group, matchin
     createdAt: Date.now(),
     updatedAt: Date.now(),
     role: "kopare",
-    profil: { telefon: "070-1112233", epost: "sparade1@example.com" },
+    profil: { telefon: "0701112233", epost: "sparade1@example.com" },
   });
   await seedAccount(page, {
     id: "e2e-acc-sparade-2",
@@ -31,7 +31,7 @@ test("admin.sparade groups favoriter by annons into an expandable group, matchin
     createdAt: Date.now(),
     updatedAt: Date.now(),
     role: "kopare",
-    profil: { telefon: "070-4445566", epost: "sparade2@example.com" },
+    profil: { telefon: "0704445566", epost: "sparade2@example.com" },
   });
   await seedFavorit(page, {
     userId: "u_e2e_sparade1",
@@ -63,9 +63,9 @@ test("admin.sparade groups favoriter by annons into an expandable group, matchin
 
   await expect(grupp.getByText("Sparade Ettson")).toBeVisible();
   await expect(grupp.getByText("Sparade Tvason")).toBeVisible();
-  await expect(grupp.getByText("070-1112233")).toBeVisible();
+  await expect(grupp.getByText("070 11 122 33")).toBeVisible();
   await expect(grupp.getByText("sparade1@example.com")).toBeVisible();
-  await expect(grupp.getByText("070-4445566")).toBeVisible();
+  await expect(grupp.getByText("070 44 455 66")).toBeVisible();
   await expect(grupp.getByText("sparade2@example.com")).toBeVisible();
 
   const kKoder = await grupp.locator("tbody tr td:nth-child(2)").allTextContents();
