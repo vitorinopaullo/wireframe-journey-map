@@ -22,6 +22,15 @@ export const stateLabel: Record<WorkflowState, string> = {
   "opublicerad": "Avpublicerad",
 };
 
+/** Samma etiketter som stateLabel, men ur TreLink-adminens perspektiv —
+ * "din komplettering" syftar på säljaren, inte på den som tittar, och
+ * admin.annonser.$id.tsx/admin.annonser.index.tsx/admin.anvandare.$id.tsx/
+ * admin.index.tsx visar de här statusarna för admin, inte säljaren. */
+export function adminStateLabel(state: WorkflowState): string {
+  if (state === "komplettering") return "Väntar på säljarens komplettering";
+  return stateLabel[state];
+}
+
 /** Kort statusrad för säljaren. */
 export const stateHint: Record<WorkflowState, string> = {
   "granskas":

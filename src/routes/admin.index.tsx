@@ -2,7 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, Annotation } from "@/components/wire";
-import { readAnnonser, STORAGE_KEY, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import {
+  readAnnonser,
+  STORAGE_KEY,
+  adminStateLabel,
+  type WorkflowState,
+} from "@/lib/annons-workflow";
 import { formatArendeRef, formatDatum } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/")({
@@ -102,7 +107,7 @@ function AdminOversikt() {
                 </div>
                 <div className="text-right">
                   <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                    {r.status ? stateLabel[r.status] : "—"}
+                    {r.status ? adminStateLabel(r.status) : "—"}
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">Väntar sedan {formatDatum(r.waitingSince)}</div>
                 </div>

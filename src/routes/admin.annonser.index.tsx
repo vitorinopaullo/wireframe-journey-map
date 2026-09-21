@@ -2,7 +2,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireTag, Annotation } from "@/components/wire";
-import { readAnnonser, STORAGE_KEY, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import {
+  readAnnonser,
+  STORAGE_KEY,
+  adminStateLabel,
+  type WorkflowState,
+} from "@/lib/annons-workflow";
 import { docsByCat, type CatId } from "@/lib/annons-model";
 import { formatArendeRef, formatDatum } from "@/lib/format";
 
@@ -73,7 +78,7 @@ function StatusTag({ status }: { status: WorkflowState | null }) {
       : "border-foreground/20 text-muted-foreground";
   return (
     <span className={`inline-flex items-center rounded-pill border px-3 py-1 text-sm ${cls}`}>
-      {stateLabel[status]}
+      {adminStateLabel(status)}
     </span>
   );
 }

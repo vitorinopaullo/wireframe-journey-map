@@ -3,7 +3,12 @@ import { useState } from "react";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, Annotation, WireTag, WireBtn } from "@/components/wire";
 import { readAdminAccounts } from "@/lib/mock-auth";
-import { readAnnonser, getAnnons, stateLabel, type WorkflowState } from "@/lib/annons-workflow";
+import {
+  readAnnonser,
+  getAnnons,
+  adminStateLabel,
+  type WorkflowState,
+} from "@/lib/annons-workflow";
 import { type CatId } from "@/lib/annons-model";
 import { readBuyerInterests } from "@/lib/kopare-workflow";
 import { getDeal } from "@/lib/affar-workflow";
@@ -43,7 +48,7 @@ function linkadeAnnonser(personnr: string | undefined): LinkatObjekt[] {
         id: item.id,
         titel: item.titel || "—",
         kategori: catId ? KAT_NAMN[catId] : "—",
-        status: st ? stateLabel[st] : item.status || "—",
+        status: st ? adminStateLabel(st) : item.status || "—",
       };
     });
 }

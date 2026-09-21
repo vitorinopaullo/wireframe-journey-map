@@ -4,7 +4,7 @@ import { Pencil, Eye, FileCheck, AlertTriangle, Check, CheckCircle2, X, Clock, P
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { WireBox, PageHeader, WireBtn, WireTag, Annotation } from "@/components/wire";
 import { ProcessStepper } from "@/components/ProcessStepper";
-import { getAnnons, patchAnnons, logEntry, stateLabel, STORAGE_KEY, begarKomplettering, type WorkflowState } from "@/lib/annons-workflow";
+import { getAnnons, patchAnnons, logEntry, adminStateLabel, STORAGE_KEY, begarKomplettering, type WorkflowState } from "@/lib/annons-workflow";
 import { readAdminAccounts, devLoginAsAccount } from "@/lib/mock-auth";
 import { MailPreview, VisaMailLank, type MailData } from "@/components/MailPreview";
 import { UppdragsavtalDokument } from "@/components/UppdragsavtalDokument";
@@ -1124,7 +1124,7 @@ function AdminAnnonsDetail() {
       <PageHeader
         eyebrow={`TreLink Admin · Annons ${formatArendeRef(id)}`}
         title={item.titel ?? "Okänd annons"}
-        subtitle={st ? stateLabel[st] : "Status okänd"}
+        subtitle={st ? adminStateLabel(st) : "Status okänd"}
       />
 
       {import.meta.env.DEV && (
