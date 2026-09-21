@@ -126,6 +126,20 @@ function Dashboard() {
         </div>
       )}
 
+      {mode === "kopare" && (
+        <CrossRoleSummary
+          label="Som säljare"
+          stats={
+            minaAnnonser.length === 0 && minaSaljareAffarer.length === 0
+              ? null
+              : `${minaAnnonser.length} annonser · ${minaSaljareAffarer.length} pågående affärer`
+          }
+          emptyText="Vill du också sälja en verksamhet?"
+          targetMode="saljare"
+          targetLabel="Byt till säljarläge"
+        />
+      )}
+
       {mode === "saljare" && (
         <CrossRoleSummary
           label="Som köpare"
