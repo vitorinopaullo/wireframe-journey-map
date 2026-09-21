@@ -98,19 +98,21 @@ export async function seedSession(
   personnr: string,
   fornamn: string,
   efternamn: string,
+  role?: "kopare" | "saljare",
 ) {
   await page.evaluate(
-    ({ personnr, fornamn, efternamn }) => {
+    ({ personnr, fornamn, efternamn, role }) => {
       const userId = `u_${personnr.replace(/\D/g, "")}`;
       sessionStorage.setItem(
         "trelink-session",
         JSON.stringify({
           userId,
           bankid: { personnr, fornamn, efternamn, verifieradAt: Date.now() },
+          ...(role ? { role } : {}),
           createdAt: Date.now(),
         }),
       );
     },
-    { personnr, fornamn, efternamn },
+    { personnr, fornamn, efternamn, role },
   );
 }
