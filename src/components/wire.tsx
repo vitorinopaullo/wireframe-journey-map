@@ -63,7 +63,7 @@ export function WireBtn({
       ? "bg-card text-foreground border-foreground/15"
       : variant === "tertiary"
       ? "border-transparent bg-transparent px-0 text-[var(--color-interactive)] underline-offset-4 hover:underline hover:opacity-100"
-      : "bg-transparent text-foreground border-dashed border-muted-foreground/50";
+      : "border-solid bg-transparent text-foreground border-muted-foreground/40";
   const cls = `inline-flex items-center justify-center rounded-button border px-4 py-2.5 text-sm font-medium transition-[background-color,border-color,box-shadow,opacity,transform] ease-standard duration-150 hover:opacity-80 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40 disabled:active:scale-100 ${styles} ${className}`;
   if (to) {
     const LinkAny = Link as unknown as ComponentType<Record<string, unknown>>;
