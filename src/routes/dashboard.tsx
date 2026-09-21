@@ -126,6 +126,20 @@ function Dashboard() {
         </div>
       )}
 
+      {mode === "saljare" && (
+        <CrossRoleSummary
+          label="Som köpare"
+          stats={
+            minaKopareAffarer.length === 0 && minaFavoriter.length === 0
+              ? null
+              : `${minaKopareAffarer.length} pågående affärer · ${minaFavoriter.length} sparade objekt`
+          }
+          emptyText="Vill du också köpa en verksamhet?"
+          targetMode="kopare"
+          targetLabel="Byt till köparläge"
+        />
+      )}
+
       <WireBox label={mode === "kopare" ? "Inga pågående? Börja söka." : "Skapa din nästa annons"} className="mt-8">
         <p className="text-sm text-muted-foreground">
           {mode === "kopare"
@@ -151,5 +165,40 @@ function DashCard({ title, value, link, hint }: { title: string; value: string; 
       <div className="mt-2 font-mono text-3xl">{value}</div>
       <p className="mt-2 text-xs text-muted-foreground">{hint}</p>
     </Link>
+  );
+}
+
+/** Small cross-role activity summary shown on the current dashboard for
+ * whichever role isn't active — e.g. the buyer's own affärer/favoriter
+ * counts shown on the seller's dashboard. `stats` is the summary line
+ * to show when there's activity on the other side; passing null falls
+ * back to `emptyText`, an invite to try the other role instead of an
+ * empty "0 affärer" box. */
+function CrossRoleSummary({
+  label,
+  stats,
+  emptyText,
+  targetMode,
+  targetLabel,
+}: {
+  label: string;
+  stats: string | null;
+  emptyText: string;
+  targetMode: "kopare" | "saljare";
+  targetLabel: string;
+}) {
+  return (
+    <WireBox label={label} className="mt-6">
+      <p className="text-sm text-muted-foreground">{stats ?? emptyText}</p>
+      <div className="mt-3">
+        <Link
+          to="/dashboard"
+          search={{ mode: targetMode }}
+          className="text-sm text-[var(--color-interactive)] hover:underline"
+        >
+          {targetLabel} →
+        </Link>
+      </div>
+    </WireBox>
   );
 }
