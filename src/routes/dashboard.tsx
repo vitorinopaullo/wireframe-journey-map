@@ -7,6 +7,7 @@ import { readAnnonser, stateLabel, STORAGE_KEY, type WorkflowState } from "@/lib
 import { readBuyerInterests, STORAGE_KEY as KOPARE_STORAGE_KEY } from "@/lib/kopare-workflow";
 import { buildAffarer } from "@/lib/affar-workflow";
 import { getSession } from "@/lib/mock-auth";
+import { readFavoriter, STORAGE_KEY as FAVORITER_STORAGE_KEY, type Favorit } from "@/lib/favoriter";
 
 const searchSchema = z.object({
   mode: z.enum(["kopare", "saljare"]).catch("kopare").default("kopare"),
@@ -41,11 +42,13 @@ function Dashboard() {
   const { mode } = Route.useSearch();
   const [annonser, setAnnonser] = useState<any[]>(() => readAnnonser());
   const [buyerInterests, setBuyerInterests] = useState(() => readBuyerInterests());
+  const [favoriter, setFavoriter] = useState<Favorit[]>(() => readFavoriter());
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
       if (e.key === STORAGE_KEY) setAnnonser(readAnnonser());
       if (e.key === KOPARE_STORAGE_KEY) setBuyerInterests(readBuyerInterests());
+      if (e.key === FAVORITER_STORAGE_KEY) setFavoriter(readFavoriter());
     }
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
@@ -53,6 +56,7 @@ function Dashboard() {
 
   const userId = getSession()?.userId;
   const minaAnnonser = annonser.filter((a) => a.agarUserId === userId);
+  const minaFavoriter = favoriter.filter((f) => f.userId === userId);
   const minaIntresseanmalningar = buyerInterests.filter((i) =>
     minaAnnonser.some((a) => a.id === i.annonsId),
   );
@@ -86,7 +90,12 @@ function Dashboard() {
 
       {mode === "kopare" ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <DashCard title="Sparade objekt" value="7" link="/kopare/favoriter" hint="Spara och jämför" />
+          <DashCard
+            title="Sparade objekt"
+            value={String(minaFavoriter.length)}
+            link="/kopare/favoriter"
+            hint="Spara och jämför"
+          />
           <DashCard
             title="Mina affärer"
             value={String(minaKopareAffarer.length)}
