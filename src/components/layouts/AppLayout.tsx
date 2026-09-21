@@ -7,6 +7,7 @@ import { AccountMenu } from "@/components/AccountMenu";
 type Mode = "kopare" | "saljare";
 
 const buyerNav = [
+  { to: "/lokaler", label: "Sök annons" },
   { to: "/dashboard", label: "Översikt" },
   { to: "/kopare/favoriter", label: "Sparade objekt" },
   { to: "/kopare/affarer", label: "Mina affärer" },
