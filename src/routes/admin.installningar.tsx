@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Check } from "lucide-react";
 import { AdminLayout, AdminComingSoon } from "@/components/layouts/AdminLayout";
 import { PageHeader, WireBox, WireBtn, Annotation } from "@/components/wire";
-import { ADMIN_ACCOUNTS_STORAGE_KEY } from "@/lib/mock-auth";
+import { ADMIN_ACCOUNTS_STORAGE_KEY, signOut } from "@/lib/mock-auth";
 import { STORAGE_KEY as ANNONSER_STORAGE_KEY } from "@/lib/annons-workflow";
 import { STORAGE_KEY as KOPARE_STORAGE_KEY } from "@/lib/kopare-workflow";
 import { STORAGE_KEY as FAVORITER_STORAGE_KEY } from "@/lib/favoriter";
@@ -39,6 +39,14 @@ function AdminInstallningar() {
     Object.keys(window.localStorage)
       .filter((key) => key.startsWith(ONBOARDING_SALJARE_KEY_PREFIX))
       .forEach((key) => window.localStorage.removeItem(key));
+    // Also signs the tester out — the buyer/seller dev-preview session
+    // (trelink-session) would otherwise dangle, still pointing at BankID/
+    // role data whose backing account/annons rows were just deleted above.
+    // Admin routes don't read this session at all (AdminLayout has no
+    // getSession() gate), so there's no page to redirect away from here —
+    // signOut() alone leaves this confirmation visible and any other
+    // open kopare/saljare view correctly logged out on next render.
+    signOut();
     setConfirming(false);
     setCleared(true);
   }
@@ -80,7 +88,8 @@ function AdminInstallningar() {
 
         {cleared && (
           <p className="flex items-center gap-1.5 text-sm font-medium">
-            <Check className="h-4 w-4" /> Testdata rensad. Konton och annonser är nu borttagna.
+            <Check className="h-4 w-4" /> Testdata rensad. Konton och annonser är nu borttagna, och
+            du är utloggad.
           </p>
         )}
 
