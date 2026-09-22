@@ -10,6 +10,8 @@ import { STORAGE_KEY as FAVORITER_STORAGE_KEY } from "@/lib/favoriter";
 import { DEALS_KEY as AFFARER_STORAGE_KEY } from "@/lib/affar-workflow";
 import { STORAGE_KEY as NOTISER_STORAGE_KEY } from "@/lib/admin-notiser";
 import { STORAGE_KEY as SKAPA_ANNONS_DRAFT_KEY } from "@/routes/saljare.skapa-annons";
+import { STORAGE_KEY as HISTORIK_STORAGE_KEY } from "@/lib/sparade-historik";
+import { STORAGE_KEY as NOTERINGAR_STORAGE_KEY } from "@/lib/admin-noteringar";
 
 export const Route = createFileRoute("/admin/installningar")({
   component: AdminInstallningar,
@@ -32,6 +34,8 @@ function AdminInstallningar() {
     window.localStorage.removeItem(AFFARER_STORAGE_KEY);
     window.localStorage.removeItem(NOTISER_STORAGE_KEY);
     window.localStorage.removeItem(SKAPA_ANNONS_DRAFT_KEY);
+    window.localStorage.removeItem(HISTORIK_STORAGE_KEY);
+    window.localStorage.removeItem(NOTERINGAR_STORAGE_KEY);
     Object.keys(window.localStorage)
       .filter((key) => key.startsWith(ONBOARDING_SALJARE_KEY_PREFIX))
       .forEach((key) => window.localStorage.removeItem(key));
@@ -45,8 +49,9 @@ function AdminInstallningar() {
 
       <WireBox label="Testdata" variant="dashed" className="mb-6">
         <p className="mb-3 text-sm text-muted-foreground">
-          Rensar alla konton (Användare), annonser, intresseanmälningar/favoriter, affärer, notiser
-          och sparade utkast i denna webbläsare, så du kan börja om från ett tomt läge vid test.
+          Rensar alla konton (Användare), annonser, intresseanmälningar/favoriter, affärer, notiser,
+          sparhistorik, anteckningar och sparade utkast i denna webbläsare, så du kan börja om från
+          ett tomt läge vid test.
         </p>
 
         {!confirming && !cleared && (
